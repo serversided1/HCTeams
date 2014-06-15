@@ -1,0 +1,8 @@
+name: Foxtrot
+version: ${timestamp} | ${computerName}
+description: What does the fox say?
+author: Kerem Celik
+main: net.frozenorb.foxtrot.FoxtrotPlugin
+commands:
+    spawn:
+ 
