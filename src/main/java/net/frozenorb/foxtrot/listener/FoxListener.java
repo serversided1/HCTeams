@@ -7,12 +7,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.TimeUtils;
 
 import org.bukkit.Bukkit;
@@ -23,9 +25,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -40,6 +44,7 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -47,8 +52,10 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -60,6 +67,7 @@ import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 @SuppressWarnings("deprecation")
@@ -325,9 +333,20 @@ public class FoxListener implements Listener {
 
 	}
 
+	@EventHandler
+	public void onItemEnchant(EnchantItemEvent e) {
+		for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getServerManager().getMaxEnchantments().entrySet()) {
+			if (e.getEnchantsToAdd().containsKey(entry.getKey())) {
+				if (e.getEnchantsToAdd().get(entry.getKey()) > entry.getValue()) {
+					e.getEnchantsToAdd().put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+	}
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onAnvilClick(InventoryClickEvent e) {
-		// check if the event has been cancelled by another plugin
+
 		if (!e.isCancelled()) {
 			HumanEntity ent = e.getWhoClicked();
 
@@ -335,6 +354,14 @@ public class FoxListener implements Listener {
 			if (ent instanceof Player) {
 				Player player = (Player) ent;
 				Inventory inv = e.getInventory();
+
+				if (e.getInventory().getType() == InventoryType.MERCHANT) {
+					for (ItemStack item : e.getInventory()) {
+						if (item != null) {
+							InvUtils.fixItem(item);
+						}
+					}
+				}
 
 				// see if the event is about an anvil
 				if (inv instanceof AnvilInventory) {
@@ -361,6 +388,29 @@ public class FoxListener implements Listener {
 
 							// check if there is an item in the result slot
 							if (item != null) {
+
+								boolean book = item.getType() == Material.ENCHANTED_BOOK;
+
+								for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getServerManager().getMaxEnchantments().entrySet()) {
+
+									if (book) {
+										EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
+										if (esm.hasStoredEnchant(entry.getKey()) && esm.getStoredEnchantLevel(entry.getKey()) > entry.getValue()) {
+											player.sendMessage(ChatColor.RED + "That book would be too strong to use!");
+											e.setCancelled(true);
+											return;
+										}
+
+									} else {
+										if (item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
+											if (entry.getValue() == -1) {
+												item.addEnchantment(Enchantment.DURABILITY, entry.getValue());
+											} else {
+												item.addEnchantment(entry.getKey(), entry.getValue());
+											}
+										}
+									}
+								}
 								ItemMeta meta = item.getItemMeta();
 
 								// it is possible that the item does not have
@@ -692,6 +742,23 @@ public class FoxListener implements Listener {
 			return;
 
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEntityDeathEvent(EntityDeathEvent e) {
+		Iterator<ItemStack> iter = e.getDrops().iterator();
+		while (iter.hasNext()) {
+			ItemStack i = iter.next();
+			InvUtils.fixItem(i);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerFishEvent(PlayerFishEvent e) {
+		if (e.getCaught() instanceof Item) {
+			ItemStack i = ((Item) e.getCaught()).getItemStack();
+			InvUtils.fixItem(i);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

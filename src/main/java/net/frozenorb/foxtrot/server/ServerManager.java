@@ -21,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,7 @@ public class ServerManager {
 
 	public static final int WARZONE_RADIUS = 512;
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
+	@Getter private HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
 
 	public ServerManager() {
 		try {
@@ -59,6 +61,8 @@ public class ServerManager {
 		catch (IOException ex) {
 			ex.printStackTrace();
 		}
+
+		loadEnchantments();
 	}
 
 	public void save() {
@@ -249,7 +253,7 @@ public class ServerManager {
 		if (seconds == 10) {
 			p.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
 		}
-		
+
 		final Listener l = new Listener() {
 			@EventHandler
 			public void onPlayerDamage(EntityDamageByEntityEvent e) {
@@ -267,5 +271,35 @@ public class ServerManager {
 				HandlerList.unregisterAll(l);
 			}
 		}, seconds * 20);
+	}
+
+	public void loadEnchantments() {
+		maxEnchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+		maxEnchantments.put(Enchantment.THORNS, -1);
+		maxEnchantments.put(Enchantment.PROTECTION_PROJECTILE, 4);
+		maxEnchantments.put(Enchantment.PROTECTION_EXPLOSIONS, 4);
+		maxEnchantments.put(Enchantment.PROTECTION_FIRE, 4);
+		maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
+		maxEnchantments.put(Enchantment.DURABILITY, 3);
+		maxEnchantments.put(Enchantment.OXYGEN, 3);
+		maxEnchantments.put(Enchantment.WATER_WORKER, 1);
+
+		maxEnchantments.put(Enchantment.DAMAGE_ALL, 3);
+		maxEnchantments.put(Enchantment.FIRE_ASPECT, 2);
+		maxEnchantments.put(Enchantment.KNOCKBACK, 1);
+		maxEnchantments.put(Enchantment.DAMAGE_ARTHROPODS, 5);
+		maxEnchantments.put(Enchantment.DAMAGE_UNDEAD, 5);
+		maxEnchantments.put(Enchantment.ARROW_DAMAGE, 5);
+		maxEnchantments.put(Enchantment.ARROW_FIRE, 1);
+		maxEnchantments.put(Enchantment.ARROW_INFINITE, 1);
+		maxEnchantments.put(Enchantment.ARROW_KNOCKBACK, 2);
+
+		maxEnchantments.put(Enchantment.DIG_SPEED, 5);
+		maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+		maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+		maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
+		maxEnchantments.put(Enchantment.LUCK, 3);
+		maxEnchantments.put(Enchantment.LURE, 3);
+
 	}
 }
