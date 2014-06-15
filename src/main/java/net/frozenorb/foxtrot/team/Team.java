@@ -455,7 +455,7 @@ public class Team {
 		Location s = getHQ() != null ? getHQ() : getChunks().size() > 0 ? new Location(w, getChunks().get(0).getX() * 16, 70, getChunks().get(0).getZ() * 16) : null;
 
 		String msg = " §3-§e HQ: ";
-		msg += s != null ? "§7" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§7None";
+		msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
 
 		p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
 
