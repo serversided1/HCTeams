@@ -11,6 +11,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamManager;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +43,12 @@ public class ServerManager {
 
 	public static final int WARZONE_RADIUS = 512;
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
-	@Getter private HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
+	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
+
+	public static final int[] DISALLOWED_POTIONS = { 8225, 16417, 16449, 16386,
+			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
+			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16426, 16458,
+			8204, 8236, 8268, 16396, 16428, 16460, 16398, 16462 };
 
 	public ServerManager() {
 		try {
@@ -186,6 +193,27 @@ public class ServerManager {
 
 			player.teleport(to);
 			return;
+		}
+
+		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
+		boolean enemyWithinRange = false;
+
+		for (Entity e : player.getNearbyEntities(40, 40, 40)) {
+			if (e instanceof Player) {
+				Player other = (Player) e;
+
+				if (tm.getPlayerTeam(other.getName()) != tm.getPlayerTeam(player.getName())) {
+					enemyWithinRange = true;
+				}
+
+			}
+		}
+
+		if (!enemyWithinRange && ((Damageable) player).getHealth() == ((Damageable) player).getMaxHealth() && player.getFoodLevel() == 20) {
+
+			player.teleport(to);
+			return;
+
 		}
 
 		if (isWarzone(player.getLocation())) {

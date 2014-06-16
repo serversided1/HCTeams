@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -25,6 +26,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EntityType;
@@ -43,6 +45,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -50,6 +53,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -69,6 +73,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -335,10 +340,38 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onItemEnchant(EnchantItemEvent e) {
-		for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getServerManager().getMaxEnchantments().entrySet()) {
+		for (Entry<Enchantment, Integer> entry : ServerManager.getMaxEnchantments().entrySet()) {
 			if (e.getEnchantsToAdd().containsKey(entry.getKey())) {
 				if (e.getEnchantsToAdd().get(entry.getKey()) > entry.getValue()) {
 					e.getEnchantsToAdd().put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPotionSplash(PotionSplashEvent e) {
+		ItemStack potion = e.getPotion().getItem();
+		int value = (int) potion.getDurability();
+
+		for (int i : ServerManager.DISALLOWED_POTIONS) {
+			if (i == value) {
+				e.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerConsume(PlayerItemConsumeEvent e) {
+
+		if (e.getItem().getType() == Material.POTION) {
+			ItemStack potion = e.getItem();
+			int value = (int) potion.getDurability();
+
+			for (int i : ServerManager.DISALLOWED_POTIONS) {
+				if (i == value) {
+					e.setCancelled(true);
+					e.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
 				}
 			}
 		}
@@ -391,7 +424,7 @@ public class FoxListener implements Listener {
 
 								boolean book = item.getType() == Material.ENCHANTED_BOOK;
 
-								for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getServerManager().getMaxEnchantments().entrySet()) {
+								for (Entry<Enchantment, Integer> entry : ServerManager.getMaxEnchantments().entrySet()) {
 
 									if (book) {
 										EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
@@ -546,7 +579,81 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
+	public void onSignPlace(BlockPlaceEvent e) {
+		if (e.getItemInHand().getType() == Material.SIGN) {
+			if (e.getItemInHand().hasItemMeta() && e.getItemInHand().getItemMeta().getLore() != null) {
+				ArrayList<String> lore = (ArrayList<String>) e.getItemInHand().getItemMeta().getLore();
+
+				if (e.getBlock().getType() == Material.WALL_SIGN || e.getBlock().getType() == Material.SIGN_POST) {
+					Sign s = (Sign) e.getBlock().getState();
+
+					for (int i = 0; i < 4; i++) {
+						s.setLine(i, lore.get(i));
+					}
+					s.setMetadata("deathSign", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+					s.update();
+
+				}
+			}
+
+		}
+	}
+
+	@EventHandler
+	public void onSignChange(SignChangeEvent e) {
+		if (e.getBlock().getState().hasMetadata("deathSign") || ((Sign) e.getBlock().getState()).getLine(1).contains("§e")) {
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onSignBreak(BlockBreakEvent e) {
+		if (e.getBlock().getState().hasMetadata("deathSign") || ((e.getBlock().getState() instanceof Sign && ((Sign) e.getBlock().getState()).getLine(1).contains("§e")))) {
+			e.setCancelled(true);
+
+			Sign sign = (Sign) e.getBlock().getState();
+
+			ItemStack deathsign = new ItemStack(Material.SIGN);
+			ItemMeta meta = deathsign.getItemMeta();
+
+			ArrayList<String> lore = new ArrayList<String>();
+
+			for (String str : sign.getLines()) {
+				lore.add(str);
+			}
+
+			meta.setLore(lore);
+			deathsign.setItemMeta(meta);
+			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), deathsign);
+
+			e.getBlock().setType(Material.AIR);
+		}
+	}
+
+	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
+
+		if (e.getEntity().getKiller() != null) {
+
+			ItemStack deathsign = new ItemStack(Material.SIGN);
+			ItemMeta meta = deathsign.getItemMeta();
+
+			ArrayList<String> lore = new ArrayList<String>();
+
+			lore.add(e.getEntity().getDisplayName());
+			lore.add("§eSlain By:");
+			lore.add("§a" + e.getEntity().getKiller().getName());
+
+			DateFormat sdf = new SimpleDateFormat("M/d/yy HH:mm");
+
+			lore.add(sdf.format(new Date()).replace(" AM", "").replace(" PM", ""));
+
+			meta.setLore(lore);
+			deathsign.setItemMeta(meta);
+
+			e.getDrops().add(deathsign);
+		}
+
 		for (World w : Bukkit.getWorlds()) {
 
 			w.playSound(w.getSpawnLocation(), Sound.AMBIENCE_THUNDER, 20F, 1F);

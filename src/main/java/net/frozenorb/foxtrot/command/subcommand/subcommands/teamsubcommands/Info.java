@@ -40,6 +40,12 @@ public class Info extends Subcommand {
 				}
 			}
 		} else {
+
+			if (args[0].equalsIgnoreCase("who") || args[0].equalsIgnoreCase("show")) {
+				p.chat("/here");
+				return;
+			}
+
 			if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) == null)
 				p.sendMessage(ChatColor.GRAY + "You are not on a team!");
 			else {
