@@ -33,12 +33,13 @@
 						<includes>
 							<include>mkremins:fanciful</include>
 							<include>org.json:json</include>
-							<include>com.comphenix.packetwrapper:PacketWrapper</include>
 							<include>org.projectlombok:lombok</include>
 							<include>log4j:log4j</include>
 							<include>org.mongodb:mongo-java-driver</include>
 							<include>redis.clients:jedis</include>
 							<include>commons-pool:commons-pool</include>
+							<include>com.comphenix.packetwrapper:PacketWrapper</include>
+
 						</includes>
 					</artifactSet>
 				</configuration>
@@ -68,8 +69,22 @@
 			<id>md_5-repo</id>
 			<url>http://repo.md-5.net/content/groups/public/</url>
 		</repository>
+		<repository>
+			<id>comphenix-snapshot-repo</id>
+			<url>http://repo.comphenix.net/content/repositories/releases/</url>
+		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.comphenix.packetwrapper</groupId>
+			<artifactId>PacketWrapper</artifactId>
+			<version>1.7.2-R0.4</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>

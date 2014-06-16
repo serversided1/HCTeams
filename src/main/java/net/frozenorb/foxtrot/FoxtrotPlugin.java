@@ -12,8 +12,14 @@ import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -58,6 +64,24 @@ public class FoxtrotPlugin extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
 		}
+
+		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
+
+			@Override
+			public void onPacketSending(PacketEvent event) {
+
+				WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
+				Player player = event.getPlayer();
+
+				Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
+
+				if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
+					event.setCancelled(true);
+
+				}
+
+			}
+		});
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
 
-@SuppressWarnings("deprecation")
 public class Focus extends BaseCommand {
 
 	public static HashMap<String, Focusable> currentTrackers = new HashMap<String, Focusable>();

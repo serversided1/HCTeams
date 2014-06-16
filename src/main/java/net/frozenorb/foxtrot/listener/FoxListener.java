@@ -579,6 +579,30 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
+	public void onSignInteract(final PlayerInteractEvent e) {
+		if (e.getItem() != null && e.getMaterial() == Material.SIGN) {
+
+			if (e.getItem().hasItemMeta() && e.getItem().getItemMeta().getLore() != null) {
+				ArrayList<String> lore = (ArrayList<String>) e.getItem().getItemMeta().getLore();
+
+				if (lore.size() > 1 && lore.get(1).contains("§e")) {
+					if (e.getClickedBlock() != null) {
+						e.getClickedBlock().getRelative(e.getBlockFace()).getState().setMetadata("noSignPacket", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+
+						Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+
+							@Override
+							public void run() {
+								e.getClickedBlock().getRelative(e.getBlockFace()).getState().removeMetadata("noSignPacket", FoxtrotPlugin.getInstance());
+							}
+						}, 20);
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
 	public void onSignPlace(BlockPlaceEvent e) {
 		if (e.getItemInHand().getType() == Material.SIGN) {
 			if (e.getItemInHand().hasItemMeta() && e.getItemInHand().getItemMeta().getLore() != null) {
@@ -608,25 +632,28 @@ public class FoxListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onSignBreak(BlockBreakEvent e) {
-		if (e.getBlock().getState().hasMetadata("deathSign") || ((e.getBlock().getState() instanceof Sign && ((Sign) e.getBlock().getState()).getLine(1).contains("§e")))) {
-			e.setCancelled(true);
+		if (e.getBlock().getType() == Material.WALL_SIGN || e.getBlock().getType() == Material.SIGN_POST) {
+			if (e.getBlock().getState().hasMetadata("deathSign") || ((e.getBlock().getState() instanceof Sign && ((Sign) e.getBlock().getState()).getLine(1).contains("§e")))) {
+				e.setCancelled(true);
 
-			Sign sign = (Sign) e.getBlock().getState();
+				Sign sign = (Sign) e.getBlock().getState();
 
-			ItemStack deathsign = new ItemStack(Material.SIGN);
-			ItemMeta meta = deathsign.getItemMeta();
+				ItemStack deathsign = new ItemStack(Material.SIGN);
+				ItemMeta meta = deathsign.getItemMeta();
 
-			ArrayList<String> lore = new ArrayList<String>();
+				ArrayList<String> lore = new ArrayList<String>();
 
-			for (String str : sign.getLines()) {
-				lore.add(str);
+				for (String str : sign.getLines()) {
+					lore.add(str);
+				}
+
+				meta.setLore(lore);
+				deathsign.setItemMeta(meta);
+				e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), deathsign);
+
+				e.getBlock().setType(Material.AIR);
+				e.getBlock().getState().removeMetadata("deathSign", FoxtrotPlugin.getInstance());
 			}
-
-			meta.setLore(lore);
-			deathsign.setItemMeta(meta);
-			e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), deathsign);
-
-			e.getBlock().setType(Material.AIR);
 		}
 	}
 
@@ -640,7 +667,7 @@ public class FoxListener implements Listener {
 
 			ArrayList<String> lore = new ArrayList<String>();
 
-			lore.add(e.getEntity().getDisplayName());
+			lore.add("§4" + e.getEntity().getName());
 			lore.add("§eSlain By:");
 			lore.add("§a" + e.getEntity().getKiller().getName());
 

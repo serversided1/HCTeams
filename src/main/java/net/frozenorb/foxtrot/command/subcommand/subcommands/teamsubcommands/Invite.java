@@ -17,7 +17,6 @@ public class Invite extends Subcommand {
 		super(name, errorMessage, aliases);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void syncExecute() {
 		final Player p = (Player) sender;
