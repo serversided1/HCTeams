@@ -683,7 +683,9 @@ public class FoxListener implements Listener {
 
 		for (World w : Bukkit.getWorlds()) {
 
-			w.playSound(w.getSpawnLocation(), Sound.AMBIENCE_THUNDER, 20F, 1F);
+			w.strikeLightningEffect(e.getEntity().getLocation());
+			w.strikeLightningEffect(e.getEntity().getLocation());
+			w.playSound(e.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, 20F, 1F);
 		}
 	}
 
