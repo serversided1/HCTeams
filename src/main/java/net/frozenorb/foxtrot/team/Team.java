@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import redis.clients.jedis.Jedis;
 
+@SuppressWarnings("deprecation")
 public class Team {
 
 	public static final int MAX_TEAM_SIZE = 30;

@@ -32,8 +32,8 @@ public class SetRally extends Subcommand {
 				org.bukkit.Chunk h = p.getLocation().getChunk();
 				ClaimedChunk cc = new ClaimedChunk(h.getX(), h.getZ());
 
-				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(h.getX(), h.getZ())) != team && FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(h.getX(), h.getZ())) != null)) {
-					sender.sendMessage(ChatColor.RED + "You can only set rally in your own territory or unclaimed territory!");
+				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(h.getX(), h.getZ())) == team) {
+					sender.sendMessage(ChatColor.RED + "You can only set rally in unclaimed territory!");
 					return;
 				}
 				Location loc = ((Player) sender).getLocation();

@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.armor.ClassTask;
+import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -36,6 +38,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Getter private TeamManager teamManager;
 	@Getter private ServerManager serverManager;
+	@Getter private KitManager kitManager;
 
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter OppleMap oppleMap;
@@ -46,6 +49,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
 
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
+		new ClassTask().runTaskTimer(this, 2L, 2L);
 
 		new CommandRegistrar().register();
 
@@ -57,6 +61,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		oppleMap = new OppleMap();
 		oppleMap.loadFromRedis();
+
+		kitManager = new KitManager();
+		kitManager.loadKits();
 
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);

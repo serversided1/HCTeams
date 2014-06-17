@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Scanner;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -30,8 +30,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import com.mongodb.BasicDBList;
@@ -102,19 +100,44 @@ public class ServerManager {
 		if (loc.getWorld().getEnvironment() != Environment.NORMAL) {
 			return false;
 		}
-		int radius = WARZONE_RADIUS;
 
 		int x = loc.getBlockX();
+
+		if (x > WARZONE_RADIUS) {
+			return false;
+		}
+
+		int z = getWarzoneZ(x);
+
+		if (loc.getBlockZ() > z || loc.getBlockZ() < -z) {
+			return false;
+		}
+		return true;
+
+	}
+
+	public static int getWarzoneZ(int x) {
+		int radius = WARZONE_RADIUS;
+
 		int xp = x - 1;
 		int zp = (int) (Math.sqrt(radius * radius - xp * xp) + 0.5);
 		int z = (int) (Math.sqrt(radius * radius - (x - 1) * x) + 0.5);
 
 		if (zp > z)
 			z = zp;
-		if (loc.getBlockZ() > z || loc.getBlockZ() < -z) {
-			return false;
+
+		return z;
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter int");
+
+		while (sc.hasNext()) {
+			int i = sc.nextInt();
+			System.out.println(getWarzoneZ(i) + " for x:" + i);
 		}
-		return true;
+		sc.close();
 
 	}
 
@@ -188,13 +211,16 @@ public class ServerManager {
 
 	public void beginWarp(final Player player, final Location to, int sec) {
 
-		final AtomicInteger seconds = new AtomicInteger(sec);
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
 
 			player.teleport(to);
 			return;
 		}
 
+		if (isWarzone(player.getLocation())) {
+			player.sendMessage(ChatColor.RED + "You cannot warp in the Warzone!");
+			return;
+		}
 		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 		boolean enemyWithinRange = false;
 
@@ -214,42 +240,10 @@ public class ServerManager {
 			player.teleport(to);
 			return;
 
-		}
-
-		if (isWarzone(player.getLocation())) {
-			player.sendMessage(ChatColor.RED + "You cannot warp in the Warzone!");
+		} else {
+			player.sendMessage(ChatColor.RED + "You are not able to warp right now!");
 			return;
 		}
-
-		player.sendMessage(ChatColor.GRAY + "Warping in " + seconds.get() + " seconds. Don't move.");
-
-		BukkitTask taskid = new BukkitRunnable() {
-
-			@Override
-			public void run() {
-
-				seconds.set(seconds.get() - 1);
-
-				if (seconds.get() % 5 == 0 || seconds.get() < 5) {
-					player.sendMessage(ChatColor.GRAY + "Warping in " + seconds.get() + " seconds.");
-				}
-				if (seconds.get() == 0) {
-					if (tasks.containsKey(player.getName())) {
-						tasks.remove(player.getName());
-						player.teleport(to);
-						disablePlayerAttacking(player, 10);
-						cancel();
-
-					}
-				}
-
-			}
-		}.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
-
-		if (tasks.containsKey(player.getName())) {
-			Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
-		}
-		tasks.put(player.getName(), taskid.getTaskId());
 
 	}
 

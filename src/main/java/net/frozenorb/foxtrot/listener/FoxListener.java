@@ -25,10 +25,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
@@ -41,13 +43,15 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -79,6 +83,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class FoxListener implements Listener {
 	private FoxtrotPlugin plugin = FoxtrotPlugin.getInstance();
 	private HashMap<String, Long> enderpearlCooldown = new HashMap<String, Long>();
+	private HashMap<String, Integer> mobSpawns = new HashMap<String, Integer>();
 
 	@EventHandler
 	public void playerhit(EntityDamageByEntityEvent e) {
@@ -270,6 +275,7 @@ public class FoxListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(null);
+		e.getPlayer().setMetadata("freshJoin", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
 		if (!e.getPlayer().hasPlayedBefore()) {
 			e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getRandomSpawnLocation());
@@ -678,7 +684,10 @@ public class FoxListener implements Listener {
 			meta.setLore(lore);
 			deathsign.setItemMeta(meta);
 
-			e.getDrops().add(deathsign);
+			for (ItemStack it : e.getEntity().getKiller().getInventory().addItem(deathsign).values()) {
+				e.getDrops().add(it);
+			}
+
 		}
 
 		for (World w : Bukkit.getWorlds()) {
@@ -827,6 +836,12 @@ public class FoxListener implements Listener {
 			return;
 		}
 
+		if (e.getBlock().getType() == Material.MOB_SPAWNER && e.getBlock().getWorld().getEnvironment() == Environment.NETHER) {
+			e.getPlayer().sendMessage(ChatColor.RED + "You cannot break this here!");
+			e.setCancelled(true);
+			return;
+		}
+
 		if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(e.getBlock().getLocation()) && e.getBlock().getType() != Material.DIAMOND_ORE) {
 
 			e.getPlayer().sendMessage(ChatColor.RED + "You cannot break blocks in the Warzone!");
@@ -921,4 +936,52 @@ public class FoxListener implements Listener {
 		}
 
 	}
+
+	@EventHandler
+	public void onCreatureSpawn(final CreatureSpawnEvent e) {
+
+		Entity entity = e.getEntity();
+
+		if (entity.getType() == EntityType.ENDER_DRAGON) {
+			e.setCancelled(true);
+		}
+
+		if (e.getEntityType() == EntityType.SQUID) {
+			e.setCancelled(true);
+			return;
+		}
+		if (e.getSpawnReason() != SpawnReason.SPAWNER)
+			return;
+		Location loc = e.getLocation();
+		Chunk c = loc.getChunk();
+		if (c.getEntities().length > 55) {
+			e.setCancelled(true);
+			return;
+		}
+		int shouldSpawn = 0;
+		if (mobSpawns.containsKey(e.getLocation().getChunk().getX() + ":" + e.getLocation().getChunk().getZ())) {
+			mobSpawns.put(e.getLocation().getChunk().getX() + ":" + e.getLocation().getChunk().getZ(), mobSpawns.get(e.getLocation().getChunk().getX() + ":" + e.getLocation().getChunk().getZ()) + 1);
+		} else {
+			mobSpawns.put(e.getLocation().getChunk().getX() + ":" + e.getLocation().getChunk().getZ(), 0);
+		}
+		shouldSpawn = mobSpawns.get(e.getLocation().getChunk().getX() + ":" + e.getLocation().getChunk().getZ());
+		if (shouldSpawn % 4 != 0) {
+			e.setCancelled(true);
+		} else
+			e.getEntity().setMetadata("Spawner", new FixedMetadataValue(plugin, true));
+		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				Entity entity = e.getEntity();
+				Location loc = entity.getLocation();
+				Chunk c = loc.getChunk();
+				if (c.getEntities().length > 55) {
+					entity.remove();
+					return;
+				}
+			}
+		}, 200L);
+	}
+
 }
