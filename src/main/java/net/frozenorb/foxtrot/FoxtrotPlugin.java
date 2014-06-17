@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.armor.ClassTask;
+import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
@@ -28,6 +29,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisException;
 
+@SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 	private static FoxtrotPlugin instance;
 
@@ -96,6 +98,13 @@ public class FoxtrotPlugin extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(p);
 		}
+		
+		for (String str : Kit.getEquippedKits().keySet()) {
+			Player p = Bukkit.getPlayerExact(str);
+
+			Kit.getEquippedKits().get(str).remove(p);
+		}
+		
 		RedisSaveTask.getInstance().save();
 	}
 

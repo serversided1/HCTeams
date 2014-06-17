@@ -78,6 +78,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -279,6 +280,13 @@ public class FoxListener implements Listener {
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
 		if (!e.getPlayer().hasPlayedBefore()) {
 			e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getRandomSpawnLocation());
+		}
+
+		for (PotionEffect pe : e.getPlayer().getActivePotionEffects()) {
+
+			if (pe.getDuration() > 1_000_000) {
+				e.getPlayer().removePotionEffect(pe.getType());
+			}
 		}
 	}
 
