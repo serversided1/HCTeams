@@ -17,6 +17,8 @@ import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.TimeUtils;
+import net.minecraft.server.v1_7_R3.MinecraftServer;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,6 +70,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -135,6 +138,13 @@ public class FoxListener implements Listener {
 			} else
 				e.setCancelled(false);
 
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onVerticalBlockGlitch(BlockPlaceEvent e) {
+		if (e.isCancelled()) {
+			e.getPlayer().teleport(e.getPlayer().getLocation());
 		}
 	}
 
@@ -672,8 +682,34 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent e) {
+	public void onPlayerLogin(PlayerLoginEvent e) {
+		String hostName = e.getHostname();
 
+		GameProfile gp = new GameProfile(e.getPlayer().getUniqueId(), e.getPlayer().getName());
+
+		if (MinecraftServer.getServer().getPlayerList().isOp(gp)) {
+			if (hostName.startsWith("bypass")) {
+				return;
+			}
+		}
+
+		if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(e.getPlayer())) {
+			Long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getValue(e.getPlayer().getName());
+
+			long left = unbannedOn - System.currentTimeMillis();
+
+			String msg = "§cYou are death-banned for another " + TimeUtils.getDurationBreakdown(left) + ".";
+			e.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_BANNED, msg);
+		}
+	}
+
+	@EventHandler
+	public void onPlayerDeath(final PlayerDeathEvent e) {
+
+		int seconds = 15 * 60;
+		FoxtrotPlugin.getInstance().getDeathbanMap().deathban(e.getEntity(), seconds);
+
+		final String m = TimeUtils.getDurationBreakdown(seconds * 1000);
 		if (e.getEntity().getKiller() != null) {
 
 			ItemStack deathsign = new ItemStack(Material.SIGN);
@@ -704,6 +740,14 @@ public class FoxListener implements Listener {
 			w.strikeLightningEffect(e.getEntity().getLocation());
 			w.playSound(e.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, 20F, 1F);
 		}
+		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+
+			@Override
+			public void run() {
+				e.getEntity().kickPlayer("§cYou were just killed! Come back in " + m + "!");
+
+			}
+		}, 2L);
 	}
 
 	@EventHandler

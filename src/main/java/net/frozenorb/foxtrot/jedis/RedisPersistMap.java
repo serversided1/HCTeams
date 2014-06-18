@@ -63,6 +63,7 @@ public abstract class RedisPersistMap<T> {
 	public void updateValue(String key, T value) {
 		wrappedMap.put(key.toLowerCase(), value);
 		updatedKeys.add(key.toLowerCase());
+		saveToRedis();
 	}
 
 	public T getValue(String key) {

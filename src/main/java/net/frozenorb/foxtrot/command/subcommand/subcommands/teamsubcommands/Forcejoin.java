@@ -37,6 +37,7 @@ public class Forcejoin extends Subcommand {
 				}
 
 				team.addMember(p.getName());
+				teamManager.setTeam(p.getName(), team);
 				p.sendMessage(ChatColor.GREEN + "You are now a member of §b" + team.getFriendlyName() + "§a!");
 			}
 		} else

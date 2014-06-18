@@ -17,4 +17,5 @@ public class OppleMap extends RedisPersistMap<Long> {
 	public Long getJavaObject(String str) {
 		return Long.parseLong(str);
 	}
+
 }

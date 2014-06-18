@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
+import net.frozenorb.foxtrot.jedis.persist.DeathbanMap;
 import net.frozenorb.foxtrot.jedis.persist.OppleMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.BorderListener;
@@ -43,7 +44,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private KitManager kitManager;
 
 	@Getter private PlaytimeMap playtimeMap;
-	@Getter OppleMap oppleMap;
+	@Getter private OppleMap oppleMap;
+	@Getter private DeathbanMap deathbanMap;
 
 	@Override
 	public void onEnable() {
@@ -63,6 +65,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		oppleMap = new OppleMap();
 		oppleMap.loadFromRedis();
+
+		deathbanMap = new DeathbanMap();
+		deathbanMap.loadFromRedis();
 
 		kitManager = new KitManager();
 		kitManager.loadKits();
@@ -98,13 +103,13 @@ public class FoxtrotPlugin extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(p);
 		}
-		
+
 		for (String str : Kit.getEquippedKits().keySet()) {
 			Player p = Bukkit.getPlayerExact(str);
 
 			Kit.getEquippedKits().get(str).remove(p);
 		}
-		
+
 		RedisSaveTask.getInstance().save();
 	}
 

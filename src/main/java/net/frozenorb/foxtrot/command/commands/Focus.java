@@ -28,7 +28,7 @@ public class Focus extends BaseCommand {
 	public static HashMap<String, Focusable> currentTrackers = new HashMap<String, Focusable>();
 
 	public Focus() {
-		super("focus");
+		super("focus", "track", "hunt", "whitepages", "whereismonica");
 	}
 
 	public List<String> tabComplete() {
