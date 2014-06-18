@@ -24,6 +24,11 @@ public class SetRally extends Subcommand {
 	@Override
 	public void syncExecute() {
 		Player p = (Player) sender;
+		
+		if (p.getWorld().getEnvironment() == Environment.NETHER) {
+			p.sendMessage(ChatColor.RED + "You cannot set rally in the nether.");
+			return;
+		}
 
 		final Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
 

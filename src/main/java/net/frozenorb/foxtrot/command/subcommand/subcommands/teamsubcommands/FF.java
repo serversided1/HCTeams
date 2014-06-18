@@ -30,7 +30,7 @@ public class FF extends Subcommand {
 				return;
 			}
 			if (args[1].equalsIgnoreCase("on")) {
-				if (team.isOwner(p.getName())) {
+				if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 					team.setFriendlyFire(true);
 					p.sendMessage(ChatColor.DARK_AQUA + "You have turned team friendly fire on.");
 
@@ -43,7 +43,7 @@ public class FF extends Subcommand {
 					p.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can change this.");
 				}
 			} else if (args[1].equalsIgnoreCase("off")) {
-				if (team.isOwner(p.getName())) {
+				if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 					team.setFriendlyFire(false);
 					p.sendMessage(ChatColor.DARK_AQUA + "You have turned team friendly fire off.");
 					for (Player pl : Bukkit.getOnlinePlayers()) {
@@ -53,7 +53,7 @@ public class FF extends Subcommand {
 					}
 
 				} else {
-					p.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can change this.");
+					p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can change this.");
 				}
 			} else
 				sender.sendMessage(ChatColor.DARK_AQUA + "/team ff on|off");

@@ -8,10 +8,12 @@ import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.DeathbanMap;
+import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.OppleMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 
@@ -46,12 +48,14 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;
 	@Getter private DeathbanMap deathbanMap;
+	@Getter private JoinTimerMap joinTimerMap;
 
 	@Override
 	public void onEnable() {
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
 
+		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
 		new ClassTask().runTaskTimer(this, 2L, 2L);
 
@@ -60,14 +64,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		teamManager = new TeamManager(this);
 		serverManager = new ServerManager();
 
-		playtimeMap = new PlaytimeMap();
-		playtimeMap.loadFromRedis();
-
-		oppleMap = new OppleMap();
-		oppleMap.loadFromRedis();
-
-		deathbanMap = new DeathbanMap();
-		deathbanMap.loadFromRedis();
+		setupPersistence();
 
 		kitManager = new KitManager();
 		kitManager.loadKits();
@@ -130,6 +127,20 @@ public class FoxtrotPlugin extends JavaPlugin {
 		}
 
 		return obj;
+	}
+
+	private void setupPersistence() {
+		playtimeMap = new PlaytimeMap();
+		playtimeMap.loadFromRedis();
+
+		oppleMap = new OppleMap();
+		oppleMap.loadFromRedis();
+
+		deathbanMap = new DeathbanMap();
+		deathbanMap.loadFromRedis();
+
+		joinTimerMap = new JoinTimerMap();
+		joinTimerMap.loadFromRedis();
 	}
 
 	/**

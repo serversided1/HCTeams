@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -37,16 +36,17 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
 public class ServerManager {
-	public static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
-
 	public static final int WARZONE_RADIUS = 512;
-	@Getter private HashSet<String> usedNames = new HashSet<String>();
-	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
 
 	public static final int[] DISALLOWED_POTIONS = { 8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
 			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16426, 16458,
 			8204, 8236, 8268, 16396, 16428, 16460, 16398, 16462 };
+
+	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
+	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
+
+	@Getter private HashSet<String> usedNames = new HashSet<String>();
 
 	public ServerManager() {
 		try {
@@ -116,7 +116,7 @@ public class ServerManager {
 
 	}
 
-	public static int getWarzoneZ(int x) {
+	public int getWarzoneZ(int x) {
 		int radius = WARZONE_RADIUS;
 
 		int xp = x - 1;
@@ -127,18 +127,6 @@ public class ServerManager {
 			z = zp;
 
 		return z;
-	}
-
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter int");
-
-		while (sc.hasNext()) {
-			int i = sc.nextInt();
-			System.out.println(getWarzoneZ(i) + " for x:" + i);
-		}
-		sc.close();
-
 	}
 
 	public Location getSpawn(World w) {
@@ -228,6 +216,10 @@ public class ServerManager {
 			if (e instanceof Player) {
 				Player other = (Player) e;
 
+				if (other.hasMetadata("invisible")) {
+					continue;
+				}
+
 				if (tm.getPlayerTeam(other.getName()) != tm.getPlayerTeam(player.getName())) {
 					enemyWithinRange = true;
 				}
@@ -235,15 +227,25 @@ public class ServerManager {
 			}
 		}
 
-		if (!enemyWithinRange && ((Damageable) player).getHealth() == ((Damageable) player).getMaxHealth() && player.getFoodLevel() == 20) {
-
-			player.teleport(to);
+		if (enemyWithinRange) {
+			player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
 			return;
 
-		} else {
-			player.sendMessage(ChatColor.RED + "You are not able to warp right now!");
+		}
+		if (((Damageable) player).getHealth() != ((Damageable) player).getMaxHealth()) {
+			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
+			return;
+
+		}
+
+		if (player.getFoodLevel() != 20) {
+			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
+
 			return;
 		}
+
+		player.teleport(to);
+		return;
 
 	}
 
@@ -252,7 +254,7 @@ public class ServerManager {
 	}
 
 	public boolean isAdminOverride(Player p) {
-		return p.getGameMode() == GameMode.CREATIVE || p.hasMetadata("invisible");
+		return p.getGameMode() == GameMode.CREATIVE;
 	}
 
 	public Location getRandomSpawnLocation() {

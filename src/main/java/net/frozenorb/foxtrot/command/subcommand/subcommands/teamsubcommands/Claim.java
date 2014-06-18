@@ -40,6 +40,12 @@ public class Claim extends Subcommand {
 			sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
 			return;
 		}
+
+		if (team.isRaidaible()) {
+
+			p.sendMessage(ChatColor.RED + "You cannot claim land if your team is raidable!");
+			return;
+		}
 		if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 
 			if (p.getLocation().distance(new Location(p.getWorld(), 0, 0, 0)) <= ServerManager.WARZONE_RADIUS + 16) {

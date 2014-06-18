@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +16,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
+import net.frozenorb.foxtrot.raid.DTRHandler;
+import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.util.TimestampedLocation;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
@@ -51,11 +55,14 @@ public class Team {
 
 	@Getter @Setter private BukkitRunnable runnable;
 
-	@Getter @Setter private double dtr;
+	@Getter private double dtr;
 
 	private ArrayList<ClaimedChunk> chunks = new ArrayList<ClaimedChunk>();
 
 	private HashMap<Location, Long> previousHomes = new HashMap<Location, Long>();
+
+	@Getter private long raidableCooldown;
+	@Getter private long deathCooldown;
 
 	public Team(String name) {
 		this.name = name;
@@ -73,6 +80,11 @@ public class Team {
 			}
 		});
 		return tls;
+	}
+
+	public void setDtr(double dtr) {
+		this.dtr = dtr;
+		setChanged(true);
 	}
 
 	public void setChanged(boolean hasChanged) {
@@ -225,6 +237,12 @@ public class Team {
 		if (!emptyTeam) {
 			save();
 		}
+
+		if (dtr > getMaxDTR()) {
+			dtr = getMaxDTR();
+			changed = true;
+		}
+
 		return emptyTeam;
 	}
 
@@ -280,13 +298,53 @@ public class Team {
 		return dtr <= 0;
 	}
 
+	public void playerDeath(Player p) {
+		boolean wasRaidable = isRaidaible();
+		setDtr(Math.max(dtr - 1D, -.99));
+
+		if (!wasRaidable && isRaidaible()) {
+			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);
+			Bukkit.broadcastMessage("2h cd activated");
+
+		}
+
+		DTRHandler.setCooldown(this);
+		deathCooldown = System.currentTimeMillis() + (3600 * 1000);
+		Bukkit.broadcastMessage("1h cd activated");
+
+	}
+
 	/**
-	 * Gets the DTR increase that the team undergoes every hour after an hour.
+	 * Gets the DTR increase that the team undergoes every minute
 	 * 
-	 * @return dtr increase per hour
+	 * @return dtr increase per minute
 	 */
-	public double getDTRIncrement() {
-		return 0.5;
+	public BigDecimal getDTRIncrement() {
+		double baseHour = DTRHandler.getBaseDTRIncrement(getSize());
+		BigDecimal curr = new BigDecimal(0);
+
+		ServerManager sm = FoxtrotPlugin.getInstance().getServerManager();
+
+		for (Player p : getOnlineMembers()) {
+			double mult = 0;
+
+			Location loc = p.getLocation();
+
+			if (sm.isWarzone(loc)) {
+				mult = 1.25;
+			}
+			if (sm.isUnclaimed(loc)) {
+				mult = 1.05;
+			}
+			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(loc.getChunk().getX(), loc.getChunk().getZ())) == this) {
+				mult = 1;
+			}
+
+			curr = curr.add(new BigDecimal(baseHour + "").multiply(new BigDecimal(mult + "")));
+
+		}
+
+		return curr.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
 	}
 
 	public double getMaxDTR() {
@@ -320,6 +378,8 @@ public class Team {
 
 			} else if (identifier.equalsIgnoreCase("HQ")) {
 				setHQ(parseLocation(lineParts), false);
+			} else if (identifier.equalsIgnoreCase("DTR")) {
+				setDtr(Double.parseDouble(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("Rally")) {
 				setRally(parseLocation(lineParts), false);
 			} else if (identifier.equalsIgnoreCase("FriendlyFire")) {
@@ -405,6 +465,7 @@ public class Team {
 		teamString.append("Owner:" + owners + '\n');
 		teamString.append("Members:" + members + '\n');
 		teamString.append("Captains:" + captains + '\n');
+		teamString.append("DTR:" + dtr + '\n');
 
 		if (homeLoc != null)
 			teamString.append("HQ:" + homeLoc.getWorld().getName() + "," + homeLoc.getX() + "," + homeLoc.getY() + "," + homeLoc.getZ() + "," + homeLoc.getYaw() + "," + homeLoc.getPitch() + '\n');
@@ -529,6 +590,18 @@ public class Team {
 		}
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
 		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);
+
+		if (DTRHandler.isRegenerating(this)) {
+			dtrMsg += "§a ▲";
+
+		} else {
+			if (DTRHandler.isOnCD(this)) {
+				dtrMsg += "§c■";
+			} else {
+				dtrMsg += "§a■";
+
+			}
+		}
 		p.sendMessage(dtrMsg);
 
 		p.sendMessage(gray);

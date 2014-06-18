@@ -35,9 +35,13 @@ public class Promote extends Subcommand {
 			if (team.isOwner(p.getName())) {
 				if (team.isOnTeam(name)) {
 
-					if (team.isOwner(name) || team.isCaptain(name)) {
-						p.sendMessage(ChatColor.RED + "You can only promote team members!");
+					if (team.isCaptain(name)) {
+						p.sendMessage(ChatColor.RED + "That player is already a Captain!");
+
 						return;
+					}
+					if (team.isOwner(name)) {
+						p.sendMessage(ChatColor.RED + "You can only promote team members!");
 					}
 
 					for (Player pm : team.getOnlineMembers()) {

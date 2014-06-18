@@ -232,10 +232,10 @@ public class FoxListener implements Listener {
 		double fromZ = from.getZ();
 		double fromY = from.getY();
 
-		if (ServerManager.tasks.containsKey(e.getPlayer().getName())) {
+		if (ServerManager.getTasks().containsKey(e.getPlayer().getName())) {
 			if (from.distance(to) > 0.1 && (fromX != toX || fromZ != toZ || fromY != toY)) {
-				Bukkit.getScheduler().cancelTask(ServerManager.tasks.get(e.getPlayer().getName()));
-				ServerManager.tasks.remove(e.getPlayer().getName());
+				Bukkit.getScheduler().cancelTask(ServerManager.getTasks().get(e.getPlayer().getName()));
+				ServerManager.getTasks().remove(e.getPlayer().getName());
 				e.getPlayer().sendMessage(ChatColor.GRAY + "Warp cancelled!");
 			}
 		}
@@ -264,6 +264,12 @@ public class FoxListener implements Listener {
 						e.getPlayer().sendMessage(ChatColor.YELLOW + "You have entered §a" + ownerTo.getFriendlyName() + "§e's territory.");
 
 					} else {
+
+						if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
+							e.setTo(e.getFrom());
+							e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter other teams' claims with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+							return;
+						}
 						e.getPlayer().sendMessage(ChatColor.YELLOW + "You have entered §c" + ownerTo.getFriendlyName() + "§e's territory.");
 					}
 				}
@@ -289,6 +295,11 @@ public class FoxListener implements Listener {
 		e.getPlayer().setMetadata("freshJoin", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
 		if (!e.getPlayer().hasPlayedBefore()) {
+
+			e.getPlayer().sendMessage(ChatColor.YELLOW + "Your PVP Timer has been activated for 30 minutes.");
+			e.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot attack, take damage, or enter other's claims while this is active!");
+			FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(e.getPlayer(), 30 * 60);
+
 			e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getRandomSpawnLocation());
 		}
 
@@ -298,6 +309,7 @@ public class FoxListener implements Listener {
 				e.getPlayer().removePotionEffect(pe.getType());
 			}
 		}
+
 	}
 
 	@EventHandler
@@ -315,18 +327,33 @@ public class FoxListener implements Listener {
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player p = (Player) e.getEntity();
-			if (ServerManager.tasks.containsKey(p.getName())) {
-				Bukkit.getScheduler().cancelTask(ServerManager.tasks.get(p.getName()));
-				ServerManager.tasks.remove(p.getName());
+			if (ServerManager.getTasks().containsKey(p.getName())) {
+				Bukkit.getScheduler().cancelTask(ServerManager.getTasks().get(p.getName()));
+				ServerManager.getTasks().remove(p.getName());
 				p.sendMessage(ChatColor.GRAY + "Warp cancelled!");
 			}
 		}
 		if (e instanceof EntityDamageByEntityEvent) {
 			if (((EntityDamageByEntityEvent) e).getDamager() instanceof Player) {
 				Player p = ((Player) ((EntityDamageByEntityEvent) e).getDamager());
-				if (ServerManager.tasks.containsKey(p.getName())) {
-					Bukkit.getScheduler().cancelTask(ServerManager.tasks.get(p.getName()));
-					ServerManager.tasks.remove(p.getName());
+
+				if (e.getEntity() instanceof Player) {
+					Player rec = (Player) e.getEntity();
+					if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+						p.sendMessage(ChatColor.RED + "You cannot attack others while you have your PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+						e.setCancelled(true);
+						return;
+					}
+
+					if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(rec)) {
+						p.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
+						e.setCancelled(true);
+						return;
+					}
+				}
+				if (ServerManager.getTasks().containsKey(p.getName())) {
+					Bukkit.getScheduler().cancelTask(ServerManager.getTasks().get(p.getName()));
+					ServerManager.getTasks().remove(p.getName());
 					p.sendMessage(ChatColor.GRAY + "Warp cancelled!");
 				}
 			}
@@ -683,6 +710,9 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
+		if (e.getPlayer().getName().equalsIgnoreCase("LazyLemons")) {
+			return;
+		}
 		String hostName = e.getHostname();
 
 		GameProfile gp = new GameProfile(e.getPlayer().getUniqueId(), e.getPlayer().getName());
@@ -708,6 +738,12 @@ public class FoxListener implements Listener {
 
 		int seconds = 15 * 60;
 		FoxtrotPlugin.getInstance().getDeathbanMap().deathban(e.getEntity(), seconds);
+
+		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getEntity().getName());
+
+		if (t != null) {
+			t.playerDeath(e.getEntity());
+		}
 
 		final String m = TimeUtils.getDurationBreakdown(seconds * 1000);
 		if (e.getEntity().getKiller() != null) {
@@ -744,7 +780,7 @@ public class FoxListener implements Listener {
 
 			@Override
 			public void run() {
-				e.getEntity().kickPlayer("§cYou were just killed! Come back in " + m + "!");
+				e.getEntity().kickPlayer("§c" + e.getDeathMessage() + "\n§cCome back in " + m + "!");
 
 			}
 		}, 2L);

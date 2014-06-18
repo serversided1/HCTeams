@@ -36,6 +36,7 @@ public class RedisSaveTask extends BukkitRunnable {
 				FoxtrotPlugin.getInstance().getDeathbanMap().saveToRedis();
 				FoxtrotPlugin.getInstance().getOppleMap().saveToRedis();
 				FoxtrotPlugin.getInstance().getPlaytimeMap().saveToRedis();
+				FoxtrotPlugin.getInstance().getJoinTimerMap().saveToRedis();
 
 				return null;
 			}
