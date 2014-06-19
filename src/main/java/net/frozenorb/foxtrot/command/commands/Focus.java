@@ -294,6 +294,7 @@ public class Focus extends BaseCommand {
 					if (lastLocation != null) {
 						p.sendMessage(data + " §elogged out and will be refocused when they log in!");
 					}
+					return;
 				}
 			} else {
 				if (lastLocation == null) {

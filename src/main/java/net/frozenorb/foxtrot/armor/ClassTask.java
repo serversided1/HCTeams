@@ -29,7 +29,7 @@ public class ClassTask extends BukkitRunnable {
 				Kit trying = Kit.getWarmupTasks().get(p.getName()).getKit();
 
 				if (!trying.qualifies(a)) {
-					Kit.getWarmupTasks().get(p.getName()).getBukkitRunnable().cancel();
+					Kit.getWarmupTasks().get(p.getName()).cancel();
 
 					Kit.getWarmupTasks().remove(p.getName());
 				}

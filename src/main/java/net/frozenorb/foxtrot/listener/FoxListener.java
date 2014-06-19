@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.NMSMethods;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.minecraft.server.v1_7_R3.MinecraftServer;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
@@ -74,7 +76,9 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -86,7 +90,7 @@ import org.bukkit.potion.PotionEffect;
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
 	private FoxtrotPlugin plugin = FoxtrotPlugin.getInstance();
-	private HashMap<String, Long> enderpearlCooldown = new HashMap<String, Long>();
+	@Getter private static HashMap<String, Long> enderpearlCooldown = new HashMap<String, Long>();
 	private HashMap<String, Integer> mobSpawns = new HashMap<String, Integer>();
 
 	@EventHandler
@@ -178,6 +182,9 @@ public class FoxListener implements Listener {
 			e.setCancelled(true);
 			return;
 		}
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getBlock().getLocation())) {
+			return;
+		}
 
 		if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(new ClaimedChunk(e.getBlock().getChunk().getX(), e.getBlock().getChunk().getZ()))) {
 			e.setCancelled(true);
@@ -188,6 +195,9 @@ public class FoxListener implements Listener {
 	public void onFireSpread(BlockBurnEvent e) {
 		if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(e.getBlock().getLocation())) {
 			e.setCancelled(true);
+			return;
+		}
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getBlock().getLocation())) {
 			return;
 		}
 
@@ -207,6 +217,10 @@ public class FoxListener implements Listener {
 			if (FoxtrotPlugin.getInstance().getServerManager().isAdminOverride(e.getPlayer())) {
 				return;
 			}
+		}
+
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getBlock().getLocation())) {
+			return;
 		}
 
 		ClaimedChunk cc = new ClaimedChunk(e.getBlock().getChunk().getX(), e.getBlock().getChunk().getZ());
@@ -309,6 +323,8 @@ public class FoxListener implements Listener {
 				e.getPlayer().removePotionEffect(pe.getType());
 			}
 		}
+
+		FoxtrotPlugin.getInstance().getScoreboardManager().startTask(e.getPlayer());
 
 	}
 
@@ -827,6 +843,10 @@ public class FoxListener implements Listener {
 				return;
 			}
 
+			if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getClickedBlock().getLocation())) {
+				return;
+			}
+
 			Chunk c = e.getClickedBlock().getChunk();
 			ClaimedChunk cc = new ClaimedChunk(c.getX(), c.getZ());
 
@@ -904,6 +924,11 @@ public class FoxListener implements Listener {
 			e.setBuild(false);
 			return;
 		}
+
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getBlock().getLocation())) {
+			return;
+		}
+
 		Block b = e.getBlock();
 		Player p = e.getPlayer();
 
@@ -937,6 +962,10 @@ public class FoxListener implements Listener {
 			return;
 		}
 
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(e.getBlock().getLocation())) {
+			return;
+		}
+
 		Block b = e.getBlock();
 		Player p = e.getPlayer();
 
@@ -960,6 +989,10 @@ public class FoxListener implements Listener {
 
 		if (!event.isSticky())
 			return;
+
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(event.getBlock().getLocation())) {
+			return;
+		}
 
 		Block retractBlock = event.getRetractLocation().getBlock();
 
@@ -1003,6 +1036,9 @@ public class FoxListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void blockBuild(BlockPistonExtendEvent event) {
 		Block block = event.getBlock();
+		if (FoxtrotPlugin.getInstance().getServerManager().isClaimedAndRaidable(event.getBlock().getLocation())) {
+			return;
+		}
 
 		ClaimedChunk pistonChunk = new ClaimedChunk(block.getChunk().getX(), block.getChunk().getZ());
 		Team pistonTeam = FoxtrotPlugin.getInstance().getTeamManager().getOwner(pistonChunk);
@@ -1072,4 +1108,75 @@ public class FoxListener implements Listener {
 		}, 200L);
 	}
 
+	@EventHandler
+	public void handleNoBrewInvClick(final InventoryClickEvent event) {
+		if (event.isCancelled())
+			return;
+
+		InventoryView view = event.getView();
+		if (view.getType() == InventoryType.BREWING) {
+			final Player p = (Player) event.getWhoClicked();
+			final BrewerInventory bi = (BrewerInventory) view.getTopInventory();
+
+			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+
+				@Override
+				public void run() {
+					final ItemStack it = bi.getIngredient();
+
+					for (int i = 0; i < 3; i++) {
+						if (bi.getItem(i) == null) {
+							continue;
+						}
+
+						ItemStack item = bi.getItem(i);
+						int result = NMSMethods.getPotionResult(item.getDurability(), it);
+
+						if (isAir(item) || item.getDurability() == result)
+							continue;
+
+						if (FoxtrotPlugin.getInstance().getServerManager().isBannedPotion(result)) {
+
+							p.getInventory().addItem(it);
+							bi.setIngredient(new ItemStack(Material.AIR));
+
+							p.sendMessage(ChatColor.RED + "You cannot brew this potion!");
+
+							return;
+						}
+					}
+
+				}
+			}, 1);
+
+		}
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void enderPearlClipping(PlayerTeleportEvent event) {
+		if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
+			return;
+
+		Location target = event.getTo();
+		Location from = event.getFrom();
+
+		Material mat = event.getTo().getBlock().getType();
+		if (((mat == Material.THIN_GLASS || mat == Material.IRON_FENCE) && clippingThrough(target, from, 0.65)) || ((mat == Material.FENCE || mat == Material.NETHER_FENCE) && clippingThrough(target, from, 0.45))) {
+			event.setTo(from);
+			return;
+		}
+
+		target.setX(target.getBlockX() + 0.5);
+		target.setZ(target.getBlockZ() + 0.5);
+		event.setTo(target);
+
+	}
+
+	public static boolean clippingThrough(Location target, Location from, double thickness) {
+		return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));
+	}
+
+	public static boolean isAir(ItemStack stack) {
+		return stack == null || stack.getType().equals(Material.AIR);
+	}
 }

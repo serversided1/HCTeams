@@ -71,7 +71,7 @@ public class CommandRegistrar {
 		}
 	}
 
-	private ArrayList<Class<?>> getClassesInPackage(String pkgname) {
+	public static ArrayList<Class<?>> getClassesInPackage(String pkgname) {
 		ArrayList<Class<?>> classes = new ArrayList<Class<?>>();
 		CodeSource codeSource = FoxtrotPlugin.getInstance().getClass().getProtectionDomain().getCodeSource();
 		URL resource = codeSource.getLocation();

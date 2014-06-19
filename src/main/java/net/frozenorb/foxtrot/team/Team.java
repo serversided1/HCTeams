@@ -56,6 +56,7 @@ public class Team {
 	@Getter @Setter private BukkitRunnable runnable;
 
 	@Getter private double dtr;
+	@Getter @Setter private long rallyExpires;
 
 	private ArrayList<ClaimedChunk> chunks = new ArrayList<ClaimedChunk>();
 
@@ -299,18 +300,15 @@ public class Team {
 	}
 
 	public void playerDeath(Player p) {
-		boolean wasRaidable = isRaidaible();
 		setDtr(Math.max(dtr - 1D, -.99));
 
-		if (!wasRaidable && isRaidaible()) {
+		if (isRaidaible()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);
-			Bukkit.broadcastMessage("2h cd activated");
 
 		}
 
 		DTRHandler.setCooldown(this);
 		deathCooldown = System.currentTimeMillis() + (3600 * 1000);
-		Bukkit.broadcastMessage("1h cd activated");
 
 	}
 
@@ -529,21 +527,25 @@ public class Team {
 		boolean first = true;
 		boolean first2 = true;
 
-		StringBuilder strb = new StringBuilder("§eMembers: ");
-		StringBuilder strb2 = new StringBuilder("§eCaptains: ");
+		StringBuilder members = new StringBuilder("§eMembers: ");
+		StringBuilder captains = new StringBuilder("§eCaptains: ");
+
+		int captainAmount = 0;
+		int memberAmount = 0;
 
 		for (Player online : getOnlineMembers()) {
-			StringBuilder toAdd = strb;
+			StringBuilder toAdd = members;
 			if (isOwner(online.getName())) {
 				continue;
 			}
 
 			if (isCaptain(online.getName())) {
 
-				toAdd = strb2;
+				toAdd = captains;
 				if (!first2) {
 					toAdd.append("§7, ");
 				}
+				captainAmount++;
 
 				toAdd.append("§a" + online.getName());
 				first2 = false;
@@ -551,23 +553,26 @@ public class Team {
 				if (!first) {
 					toAdd.append("§7, ");
 				}
+				memberAmount++;
 
 				toAdd.append("§a" + online.getName());
 				first = false;
 			}
 		}
 		for (String offline : getOfflineMembers()) {
-			StringBuilder toAdd = strb;
+			StringBuilder toAdd = members;
 
 			if (isOwner(offline)) {
 				continue;
 			}
 			if (isCaptain(offline)) {
 
-				toAdd = strb2;
+				toAdd = captains;
 				if (!first2) {
 					toAdd.append("§7, ");
 				}
+
+				captainAmount++;
 
 				toAdd.append("§7" + offline);
 				first2 = false;
@@ -576,14 +581,21 @@ public class Team {
 				if (!first) {
 					toAdd.append("§7, ");
 				}
+				memberAmount++;
+
 				toAdd.append("§7" + offline);
 				first = false;
+
 			}
 		}
 
-		p.sendMessage(strb2.toString());
-		p.sendMessage(strb.toString());
+		if (captainAmount > 0) {
+			p.sendMessage(captains.toString());
+		}
 
+		if (memberAmount > 0) {
+			p.sendMessage(members.toString());
+		}
 		if (isOnTeam(p)) {
 			p.sendMessage("§eFriendly Fire: §7" + (isFriendlyFire() ? "On" : "Off"));
 			p.sendMessage("§eClaimed Chunks: §7" + getChunks().size() + "/" + getMaxChunkAmount());
@@ -591,15 +603,19 @@ public class Team {
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
 		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);
 
-		if (DTRHandler.isRegenerating(this)) {
-			dtrMsg += "§a ▲";
-
+		if (getOnlineMemberAmount() == 0) {
+			dtrMsg += "§7■";
 		} else {
-			if (DTRHandler.isOnCD(this)) {
-				dtrMsg += "§c■";
-			} else {
-				dtrMsg += "§a■";
+			if (DTRHandler.isRegenerating(this)) {
+				dtrMsg += "§a ▲";
 
+			} else {
+				if (DTRHandler.isOnCD(this)) {
+					dtrMsg += "§c■";
+				} else {
+					dtrMsg += "§a■";
+
+				}
 			}
 		}
 		p.sendMessage(dtrMsg);

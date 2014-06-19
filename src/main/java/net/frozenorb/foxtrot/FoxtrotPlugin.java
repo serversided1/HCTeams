@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.armor.ClassTask;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
+import net.frozenorb.foxtrot.game.MinigameManager;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.DeathbanMap;
@@ -16,6 +17,8 @@ import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.visual.BossBarManager;
+import net.frozenorb.foxtrot.visual.ScoreboardManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -45,6 +48,10 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private ServerManager serverManager;
 	@Getter private KitManager kitManager;
 
+	@Getter private BossBarManager bossBarManager;
+	@Getter private ScoreboardManager scoreboardManager;
+	@Getter private MinigameManager minigameManager;
+
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;
 	@Getter private DeathbanMap deathbanMap;
@@ -54,15 +61,22 @@ public class FoxtrotPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
+		bossBarManager = new BossBarManager();
 
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
 		new ClassTask().runTaskTimer(this, 2L, 2L);
+		Bukkit.getScheduler().runTaskTimer(this, bossBarManager, 20L, 20L);
 
 		new CommandRegistrar().register();
 
 		teamManager = new TeamManager(this);
 		serverManager = new ServerManager();
+
+		minigameManager = new MinigameManager();
+		minigameManager.loadMinigames();
+
+		scoreboardManager = new ScoreboardManager();
 
 		setupPersistence();
 

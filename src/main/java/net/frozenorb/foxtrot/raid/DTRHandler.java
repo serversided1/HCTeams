@@ -45,11 +45,12 @@ public class DTRHandler extends BukkitRunnable {
 	@Override
 	public void run() {
 		for (Team t : FoxtrotPlugin.getInstance().getTeamManager().getTeams()) {
+
 			if (t.getOnlineMembers().size() > 0) {
 
 				if (t.getDeathCooldown() > System.currentTimeMillis() || t.getRaidableCooldown() > System.currentTimeMillis()) {
 					wasOnCooldown.add(t.getFriendlyName().toLowerCase());
-					return;
+					continue;
 				}
 
 				if (wasOnCooldown.contains(t.getFriendlyName().toLowerCase())) {

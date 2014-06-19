@@ -24,7 +24,7 @@ public class SetRally extends Subcommand {
 	@Override
 	public void syncExecute() {
 		Player p = (Player) sender;
-		
+
 		if (p.getWorld().getEnvironment() == Environment.NETHER) {
 			p.sendMessage(ChatColor.RED + "You cannot set rally in the nether.");
 			return;
@@ -35,9 +35,8 @@ public class SetRally extends Subcommand {
 		if (team != null) {
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 				org.bukkit.Chunk h = p.getLocation().getChunk();
-				ClaimedChunk cc = new ClaimedChunk(h.getX(), h.getZ());
 
-				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(h.getX(), h.getZ())) == team) {
+				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().isTaken(new ClaimedChunk(h.getX(), h.getZ()))) {
 					sender.sendMessage(ChatColor.RED + "You can only set rally in unclaimed territory!");
 					return;
 				}
@@ -51,19 +50,18 @@ public class SetRally extends Subcommand {
 					team.getRunnable().cancel();
 				}
 
-				if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) != null && FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) != team) {
-					team.setRunnable(new BukkitRunnable() {
+				team.setRunnable(new BukkitRunnable() {
 
-						@Override
-						public void run() {
-							team.setRally(null, true);
-							for (Player p : team.getOnlineMembers()) {
-								p.sendMessage(ChatColor.DARK_AQUA + "Your team's rally point has expired!");
-							}
+					@Override
+					public void run() {
+						team.setRally(null, true);
+						for (Player p : team.getOnlineMembers()) {
+							p.sendMessage(ChatColor.DARK_AQUA + "Your team's rally point has expired!");
 						}
-					});
-					team.getRunnable().runTaskLater(FoxtrotPlugin.getInstance(), 5 * 20L * 60L);
-				}
+					}
+				});
+				team.getRunnable().runTaskLater(FoxtrotPlugin.getInstance(), 5 * 20L * 60L);
+				team.setRallyExpires(System.currentTimeMillis() + 5 * 60 * 1000L);
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (team.isOnTeam(pl)) {

@@ -15,8 +15,10 @@ import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
@@ -24,17 +26,22 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 
+@SuppressWarnings("deprecation")
 public class ServerManager {
 	public static final int WARZONE_RADIUS = 512;
 
@@ -93,6 +100,15 @@ public class ServerManager {
 			ex.printStackTrace();
 		}
 
+	}
+
+	public boolean isBannedPotion(int value) {
+		for (int i : DISALLOWED_POTIONS) {
+			if (i == value) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isWarzone(Location loc) {
@@ -212,7 +228,7 @@ public class ServerManager {
 		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 		boolean enemyWithinRange = false;
 
-		for (Entity e : player.getNearbyEntities(40, 40, 40)) {
+		for (Entity e : player.getNearbyEntities(40, 256, 40)) {
 			if (e instanceof Player) {
 				Player other = (Player) e;
 
@@ -267,6 +283,15 @@ public class ServerManager {
 		return new Location(w, x, w.getHighestBlockYAt(x, z), z);
 	}
 
+	public boolean isClaimedAndRaidable(Location loc) {
+
+		Chunk c = loc.getChunk();
+		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(c.getX(), c.getZ()));
+
+		return owner != null && owner.isRaidaible();
+
+	}
+
 	/**
 	 * Disables a player from attacking for 10 seconds
 	 * 
@@ -285,6 +310,19 @@ public class ServerManager {
 					if (((Player) e.getDamager()).getName().equals(p.getName())) {
 						e.setCancelled(true);
 					}
+				}
+
+			}
+
+			@EventHandler(priority = EventPriority.HIGHEST,
+					ignoreCancelled = true)
+			public void onProjectileLaunch(ProjectileLaunchEvent e) {
+
+				if (e.getEntityType() == EntityType.ENDER_PEARL) {
+					Player p = (Player) e.getEntity().getShooter();
+					e.setCancelled(true);
+					p.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
+					p.updateInventory();
 				}
 
 			}

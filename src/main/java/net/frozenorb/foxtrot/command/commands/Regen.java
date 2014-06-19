@@ -29,8 +29,8 @@ public class Regen extends BaseCommand {
 
 		p.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of §d" + team.getMaxDTR() + "§e.");
 		p.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + team.getDTRIncrement().doubleValue() * 60 + "/hr§e.");
-		p.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + hrsToRegain(team) + "§eh to fully gain all DTR.");
-		p.sendMessage(ChatColor.YELLOW + "To regain 1 DTR, it would take §d" + hrTo1(team) + "h.");
+		p.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + (hrsToRegain(team) == -1 ? "Infinity" : hrsToRegain(team)) + "§eh to fully gain all DTR.");
+		p.sendMessage(ChatColor.YELLOW + "To regain 1 DTR, it would take §d" + (hrTo1(team) == -1 ? "Infinity" : hrTo1(team)) + "h.");
 
 		if (team.getRaidableCooldown() > System.currentTimeMillis() || team.getDeathCooldown() > System.currentTimeMillis()) {
 
@@ -47,6 +47,10 @@ public class Regen extends BaseCommand {
 
 		double diff = max - cur;
 
+		if (team.getDTRIncrement().doubleValue() == 0) {
+			return -1;
+		}
+
 		double required = diff / team.getDTRIncrement().doubleValue();
 		double h = required / 60D;
 
@@ -56,6 +60,9 @@ public class Regen extends BaseCommand {
 
 	private double hrTo1(Team t) {
 		double rate = t.getDTRIncrement().doubleValue();
+		if (rate == 0) {
+			return -1;
+		}
 
 		double h = new BigDecimal(Math.round(10.0 * (new BigDecimal("1").divide(new BigDecimal(rate + ""), 5, RoundingMode.HALF_UP)).doubleValue())).divide(new BigDecimal("10"), 5, RoundingMode.HALF_UP).doubleValue() / 60D;
 		return Math.round(10.0 * h) / 10.0;

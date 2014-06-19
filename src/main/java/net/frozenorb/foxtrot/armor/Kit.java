@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.armor;
 import java.util.HashMap;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 
@@ -19,9 +18,7 @@ public abstract class Kit {
 
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e60s");
 
-		warmupTasks.put(p.getName(), new KitTask(new BukkitRunnable() {
-
-			int seconds = 60;
+		warmupTasks.put(p.getName(), new KitTask(this, 60) {
 
 			@Override
 			public void run() {
@@ -43,14 +40,14 @@ public abstract class Kit {
 					warmupTasks.remove(p.getName());
 				}
 			}
-		}, this));
+		});
 
-		warmupTasks.get(p.getName()).getBukkitRunnable().runTaskTimer(FoxtrotPlugin.getInstance(), 20, 20);
+		warmupTasks.get(p.getName()).runTaskTimer(FoxtrotPlugin.getInstance(), 20, 20);
 	}
 
 	public void finishWarmup(Player p) {
 		if (warmupTasks.containsKey(p.getName())) {
-			warmupTasks.get(p.getName()).getBukkitRunnable().cancel();
+			warmupTasks.get(p.getName()).cancel();
 			warmupTasks.remove(p.getName());
 		}
 	}
@@ -64,10 +61,10 @@ public abstract class Kit {
 	public abstract void remove(Player p);
 
 	@AllArgsConstructor
-	@Data
-	public static class KitTask {
-		private BukkitRunnable bukkitRunnable;
-		private Kit kit;
+	public abstract static class KitTask extends BukkitRunnable {
+		@Getter private Kit kit;
+
+		@Getter int seconds = 60;
 	}
 
 }

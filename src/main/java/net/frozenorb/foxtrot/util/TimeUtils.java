@@ -34,4 +34,40 @@ public class TimeUtils {
 
 		return (sb.toString());
 	}
+
+	/**
+	 * Converts a given length, in seconds, to a formatted String.
+	 * 
+	 * @param i
+	 *            the length in seconds
+	 * @return string
+	 */
+	public static String getConvertedTime(long i) {
+		i = Math.abs(i);
+		int hours = (int) Math.floor(i / 3600);
+		int remainder = (int) (i % 3600), minutes = remainder / 60, seconds = remainder % 60;
+		String toReturn;
+		if (seconds == 0 && minutes == 0)
+			return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + "0 seconds";
+		if (minutes == 0) {
+			if (seconds == 1)
+				return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%s seconds", seconds);
+			return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%s seconds", seconds);
+		}
+		if (seconds == 0) {
+			if (minutes == 1)
+				return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%sm", minutes);
+			return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%sm", minutes);
+		}
+		if (seconds == 1) {
+			if (minutes == 1)
+				return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%sm %ss", minutes, seconds);
+			return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%sm %ss", minutes, seconds);
+		}
+		if (minutes == 1) {
+			return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + "" + String.format("%sm %ss", minutes, seconds);
+		}
+		toReturn = String.format("%sm %ss", minutes, seconds);
+		return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + " " + toReturn;
+	}
 }
