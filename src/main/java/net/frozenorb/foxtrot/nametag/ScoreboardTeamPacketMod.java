@@ -75,7 +75,8 @@ public class ScoreboardTeamPacketMod {
 			throw new IllegalArgumentException("Method must be join or leave for player constructor");
 		if ((players == null) || (players.isEmpty()))
 			players = new ArrayList<String>();
-
+		
+		setField("g", 3);
 		setField("a", name);
 		setField("f", paramInt);
 		addAll(players);

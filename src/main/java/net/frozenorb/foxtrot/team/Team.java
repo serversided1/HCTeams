@@ -413,7 +413,6 @@ public class Team {
 						int x = Integer.parseInt(prt.split(":")[0].trim());
 						int z = Integer.parseInt(prt.split(":")[1].trim());
 						getChunks().add(new ClaimedChunk(x, z));
-						System.out.println("loaded:" + x + " <-> " + z + "\n\n\n\n\n\n");
 
 					}
 				}

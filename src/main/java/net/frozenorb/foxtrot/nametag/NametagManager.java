@@ -28,8 +28,8 @@ public class NametagManager {
 
 	@Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
-	private static final TeamInfo FRIENDLY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "1", "§a", "");
-	private static final TeamInfo ENEMY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "2", "§C", "");
+	private static final TeamInfo FRIENDLY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "FRIENDLY", "§a", "");
+	private static final TeamInfo ENEMY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "ENEMY", "§e", "");
 
 	/**
 	 * This is player team packet -> p
@@ -40,15 +40,14 @@ public class NametagManager {
 		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-
-			String color = "§e";
+			TeamInfo teamInfo = ENEMY_TEAM;
 
 			if (t != null && t == FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName())) {
-				color = "§a";
+				teamInfo = FRIENDLY_TEAM;
 			}
 
 			if (p == player) {
-				color = "§a";
+				teamInfo = FRIENDLY_TEAM;
 			}
 
 			HashMap<String, TeamInfo> ti = new HashMap<String, TeamInfo>();
@@ -59,17 +58,17 @@ public class NametagManager {
 				if (ti.containsKey(player.getName())) {
 					TeamInfo tem = ti.get(player.getName());
 
+					if (tem == teamInfo) {
+						continue;
+					}
+
 					sendPacketsRemoveFromTeam(tem, player.getName(), p);
-					sendPacketsRemoveTeam(tem, p);
 					ti.remove(player.getName());
 					list.remove(tem.getName());
 
 				}
 			}
 
-			TeamInfo teamInfo = new TeamInfo(TEAM_NAME_PREFIX + nextName(), color, "");
-
-			sendPacketsAddTeam(teamInfo, p);
 			sendPacketsAddToTeam(teamInfo, new String[] { player.getName() }, p);
 
 			ti.put(player.getName(), teamInfo);
@@ -98,7 +97,6 @@ public class NametagManager {
 					TeamInfo tem = ti.get(player.getName());
 
 					sendPacketsRemoveFromTeam(tem, player.getName(), p);
-					sendPacketsRemoveTeam(tem, p);
 					ti.remove(player.getName());
 					list.remove(tem.getName());
 
@@ -117,15 +115,14 @@ public class NametagManager {
 		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
-
-			String color = "§e";
+			TeamInfo teamInfo = ENEMY_TEAM;
 
 			if (t != null && t == FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName())) {
-				color = "§a";
+				teamInfo = FRIENDLY_TEAM;
 			}
 
 			if (p == player) {
-				color = "§a";
+				teamInfo = FRIENDLY_TEAM;
 			}
 
 			HashMap<String, TeamInfo> ti = new HashMap<String, TeamInfo>();
@@ -136,19 +133,17 @@ public class NametagManager {
 				if (ti.containsKey(p.getName())) {
 					TeamInfo tem = ti.get(p.getName());
 
+					if (tem == teamInfo) {
+						continue;
+					}
+
 					sendPacketsRemoveFromTeam(tem, p.getName(), player);
-					sendPacketsRemoveTeam(tem, player);
 					ti.remove(p.getName());
 
 					list.remove(tem.getName());
 				}
 			}
 
-			TeamInfo teamInfo = new TeamInfo(TEAM_NAME_PREFIX + nextName(), color, "");
-			teamInfo.setPrefix(color);
-			teamInfo.setSuffix("");
-
-			sendPacketsAddTeam(teamInfo, player);
 			sendPacketsAddToTeam(teamInfo, new String[] { p.getName() }, player);
 
 			ti.put(p.getName(), teamInfo);

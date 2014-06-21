@@ -515,6 +515,7 @@ public class FoxListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
 
+		NametagManager.sendPacketsInitialize(e.getPlayer());
 		NametagManager.sendTeamsToPlayer(e.getPlayer());
 		NametagManager.reloadPlayer(e.getPlayer());
 

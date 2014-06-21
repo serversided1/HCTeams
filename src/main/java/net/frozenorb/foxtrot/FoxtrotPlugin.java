@@ -108,6 +108,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
 			NametagManager.sendPacketsInitialize(p);
+
 			NametagManager.reloadPlayer(p);
 		}
 
@@ -151,8 +152,10 @@ public class FoxtrotPlugin extends JavaPlugin {
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(p);
+			NametagManager.getTeamMap().remove(p.getName());
+			// NametagManager.clear(p);
 			NametagManager.cleanupTeams(p);
-			NametagManager.clear(p);
+
 		}
 
 		for (String str : Kit.getEquippedKits().keySet()) {

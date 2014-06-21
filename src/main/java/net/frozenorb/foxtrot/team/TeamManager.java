@@ -43,6 +43,7 @@ public class TeamManager {
 						playerTeamMap.put(member.toLowerCase(), team);
 					}
 				}
+
 				return null;
 			}
 		});
