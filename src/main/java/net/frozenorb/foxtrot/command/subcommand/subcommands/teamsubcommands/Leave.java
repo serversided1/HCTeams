@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
 
@@ -58,6 +59,9 @@ public class Leave extends Subcommand {
 				}
 				p.sendMessage(ChatColor.DARK_AQUA + "Successfully left the team!");
 			}
+
+			NametagManager.reloadPlayer(p);
+			NametagManager.sendTeamsToPlayer(p);
 		}
 
 	}

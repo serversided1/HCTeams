@@ -9,8 +9,10 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 
+@SuppressWarnings("deprecation")
 public class Kick extends Subcommand {
 
 	public Kick(String name, String errorMessage, String... aliases) {
@@ -57,6 +59,11 @@ public class Kick extends Subcommand {
 						FoxtrotPlugin.getInstance().getTeamManager().removeTeam(team.getName());
 
 					FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(name);
+
+					if (Bukkit.getPlayerExact(name) != null) {
+						NametagManager.reloadPlayer(Bukkit.getPlayerExact(name));
+						NametagManager.sendTeamsToPlayer(Bukkit.getPlayerExact(name));
+					}
 
 				} else {
 					p.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");

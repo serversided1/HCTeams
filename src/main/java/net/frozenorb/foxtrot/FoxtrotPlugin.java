@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot;
 
 import lombok.Getter;
+import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassTask;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
+import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.MinigameManager;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -14,11 +16,15 @@ import net.frozenorb.foxtrot.jedis.persist.OppleMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.visual.BossBarManager;
 import net.frozenorb.foxtrot.visual.ScoreboardManager;
+import net.frozenorb.foxtrot.visual.TabHandler;
+import net.frozenorb.mShared.Shared;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,6 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -59,14 +66,27 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		try {
+			EntityRegistrar.registerCustomEntities();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Shared.get().getProfileManager().setNametagsEnabled(false);
+
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
 		bossBarManager = new BossBarManager();
+
+		RegionManager.register(this);
+		RegionManager.get();
 
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
 		new ClassTask().runTaskTimer(this, 2L, 2L);
 		Bukkit.getScheduler().runTaskTimer(this, bossBarManager, 20L, 20L);
+		Bukkit.getScheduler().runTaskTimer(this, new TabHandler(), 0, 10);
 
 		new CommandRegistrar().register();
 
@@ -74,7 +94,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 		serverManager = new ServerManager();
 
 		minigameManager = new MinigameManager();
-		minigameManager.loadMinigames();
 
 		scoreboardManager = new ScoreboardManager();
 
@@ -88,6 +107,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
+			NametagManager.sendPacketsInitialize(p);
+			NametagManager.reloadPlayer(p);
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
@@ -107,12 +128,31 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 			}
 		});
+		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerPlayerInfo.TYPE) {
+
+			@Override
+			public void onPacketSending(PacketEvent event) {
+
+				WrapperPlayServerPlayerInfo packet = new WrapperPlayServerPlayerInfo(event.getPacket());
+
+				if (!packet.getPlayerName().startsWith("$")) {
+					event.setCancelled(true);
+				} else {
+					packet.setPlayerName(packet.getPlayerName().substring(1));
+				}
+
+			}
+		});
+
+		MountainHandler.load();
 	}
 
 	@Override
 	public void onDisable() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(p);
+			NametagManager.cleanupTeams(p);
+			NametagManager.clear(p);
 		}
 
 		for (String str : Kit.getEquippedKits().keySet()) {
@@ -122,6 +162,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		}
 
 		RedisSaveTask.getInstance().save();
+		MountainHandler.reset();
 	}
 
 	public <T> T runJedisCommand(JedisCommand<T> jedis) {

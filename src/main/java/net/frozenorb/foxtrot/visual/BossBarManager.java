@@ -58,6 +58,10 @@ public class BossBarManager implements Runnable {
 		}
 	}
 
+	public Scrollable getMessage(Player p) {
+		return messages.get(p.getName());
+	}
+
 	/**
 	 * Adds the scrollable to the player, and sets their bar.
 	 * 

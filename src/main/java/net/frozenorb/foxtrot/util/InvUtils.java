@@ -12,7 +12,7 @@ public class InvUtils {
 	public static void fixItem(ItemStack item) {
 		for (Entry<Enchantment, Integer> entry : ServerManager.getMaxEnchantments().entrySet()) {
 
-			if (item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
+			if (item != null && item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
 				if (entry.getValue() == -1) {
 					item.addEnchantment(Enchantment.DURABILITY, entry.getValue());
 				} else {

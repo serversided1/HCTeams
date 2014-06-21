@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
 
@@ -41,7 +42,8 @@ public class Accept extends Subcommand {
 							ps.sendMessage(ChatColor.GRAY + p.getName() + " has joined the team!");
 						}
 					}
-
+					NametagManager.reloadPlayer(p);
+					NametagManager.sendTeamsToPlayer(p);
 				} else {
 					sender.sendMessage(ChatColor.RED + "This team has not invited you!");
 				}

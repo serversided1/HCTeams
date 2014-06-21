@@ -12,7 +12,7 @@ public class MinigameCountdownScroller implements Scrollable {
 	public String next() {
 		int timeLeft = Math.abs(minigame.getCurrentTime());
 
-		String msg = "§6" + minigame.getName() + "§e is starting in §d" + timeLeft + "§e seconds";
+		String msg = "§6" + minigame.getBCName() + "§e is starting in §d" + timeLeft + "§e seconds";
 		return msg;
 	}
 }

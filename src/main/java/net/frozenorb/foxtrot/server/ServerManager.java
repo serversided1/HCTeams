@@ -2,11 +2,15 @@ package net.frozenorb.foxtrot.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
+import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
+import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
@@ -35,6 +39,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import com.mongodb.BasicDBList;
@@ -48,7 +55,7 @@ public class ServerManager {
 	public static final int[] DISALLOWED_POTIONS = { 8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
 			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16426, 16458,
-			8204, 8236, 8268, 16396, 16428, 16460, 16398, 16462 };
+			8204, 8236, 8268, 16396, 16428, 16460, 16398, 16462, 8257, 8193 };
 
 	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
 	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
@@ -213,6 +220,38 @@ public class ServerManager {
 
 	}
 
+	public void startLogoutSequence(final Player player) {
+		player.sendMessage(ChatColor.YELLOW + "§lLogging out... §ePlease wait§c 30§e seconds.");
+		final AtomicInteger seconds = new AtomicInteger(30);
+
+		BukkitTask taskid = new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				seconds.set(seconds.get() - 1);
+				player.sendMessage(ChatColor.RED + "" + seconds.get() + "§e seconds...");
+
+				if (seconds.get() == 0) {
+					if (tasks.containsKey(player.getName())) {
+						tasks.remove(player.getName());
+						player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+						player.kickPlayer("§cYou have been safely logged out of the server!");
+						cancel();
+
+					}
+				}
+
+			}
+		}.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+
+		if (tasks.containsKey(player.getName())) {
+			Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
+		}
+		tasks.put(player.getName(), taskid.getTaskId());
+
+	}
+
 	public void beginWarp(final Player player, final Location to, int sec) {
 
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
@@ -335,6 +374,39 @@ public class ServerManager {
 		}, seconds * 20);
 	}
 
+	public boolean isKOTHArena(Location loc) {
+		for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
+			if (cr.getName().startsWith("koth_")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isDiamondMountain(Location loc) {
+
+		for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
+			if (cr.getName().toLowerCase().startsWith("diamond")) {
+				return true;
+			}
+		}
+		return false;
+
+	}
+
+	public ArrayList<Team> getOnlineTeams() {
+		ArrayList<Team> teams = new ArrayList<Team>();
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+
+			if (t != null) {
+				teams.add(t);
+			}
+		}
+		return teams;
+	}
+
 	public void loadEnchantments() {
 		maxEnchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
 		maxEnchantments.put(Enchantment.THORNS, -1);
@@ -346,7 +418,7 @@ public class ServerManager {
 		maxEnchantments.put(Enchantment.OXYGEN, 3);
 		maxEnchantments.put(Enchantment.WATER_WORKER, 1);
 
-		maxEnchantments.put(Enchantment.DAMAGE_ALL, 3);
+		maxEnchantments.put(Enchantment.DAMAGE_ALL, 2);
 		maxEnchantments.put(Enchantment.FIRE_ASPECT, 2);
 		maxEnchantments.put(Enchantment.KNOCKBACK, 1);
 		maxEnchantments.put(Enchantment.DAMAGE_ARTHROPODS, 5);

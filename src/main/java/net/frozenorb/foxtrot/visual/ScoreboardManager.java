@@ -73,7 +73,7 @@ public class ScoreboardManager {
 				if (team == null || team.getRallyExpires() < System.currentTimeMillis()) {
 					return "~1a";
 				}
-				return "§c§lRally Timer";
+				return "§c§lRally";
 			}
 		}, new Scrollable() {
 
@@ -95,7 +95,12 @@ public class ScoreboardManager {
 				if (!FoxListener.getEnderpearlCooldown().containsKey(p.getName()) || FoxListener.getEnderpearlCooldown().get(p.getName()) < System.currentTimeMillis()) {
 					return "~2a";
 				}
-				return "§e§lPearl Timer";
+				long diff = FoxListener.getEnderpearlCooldown().get(p.getName()) - System.currentTimeMillis();
+
+				if ((int) (diff / 1000) == 0) {
+					return "~2a";
+				}
+				return "§e§lEnderpearl";
 			}
 		}, new Scrollable() {
 
@@ -107,7 +112,8 @@ public class ScoreboardManager {
 
 				long diff = FoxListener.getEnderpearlCooldown().get(p.getName()) - System.currentTimeMillis();
 
-				if ((int) diff / 1000 == 0) {
+				if ((int) (diff / 1000) == 0) {
+
 					return "~2i";
 				}
 
@@ -133,28 +139,6 @@ public class ScoreboardManager {
 				}
 
 				long diff = FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(p.getName()) - System.currentTimeMillis();
-				return "   " + TimeUtils.getConvertedTime(diff / 1000);
-			}
-		}),
-
-		new SBMap(new Scrollable() {
-
-			@Override
-			public String next() {
-				if (FoxtrotPlugin.getInstance().getOppleMap().getValue(p.getName()) == null || FoxtrotPlugin.getInstance().getOppleMap().getValue(p.getName()) < System.currentTimeMillis()) {
-					return "~4a";
-				}
-				return "§b§lGApple Timer";
-			}
-		}, new Scrollable() {
-
-			@Override
-			public String next() {
-				if (FoxtrotPlugin.getInstance().getOppleMap().getValue(p.getName()) == null || FoxtrotPlugin.getInstance().getOppleMap().getValue(p.getName()) < System.currentTimeMillis()) {
-					return "~4i";
-				}
-
-				long diff = FoxtrotPlugin.getInstance().getOppleMap().getValue(p.getName()) - System.currentTimeMillis();
 				return "   " + TimeUtils.getConvertedTime(diff / 1000);
 			}
 		}),

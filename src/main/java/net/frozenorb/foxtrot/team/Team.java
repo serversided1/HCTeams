@@ -300,6 +300,10 @@ public class Team {
 	}
 
 	public void playerDeath(Player p) {
+		playerDeath(p.getName());
+	}
+
+	public void playerDeath(String p) {
 		setDtr(Math.max(dtr - 1D, -.99));
 
 		if (isRaidaible()) {
