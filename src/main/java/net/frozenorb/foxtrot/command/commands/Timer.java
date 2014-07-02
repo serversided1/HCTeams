@@ -10,7 +10,7 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 public class Timer extends BaseCommand {
 
 	public Timer() {
-		super("pvptimer", "timer");
+		super("pvptimer", "timer", "pvp");
 	}
 
 	@Override

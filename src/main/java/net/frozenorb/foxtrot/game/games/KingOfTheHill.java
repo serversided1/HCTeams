@@ -2,8 +2,10 @@ package net.frozenorb.foxtrot.game.games;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -14,13 +16,10 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.HostKOTH;
 import net.frozenorb.foxtrot.game.Minigame;
 import net.frozenorb.foxtrot.team.Team;
-import net.minecraft.server.v1_7_R3.AxisAlignedBB;
-import net.minecraft.server.v1_7_R3.EntityPlayer;
+import net.frozenorb.foxtrot.util.TimeUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -79,6 +78,27 @@ public class KingOfTheHill extends Minigame {
 
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent e) {
+
+		if (hillRegion.contains(e.getFrom()) && !hillRegion.contains(e.getTo())) {
+			if (progress.get(getStorageValue(e.getPlayer())) >= 1080) {
+
+				Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getPlayer().getName());
+
+				if (t != null) {
+					for (Player p : t.getOnlineMembers()) {
+						if (p != e.getPlayer() && !p.isDead()) {
+							if (isOnHill(p)) {
+								return;
+							}
+						}
+					}
+				}
+
+				progress.put(getStorageValue(e.getPlayer()), 1080);
+
+			}
+		}
+
 		if (hillRegion.contains(e.getTo())) {
 
 			if (FoxtrotPlugin.getInstance().getBossBarManager().getMessage(e.getPlayer()) == null) {
@@ -140,45 +160,59 @@ public class KingOfTheHill extends Minigame {
 		return (hillRegion.contains(p)) && !p.isDead();
 	}
 
-	private boolean isContested(Set<String> handledNames) {
+	public boolean isContesting(Player p) {
+		HashSet<String> con = new HashSet<String>();
+		if (isContested(con)) {
+			return isOnHill(p);
+		}
 
-		Location min = hillRegion.getMinimumPoint();
-		Location max = hillRegion.getMaximumPoint();
-		AxisAlignedBB aabb = AxisAlignedBB.a(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+		return false;
+	}
+
+	private List<Player> getPlayersOnHill() {
+		List<Player> list = new ArrayList<Player>();
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (hillRegion.contains(p)) {
+				list.add(p);
+			}
+		}
+
+		return list;
+
+	}
+
+	private boolean isContested(Set<String> handledNames) {
 
 		boolean first = true;
 
 		Team onHill = null;
 		Player ponHill = null;
 
-		for (Object o : ((CraftWorld) min.getWorld()).getHandle().getEntities(null, aabb)) {
-			if (o instanceof EntityPlayer) {
-				EntityPlayer ep = (EntityPlayer) o;
-				Player p = ep.getBukkitEntity();
+		for (Player p : getPlayersOnHill()) {
 
-				if (p.hasMetadata("invisible") || p.getGameMode() == GameMode.CREATIVE) {
-					continue;
-				}
-
-				if (first) {
-					ponHill = p;
-					onHill = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-				} else {
-					Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-
-					if (team == null || team != onHill) {
-
-						if (handledNames != null) {
-							handledNames.add(getStorageValue(p));
-							handledNames.add(getStorageValue(ponHill));
-						}
-
-						return true;
-					}
-				}
-
-				first = false;
+			if (p.hasMetadata("invisible") || p.getGameMode() == GameMode.CREATIVE || p.isDead()) {
+				continue;
 			}
+
+			if (first) {
+				ponHill = p;
+				onHill = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+			} else {
+				Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+
+				if (team == null || team != onHill) {
+
+					if (handledNames != null) {
+						handledNames.add(getStorageValue(p));
+						handledNames.add(getStorageValue(ponHill));
+					}
+
+					return true;
+				}
+			}
+
+			first = false;
 		}
 		return false;
 	}
@@ -196,7 +230,12 @@ public class KingOfTheHill extends Minigame {
 
 			DecimalFormat df = new DecimalFormat("0.0");
 
-			return "§eYou are at §d" + df.format(percent) + "%§e  -  " + ((p.getGameMode() == GameMode.CREATIVE || p.hasMetadata("invisible")) ? "§7Not capturing" : isContested(null) ? "§6Contested" : !onHill ? "§cNot capturing" : "§aCapturing");
+			int secondsLeft = CAPTURE_SECODNS - progress.get(getStorageValue(p));
+			String hm = TimeUtils.getMMSS(secondsLeft);
+
+			String msg = "§eYou are at §d" + df.format(percent) + "% §7(" + hm + ")§e  -  " + ((p.getGameMode() == GameMode.CREATIVE || p.hasMetadata("invisible")) ? "§7Not capturing" : isContesting(p) ? "§6Contested" : !onHill ? "§cNot capturing" : "§aCapturing");
+
+			return msg;
 		}
 	}
 
@@ -207,66 +246,57 @@ public class KingOfTheHill extends Minigame {
 		public void run() {
 			Set<String> handledNames = new HashSet<String>();
 
-			Location min = hillRegion.getMinimumPoint();
-			Location max = hillRegion.getMaximumPoint();
-			AxisAlignedBB aabb = AxisAlignedBB.a(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
-
 			boolean shouldIncrement = !isContested(handledNames);
 
 			if (shouldIncrement) {
-				for (Object o : ((CraftWorld) min.getWorld()).getHandle().getEntities(null, aabb)) {
-					if (o instanceof EntityPlayer) {
-						EntityPlayer ep = (EntityPlayer) o;
+				for (Player p : getPlayersOnHill()) {
 
-						Player p = ep.getBukkitEntity();
+					if (p.hasMetadata("invisible") || p.getGameMode() == GameMode.CREATIVE || p.isDead()) {
+						continue;
+					}
 
-						if (p.hasMetadata("invisible") || p.getGameMode() == GameMode.CREATIVE) {
-							continue;
-						}
+					String key = getStorageValue(p);
 
-						String key = getStorageValue(p);
+					if (handledNames.contains(key)) {
+						continue;
+					}
 
-						if (handledNames.contains(key)) {
-							continue;
-						}
+					int current = progress.containsKey(key) ? progress.get(key) : 0;
 
-						int current = progress.containsKey(key) ? progress.get(key) : 0;
+					progress.put(key, current + 1);
+					current = progress.get(key);
+					handledNames.add(key);
 
-						progress.put(key, current + 1);
-						current = progress.get(key);
-						handledNames.add(key);
+					double i = Math.round((current / (double) CAPTURE_SECODNS) * 100.0D) / 100.0D;
+					int percent = (int) (i * 100);
 
-						double i = Math.round((current / (double) CAPTURE_SECODNS) * 100.0D) / 100.0D;
-						int percent = (int) (i * 100);
+					if (percent != 100) {
+						if ((percent % 20 == 0 && percent != 0) || percent >= 95) {
 
-						if (percent != 100) {
-							if ((percent % 20 == 0 && percent != 0) || percent >= 95) {
+							if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) != null) {
+								Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
 
-								if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) != null) {
-									Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+								if (!broadcasted.containsKey(t.getFriendlyName()) || broadcasted.get(t.getFriendlyName()) != percent) {
 
-									if (!broadcasted.containsKey(t.getFriendlyName()) || broadcasted.get(t.getFriendlyName()) != percent) {
+									Bukkit.broadcastMessage(MESSAGE_HEADER + "§6Team §c" + t.getFriendlyName() + "§6 is at §c" + (percent >= 95 ? "§l" : "") + (int) percent + "§6% captured!");
+									broadcasted.put(t.getFriendlyName(), percent);
+								}
 
-										Bukkit.broadcastMessage(MESSAGE_HEADER + "§6Team §c" + t.getFriendlyName() + "§6 is at §c" + (percent >= 95 ? "§l" : "") + (int) percent + "§6% captured!");
-										broadcasted.put(t.getFriendlyName(), percent);
-									}
+							} else {
 
-								} else {
+								if (!broadcasted.containsKey(p.getName()) || broadcasted.get(p.getName()) != percent) {
 
-									if (!broadcasted.containsKey(p.getName()) || broadcasted.get(p.getName()) != percent) {
-
-										Bukkit.broadcastMessage(MESSAGE_HEADER + "§6Player " + p.getDisplayName() + "§6 is at §c" + (percent >= 95 ? "§l" : "") + (int) percent + "§6% captured!");
-										broadcasted.put(p.getName(), percent);
-									}
+									Bukkit.broadcastMessage(MESSAGE_HEADER + "§6Player " + p.getDisplayName() + "§6 is at §c" + (percent >= 95 ? "§l" : "") + (int) percent + "§6% captured!");
+									broadcasted.put(p.getName(), percent);
 								}
 							}
-
 						}
 
-						if ((int) current >= CAPTURE_SECODNS) {
-							finish(p);
-							cancel();
-						}
+					}
+
+					if ((int) current >= CAPTURE_SECODNS) {
+						finish(p);
+						cancel();
 					}
 
 				}
@@ -292,6 +322,10 @@ public class KingOfTheHill extends Minigame {
 	public void cleanup() {
 		progress.clear();
 		broadcasted.clear();
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			FoxtrotPlugin.getInstance().getBossBarManager().unregisterPlayer(p);
+		}
 
 		try {
 			Field f = HostKOTH.class.getDeclaredField("current" + name);

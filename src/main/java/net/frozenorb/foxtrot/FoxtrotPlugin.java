@@ -1,11 +1,15 @@
 package net.frozenorb.foxtrot;
 
+import java.util.List;
+import java.util.Random;
+
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassTask;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
+import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.MinigameManager;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
@@ -19,8 +23,10 @@ import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
+import net.frozenorb.foxtrot.server.LocationTickStore;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.visual.BossBarManager;
 import net.frozenorb.foxtrot.visual.ScoreboardManager;
 import net.frozenorb.foxtrot.visual.TabHandler;
@@ -28,14 +34,24 @@ import net.frozenorb.mShared.Shared;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wither;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
 import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -82,15 +98,20 @@ public class FoxtrotPlugin extends JavaPlugin {
 		RegionManager.register(this);
 		RegionManager.get();
 
+		LocationTickStore.getInstance().runTaskTimer(this, 1L, 1L);
+
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
 		new ClassTask().runTaskTimer(this, 2L, 2L);
+
 		Bukkit.getScheduler().runTaskTimer(this, bossBarManager, 20L, 20L);
 		Bukkit.getScheduler().runTaskTimer(this, new TabHandler(), 0, 10);
 
 		new CommandRegistrar().register();
 
 		teamManager = new TeamManager(this);
+		LandBoard.getInstance().loadFromTeams();
+
 		serverManager = new ServerManager();
 
 		minigameManager = new MinigameManager();
@@ -104,12 +125,16 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
+		Bukkit.getPluginManager().registerEvents(new Subclaim("", ""), this);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
 			NametagManager.sendPacketsInitialize(p);
 
 			NametagManager.reloadPlayer(p);
+
+			p.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
+
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
@@ -145,6 +170,30 @@ public class FoxtrotPlugin extends JavaPlugin {
 			}
 		});
 
+		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
+			public void onPacketSending(PacketEvent event) {
+				try {
+					Player observer = event.getPlayer();
+					StructureModifier<Entity> entityModifer = event.getPacket().getEntityModifier(observer.getWorld());
+					org.bukkit.entity.Entity entity = entityModifer.read(0);
+					if (entity != null && observer != entity && entity instanceof LivingEntity && !(entity instanceof EnderDragon && entity instanceof Wither) && (entity.getPassenger() == null || entity.getPassenger() != observer)) {
+						event.setPacket(event.getPacket().deepClone());
+						StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
+						for (WrappedWatchableObject watch : watcher.read(0)) {
+							if (watch.getIndex() == 6) {
+								if ((Float) watch.getValue() > 0) {
+									watch.setValue(new Random().nextInt((int) ((Damageable) entity).getMaxHealth()) + new Random().nextFloat());
+								}
+							}
+						}
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
 		MountainHandler.load();
 	}
 
@@ -153,8 +202,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(p);
 			NametagManager.getTeamMap().remove(p.getName());
-			// NametagManager.clear(p);
 			NametagManager.cleanupTeams(p);
+
+			p.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 
 		}
 

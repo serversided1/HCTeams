@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -50,22 +52,12 @@ public class TeamManager {
 
 	}
 
-	public boolean isTaken(ClaimedChunk cc) {
-		for (Team t : teamNameMap.values()) {
-			if (t.getChunks().contains(cc)) {
-				return true;
-			}
-		}
-		return false;
+	public boolean isTaken(PhysicalChunk cc) {
+		return getOwner(cc) != null;
 	}
 
-	public Team getOwner(ClaimedChunk cc) {
-		for (Team t : teamNameMap.values()) {
-			if (t.getChunks().contains(cc)) {
-				return t;
-			}
-		}
-		return null;
+	public Team getOwner(PhysicalChunk cc) {
+		return LandBoard.getInstance().getTeamAt(cc);
 	}
 
 	public Team getPlayerTeam(String name) {

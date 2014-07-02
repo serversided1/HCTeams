@@ -9,8 +9,9 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 public class Unclaim extends Subcommand {
 
@@ -34,6 +35,7 @@ public class Unclaim extends Subcommand {
 					team.getChunks().clear();
 					team.setRally(null, true);
 					team.setHQ(null, true);
+					LandBoard.getInstance().clear(team);
 					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your chunks!");
 					return;
 				}
@@ -44,11 +46,14 @@ public class Unclaim extends Subcommand {
 			int x = c.getX();
 			int z = c.getZ();
 
-			ClaimedChunk cc = new ClaimedChunk(x, z);
+			PhysicalChunk cc = new PhysicalChunk(x, z);
 
 			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(cc) && team.getChunks().contains(cc)) {
 				team.getChunks().remove(cc);
 				team.flagForSave();
+
+				LandBoard.getInstance().setTeamAt(cc, null);
+
 				p.sendMessage(ChatColor.RED + "You have unclaimed the chunk (" + x + ", " + z + ").");
 
 				if (team.getHQ() != null && team.getHQ().getChunk().getX() == c.getX() && team.getHQ().getChunk().getZ() == c.getZ()) {

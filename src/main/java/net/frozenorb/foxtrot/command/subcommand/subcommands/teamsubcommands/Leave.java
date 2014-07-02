@@ -11,8 +11,9 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 public class Leave extends Subcommand {
 
@@ -36,7 +37,7 @@ public class Leave extends Subcommand {
 			}
 
 			Chunk c = p.getLocation().getChunk();
-			ClaimedChunk cc = new ClaimedChunk(c.getX(), c.getZ());
+			PhysicalChunk cc = new PhysicalChunk(c.getX(), c.getZ());
 
 			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) == team) {
 				sender.sendMessage(ChatColor.RED + "You cannot leave your team while on team territory.");
@@ -49,6 +50,8 @@ public class Leave extends Subcommand {
 				FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(sender.getName());
 				FoxtrotPlugin.getInstance().getTeamManager().removeTeam(team.getName());
 				p.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
+
+				LandBoard.getInstance().clear(team);
 			} else {
 				FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(sender.getName());
 				team.setChanged(true);

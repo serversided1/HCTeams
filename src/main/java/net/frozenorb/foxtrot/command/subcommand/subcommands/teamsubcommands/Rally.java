@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Rally extends Subcommand {
 
@@ -31,14 +31,20 @@ public class Rally extends Subcommand {
 			sender.sendMessage(ChatColor.RED + "Rally not set.");
 			return;
 		}
+
+		if (team.getRallySetTime() > System.currentTimeMillis()) {
+			p.sendMessage(ChatColor.RED + "You cannot use your rally within 30 seconds of it being set!");
+			return;
+		}
+
 		if (p.getWorld().getEnvironment() == Environment.THE_END) {
 			p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
 			return;
 		}
 		org.bukkit.Chunk h = team.getRally().getChunk();
-		ClaimedChunk pCC = new ClaimedChunk(p.getLocation().getChunk().getX(), p.getLocation().getChunk().getZ());
+		PhysicalChunk pCC = new PhysicalChunk(p.getLocation().getChunk().getX(), p.getLocation().getChunk().getZ());
 
-		if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(h.getX(), h.getZ())) != team) {
+		if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(h.getX(), h.getZ())) != team) {
 			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(pCC) == team) {
 				sender.sendMessage(ChatColor.RED + "You can only warp to your rally from outside of your claimed land!");
 				return;

@@ -16,6 +16,7 @@ public class TabPlayer {
 	private String name;
 	private TabOperation operation;
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof TabPlayer) {
 			return ((TabPlayer) o).getName().equals(getName());

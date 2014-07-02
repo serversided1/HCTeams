@@ -248,6 +248,11 @@ public abstract class BaseCommand implements CommandExecutor, TabExecutor {
 				action = args.pop().toLowerCase();
 				if (cmd == null)
 					continue;
+
+				if (cmd instanceof CompletionHandler) {
+					return ((CompletionHandler) cmd).complete(sender, this.args);
+				}
+
 				if ((cmd.isCompleteSecondHalf() && this.args[i + 1].length() < 2))
 					return new ArrayList<String>();
 

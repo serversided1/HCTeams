@@ -25,7 +25,7 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Roster("roster", "§c/t roster <message>", "r"));
 		registerSubcommand(new Claim("claim", "§c/t claim"));
 		registerSubcommand(new Invite("invite", "§c/t invite <player>", "inv"));
-		registerSubcommand(new Accept("accept", "§c/t accept <teamName>"));
+		registerSubcommand(new Accept("accept", "§c/t accept <teamName>", "join", "j"));
 		registerSubcommand(new Revoke("revoke", "§c/t revoke"));
 		registerSubcommand(new Unclaim("unclaim", "§c/t unclaim"));
 		registerSubcommand(new Claims("claims", "§c/t claims [team]", "chunks"));
@@ -35,8 +35,8 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Forcejoin("forcejoin", "§c/t forcejoin <team>"));
 		registerSubcommand(new Help("help", ""));
 		registerSubcommand(new Demote("demote", "§c/t demote <player>", "uncaptain"));
-		registerSubcommand(new Promote("promote", "§c/t promtoe <player>", "captain"));
-
+		registerSubcommand(new Promote("promote", "§c/t promote <player>", "p", "captain"));
+		registerSubcommand(new Subclaim("subclaim", "", "sub", "s"));
 		registerSubcommandsToTabCompletions();
 	}
 

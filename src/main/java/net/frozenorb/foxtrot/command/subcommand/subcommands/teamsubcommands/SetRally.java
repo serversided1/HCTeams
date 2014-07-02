@@ -12,8 +12,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class SetRally extends Subcommand {
 
@@ -36,7 +36,7 @@ public class SetRally extends Subcommand {
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 				org.bukkit.Chunk h = p.getLocation().getChunk();
 
-				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().isTaken(new ClaimedChunk(h.getX(), h.getZ()))) {
+				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().isTaken(new PhysicalChunk(h.getX(), h.getZ()))) {
 					sender.sendMessage(ChatColor.RED + "You can only set rally in unclaimed territory!");
 					return;
 				}
@@ -62,6 +62,7 @@ public class SetRally extends Subcommand {
 				});
 				team.getRunnable().runTaskLater(FoxtrotPlugin.getInstance(), 5 * 20L * 60L);
 				team.setRallyExpires(System.currentTimeMillis() + 5 * 60 * 1000L);
+				team.setRallySetTime(System.currentTimeMillis() + 30_000);
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (team.isOnTeam(pl)) {

@@ -13,8 +13,9 @@ import net.frozenorb.foxtrot.game.games.KingOfTheHill;
 public class HostKOTH extends BaseCommand {
 
 	public static KingOfTheHill currentTower;
+	public static KingOfTheHill currentPlaza;
 
-	String[] locs = { "Tower" };
+	String[] locs = { "Tower", "Plaza" };
 
 	public HostKOTH() {
 		super("koth", "hostkoth");
@@ -27,6 +28,8 @@ public class HostKOTH extends BaseCommand {
 
 				String n = args[0];
 
+				boolean cancel = args.length > 1 && args[1].equalsIgnoreCase("stop");
+
 				if (!Arrays.asList(locs).contains(n)) {
 					sender.sendMessage(ChatColor.RED + "Unrecognized name! Please tab-complete '§e/koth§c' for a list of valid names!");
 					return;
@@ -34,8 +37,19 @@ public class HostKOTH extends BaseCommand {
 
 				try {
 					Field f = HostKOTH.class.getDeclaredField("current" + n);
+					KingOfTheHill koth = (KingOfTheHill) f.get(null);
 
-					if (f.get(null) != null) {
+					if (cancel) {
+						if (koth == null) {
+							sender.sendMessage(ChatColor.RED + "No " + n + " KOTH is currently in progress!");
+						} else {
+							koth.cancelGame();
+						}
+						return;
+					}
+
+					if (koth != null) {
+
 						sender.sendMessage(ChatColor.RED + "A " + n + " KOTH is currently running!");
 						return;
 					}

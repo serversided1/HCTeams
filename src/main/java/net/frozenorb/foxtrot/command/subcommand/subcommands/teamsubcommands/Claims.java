@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Claims extends Subcommand {
 
@@ -47,7 +47,7 @@ public class Claims extends Subcommand {
 		} else {
 			sender.sendMessage(ChatColor.GRAY + "-- §3" + team.getFriendlyName() + "'s Claimed Chunks§7 --");
 
-			for (ClaimedChunk cc : team.getChunks()) {
+			for (PhysicalChunk cc : team.getChunks()) {
 				sender.sendMessage("  §7(" + cc.getX() + ", " + cc.getZ() + ")");
 			}
 		}

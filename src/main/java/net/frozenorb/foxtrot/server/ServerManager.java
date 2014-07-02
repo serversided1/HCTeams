@@ -12,9 +12,9 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.ClaimedChunk;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
@@ -54,8 +54,9 @@ public class ServerManager {
 
 	public static final int[] DISALLOWED_POTIONS = { 8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
-			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16426, 16458,
-			8204, 8236, 8268, 16396, 16428, 16460, 16398, 16462, 8257, 8193 };
+			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16458, 8204,
+			8236, 8268, 16396, 16428, 16460, 16398, 16462, 8257, 8193, 16385,
+			16424, 16430 };
 
 	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
 	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
@@ -126,7 +127,7 @@ public class ServerManager {
 
 		int x = loc.getBlockX();
 
-		if (x > WARZONE_RADIUS) {
+		if (x > WARZONE_RADIUS || x < -WARZONE_RADIUS) {
 			return false;
 		}
 
@@ -305,7 +306,7 @@ public class ServerManager {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return !FoxtrotPlugin.getInstance().getTeamManager().isTaken(new ClaimedChunk(loc.getChunk().getX(), loc.getChunk().getZ())) && !isWarzone(loc);
+		return !FoxtrotPlugin.getInstance().getTeamManager().isTaken(new PhysicalChunk(loc.getChunk().getX(), loc.getChunk().getZ())) && !isWarzone(loc);
 	}
 
 	public boolean isAdminOverride(Player p) {
@@ -325,7 +326,7 @@ public class ServerManager {
 	public boolean isClaimedAndRaidable(Location loc) {
 
 		Chunk c = loc.getChunk();
-		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(c.getX(), c.getZ()));
+		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(c.getX(), c.getZ()));
 
 		return owner != null && owner.isRaidaible();
 

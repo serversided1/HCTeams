@@ -34,4 +34,9 @@ public class Miner extends Kit {
 
 	}
 
+	@Override
+	public int getWarmup() {
+		return 10;
+	}
+
 }

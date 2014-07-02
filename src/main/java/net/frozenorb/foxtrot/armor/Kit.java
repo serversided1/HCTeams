@@ -18,7 +18,7 @@ public abstract class Kit {
 
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e60s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, 60) {
+		warmupTasks.put(p.getName(), new KitTask(this, getWarmup()) {
 
 			@Override
 			public void run() {
@@ -60,11 +60,12 @@ public abstract class Kit {
 
 	public abstract void remove(Player p);
 
+	public abstract int getWarmup();
+
 	@AllArgsConstructor
 	public abstract static class KitTask extends BukkitRunnable {
 		@Getter private Kit kit;
-
-		@Getter int seconds = 60;
+		@Getter int seconds;
 	}
 
 }

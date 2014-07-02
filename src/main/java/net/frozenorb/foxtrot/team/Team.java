@@ -4,21 +4,19 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
-import net.frozenorb.foxtrot.util.TimestampedLocation;
+import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
@@ -57,30 +55,17 @@ public class Team {
 
 	@Getter private double dtr;
 	@Getter @Setter private long rallyExpires;
+	@Getter @Setter private long rallySetTime;
 
-	private ArrayList<ClaimedChunk> chunks = new ArrayList<ClaimedChunk>();
-
-	private HashMap<Location, Long> previousHomes = new HashMap<Location, Long>();
+	private ArrayList<PhysicalChunk> chunks = new ArrayList<PhysicalChunk>();
 
 	@Getter private long raidableCooldown;
 	@Getter private long deathCooldown;
 
+	@Getter private ArrayList<Subclaim> subclaims = new ArrayList<Subclaim>();
+
 	public Team(String name) {
 		this.name = name;
-	}
-
-	public ArrayList<TimestampedLocation> getPreviousHomes() {
-		ArrayList<TimestampedLocation> tls = new ArrayList<TimestampedLocation>();
-		for (Entry<Location, Long> entry : previousHomes.entrySet()) {
-			tls.add(new TimestampedLocation(entry.getKey(), entry.getValue()));
-		}
-		Collections.sort(tls, new Comparator<TimestampedLocation>() {
-			@Override
-			public int compare(TimestampedLocation o1, TimestampedLocation o2) {
-				return ((Long) o1.timestamp).compareTo(o2.timestamp);
-			}
-		});
-		return tls;
 	}
 
 	public void setDtr(double dtr) {
@@ -155,9 +140,6 @@ public class Team {
 	public void setHQ(Location hq, boolean update) {
 		changed = true;
 		this.hq = hq;
-		if (update) {
-			previousHomes.put(hq, System.currentTimeMillis());
-		}
 	}
 
 	public void setRally(Location rally, boolean update) {
@@ -233,6 +215,21 @@ public class Team {
 			}
 		}
 
+		Iterator<Subclaim> sc = subclaims.iterator();
+
+		while (sc.hasNext()) {
+			Subclaim s = sc.next();
+
+			if (s.getManager().equalsIgnoreCase(name)) {
+				sc.remove();
+				continue;
+			}
+
+			if (s.isMember(name)) {
+				s.removeMember(name);
+			}
+		}
+
 		boolean emptyTeam = owner == null || members.size() == 0;
 
 		if (!emptyTeam) {
@@ -287,6 +284,24 @@ public class Team {
 
 	}
 
+	public Subclaim getSubclaim(String name, boolean fullName) {
+		for (Subclaim sc : subclaims) {
+			if ((!fullName && sc.getName().equalsIgnoreCase(name)) || sc.getFriendlyName().equalsIgnoreCase(name)) {
+				return sc;
+			}
+		}
+		return null;
+	}
+
+	public Subclaim getSubclaim(Location loc) {
+		for (Subclaim sc : subclaims) {
+			if (new CuboidRegion(sc.getName(), sc.getLoc1(), sc.getLoc2()).contains(loc)) {
+				return sc;
+			}
+		}
+		return null;
+	}
+
 	public int getMemberAmount() {
 		return getMembers().size();
 	}
@@ -338,7 +353,7 @@ public class Team {
 			if (sm.isUnclaimed(loc)) {
 				mult = 1.05;
 			}
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new ClaimedChunk(loc.getChunk().getX(), loc.getChunk().getZ())) == this) {
+			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(loc.getChunk().getX(), loc.getChunk().getZ())) == this) {
 				mult = 1;
 			}
 
@@ -388,33 +403,57 @@ public class Team {
 				setFriendlyFire(Boolean.parseBoolean(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("FriendlyName")) {
 				setFriendlyName(lineParts[0]);
-			} else if (identifier.equalsIgnoreCase("PreviousHomes")) {
-
-				for (String meta : lineParts) {
-					if (!meta.contains(" - "))
-						continue;
-					long timestamp = Long.parseLong(meta.split(" - ")[1]);
-					String coords = meta.split(" - ")[0].replace("(", "").replace(")", "");
-					double x = Double.parseDouble(coords.split(" ")[0]);
-					double y = Double.parseDouble(coords.split(" ")[1]);
-					double z = Double.parseDouble(coords.split(" ")[2]);
-					float n = Float.parseFloat(coords.split(" ")[3]);
-					float n2 = Float.parseFloat(coords.split(" ")[4]);
-					String world = coords.split(" ")[5];
-					Location loc = new Location(Bukkit.getWorld(world), x, y, z, n, n2);
-					previousHomes.put(loc, timestamp);
-
-				}
-
 			} else if (identifier.equalsIgnoreCase("Chunks")) {
 				for (String prt : lineParts) {
 					prt = prt.replace("[", "").replace("]", "");
 					if (prt.contains(":")) {
 						int x = Integer.parseInt(prt.split(":")[0].trim());
 						int z = Integer.parseInt(prt.split(":")[1].trim());
-						getChunks().add(new ClaimedChunk(x, z));
+						getChunks().add(new PhysicalChunk(x, z));
 
 					}
+				}
+			} else if (identifier.equalsIgnoreCase("Subclaims")) {
+				for (String sc : lineParts) {
+					if (!(sc.length() > 2)) {
+						continue;
+					}
+					String[] part = sc.split("\\|");
+
+					String loc1 = part[0];
+
+					String world = loc1.split(" ")[0];
+					double x = Double.parseDouble(loc1.split(" ")[1]);
+					double y = Double.parseDouble(loc1.split(" ")[2]);
+					double z = Double.parseDouble(loc1.split(" ")[3]);
+
+					Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+
+					String loc2str = part[1];
+
+					String world2 = loc2str.split(" ")[0];
+					double x2 = Double.parseDouble(loc2str.split(" ")[1]);
+					double y2 = Double.parseDouble(loc2str.split(" ")[2]);
+					double z2 = Double.parseDouble(loc2str.split(" ")[3]);
+
+					Location loc2 = new Location(Bukkit.getWorld(world2), x2, y2, z2);
+
+					String manager = part[2];
+
+					String name = part[3];
+
+					Subclaim sclaim = new Subclaim(loc, loc2, manager, name);
+
+					if (part.length > 4) {
+						String members = part[4];
+
+						for (String member : members.split(",")) {
+							sclaim.addMember(member);
+						}
+					}
+
+					subclaims.add(sclaim);
+
 				}
 			} else if (identifier.equalsIgnoreCase("Tag")) {
 				tag = lineParts[0];
@@ -453,16 +492,6 @@ public class Team {
 			cFirst = false;
 		}
 
-		String prevHomes = "";
-		boolean hqFirst = true;
-		for (Entry<Location, Long> entry : previousHomes.entrySet()) {
-			if (!hqFirst)
-				prevHomes += ",";
-			hqFirst = false;
-			Location l = entry.getKey();
-			prevHomes += ("(" + l.getX() + " " + l.getY() + " " + l.getZ() + " " + l.getYaw() + " " + l.getPitch() + " " + l.getWorld().getName() + ") - " + entry.getValue());
-		}
-
 		teamString.append("Owner:" + owners + '\n');
 		teamString.append("Members:" + members + '\n');
 		teamString.append("Captains:" + captains + '\n');
@@ -475,10 +504,24 @@ public class Team {
 
 		teamString.append("FriendlyFire:" + friendlyFire + '\n');
 		teamString.append("FriendlyName:" + friendlyName + '\n');
-		teamString.append("PreviousHomes:" + prevHomes + '\n');
 		if (tag != null) {
 			teamString.append("Tag:" + tag + '\n');
 		}
+
+		String scm = "";
+
+		boolean first = true;
+		for (Subclaim sc : subclaims) {
+			if (!first) {
+				scm += ",";
+			}
+			scm += sc.saveString();
+
+			first = false;
+
+		}
+
+		teamString.append("Subclaims:" + scm + '\n');
 
 		teamString.append("Chunks:" + chunks.toString() + '\n');
 		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
@@ -489,7 +532,7 @@ public class Team {
 		return /* Math.min(12, getMemberAmount() * 2) */20;
 	}
 
-	public ArrayList<ClaimedChunk> getChunks() {
+	public ArrayList<PhysicalChunk> getChunks() {
 		return chunks;
 	}
 

@@ -70,4 +70,14 @@ public class TimeUtils {
 		toReturn = String.format("%sm %ss", minutes, seconds);
 		return (hours != 0 ? (hours == 1 ? hours + "h" : hours + "h") : "") + " " + toReturn;
 	}
+
+	public static String getMMSS(int seconds) {
+		int millis = seconds * 1000;
+
+		int sec = (int) (millis / 1000) % 60;
+		int min = (int) ((millis / (1000 * 60)) % 60);
+		int hr = (int) ((millis / (1000 * 60 * 60)) % 24);
+
+		return (hr > 0 ? String.format("%02d", hr) : "") + String.format("%02d:%02d", min, sec);
+	}
 }

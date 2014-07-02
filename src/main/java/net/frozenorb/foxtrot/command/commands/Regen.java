@@ -27,6 +27,12 @@ public class Regen extends BaseCommand {
 			return;
 		}
 
+		if (team.getMaxDTR() == team.getDtr()) {
+			p.sendMessage(ChatColor.YELLOW + "Your team is currently at max DTR, which is §d" + team.getMaxDTR() + "§e.");
+
+			return;
+		}
+
 		p.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of §d" + team.getMaxDTR() + "§e.");
 		p.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + team.getDTRIncrement().doubleValue() * 60 + "/hr§e.");
 		p.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + (hrsToRegain(team) == -1 ? "Infinity" : hrsToRegain(team)) + "§eh to fully gain all DTR.");

@@ -60,6 +60,23 @@ public abstract class RedisPersistMap<T> {
 		System.out.println("Successfully saved " + done + " key-value pairs with prefix '" + keyPrefix + "'");
 	}
 
+	public void executeSave(Jedis jedis) {
+
+		int done = 0;
+
+		for (String key : updatedKeys) {
+			T toSave = getValue(key);
+
+			jedis.set(keyPrefix + '.' + key.toLowerCase(), getRedisValue(toSave));
+			done++;
+		}
+
+		updatedKeys.clear();
+
+		System.out.println("Successfully saved " + done + " key-value pairs with prefix '" + keyPrefix + "'");
+
+	}
+
 	public void updateValue(String key, T value) {
 		wrappedMap.put(key.toLowerCase(), value);
 		updatedKeys.add(key.toLowerCase());
