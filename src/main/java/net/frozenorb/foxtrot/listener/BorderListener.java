@@ -31,15 +31,16 @@ public class BorderListener implements Listener {
 		Location locs = e.getTo();
 		if (Math.abs(locs.getBlockX()) > BORDER_SIZE || Math.abs(locs.getBlockZ()) > BORDER_SIZE) {
 			e.getPlayer().sendMessage(ChatColor.RED + "That portal's location is past the border.");
-			if (locs.getX() > 9999)
-				locs.setX(9997);
-			if (locs.getZ() > 9999)
-				locs.setZ(9997);
+			if (locs.getX() > BORDER_SIZE)
+				locs.setX(BORDER_SIZE - 2);
+			if (locs.getZ() > BORDER_SIZE)
+				locs.setZ(BORDER_SIZE - 2);
 			e.setCancelled(true);
 
 		}
 	}
 
+	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
 		if (!e.getTo().getChunk().isLoaded()) {
 			e.getTo().getChunk().load();
@@ -50,10 +51,10 @@ public class BorderListener implements Listener {
 				Location locs = e.getTo();
 				if (Math.abs(locs.getBlockX()) > BORDER_SIZE || Math.abs(locs.getBlockZ()) > BORDER_SIZE) {
 					e.getPlayer().sendMessage(ChatColor.RED + "That location is past the border.");
-					if (locs.getX() > 9999)
-						locs.setX(9997);
-					if (locs.getZ() > 9999)
-						locs.setZ(9997);
+					if (locs.getX() > BORDER_SIZE)
+						locs.setX(BORDER_SIZE - 2);
+					if (locs.getZ() > BORDER_SIZE)
+						locs.setZ(BORDER_SIZE - 2);
 					e.setTo(e.getFrom());
 					e.getPlayer().setVelocity(new Vector(0, 0, 0));
 

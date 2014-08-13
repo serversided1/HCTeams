@@ -102,7 +102,7 @@ public class TabHandler extends BukkitRunnable {
 		}
 
 		for (TabPlayer str : oldnames) {
-			if (!viewablePlayers.contains(str)) {
+			if (!viewablePlayers.contains(str) && str.getOperation() == TabOperation.ADD) {
 				viewablePlayers.add(new TabPlayer(str.getName(), TabOperation.REMOVE));
 			}
 		}

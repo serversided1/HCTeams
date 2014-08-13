@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.mBasic.Basic;
 
 public class SetRally extends Subcommand {
 
@@ -45,6 +46,16 @@ public class SetRally extends Subcommand {
 					sender.sendMessage(ChatColor.RED + "You cannot set warps in the end!");
 					return;
 				}
+
+				Location check = loc.clone();
+
+				check.setY(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation().getY());
+
+				if (check.distanceSquared(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation()) <= Math.pow(800, 2)) {
+					p.sendMessage(ChatColor.RED + "You cannot set rally within 800 blocks of spawn.");
+					return;
+				}
+
 				team.setRally(p.getLocation(), true);
 				if (team.getRunnable() != null && Bukkit.getScheduler().isCurrentlyRunning(team.getRunnable().getTaskId())) {
 					team.getRunnable().cancel();
@@ -60,9 +71,20 @@ public class SetRally extends Subcommand {
 						}
 					}
 				});
+				double bal = Basic.get().getEconomyManager().getBalance(p.getName());
+
+				if (bal < 5000) {
+					p.sendMessage(ChatColor.RED + "This costs §e$" + 5000 + "§c while you have §e$" + bal + "§c!");
+					return;
+				}
+
+				p.sendMessage(ChatColor.YELLOW + "§d$" + 5000 + " §ehas been deducted from your balance.");
+
+				Basic.get().getEconomyManager().withdrawPlayer(p.getName(), 5000);
+
 				team.getRunnable().runTaskLater(FoxtrotPlugin.getInstance(), 5 * 20L * 60L);
 				team.setRallyExpires(System.currentTimeMillis() + 5 * 60 * 1000L);
-				team.setRallySetTime(System.currentTimeMillis() + 30_000);
+				team.setRallySetTime(System.currentTimeMillis());
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (team.isOnTeam(pl)) {

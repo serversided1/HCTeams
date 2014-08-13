@@ -12,9 +12,12 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
@@ -60,8 +63,10 @@ public class ServerManager {
 
 	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
 	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
+	@Getter private HashMap<String, Long> fHomeCooldown = new HashMap<String, Long>();
 
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
+	private HashSet<String> spawnProtection = new HashSet<String>();
 
 	public ServerManager() {
 		try {
@@ -110,6 +115,22 @@ public class ServerManager {
 
 	}
 
+	public void addSpawnProt(Player p) {
+		spawnProtection.add(p.getName().toLowerCase());
+	}
+
+	public void removeSpawnProt(Player p) {
+		spawnProtection.remove(p.getName().toLowerCase());
+	}
+
+	public boolean hasSpawnProt(Player p) {
+		if (!isSpawn(p.getLocation())) {
+			removeSpawnProt(p);
+		}
+
+		return spawnProtection.contains(p.getName().toLowerCase());
+	}
+
 	public boolean isBannedPotion(int value) {
 		for (int i : DISALLOWED_POTIONS) {
 			if (i == value) {
@@ -151,13 +172,6 @@ public class ServerManager {
 			z = zp;
 
 		return z;
-	}
-
-	public Location getSpawn(World w) {
-		w = Bukkit.getWorld("world");
-		Location l = w.getSpawnLocation().add(new Vector(0.5, 1, 0.5));
-		l.setWorld(Bukkit.getServer().getWorlds().get(0));
-		return l;
 	}
 
 	public boolean canWarp(Player player) {
@@ -253,7 +267,7 @@ public class ServerManager {
 
 	}
 
-	public void beginWarp(final Player player, final Location to, int sec) {
+	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
 
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
 
@@ -261,14 +275,29 @@ public class ServerManager {
 			return;
 		}
 
-		if (isWarzone(player.getLocation())) {
-			player.sendMessage(ChatColor.RED + "You cannot warp in the Warzone!");
+		double bal = Basic.get().getEconomyManager().getBalance(player.getName());
+
+		if (bal < price) {
+			player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while you have §e$" + bal + "§c!");
 			return;
 		}
+
+		if (type == TeamLocationType.HOME) {
+			if (SpawnTag.isTagged(player)) {
+				player.sendMessage(ChatColor.RED + "You cannot warp to rally while spawn-tagged!");
+				return;
+			}
+
+			if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
+				player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
+				return;
+			}
+		}
+
 		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 		boolean enemyWithinRange = false;
 
-		for (Entity e : player.getNearbyEntities(40, 256, 40)) {
+		for (Entity e : player.getNearbyEntities(30, 256, 30)) {
 			if (e instanceof Player) {
 				Player other = (Player) e;
 
@@ -299,8 +328,18 @@ public class ServerManager {
 
 			return;
 		}
+		Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
 
+		player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
 		player.teleport(to);
+
+		if (type == TeamLocationType.HOME) {
+			FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+		}
+
+		if (type == TeamLocationType.RALLY) {
+			fHomeCooldown.put(player.getName(), System.currentTimeMillis() + 15 * 60_000);
+		}
 		return;
 
 	}
@@ -313,14 +352,17 @@ public class ServerManager {
 		return p.getGameMode() == GameMode.CREATIVE;
 	}
 
-	public Location getRandomSpawnLocation() {
-		double angle = Math.random() * Math.PI * 2;
+	public Location getSpawnLocation() {
+		World w = Bukkit.getWorld("world");
 
-		int x = (int) (Math.cos(angle) * ServerManager.WARZONE_RADIUS * 2);
-		int z = (int) (Math.sin(angle) * ServerManager.WARZONE_RADIUS * 2);
+		Location l = w.getSpawnLocation().add(new Vector(0.5, 1, 0.5));
+		l.setWorld(Bukkit.getServer().getWorlds().get(0));
 
-		World w = Bukkit.getWorlds().get(0);
-		return new Location(w, x, w.getHighestBlockYAt(x, z), z);
+		return l;
+	}
+
+	public boolean isSpawn(Location loc) {
+		return RegionManager.get().hasTag(loc, "spawn");
 	}
 
 	public boolean isClaimedAndRaidable(Location loc) {
@@ -329,6 +371,19 @@ public class ServerManager {
 		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(c.getX(), c.getZ()));
 
 		return owner != null && owner.isRaidaible();
+
+	}
+
+	public int getLives(String name) {
+		return 0;
+	}
+
+	public void setLives(String name, int lives) {
+
+	}
+
+	public void revivePlayer(String name) {
+		FoxtrotPlugin.getInstance().getDeathbanMap().updateValue(name, 0L);
 
 	}
 

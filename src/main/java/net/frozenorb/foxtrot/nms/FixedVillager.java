@@ -39,4 +39,5 @@ public class FixedVillager extends EntityVillager {
 
 	@Override
 	public void collide(Entity arg0) {}
+
 }

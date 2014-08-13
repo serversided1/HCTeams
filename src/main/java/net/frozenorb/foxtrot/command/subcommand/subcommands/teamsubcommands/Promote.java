@@ -32,7 +32,7 @@ public class Promote extends Subcommand {
 				sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
 				return;
 			}
-			if (team.isOwner(p.getName())) {
+			if (team.isOwner(p.getName()) || p.isOp()) {
 				if (team.isOnTeam(name)) {
 
 					if (team.isCaptain(name)) {

@@ -27,8 +27,15 @@ public class DeathbanMap extends RedisPersistMap<Long> {
 		return false;
 	}
 
+	public boolean isDeathbanned(String name) {
+		if (getValue(name) != null) {
+			return getValue(name) > System.currentTimeMillis();
+		}
+		return false;
+	}
+
 	public void deathban(Player player, long seconds) {
-		updateValue(player.getName().toLowerCase(), System.currentTimeMillis() + seconds * 1000);
+		deathban(player.getName(), seconds);
 	}
 
 	public void deathban(String player, long seconds) {

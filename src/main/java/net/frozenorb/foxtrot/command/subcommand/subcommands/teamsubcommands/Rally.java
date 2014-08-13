@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Rally extends Subcommand {
@@ -32,7 +33,7 @@ public class Rally extends Subcommand {
 			return;
 		}
 
-		if (team.getRallySetTime() > System.currentTimeMillis()) {
+		if (team.getRallySetTime() + 30_000 > System.currentTimeMillis()) {
 			p.sendMessage(ChatColor.RED + "You cannot use your rally within 30 seconds of it being set!");
 			return;
 		}
@@ -50,7 +51,7 @@ public class Rally extends Subcommand {
 				return;
 			}
 		}
-		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getRally(), 30);
+		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getRally(), 100, TeamLocationType.RALLY);
 
 	}
 

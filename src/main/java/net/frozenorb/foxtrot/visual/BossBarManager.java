@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import net.frozenorb.Utilities.Types.Scrollable;
+import net.frozenorb.foxtrot.visual.scrollers.ImportantScrollable;
 import net.minecraft.server.v1_7_R3.DataWatcher;
 import net.minecraft.server.v1_7_R3.Entity;
 import net.minecraft.server.v1_7_R3.EntityEnderDragon;
@@ -71,6 +72,9 @@ public class BossBarManager implements Runnable {
 	 *            the scrollable to register
 	 */
 	public void registerMessage(Player player, Scrollable scrollable) {
+		if (messages.containsKey(player.getName()) && (messages.get(player.getName()) instanceof ImportantScrollable && !((ImportantScrollable) messages.get(player.getName())).canFinish())) {
+			return;
+		}
 		messages.put(player.getName(), scrollable);
 		PacketPlayOutEntityDestroy pac = new PacketPlayOutEntityDestroy(player.getEntityId() + ENTITY_ID_MODIFIER);
 		((CraftPlayer) player).getHandle().playerConnection.sendPacket(pac);
@@ -84,6 +88,9 @@ public class BossBarManager implements Runnable {
 	 *            the player to remove the bar on
 	 */
 	public void unregisterPlayer(Player player) {
+		if (messages.containsKey(player.getName()) && (messages.get(player.getName()) instanceof ImportantScrollable && !((ImportantScrollable) messages.get(player.getName())).canFinish())) {
+			return;
+		}
 		messages.remove(player.getName());
 		PacketPlayOutEntityDestroy pac = new PacketPlayOutEntityDestroy(player.getEntityId() + ENTITY_ID_MODIFIER);
 		((CraftPlayer) player).getHandle().playerConnection.sendPacket(pac);

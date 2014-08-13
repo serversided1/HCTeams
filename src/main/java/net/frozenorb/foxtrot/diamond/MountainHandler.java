@@ -51,6 +51,11 @@ public class MountainHandler {
 		totalDiamonds = 0;
 		CuboidRegion cr = RegionManager.get().getByName("diamond_mountain");
 
+		if (cr == null) {
+
+			System.out.println("\nDiamond Mountain couldn't load!\nThere's no region with the name 'diamond_mountain'!\n");
+			return;
+		}
 		for (Location l : cr) {
 			if (l.getBlock().getType() == Material.DIAMOND_ORE) {
 				totalDiamonds++;

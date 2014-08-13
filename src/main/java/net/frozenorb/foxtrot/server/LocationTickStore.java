@@ -34,7 +34,7 @@ public class LocationTickStore extends BukkitRunnable {
 
 			locs.addLast(p.getLocation());
 
-			if (locs.size() > 8) {
+			if (locs.size() > 2) {
 				locs.removeFirst();
 			}
 

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamLocationType;
 
 public class HQ extends Subcommand {
 
@@ -35,7 +36,12 @@ public class HQ extends Subcommand {
 			return;
 		}
 
-		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getHQ(), 15);
+		if (FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().containsKey(p.getName()) && FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().get(p.getName()) > System.currentTimeMillis()) {
+			p.sendMessage(ChatColor.RED + "You cannot warp to your team home within 15 minutes of warping to rally!");
+			return;
+		}
+
+		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getHQ(), 75, TeamLocationType.HOME);
 
 	}
 

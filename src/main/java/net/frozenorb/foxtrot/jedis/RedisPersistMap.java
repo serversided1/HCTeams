@@ -1,7 +1,9 @@
 package net.frozenorb.foxtrot.jedis;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import redis.clients.jedis.Jedis;
@@ -16,14 +18,21 @@ public abstract class RedisPersistMap<T> {
 
 	@NonNull private String keyPrefix;
 
-	public void loadFromRedis() {
+	/**
+	 * Loads the contents of the internal map from the according key-value pairs
+	 * in redis with the same prefix.
+	 */
+	public final void loadFromRedis() {
 		JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
 			@Override
 			public Object execute(Jedis jedis) {
 				for (String key : jedis.keys(keyPrefix + ".*")) {
 					String storedKey = key.substring(key.indexOf('.') + 1);
-					wrappedMap.put(storedKey, getJavaObject(jedis.get(key)));
+
+					if (jedis.get(key) != null) {
+						wrappedMap.put(storedKey, getJavaObject(jedis.get(key)));
+					}
 				}
 
 				return null;
@@ -34,6 +43,9 @@ public abstract class RedisPersistMap<T> {
 
 	}
 
+	/**
+	 * Asynchronously writes the key-value pairs that need updating to redis.
+	 */
 	public void saveToRedis() {
 		JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
 
@@ -85,6 +97,10 @@ public abstract class RedisPersistMap<T> {
 
 	public T getValue(String key) {
 		return wrappedMap.get(key.toLowerCase());
+	}
+
+	public List<String> keyList() {
+		return new ArrayList<String>(wrappedMap.keySet());
 	}
 
 	/**

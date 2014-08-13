@@ -37,7 +37,7 @@ public class Rank extends Subcommand {
 				return;
 			}
 
-			if (team.isOwner(sender.getName())) {
+			if (team.isOwner(p.getName()) || p.isOp()) {
 
 				if (team.isOnTeam(name)) {
 

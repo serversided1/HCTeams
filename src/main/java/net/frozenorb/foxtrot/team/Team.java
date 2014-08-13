@@ -13,6 +13,7 @@ import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
+import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
@@ -563,11 +564,12 @@ public class Team {
 		msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
 
 		p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
+		KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
 
 		if (Bukkit.getPlayerExact(getOwner()) != null) {
-			p.sendMessage("§eLeader: §a" + getOwner());
+			p.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
 		} else {
-			p.sendMessage("§eLeader: §7" + getOwner());
+			p.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
 		}
 
 		boolean first = true;
@@ -593,7 +595,7 @@ public class Team {
 				}
 				captainAmount++;
 
-				toAdd.append("§a" + online.getName());
+				toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
 				first2 = false;
 			} else {
 				if (!first) {
@@ -601,7 +603,7 @@ public class Team {
 				}
 				memberAmount++;
 
-				toAdd.append("§a" + online.getName());
+				toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
 				first = false;
 			}
 		}
@@ -620,7 +622,7 @@ public class Team {
 
 				captainAmount++;
 
-				toAdd.append("§7" + offline);
+				toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
 				first2 = false;
 
 			} else {
@@ -629,7 +631,7 @@ public class Team {
 				}
 				memberAmount++;
 
-				toAdd.append("§7" + offline);
+				toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
 				first = false;
 
 			}

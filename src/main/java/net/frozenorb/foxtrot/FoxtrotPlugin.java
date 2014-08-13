@@ -16,9 +16,11 @@ import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.DeathbanMap;
 import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
+import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.jedis.persist.OppleMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.listener.EndListener;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
@@ -79,6 +81,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private OppleMap oppleMap;
 	@Getter private DeathbanMap deathbanMap;
 	@Getter private JoinTimerMap joinTimerMap;
+	@Getter private KillsMap killsMap;
 
 	@Override
 	public void onEnable() {
@@ -109,7 +112,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		new CommandRegistrar().register();
 
-		teamManager = new TeamManager(this);
+		teamManager = new TeamManager(this); 
 		LandBoard.getInstance().loadFromTeams();
 
 		serverManager = new ServerManager();
@@ -122,7 +125,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		kitManager = new KitManager();
 		kitManager.loadKits();
-
+		
+		Bukkit.getPluginManager().registerEvents(new EndListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
 		Bukkit.getPluginManager().registerEvents(new Subclaim("", ""), this);
@@ -249,6 +253,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		joinTimerMap = new JoinTimerMap();
 		joinTimerMap.loadFromRedis();
+
+		killsMap = new KillsMap();
+		killsMap.loadFromRedis();
 	}
 
 	/**
