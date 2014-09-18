@@ -5,10 +5,11 @@ import java.util.Random;
 
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
-import net.frozenorb.foxtrot.armor.ClassTask;
+import net.frozenorb.foxtrot.armor.ClassHandler;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
+import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Claim;
 import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.MinigameManager;
@@ -26,6 +27,7 @@ import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.LocationTickStore;
+import net.frozenorb.foxtrot.server.PacketBorder.BorderThread;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -46,7 +48,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
-import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -105,14 +106,18 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
-		new ClassTask().runTaskTimer(this, 2L, 2L);
+
+		ClassHandler chandler = new ClassHandler();
+
+		chandler.runTaskTimer(this, 2L, 2L);
+		Bukkit.getPluginManager().registerEvents(chandler, this);
 
 		Bukkit.getScheduler().runTaskTimer(this, bossBarManager, 20L, 20L);
 		Bukkit.getScheduler().runTaskTimer(this, new TabHandler(), 0, 10);
 
 		new CommandRegistrar().register();
 
-		teamManager = new TeamManager(this); 
+		teamManager = new TeamManager(this);
 		LandBoard.getInstance().loadFromTeams();
 
 		serverManager = new ServerManager();
@@ -123,13 +128,16 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		setupPersistence();
 
+		new BorderThread().start();
+
 		kitManager = new KitManager();
 		kitManager.loadKits();
-		
+
 		Bukkit.getPluginManager().registerEvents(new EndListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
 		Bukkit.getPluginManager().registerEvents(new Subclaim("", ""), this);
+		Bukkit.getPluginManager().registerEvents(new Claim("", ""), this);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
@@ -158,22 +166,19 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 			}
 		});
-		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerPlayerInfo.TYPE) {
-
-			@Override
-			public void onPacketSending(PacketEvent event) {
-
-				WrapperPlayServerPlayerInfo packet = new WrapperPlayServerPlayerInfo(event.getPacket());
-
-				if (!packet.getPlayerName().startsWith("$")) {
-					event.setCancelled(true);
-				} else {
-					packet.setPlayerName(packet.getPlayerName().substring(1));
-				}
-
-			}
-		});
-
+		/*
+		 * ProtocolLibrary.getProtocolManager().addPacketListener(new
+		 * PacketAdapter(this, PacketType.Play.Server.PLAYER_INFO) {
+		 * 
+		 * @Override public void onPacketSending(PacketEvent event) {
+		 * 
+		 * String name = event.getPacket().getStrings().read(0);
+		 * 
+		 * if (!name.endsWith(" ")) { event.setCancelled(true); } else {
+		 * event.getPacket().getStrings().write(0, name); }
+		 * 
+		 * } });
+		 */
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
 			public void onPacketSending(PacketEvent event) {
 				try {
@@ -208,7 +213,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 			NametagManager.getTeamMap().remove(p.getName());
 			NametagManager.cleanupTeams(p);
 
-			p.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+			p.setMetadata("loggedout", new FixedMetadataValue(this, true));
+			p.removeMetadata("subTitle", this);
 
 		}
 

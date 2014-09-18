@@ -16,7 +16,7 @@ import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +28,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import redis.clients.jedis.Jedis;
 
-@SuppressWarnings("deprecation")
 public class Team {
 
 	public static final int MAX_TEAM_SIZE = 30;
@@ -41,7 +40,7 @@ public class Team {
 
 	private Location hq;
 
-	private boolean friendlyFire;
+	private boolean friendlyFire = false;
 	private boolean changed = false;
 	private boolean loading = false;
 	private String friendlyName;
@@ -58,10 +57,12 @@ public class Team {
 	@Getter @Setter private long rallyExpires;
 	@Getter @Setter private long rallySetTime;
 
-	private ArrayList<PhysicalChunk> chunks = new ArrayList<PhysicalChunk>();
+	private ArrayList<Claim> claims = new ArrayList<Claim>();
 
 	@Getter private long raidableCooldown;
 	@Getter private long deathCooldown;
+
+	@Getter @Setter private double balance;
 
 	@Getter private ArrayList<Subclaim> subclaims = new ArrayList<Subclaim>();
 
@@ -89,6 +90,10 @@ public class Team {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Location getHQ() {
@@ -194,6 +199,14 @@ public class Team {
 		}
 
 		return false;
+	}
+
+	public boolean ownsLocation(Location loc) {
+		return FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this;
+	}
+
+	public boolean ownsClaim(Claim cc) {
+		return FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) == this;
 	}
 
 	public boolean remove(String name) {
@@ -354,7 +367,7 @@ public class Team {
 			if (sm.isUnclaimed(loc)) {
 				mult = 1.05;
 			}
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(loc.getChunk().getX(), loc.getChunk().getZ())) == this) {
+			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this) {
 				mult = 1;
 			}
 
@@ -398,19 +411,30 @@ public class Team {
 				setHQ(parseLocation(lineParts), false);
 			} else if (identifier.equalsIgnoreCase("DTR")) {
 				setDtr(Double.parseDouble(lineParts[0]));
+			} else if (identifier.equalsIgnoreCase("Balance")) {
+				setBalance(Double.parseDouble(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("Rally")) {
 				setRally(parseLocation(lineParts), false);
 			} else if (identifier.equalsIgnoreCase("FriendlyFire")) {
 				setFriendlyFire(Boolean.parseBoolean(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("FriendlyName")) {
 				setFriendlyName(lineParts[0]);
-			} else if (identifier.equalsIgnoreCase("Chunks")) {
+			} else if (identifier.equalsIgnoreCase("Claims")) {
 				for (String prt : lineParts) {
 					prt = prt.replace("[", "").replace("]", "");
 					if (prt.contains(":")) {
-						int x = Integer.parseInt(prt.split(":")[0].trim());
-						int z = Integer.parseInt(prt.split(":")[1].trim());
-						getChunks().add(new PhysicalChunk(x, z));
+						int x1 = Integer.parseInt(prt.split(":")[0].trim());
+						int y1 = Integer.parseInt(prt.split(":")[1].trim());
+						int z1 = Integer.parseInt(prt.split(":")[2].trim());
+						int x2 = Integer.parseInt(prt.split(":")[3].trim());
+						int y2 = Integer.parseInt(prt.split(":")[4].trim());
+						int z2 = Integer.parseInt(prt.split(":")[5].trim());
+						String name = (prt.split(":")[6].trim());
+
+						Claim c = new Claim(x1, y1, z1, x2, y2, z2);
+						c.setName(name);
+
+						getClaims().add(c);
 
 					}
 				}
@@ -497,6 +521,7 @@ public class Team {
 		teamString.append("Members:" + members + '\n');
 		teamString.append("Captains:" + captains + '\n');
 		teamString.append("DTR:" + dtr + '\n');
+		teamString.append("Balance:" + balance + '\n');
 
 		if (homeLoc != null)
 			teamString.append("HQ:" + homeLoc.getWorld().getName() + "," + homeLoc.getX() + "," + homeLoc.getY() + "," + homeLoc.getZ() + "," + homeLoc.getYaw() + "," + homeLoc.getPitch() + '\n');
@@ -524,17 +549,17 @@ public class Team {
 
 		teamString.append("Subclaims:" + scm + '\n');
 
-		teamString.append("Chunks:" + chunks.toString() + '\n');
+		teamString.append("Claims:" + claims.toString() + '\n');
 		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
 		j.disconnect();
 	}
 
-	public int getMaxChunkAmount() {
-		return /* Math.min(12, getMemberAmount() * 2) */20;
+	public int getMaxClaimAmount() {
+		return /* Math.min(12, getMemberAmount() * 2) */2;
 	}
 
-	public ArrayList<PhysicalChunk> getChunks() {
-		return chunks;
+	public ArrayList<Claim> getClaims() {
+		return claims;
 	}
 
 	private Location parseLocation(String[] args) {
@@ -556,9 +581,7 @@ public class Team {
 
 		p.sendMessage(gray);
 
-		World w = Bukkit.getWorld("world");
-
-		Location s = getHQ() != null ? getHQ() : getChunks().size() > 0 ? new Location(w, getChunks().get(0).getX() * 16, 70, getChunks().get(0).getZ() * 16) : null;
+		Location s = getHQ();
 
 		String msg = " §3-§e HQ: ";
 		msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
@@ -644,10 +667,8 @@ public class Team {
 		if (memberAmount > 0) {
 			p.sendMessage(members.toString());
 		}
-		if (isOnTeam(p)) {
-			p.sendMessage("§eFriendly Fire: §7" + (isFriendlyFire() ? "On" : "Off"));
-			p.sendMessage("§eClaimed Chunks: §7" + getChunks().size() + "/" + getMaxChunkAmount());
-		}
+		p.sendMessage("§eBalance: §7" + getBalance());
+
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
 		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);
 
@@ -680,6 +701,15 @@ public class Team {
 				return null;
 			}
 		});
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (obj instanceof Team) {
+			return ((Team) obj).getName().equals(getName());
+		}
+		return super.equals(obj);
 	}
 
 }

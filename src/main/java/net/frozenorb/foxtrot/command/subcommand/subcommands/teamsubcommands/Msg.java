@@ -20,7 +20,6 @@ public class Msg extends Subcommand {
 		super(name, errorMessage, aliases);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void syncExecute() {
 		Player p = (Player) sender;

@@ -11,7 +11,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Rally extends Subcommand {
 
@@ -42,11 +41,9 @@ public class Rally extends Subcommand {
 			p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
 			return;
 		}
-		org.bukkit.Chunk h = team.getRally().getChunk();
-		PhysicalChunk pCC = new PhysicalChunk(p.getLocation().getChunk().getX(), p.getLocation().getChunk().getZ());
 
-		if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(h.getX(), h.getZ())) != team) {
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(pCC) == team) {
+		if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(team.getRally()) != team) {
+			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(p.getLocation()) == team) {
 				sender.sendMessage(ChatColor.RED + "You can only warp to your rally from outside of your claimed land!");
 				return;
 			}

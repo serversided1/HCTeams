@@ -5,9 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import redis.clients.jedis.Jedis;
@@ -52,12 +53,20 @@ public class TeamManager {
 
 	}
 
-	public boolean isTaken(PhysicalChunk cc) {
+	public boolean isTaken(Claim cc) {
 		return getOwner(cc) != null;
 	}
 
-	public Team getOwner(PhysicalChunk cc) {
+	public boolean isTaken(Location loc) {
+		return getOwner(loc) != null;
+	}
+
+	public Team getOwner(Claim cc) {
 		return LandBoard.getInstance().getTeamAt(cc);
+	}
+
+	public Team getOwner(Location loc) {
+		return LandBoard.getInstance().getTeamAt(loc);
 	}
 
 	public Team getPlayerTeam(String name) {
@@ -88,12 +97,39 @@ public class TeamManager {
 		return playerTeamMap.containsKey(name.toLowerCase());
 	}
 
+	public void renameTeam(Team team, String name) {
+		if (teamExists(name)) {
+			return;
+		}
+		final String oldName = team.getName();
+
+		team.setName(name.toLowerCase());
+		team.setFriendlyName(name);
+
+		team.getMembers().forEach(s -> {
+			setTeam(s, team);
+		});
+		addTeam(team);
+
+		teamNameMap.remove(oldName.toLowerCase());
+
+		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+			@Override
+			public Object execute(Jedis jedis) {
+				jedis.del("fox_teams." + oldName.toLowerCase());
+				return null;
+			}
+		});
+	}
+
 	public void removeTeam(final String name) {
 		if (teamExists(name)) {
 			Team t = getTeam(name);
 			for (String names : t.getMembers()) {
 				removePlayerFromTeam(names);
 			}
+
+			LandBoard.getInstance().clear(t);
 		}
 		teamNameMap.remove(name.toLowerCase());
 

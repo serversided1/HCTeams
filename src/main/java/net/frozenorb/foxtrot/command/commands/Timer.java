@@ -19,6 +19,12 @@ public class Timer extends BaseCommand {
 
 		if (args.length > 0) {
 
+			if (args[0].equalsIgnoreCase("create") && p.isOp()) {
+				FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(p, 300);
+				p.sendMessage(ChatColor.RED + "You have 5 minutes of PVP Timer!");
+				return;
+			}
+
 			if (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("remove")) {
 				if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
 
@@ -77,6 +83,13 @@ public class Timer extends BaseCommand {
 
 			return;
 		}
+		String[] msges = {
+				"§c/pvp lives [target] - Shows amount of lives that a player has",
+				"§c/pvp revive <player> - Revives targeted player",
+				"§c/pvp time - Shows time left on PVP Timer",
+				"§c/pvp enable - Remove PVP Timer" };
+
+		p.sendMessage(msges);
 
 	}
 }

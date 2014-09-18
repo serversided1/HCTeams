@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("deprecation")
 public class Accept extends Subcommand {
 
 	public Accept(String name, String errorMessage, String... aliases) {
@@ -39,7 +40,7 @@ public class Accept extends Subcommand {
 
 					for (Player ps : Bukkit.getOnlinePlayers()) {
 						if (team.isOnTeam(ps)) {
-							ps.sendMessage(ChatColor.GRAY + p.getName() + " has joined the team!");
+							ps.sendMessage(ChatColor.YELLOW + p.getName() + " has joined the team!");
 						}
 					}
 					NametagManager.reloadPlayer(p);

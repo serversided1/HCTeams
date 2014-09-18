@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.server;
 
 import java.util.HashMap;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -15,11 +16,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class SpawnTag {
 
 	private static final int SPAWN_TAG_LENGTH_SECONDS = 60;
-	private static HashMap<String, SpawnTag> spawnTags = new HashMap<String, SpawnTag>();
+	@Getter private static HashMap<String, SpawnTag> spawnTags = new HashMap<String, SpawnTag>();
 
 	@NonNull private Player player;
 
-	private int secondsLeft;
+	@Getter private int secondsLeft;
 	private boolean inProgress;
 
 	public static void removeTag(Player player) {
@@ -32,6 +33,10 @@ public class SpawnTag {
 	}
 
 	public static void applyTag(Player player) {
+
+		if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation())) {
+			return;
+		}
 
 		if (!isTagged(player)) {
 			player.sendMessage(ChatColor.YELLOW + "You have been spawn-tagged for §c" + SPAWN_TAG_LENGTH_SECONDS + " §eseconds!");
@@ -56,6 +61,25 @@ public class SpawnTag {
 
 		}
 
+	}
+
+	public static void addSeconds(Player player, int seconds) {
+		if (isTagged(player)) {
+			SpawnTag spt = spawnTags.get(player.getName());
+
+			spt.secondsLeft = Math.min(spt.secondsLeft + 16, SPAWN_TAG_LENGTH_SECONDS);
+
+		} else {
+			player.sendMessage(ChatColor.YELLOW + "You have been spawn-tagged for §c" + seconds + " §eseconds!");
+
+			SpawnTag spt = new SpawnTag(player);
+
+			spt.secondsLeft = seconds;
+			spt.start();
+
+			spawnTags.put(player.getName(), spt);
+
+		}
 	}
 
 	public static boolean isTagged(Player player) {

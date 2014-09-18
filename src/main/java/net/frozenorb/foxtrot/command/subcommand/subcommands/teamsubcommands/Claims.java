@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Claims extends Subcommand {
 
@@ -37,7 +36,7 @@ public class Claims extends Subcommand {
 			}
 		}
 
-		if (team.getChunks().size() == 0) {
+		if (team.getClaims().size() == 0) {
 			if (other) {
 				sender.sendMessage(ChatColor.RED + "That team has no claimed land!");
 
@@ -45,10 +44,10 @@ public class Claims extends Subcommand {
 				sender.sendMessage(ChatColor.RED + "Your team has no claimed land!");
 			}
 		} else {
-			sender.sendMessage(ChatColor.GRAY + "-- §3" + team.getFriendlyName() + "'s Claimed Chunks§7 --");
+			sender.sendMessage(ChatColor.GRAY + "-- §3" + team.getFriendlyName() + "'s Claims§7 --");
 
-			for (PhysicalChunk cc : team.getChunks()) {
-				sender.sendMessage("  §7(" + cc.getX() + ", " + cc.getZ() + ")");
+			for (net.frozenorb.foxtrot.team.claims.Claim cc : team.getClaims()) {
+				sender.sendMessage("  §7" + cc.getFriendlyName());
 			}
 		}
 

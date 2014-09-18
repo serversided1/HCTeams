@@ -33,6 +33,7 @@ import com.mongodb.BasicDBObject;
  * @author Kerem Celik
  * 
  */
+@SuppressWarnings("deprecation")
 public class KingOfTheHill extends Minigame {
 
 	public static final int CAPTURE_SECODNS = 1200;

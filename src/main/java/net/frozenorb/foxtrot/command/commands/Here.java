@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.BaseCommand;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Here extends BaseCommand {
 
@@ -18,14 +17,14 @@ public class Here extends BaseCommand {
 	public void syncExecute() {
 		Location loc = ((Player) sender).getLocation();
 
-		net.frozenorb.foxtrot.team.Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(loc.getChunk().getX(), loc.getChunk().getZ()));
+		net.frozenorb.foxtrot.team.Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
 		if (owner != null) {
 			sender.sendMessage("§eYou are in §c" + owner.getFriendlyName() + "§e's territory.");
 			return;
 		}
 
 		if (!FoxtrotPlugin.getInstance().getServerManager().isWarzone(loc)) {
-			sender.sendMessage(ChatColor.YELLOW + "You are in §7Unclaimed Territory§e!");
+			sender.sendMessage(ChatColor.YELLOW + "You are in §7The Wilderness§e!");
 		} else {
 			sender.sendMessage(ChatColor.YELLOW + "You are in the §cWarzone§e!");
 		}

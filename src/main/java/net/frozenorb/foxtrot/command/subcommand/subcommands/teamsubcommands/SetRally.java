@@ -13,9 +13,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 import net.frozenorb.mBasic.Basic;
 
+@SuppressWarnings("deprecation")
 public class SetRally extends Subcommand {
 
 	public SetRally(String name, String errorMessage, String... aliases) {
@@ -35,9 +35,8 @@ public class SetRally extends Subcommand {
 
 		if (team != null) {
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
-				org.bukkit.Chunk h = p.getLocation().getChunk();
 
-				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().isTaken(new PhysicalChunk(h.getX(), h.getZ()))) {
+				if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(p.getLocation()) || FoxtrotPlugin.getInstance().getTeamManager().isTaken(p.getLocation())) {
 					sender.sendMessage(ChatColor.RED + "You can only set rally in unclaimed territory!");
 					return;
 				}

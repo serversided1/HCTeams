@@ -2,12 +2,12 @@ package net.frozenorb.foxtrot.nms;
 
 import java.lang.reflect.Field;
 
-import org.bukkit.craftbukkit.v1_7_R3.util.UnsafeList;
+import org.bukkit.craftbukkit.v1_7_R4.util.UnsafeList;
 
-import net.minecraft.server.v1_7_R3.Entity;
-import net.minecraft.server.v1_7_R3.EntityVillager;
-import net.minecraft.server.v1_7_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_7_R3.World;
+import net.minecraft.server.v1_7_R4.Entity;
+import net.minecraft.server.v1_7_R4.EntityVillager;
+import net.minecraft.server.v1_7_R4.PathfinderGoalSelector;
+import net.minecraft.server.v1_7_R4.World;
 
 @SuppressWarnings("rawtypes")
 public class FixedVillager extends EntityVillager {

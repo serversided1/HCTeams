@@ -5,5 +5,6 @@ public enum ArmorMaterial {
 	DIAMOND,
 	IRON,
 	GOLD,
+	CHAINMAIL,
 	LEATHER
 }

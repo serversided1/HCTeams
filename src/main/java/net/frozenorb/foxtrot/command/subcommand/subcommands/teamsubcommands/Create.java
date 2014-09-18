@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -32,6 +33,11 @@ public class Create extends Subcommand {
 					return;
 
 				}
+				if (name.length() < 3) {
+					p.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
+
+					return;
+				}
 
 				if (!FoxtrotPlugin.getInstance().getTeamManager().teamExists(name)) {
 					net.frozenorb.foxtrot.team.Team team = new net.frozenorb.foxtrot.team.Team(name);
@@ -42,6 +48,9 @@ public class Create extends Subcommand {
 					FoxtrotPlugin.getInstance().getTeamManager().setTeam(p.getName(), team);
 					p.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
 					p.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
+
+					Bukkit.broadcastMessage("§eTeam §9" + team.getName() + "§e has been §acreated §eby §f" + p.getDisplayName());
+
 				} else {
 					p.sendMessage(ChatColor.GRAY + "That team already exists!");
 				}

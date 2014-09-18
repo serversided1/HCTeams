@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.util;
 
-import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
 
-import net.minecraft.server.v1_7_R3.PotionBrewer;
-import net.minecraft.server.v1_7_R3.ItemStack;
+import net.minecraft.server.v1_7_R4.PotionBrewer;
+import net.minecraft.server.v1_7_R4.ItemStack;
 
 public class NMSMethods {
 

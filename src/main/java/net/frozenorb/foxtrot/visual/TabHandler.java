@@ -1,23 +1,38 @@
 package net.frozenorb.foxtrot.visual;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.UUID;
 
 import lombok.Getter;
 import net.frozenorb.NametagSystem.NameChanger;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.visual.TabPlayer.TabOperation;
 import net.frozenorb.mShared.Shared;
+import net.minecraft.server.v1_7_R4.ChatSerializer;
+import net.minecraft.server.v1_7_R4.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_7_R4.EntityPlayer;
+import net.minecraft.server.v1_7_R4.IChatBaseComponent;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.spigotmc.ProtocolInjector.PacketTabHeader;
+import org.spigotmc.ProtocolInjector.PacketTitle;
+import org.spigotmc.ProtocolInjector.PacketTitle.Action;
 
-import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
-
+@SuppressWarnings("deprecation")
 public class TabHandler extends BukkitRunnable {
+	private static final boolean SEND_FAKE_PLAYER_LIST = false;
 
 	@Getter private static TabHandler instance;
+	private static HashMap<String, UUID> cachedUUIDs = new HashMap<String, UUID>();
 
 	private ArrayList<TabPlayer> viewablePlayers = new ArrayList<TabPlayer>();
 
@@ -33,47 +48,66 @@ public class TabHandler extends BukkitRunnable {
 	 *            the player to send the tab packets to
 	 */
 	public void sendTabPackets(Player p) {
-		LinkedList<TabPlayer> send = new LinkedList<TabPlayer>();
+		EntityPlayer pl = ((CraftPlayer) p).getHandle();
 
-		send.addAll(getViewablePlayers());
+		RegionData<?> rd = FoxtrotPlugin.getInstance().getServerManager().getRegion(p.getLocation(), p);
 
-		Iterator<TabPlayer> iter = send.iterator();
+		if (pl.playerConnection.networkManager.getVersion() >= 47) {
+			pl.playerConnection.sendPacket(new PacketTabHeader((IChatBaseComponent) ChatSerializer.a("{\"text\":\"§6HCTeams\"}"), (IChatBaseComponent) ChatSerializer.a("{\"text\":\"§eCurrently at " + rd.getRegion().getDisplayName() + "\"}")));
 
-		while (iter.hasNext()) {
-			if (iter.next().getName().equals(p.getName())) {
-				iter.remove();
+			if (!p.hasMetadata("subTitle")) {
+				pl.playerConnection.sendPacket(new PacketTitle(Action.TIMES, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+				p.setMetadata("subTitle", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 			}
+
 		}
 
-		send.push(new TabPlayer(p.getName(), TabOperation.ADD));
+		if (SEND_FAKE_PLAYER_LIST) {
 
-		for (TabPlayer tp : send) {
+			LinkedList<TabPlayer> send = new LinkedList<TabPlayer>();
 
-			boolean online = tp.getOperation() == TabOperation.ADD;
+			send.addAll(getViewablePlayers());
 
-			WrapperPlayServerPlayerInfo pac = new WrapperPlayServerPlayerInfo();
-			pac.setOnline(online);
-			pac.setPing((short) 0);
+			Iterator<TabPlayer> iter = send.iterator();
 
-			String name = tp.getName().substring(1) + " ";
-			pac.setPlayerName("$" + name);
-			pac.sendPacket(p);
-
-			String code = "";
-
-			if (Shared.get().getProfileManager().getProfile(tp.getName()) != null) {
-
-				String color = Shared.get().getProfileManager().getProfile(tp.getName()).getColor();
-
-				for (char c : color.toCharArray()) {
-					code += "§" + c;
+			while (iter.hasNext()) {
+				if (iter.next().getName().equals(p.getName())) {
+					iter.remove();
 				}
 			}
 
-			NameChanger.setNametagHard(name, code + tp.getName().substring(0, 1), "");
+			send.push(new TabPlayer(p.getName(), TabOperation.ADD));
+
+			for (TabPlayer tp : send) {
+				String name = tp.getName().substring(1) + " ";
+
+				PacketPlayOutPlayerInfo pi = null;
+
+				if (tp.getOperation() == TabOperation.ADD) {
+					pi = PacketPlayOutPlayerInfo.addPlayer(new WrappedEntityPlayer(new GameProfile(cachedUUIDs.get(tp.getName()), name), name));
+				} else if (tp.getOperation() == TabOperation.REMOVE) {
+					pi = PacketPlayOutPlayerInfo.removePlayer(new WrappedEntityPlayer(new GameProfile(cachedUUIDs.get(tp.getName()), name), name));
+				}
+
+				if (pi != null) {
+
+					String code = "";
+
+					if (Shared.get().getProfileManager().getProfile(tp.getName()) != null) {
+
+						String color = Shared.get().getProfileManager().getProfile(tp.getName()).getColor();
+
+						for (char c : color.toCharArray()) {
+							code += "§" + c;
+						}
+					}
+
+					NameChanger.setNametagHard(name, code + tp.getName().substring(0, 1), "");
+					pl.playerConnection.sendPacket(pi);
+				}
+			}
 
 		}
-
 	}
 
 	/**
@@ -96,6 +130,8 @@ public class TabHandler extends BukkitRunnable {
 		viewablePlayers.clear();
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
+			cachedUUIDs.put(p.getName(), p.getUniqueId());
+
 			if (!p.hasMetadata("invisible")) {
 				viewablePlayers.add(new TabPlayer(p.getName(), TabOperation.ADD));
 			}

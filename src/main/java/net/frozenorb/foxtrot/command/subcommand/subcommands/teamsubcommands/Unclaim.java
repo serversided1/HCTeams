@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 public class Unclaim extends Subcommand {
@@ -32,42 +30,38 @@ public class Unclaim extends Subcommand {
 
 			if (args.length > 1) {
 				if (args[1].equalsIgnoreCase("all")) {
-					team.getChunks().clear();
+					team.getClaims().clear();
 					team.setRally(null, true);
 					team.setHQ(null, true);
 					LandBoard.getInstance().clear(team);
-					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your chunks!");
+					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims!");
 					return;
 				}
 			}
 
-			Chunk c = p.getLocation().getChunk();
+			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(p.getLocation()) && team.ownsLocation(p.getLocation())) {
 
-			int x = c.getX();
-			int z = c.getZ();
+				net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(p.getLocation());
 
-			PhysicalChunk cc = new PhysicalChunk(x, z);
-
-			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(cc) && team.getChunks().contains(cc)) {
-				team.getChunks().remove(cc);
+				team.getClaims().remove(cc);
 				team.flagForSave();
 
 				LandBoard.getInstance().setTeamAt(cc, null);
 
-				p.sendMessage(ChatColor.RED + "You have unclaimed the chunk (" + x + ", " + z + ").");
+				p.sendMessage(ChatColor.RED + "You have unclaimed the claim §d" + cc.getFriendlyName() + "§c!");
 
-				if (team.getHQ() != null && team.getHQ().getChunk().getX() == c.getX() && team.getHQ().getChunk().getZ() == c.getZ()) {
+				if (team.getHQ() != null && cc.contains(team.getHQ())) {
 					team.setHQ(null, true);
-					sender.sendMessage(ChatColor.RED + "Your HQ was in this chunk, so it has been unset.");
+					sender.sendMessage(ChatColor.RED + "Your HQ was in this claim, so it has been unset.");
 				}
-				if (team.getRally() != null && team.getRally().getChunk().getX() == c.getX() && team.getRally().getChunk().getZ() == c.getZ()) {
+				if (team.getRally() != null && cc.contains(team.getRally())) {
 					team.setRally(null, true);
-					sender.sendMessage(ChatColor.RED + "Your rally was in this chunk, so it has been unset.");
+					sender.sendMessage(ChatColor.RED + "Your rally was in this claim, so it has been unset.");
 				}
 				return;
 			}
 
-			p.sendMessage(ChatColor.RED + "You do not own this chunk. To unclaim all chunks, type '§e/t unclaim all§c'.");
+			p.sendMessage(ChatColor.RED + "You do not own this claim. To unclaim all claims, type '§e/t unclaim all§c'.");
 
 		} else
 			p.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");

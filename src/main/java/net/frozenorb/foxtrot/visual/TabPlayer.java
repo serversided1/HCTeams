@@ -45,6 +45,12 @@ public class TabPlayer {
 		/**
 		 * Removal from tab screen.
 		 */
-		REMOVE
+		REMOVE,
+
+		/**
+		 * Updates a player's ping in the tab screen.
+		 */
+		UPDATE_PING
+
 	}
 }

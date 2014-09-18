@@ -103,6 +103,10 @@ public abstract class RedisPersistMap<T> {
 		return new ArrayList<String>(wrappedMap.keySet());
 	}
 
+	public boolean contains(String key) {
+		return wrappedMap.containsKey(key.toLowerCase());
+	}
+
 	/**
 	 * Gets the String that will be stored as the value instead of the given
 	 * Java object.

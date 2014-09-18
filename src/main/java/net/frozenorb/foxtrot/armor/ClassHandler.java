@@ -3,10 +3,17 @@ package net.frozenorb.foxtrot.armor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class ClassTask extends BukkitRunnable {
+@SuppressWarnings("deprecation")
+public class ClassHandler extends BukkitRunnable implements Listener {
 
 	@Override
 	public void run() {
@@ -41,6 +48,8 @@ public class ClassTask extends BukkitRunnable {
 				if (!eq.qualifies(a)) {
 					eq.remove(p);
 					Kit.getEquippedKits().remove(p.getName());
+				} else {
+					eq.applyRepeat(p);
 				}
 
 			}
@@ -58,6 +67,32 @@ public class ClassTask extends BukkitRunnable {
 				}
 			}
 
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		Player p = e.getPlayer();
+
+		if (e.getPlayer().getItemInHand() != null) {
+			for (Kit k : FoxtrotPlugin.getInstance().getKitManager().getKits()) {
+
+				if (k.hasKitOn(p) && k.getConsumable() == e.getPlayer().getItemInHand().getType()) {
+
+					if (!k.hasCooldown(p, true)) {
+
+						if (p.getItemInHand().getAmount() > 1) {
+							p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+						} else {
+							p.setItemInHand(new ItemStack(Material.AIR));
+						}
+
+						k.itemConsumed(p);
+						k.addCooldown(p, k.getCooldownSeconds());
+					}
+
+				}
+			}
 		}
 	}
 

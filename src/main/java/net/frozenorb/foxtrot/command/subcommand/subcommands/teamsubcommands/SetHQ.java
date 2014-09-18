@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
+@SuppressWarnings("deprecation")
 public class SetHQ extends Subcommand {
 
 	public SetHQ(String name, String errorMessage, String... aliases) {
@@ -29,8 +29,7 @@ public class SetHQ extends Subcommand {
 		if (team != null) {
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 
-				org.bukkit.Chunk h = p.getLocation().getChunk();
-				if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(h.getX(), h.getZ())) != team) {
+				if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(p.getLocation()) != team) {
 					sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
 					return;
 				}

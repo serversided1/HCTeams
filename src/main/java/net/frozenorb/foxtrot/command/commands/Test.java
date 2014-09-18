@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import net.frozenorb.foxtrot.command.BaseCommand;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 
+@SuppressWarnings("deprecation")
 public class Test extends BaseCommand {
 
 	public Test() {
@@ -16,7 +17,7 @@ public class Test extends BaseCommand {
 	public void syncExecute() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			NametagManager.clear(p);
-//			NametagManager.cleanupTeams(p);
+			// NametagManager.cleanupTeams(p);
 		}
 	}
 

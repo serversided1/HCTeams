@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 
+@SuppressWarnings("deprecation")
 public class NewLeader extends Subcommand {
 
 	public NewLeader(String name, String errorMessage, String... aliases) {

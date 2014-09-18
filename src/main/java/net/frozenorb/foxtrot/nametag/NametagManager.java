@@ -21,6 +21,7 @@ import java.util.List;
  * @author Kerem Celik
  * 
  */
+@SuppressWarnings("deprecation")
 public class NametagManager {
 	private static final String TEAM_NAME_PREFIX = "K_MONEY_";
 

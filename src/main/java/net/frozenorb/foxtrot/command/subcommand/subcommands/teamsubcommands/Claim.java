@@ -3,25 +3,33 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World.Environment;
-import org.bukkit.block.BlockFace;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.claims.VisualClaim;
+import net.frozenorb.foxtrot.team.claims.VisualClaim.VisualType;
+import net.frozenorb.foxtrot.util.ListUtils;
 
-public class Claim extends Subcommand {
+public class Claim extends Subcommand implements Listener {
+	public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_HOE);
 
-	private static final BlockFace[] AXIAL = { BlockFace.NORTH, BlockFace.EAST,
-			BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH_EAST,
-			BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST };
+	static {
+		ItemMeta meta = SELECTION_WAND.getItemMeta();
+
+		meta.setDisplayName("§a§oClaiming Wand");
+		meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect claim's corners" + " | §eRight Click §6Air  |  §b- §fCancel current claim" + " | §9Shift §eLeft Click §6Block/Air   §b- §fPurchase current claim", ""));
+		SELECTION_WAND.setItemMeta(meta);
+	}
 
 	public Claim(String name, String errorMessage, String... aliases) {
 		super(name, errorMessage, aliases);
@@ -31,90 +39,39 @@ public class Claim extends Subcommand {
 	public void syncExecute() {
 		final Player p = (Player) sender;
 
-		if (p.getWorld().getEnvironment() == Environment.NETHER) {
-			p.sendMessage(ChatColor.RED + "You cannot claim chunks in the nether.");
-			return;
-		}
-
 		Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
 		if (team == null) {
 			sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
 			return;
 		}
-
-		if (team.isRaidaible()) {
-
-			p.sendMessage(ChatColor.RED + "You cannot claim land if your team is raidable!");
-			return;
-		}
 		if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
+			p.getInventory().remove(SELECTION_WAND);
 
-			if (p.getLocation().distance(new Location(p.getWorld(), 0, 0, 0)) <= ServerManager.WARZONE_RADIUS + 16) {
-				p.sendMessage(ChatColor.RED + "You cannot claim land this close to the Warzone!");
-				return;
+			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> p.getInventory().addItem(SELECTION_WAND.clone()), 1L);
+
+			new VisualClaim(p, VisualType.CREATE).draw(false);
+
+			if (!VisualClaim.getCurrentMaps().containsKey(p.getName())) {
+				new VisualClaim(p, VisualType.MAP).draw(false);
 			}
-
-			Chunk c = p.getLocation().getChunk();
-			int x = c.getX();
-			int z = c.getZ();
-
-			if (team.getChunks().size() >= team.getMaxChunkAmount()) {
-				p.sendMessage(ChatColor.RED + "You have claimed the maximum amount of chunks your team can.");
-				return;
-			}
-			PhysicalChunk cc = new PhysicalChunk(x, z);
-
-			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(cc)) {
-				Team cl = FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc);
-				if (cl == team) {
-					p.sendMessage(ChatColor.RED + "Your team already claimed this chunk.");
-				} else {
-					p.sendMessage(ChatColor.YELLOW + "This chunk is owned by §c" + cl.getFriendlyName() + "§e.");
-				}
-				return;
-			}
-
-			if (team.getChunks().size() > 0) {
-				boolean touching = false;
-
-				for (PhysicalChunk hasClaimed : team.getChunks()) {
-					int diffX = Math.abs(hasClaimed.getX()) - Math.abs(cc.getX());
-					int diffZ = Math.abs(hasClaimed.getZ()) - Math.abs(cc.getZ());
-
-					int actualDiff = Math.abs(diffX) + Math.abs(diffZ);
-
-					if (actualDiff == 1) {
-						touching = true;
-					}
-				}
-				if (!touching) {
-					p.sendMessage(ChatColor.RED + "You can only claim chunks adjacent to your existing claims.");
-					return;
-				}
-			}
-
-			for (BlockFace bf : AXIAL) {
-				int i = bf.getModX();
-				int j = bf.getModZ();
-
-				PhysicalChunk c22 = new PhysicalChunk(x + i, z + j);
-
-				if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(c22) && !team.getChunks().contains(c22)) {
-					p.sendMessage(ChatColor.RED + "Failed! §eThat chunk is adjacent to a chunk claimed by §3" + FoxtrotPlugin.getInstance().getTeamManager().getOwner(c22).getFriendlyName() + "§e.");
-					return;
-				}
-
-			}
-
-			team.getChunks().add(cc);
-			team.flagForSave();
-
-			LandBoard.getInstance().setTeamAt(cc, team);
-
-			sender.sendMessage(ChatColor.GRAY + "Your team has claimed the chunk at (" + x + ", " + z + ").");
 		} else
 			p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
 
+	}
+
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent e) {
+		if (e.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
+
+			VisualClaim vc = VisualClaim.getVisualClaim(e.getPlayer().getName());
+
+			if (vc != null) {
+				e.setCancelled(true);
+				vc.cancel(false);
+
+			}
+			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> e.getItemDrop().remove(), 1L);
+		}
 	}
 
 	@Override

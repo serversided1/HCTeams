@@ -1,5 +1,8 @@
 package net.frozenorb.foxtrot.command.commands;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.ChatColor;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -38,5 +41,14 @@ public class SetDTR extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + "/setdtr <team> <dtr>");
 		}
 
+	}
+
+	@Override
+	public List<String> getTabCompletions() {
+		if (args.length == 1) {
+			return FoxtrotPlugin.getInstance().getTeamManager().getTeams().stream().map(t -> t.getFriendlyName()).collect(Collectors.toList());
+
+		}
+		return null;
 	}
 }

@@ -5,20 +5,26 @@ import java.util.HashMap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.util.TimeUtils;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public abstract class Kit {
+public abstract class Kit implements Listener {
 
 	@Getter private static HashMap<String, KitTask> warmupTasks = new HashMap<String, KitTask>();
 	@Getter private static HashMap<String, Kit> equippedKits = new HashMap<String, Kit>();
 
+	private HashMap<String, Long> cooldowns = new HashMap<String, Long>();
+
 	public void startWarmup(final Player p) {
 
-		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e60s");
+		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e" + getWarmup() + "s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, getWarmup()) {
+		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("LazyLemons") ? 1 : getWarmup()) {
 
 			@Override
 			public void run() {
@@ -52,13 +58,49 @@ public abstract class Kit {
 		}
 	}
 
+	public Material getConsumable() {
+		return null;
+	}
+
+	public void applyRepeat(Player p) {}
+
+	public void apply(Player p) {}
+
+	public void remove(Player p) {}
+
+	public void itemConsumed(Player p) {}
+
+	public int getCooldownSeconds() {
+		return 0;
+	}
+
+	public void addCooldown(Player p, int seconds) {
+		cooldowns.put(p.getName(), System.currentTimeMillis() + (seconds * 1000L));
+	}
+
+	public boolean hasCooldown(Player p, boolean message) {
+		if (cooldowns.containsKey(p.getName()) && cooldowns.get(p.getName()) > System.currentTimeMillis()) {
+
+			if (message) {
+				Long millisLeft = cooldowns.get(p.getName()) - System.currentTimeMillis();
+				String msg = TimeUtils.getDurationBreakdown(millisLeft);
+
+				p.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean hasKitOn(Player p) {
+		return equippedKits.containsKey(p.getName()) && equippedKits.get(p.getName()) == this;
+	}
+
 	public abstract boolean qualifies(Armor armor);
 
 	public abstract String getName();
-
-	public abstract void apply(Player p);
-
-	public abstract void remove(Player p);
 
 	public abstract int getWarmup();
 

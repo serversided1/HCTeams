@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author Kerem Celik
  * 
  */
+@SuppressWarnings("deprecation")
 @SerializableClass(appendClassSignature = true)
 public abstract class Minigame extends ReflectionSerializer implements Listener {
 	/**

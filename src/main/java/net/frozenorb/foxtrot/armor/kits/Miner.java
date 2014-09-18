@@ -12,7 +12,7 @@ public class Miner extends Kit {
 
 	@Override
 	public boolean qualifies(Armor armor) {
-		return armor.isFullSet(ArmorMaterial.IRON, false, false);
+		return armor.isFullSet(ArmorMaterial.IRON);
 	}
 
 	@Override

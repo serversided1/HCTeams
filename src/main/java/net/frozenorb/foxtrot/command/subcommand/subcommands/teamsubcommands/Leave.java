@@ -5,16 +5,15 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 
+@SuppressWarnings("deprecation")
 public class Leave extends Subcommand {
 
 	public Leave(String name, String errorMessage, String... aliases) {
@@ -36,10 +35,7 @@ public class Leave extends Subcommand {
 				return;
 			}
 
-			Chunk c = p.getLocation().getChunk();
-			PhysicalChunk cc = new PhysicalChunk(c.getX(), c.getZ());
-
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) == team) {
+			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(p.getLocation()) == team) {
 				sender.sendMessage(ChatColor.RED + "You cannot leave your team while on team territory.");
 				return;
 			}
@@ -57,7 +53,7 @@ public class Leave extends Subcommand {
 				team.setChanged(true);
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (team.isOnTeam(pl)) {
-						pl.sendMessage(ChatColor.DARK_AQUA + p.getName() + " has left the team.");
+						pl.sendMessage(ChatColor.YELLOW + p.getName() + " has left the team.");
 					}
 				}
 				p.sendMessage(ChatColor.DARK_AQUA + "Successfully left the team!");

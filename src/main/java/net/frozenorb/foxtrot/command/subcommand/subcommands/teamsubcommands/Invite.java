@@ -17,7 +17,6 @@ public class Invite extends Subcommand {
 		super(name, errorMessage, aliases);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void syncExecute() {
 		final Player p = (Player) sender;
@@ -49,7 +48,7 @@ public class Invite extends Subcommand {
 					}
 					team.getInvitations().add(name);
 					Bukkit.getPlayerExact(name).sendMessage(ChatColor.GRAY + "You have been invited to team '§e" + team.getFriendlyName() + "§7'. Type '§3/team accept §e" + team.getFriendlyName() + "§7' to join.");
-					sender.sendMessage("§7" + name + " has been invited to the team!");
+					sender.sendMessage("§e" + name + " has been invited to the team!");
 				} else {
 					p.sendMessage(ChatColor.DARK_AQUA + "Player is already on your team.");
 				}
@@ -62,6 +61,7 @@ public class Invite extends Subcommand {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public List<String> tabComplete() {
 		ArrayList<String> pls = new ArrayList<String>();
 

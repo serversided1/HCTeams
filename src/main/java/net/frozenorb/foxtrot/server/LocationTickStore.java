@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@SuppressWarnings("deprecation")
 public class LocationTickStore extends BukkitRunnable {
 	private static LocationTickStore instance;
 	private HashMap<String, LinkedList<Location>> storeLocations = new HashMap<String, LinkedList<Location>>();

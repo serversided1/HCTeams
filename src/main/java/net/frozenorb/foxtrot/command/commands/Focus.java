@@ -20,7 +20,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.BaseCommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
+import net.frozenorb.foxtrot.team.claims.Claim;
 
 @SuppressWarnings("deprecation")
 public class Focus extends BaseCommand {
@@ -122,7 +122,7 @@ public class Focus extends BaseCommand {
 				}
 				final Team t = tm.getTeam(teamName);
 
-				if (t.getChunks().size() == 0 && t.getHQ() == null) {
+				if (t.getClaims().size() == 0 && t.getHQ() == null) {
 					sender.sendMessage(ChatColor.RED + "That team has nothing to focus on!");
 					return;
 				}
@@ -136,11 +136,10 @@ public class Focus extends BaseCommand {
 					@Override
 					public Location updateLocation() {
 						if (t.getHQ() == null) {
-							if (t.getChunks().size() > 0) {
-								PhysicalChunk cc = t.getChunks().get(0);
+							if (t.getClaims().size() > 0) {
+								Claim cc = t.getClaims().get(0);
 
-								Location loc = new Location(Bukkit.getWorld("world"), cc.getX() * 16, 70, cc.getZ() * 16);
-								return loc;
+								return cc.getMaximumPoint();
 							}
 							return null;
 						}

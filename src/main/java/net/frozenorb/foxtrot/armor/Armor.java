@@ -13,7 +13,7 @@ public class Armor {
 
 	@Getter @NonNull ItemStack[] items;
 
-	public boolean isFullSet(ArmorMaterial material, boolean enchanted, boolean ignoreEnchants) {
+	public boolean isFullSet(ArmorMaterial material) {
 
 		boolean is = true;
 		for (ItemStack item : items) {
@@ -21,16 +21,9 @@ public class Armor {
 				return false;
 			}
 			if (!item.getType().name().contains(material.name())) {
-				is = false;
+				return false;
 			}
 
-			if (!ignoreEnchants) {
-				if (item.getEnchantments().size() > 0) {
-					if (!enchanted) {
-						is = false;
-					}
-				}
-			}
 		}
 
 		return is;

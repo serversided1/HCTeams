@@ -62,23 +62,22 @@
 	</build>
 	<repositories>
 		<repository>
+			<id>comphenix-snapshot-repo</id>
+			<url>http://repo.comphenix.net/content/groups/public/</url>
+		</repository>
+		<repository>
 			<id>maven-repo</id>
 			<url>http://repo1.maven.org/maven2</url>
 		</repository>
-		<repository>
-			<id>md_5-repo</id>
-			<url>http://repo.md-5.net/content/groups/public/</url>
-		</repository>
-		<repository>
-			<id>comphenix-snapshot-repo</id>
-			<url>http://repo.comphenix.net/content/repositories/releases/</url>
-		</repository>
+
+
 	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.7.9-R0.2-SNAPSHOT</version>
+			<version>1.7.10-R0.1-SNAPSHOT</version>
+
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
@@ -98,12 +97,12 @@
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
-			<version>3.2.0</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.comphenix.packetwrapper</groupId>
 			<artifactId>PacketWrapper</artifactId>
-			<version>1.7.2-R0.4</version>
+			<version>1.7.2-R0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-pool</groupId>

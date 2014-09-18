@@ -14,7 +14,7 @@ import net.frozenorb.Utilities.Types.Scrollable;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.listener.FoxListener;
-import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.server.SpawnTag;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.util.WrappedPlayer;
 import net.frozenorb.foxtrot.visual.scrollers.ConstantScroller;
@@ -63,28 +63,32 @@ public class ScoreboardManager {
 	}
 
 	public void startTask(final Player p) {
-		final Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
 		SBMap[] ar = {
 
 		new SBMap(new Scrollable() {
 
 			@Override
 			public String next() {
-				if (team == null || team.getRallyExpires() < System.currentTimeMillis()) {
+				if (!SpawnTag.isTagged(p)) {
 					return "~1a";
 				}
-				return "§c§lRally";
+				return "§c§lSpawn Tag";
 			}
 		}, new Scrollable() {
 
 			@Override
 			public String next() {
-				if (team == null || team.getRallyExpires() < System.currentTimeMillis()) {
+				if (!SpawnTag.isTagged(p)) {
 					return "~1i";
 				}
 
-				long diff = team.getRallyExpires() - System.currentTimeMillis();
-				return "   " + TimeUtils.getConvertedTime(diff / 1000);
+				int diff = SpawnTag.getSpawnTags().get(p.getName()).getSecondsLeft();
+				if ((int) (diff) == 0) {
+
+					return "~1i";
+				}
+
+				return "   " + TimeUtils.getConvertedTime(diff);
 			}
 		}),
 
@@ -167,7 +171,7 @@ public class ScoreboardManager {
 
 		};
 
-		set(p, "§6§lFoxtrot Alpha", ar);
+		set(p, "§6§lHCTeams Alpha", ar);
 	}
 
 	/**

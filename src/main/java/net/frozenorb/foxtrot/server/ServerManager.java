@@ -16,13 +16,11 @@ import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.TeamManager;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,7 +51,7 @@ import com.mongodb.util.JSON;
 
 @SuppressWarnings("deprecation")
 public class ServerManager {
-	public static final int WARZONE_RADIUS = 512;
+	public static final int WARZONE_RADIUS = 1000;
 
 	public static final int[] DISALLOWED_POTIONS = { 8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
@@ -66,7 +64,6 @@ public class ServerManager {
 	@Getter private HashMap<String, Long> fHomeCooldown = new HashMap<String, Long>();
 
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
-	private HashSet<String> spawnProtection = new HashSet<String>();
 
 	public ServerManager() {
 		try {
@@ -115,22 +112,6 @@ public class ServerManager {
 
 	}
 
-	public void addSpawnProt(Player p) {
-		spawnProtection.add(p.getName().toLowerCase());
-	}
-
-	public void removeSpawnProt(Player p) {
-		spawnProtection.remove(p.getName().toLowerCase());
-	}
-
-	public boolean hasSpawnProt(Player p) {
-		if (!isSpawn(p.getLocation())) {
-			removeSpawnProt(p);
-		}
-
-		return spawnProtection.contains(p.getName().toLowerCase());
-	}
-
 	public boolean isBannedPotion(int value) {
 		for (int i : DISALLOWED_POTIONS) {
 			if (i == value) {
@@ -147,31 +128,10 @@ public class ServerManager {
 		}
 
 		int x = loc.getBlockX();
+		int z = loc.getBlockZ();
 
-		if (x > WARZONE_RADIUS || x < -WARZONE_RADIUS) {
-			return false;
-		}
+		return ((x < WARZONE_RADIUS && x > -WARZONE_RADIUS) && (z < WARZONE_RADIUS && z > -WARZONE_RADIUS));
 
-		int z = getWarzoneZ(x);
-
-		if (loc.getBlockZ() > z || loc.getBlockZ() < -z) {
-			return false;
-		}
-		return true;
-
-	}
-
-	public int getWarzoneZ(int x) {
-		int radius = WARZONE_RADIUS;
-
-		int xp = x - 1;
-		int zp = (int) (Math.sqrt(radius * radius - xp * xp) + 0.5);
-		int z = (int) (Math.sqrt(radius * radius - (x - 1) * x) + 0.5);
-
-		if (zp > z)
-			z = zp;
-
-		return z;
 	}
 
 	public boolean canWarp(Player player) {
@@ -267,6 +227,42 @@ public class ServerManager {
 
 	}
 
+	public RegionData<?> getRegion(Location loc, Player p) {
+
+		if (isSpawn(loc)) {
+			return new RegionData<Object>(loc, Region.SPAWN, null);
+		}
+
+		if (isDiamondMountain(loc)) {
+			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
+		}
+
+		if (isKOTHArena(loc)) {
+
+			String n = "";
+			for (CuboidRegion rg : RegionManager.get().getApplicableRegions(loc)) {
+				if (rg.getName().startsWith("koth_")) {
+					n = rg.getName().replace("koth_", "");
+					break;
+				}
+			}
+
+			return new RegionData<String>(loc, Region.KOTH_ARENA, n);
+		}
+
+		if (isUnclaimed(loc)) {
+			return new RegionData<Object>(loc, Region.WILDNERNESS, null);
+		}
+
+		if (isWarzone(loc)) {
+			return new RegionData<Object>(loc, Region.WARZONE, null);
+		}
+
+		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+		return new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo);
+
+	}
+
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
 
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
@@ -275,33 +271,50 @@ public class ServerManager {
 			return;
 		}
 
-		double bal = Basic.get().getEconomyManager().getBalance(player.getName());
+		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 
-		if (bal < price) {
-			player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while you have §e$" + bal + "§c!");
+		if (type == TeamLocationType.HOME) {
+			double bal = tm.getPlayerTeam(player.getName()).getBalance();
+
+			if (bal < price) {
+				player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
+				return;
+			}
+		} else {
+
+			double bal = Basic.get().getEconomyManager().getBalance(player.getName());
+
+			if (bal < price) {
+				player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while you have §e$" + bal + "§c!");
+				return;
+			}
+
+		}
+
+		if (type == TeamLocationType.HOME && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+			player.sendMessage("You cannot warp home with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
 			return;
 		}
 
-		if (type == TeamLocationType.HOME) {
+		if (type == TeamLocationType.RALLY) {
 			if (SpawnTag.isTagged(player)) {
 				player.sendMessage(ChatColor.RED + "You cannot warp to rally while spawn-tagged!");
 				return;
 			}
 
-			if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
-				player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
-				return;
-			}
+		}
+		if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
+			player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
+			return;
 		}
 
-		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 		boolean enemyWithinRange = false;
 
 		for (Entity e : player.getNearbyEntities(30, 256, 30)) {
 			if (e instanceof Player) {
 				Player other = (Player) e;
 
-				if (other.hasMetadata("invisible")) {
+				if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(other)) {
 					continue;
 				}
 
@@ -328,9 +341,16 @@ public class ServerManager {
 
 			return;
 		}
-		Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
 
-		player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
+		if (type == TeamLocationType.HOME) {
+			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");
+			tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
+		} else {
+			Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
+			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
+
+		}
+
 		player.teleport(to);
 
 		if (type == TeamLocationType.HOME) {
@@ -345,7 +365,7 @@ public class ServerManager {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return !FoxtrotPlugin.getInstance().getTeamManager().isTaken(new PhysicalChunk(loc.getChunk().getX(), loc.getChunk().getZ())) && !isWarzone(loc);
+		return !FoxtrotPlugin.getInstance().getTeamManager().isTaken(loc) && !isWarzone(loc);
 	}
 
 	public boolean isAdminOverride(Player p) {
@@ -367,8 +387,7 @@ public class ServerManager {
 
 	public boolean isClaimedAndRaidable(Location loc) {
 
-		Chunk c = loc.getChunk();
-		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(new PhysicalChunk(c.getX(), c.getZ()));
+		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
 
 		return owner != null && owner.isRaidaible();
 
@@ -464,7 +483,7 @@ public class ServerManager {
 	}
 
 	public void loadEnchantments() {
-		maxEnchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+		maxEnchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
 		maxEnchantments.put(Enchantment.THORNS, -1);
 		maxEnchantments.put(Enchantment.PROTECTION_PROJECTILE, 4);
 		maxEnchantments.put(Enchantment.PROTECTION_EXPLOSIONS, 4);

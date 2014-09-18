@@ -10,7 +10,6 @@ import lombok.Data;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -28,7 +27,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CompletionHandler;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.PhysicalChunk;
 
 public class Subclaim extends Subcommand implements Listener, CompletionHandler {
 	private static HashMap<String, Selection> selections = new HashMap<String, Subclaim.Selection>();
@@ -251,11 +249,9 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 							Selection sel = selections.get(p.getName());
 
 							for (Location loc : new CuboidRegion("test123", sel.getLoc1(), sel.getLoc2())) {
-								Chunk c = loc.getChunk();
-								PhysicalChunk cc = new PhysicalChunk(c.getX(), c.getZ());
 
-								if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) != t) {
-									p.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc).getFriendlyName() + "§c!");
+								if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) != t) {
+									p.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc).getFriendlyName() + "§c!");
 									return;
 								}
 
@@ -300,7 +296,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 					sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the Subclaim Wand!");
 					return;
 				}
-				p.getInventory().setItem(slot, SELECTION_WAND);
+				p.getInventory().setItem(slot, SELECTION_WAND.clone());
 
 			}
 
@@ -369,9 +365,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 						return;
 					}
 
-					Chunk c = e.getClickedBlock().getChunk();
-					PhysicalChunk cc = new PhysicalChunk(c.getX(), c.getZ());
-					if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) != t) {
+					if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getClickedBlock().getLocation()) != t) {
 						e.getPlayer().sendMessage("§cThis block is not a part of your teams' territory!");
 						return;
 					}
