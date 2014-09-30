@@ -18,6 +18,7 @@ import java.util.Set;
 
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import net.frozenorb.Utilities.Utils.FaceUtil;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.HostKOTH;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
@@ -133,6 +134,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Function;
@@ -1225,12 +1227,23 @@ public class FoxListener implements Listener {
 		if (e.getClickedBlock() != null && e.getClickedBlock().getType() == Material.SKULL && e.getClickedBlock().getData() == (byte) 3) {
 			Skull sk = (Skull) e.getClickedBlock().getState();
 
-			CraftHologram ch = new CraftHologram(sk.getOwner(), sk.getLocation());
+			Location loc = sk.getLocation().add(0, 1, 0);
+
+			Location to = e.getPlayer().getLocation();
+
+			Vector v = to.toVector().subtract(loc.toVector());
+
+			Location newloc = loc.getBlock().getRelative(FaceUtil.getDirection(v)).getLocation();
+			newloc.setY((loc.getY() + newloc.getY()) / 2D);
+
+			CraftHologram ch = new CraftHologram(sk.getOwner(), newloc);
 
 			HologramManager.addHologram(ch);
 
 			ch.addLine(sk.getOwner());
 			ch.update();
+
+			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> ch.delete(), 60L);
 
 		}
 

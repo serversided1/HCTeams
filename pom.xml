@@ -81,16 +81,6 @@
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mShared</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
-			<artifactId>mCommon</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
 			<artifactId>qUtils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
