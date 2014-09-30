@@ -2,10 +2,12 @@ package net.frozenorb.foxtrot.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
@@ -17,6 +19,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.mBasic.Basic;
+import net.minecraft.server.v1_7_R4.PacketPlayOutUpdateSign;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 import org.bukkit.Bukkit;
@@ -26,8 +29,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
+import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -40,6 +45,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -480,6 +486,157 @@ public class ServerManager {
 			}
 		}
 		return teams;
+	}
+
+	public void handleShopSign(Sign sign, Player p) {
+		ItemStack it = Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", ""));
+
+		if (it == null) {
+			System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
+			return;
+		}
+
+		if (sign.getLine(0).toLowerCase().contains("buy")) {
+
+			int price = 0;
+			int amount = 0;
+			try {
+				price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+				amount = Integer.parseInt(sign.getLine(1));
+
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+				System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
+				return;
+			}
+
+			if (Basic.get().getEconomyManager().getBalance(p.getName()) > price) {
+
+				if (p.getInventory().firstEmpty() != -1) {
+					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
+
+					it.setAmount(amount);
+					p.getInventory().addItem(it);
+
+					String[] msgs = {
+							"§cBOUGHT§r " + amount,
+							"for §c$" + NumberFormat.getNumberInstance(Locale.US).format(price),
+							"New Balance:",
+							"§c$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
+
+					showSignPacket(p, sign, msgs);
+				} else {
+					showSignPacket(p, sign, new String[] { "§c§lError!", "",
+							"§cNo space", "§cin inventory!" });
+				}
+
+			} else {
+				showSignPacket(p, sign, new String[] { "§cInsufficient",
+						"§cfunds for", sign.getLine(2), sign.getLine(3) });
+			}
+
+		} else if (sign.getLine(0).toLowerCase().contains("sell")) {
+
+			int price = 0;
+			try {
+				int totalStackPrice = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+				int amount = Integer.parseInt(sign.getLine(1));
+
+				price = (int) ((double) totalStackPrice / (double) amount);
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+				System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
+				return;
+			}
+
+			int amountInInventory = Math.min(64, countItems(p, it.getType(), (int) it.getDurability()));
+
+			if (amountInInventory == 0) {
+				showSignPacket(p, sign, new String[] { "§cYou do not",
+						"§chave any", sign.getLine(2), "§con you!" });
+			} else {
+				int totalPrice = amountInInventory * price;
+				removeItem(p, it, amountInInventory);
+				p.updateInventory();
+
+				Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
+
+				String[] msgs = {
+						"§aSOLD§r " + amountInInventory,
+						"for §a$" + NumberFormat.getNumberInstance(Locale.US).format(totalPrice),
+						"New Balance:",
+						"§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
+
+				showSignPacket(p, sign, msgs);
+			}
+
+		}
+	}
+
+	public void removeItem(Player p, ItemStack it, int amount) {
+		boolean specialDamage = it.getType().getMaxDurability() == (short) 0;
+
+		for (int a = 0; a < amount; a++) {
+			for (ItemStack i : p.getInventory()) {
+				if (i != null) {
+					if (i.getType() == it.getType() && (!specialDamage || it.getDurability() == i.getDurability())) {
+						if (i.getAmount() == 1) {
+							p.getInventory().clear(p.getInventory().first(i));
+							break;
+						} else {
+							i.setAmount(i.getAmount() - 1);
+							break;
+
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	private HashMap<String, BukkitRunnable> showSignTasks = new HashMap<String, BukkitRunnable>();
+
+	public void showSignPacket(Player p, final Sign sign, String[] lines) {
+		PacketPlayOutUpdateSign sgn = new PacketPlayOutUpdateSign(sign.getX(), sign.getY(), sign.getZ(), lines);
+		((CraftPlayer) p).getHandle().playerConnection.sendPacket(sgn);
+
+		if (showSignTasks.containsKey(p.getName())) {
+			showSignTasks.remove(p.getName()).cancel();
+		}
+
+		BukkitRunnable br = new BukkitRunnable() {
+
+			@Override
+			public void run() {
+
+				sign.update();
+				showSignTasks.remove(p.getName());
+
+			}
+		};
+
+		showSignTasks.put(p.getName(), br);
+		br.runTaskLater(FoxtrotPlugin.getInstance(), 90L);
+
+	}
+
+	public int countItems(Player player, Material material, int damageValue) {
+		PlayerInventory inventory = player.getInventory();
+		ItemStack[] items = inventory.getContents();
+		int amount = 0;
+		for (ItemStack item : items) {
+			if (item != null) {
+				boolean specialDamage = material.getMaxDurability() == (short) 0;
+
+				if (item.getType() != null && item.getType() == material && (!specialDamage || item.getDurability() == (short) damageValue)) {
+					amount += item.getAmount();
+				}
+			}
+		}
+		return amount;
 	}
 
 	public void loadEnchantments() {

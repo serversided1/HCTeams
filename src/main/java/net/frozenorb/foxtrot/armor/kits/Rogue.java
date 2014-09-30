@@ -19,7 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Rogue extends Kit {
 
-	public static final double BACKSTAB_ANGLE_DIFF_MAX = 60;
+	public static final double BACKSTAB_ANGLE_DIFF_MAX = 70;
 
 	@Override
 	public boolean qualifies(Armor armor) {
@@ -48,8 +48,8 @@ public class Rogue extends Kit {
 	}
 
 	@Override
-	public int getCooldownSeconds() {
-		return 1;
+	public double getCooldownSeconds() {
+		return 0.5;
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

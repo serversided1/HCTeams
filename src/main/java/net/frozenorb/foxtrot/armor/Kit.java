@@ -70,12 +70,12 @@ public abstract class Kit implements Listener {
 
 	public void itemConsumed(Player p) {}
 
-	public int getCooldownSeconds() {
+	public double getCooldownSeconds() {
 		return 0;
 	}
 
-	public void addCooldown(Player p, int seconds) {
-		cooldowns.put(p.getName(), System.currentTimeMillis() + (seconds * 1000L));
+	public void addCooldown(Player p, double seconds) {
+		cooldowns.put(p.getName(), System.currentTimeMillis() + (int) (seconds * 1000L));
 	}
 
 	public boolean hasCooldown(Player p, boolean message) {

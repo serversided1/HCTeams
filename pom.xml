@@ -91,6 +91,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
+			<artifactId>qUtils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

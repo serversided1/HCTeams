@@ -38,6 +38,8 @@ import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.NMSMethods;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
+import net.frozenorb.utils.hologram.object.CraftHologram;
+import net.frozenorb.utils.hologram.object.HologramManager;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MathHelper;
 
@@ -52,6 +54,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.enchantments.Enchantment;
@@ -1210,7 +1213,37 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
+	public void onEntityChangeBlock(EntityChangeBlockEvent e) {
+		if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(e.getBlock().getLocation())) {
+			e.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onSignInteract(final PlayerInteractEvent e) {
+
+		if (e.getClickedBlock() != null && e.getClickedBlock().getType() == Material.SKULL && e.getClickedBlock().getData() == (byte) 3) {
+			Skull sk = (Skull) e.getClickedBlock().getState();
+
+			CraftHologram ch = new CraftHologram(sk.getOwner(), sk.getLocation());
+
+			HologramManager.addHologram(ch);
+
+			ch.addLine(sk.getOwner());
+			ch.update();
+
+		}
+
+		if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (e.getClickedBlock().getType() == Material.WALL_SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
+				Sign s = (Sign) e.getClickedBlock().getState();
+
+				if (s.getLine(0) != null && FoxtrotPlugin.getInstance().getServerManager().isSpawn(e.getClickedBlock().getLocation())) {
+					FoxtrotPlugin.getInstance().getServerManager().handleShopSign(s, e.getPlayer());
+				}
+			}
+		}
+
 		if (e.getItem() != null && e.getMaterial() == Material.SIGN) {
 
 			if (e.getItem().hasItemMeta() && e.getItem().getItemMeta().getLore() != null) {
@@ -1549,7 +1582,7 @@ public class FoxListener implements Listener {
 
 			String killerStr = "§c" + e.getEntity().getKiller().getName() + "§4[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getKiller().getName()) + "]§e";
 
-			if (e.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent) {
+			if (e.getEntity().getLastDamageCause() instanceof EntityDamageByEntityEvent && e.getEntity() != e.getEntity().getKiller()) {
 				EntityDamageByEntityEvent ee = (EntityDamageByEntityEvent) e.getEntity().getLastDamageCause();
 
 				if (ee.getDamager() instanceof Arrow) {

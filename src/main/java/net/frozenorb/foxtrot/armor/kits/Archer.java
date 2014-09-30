@@ -46,7 +46,7 @@ public class Archer extends Kit {
 	}
 
 	@Override
-	public int getCooldownSeconds() {
+	public double getCooldownSeconds() {
 		return 600;
 	}
 
@@ -93,11 +93,7 @@ public class Archer extends Kit {
 
 				}
 
-				double oldDmg = e.getDamage();
-
 				e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
-
-				Bukkit.broadcastMessage(oldDmg + "=>" + e.getDamage());
 
 				Player p = (Player) a.getShooter();
 
