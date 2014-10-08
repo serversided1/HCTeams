@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.command.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,8 +47,11 @@ public class SetDTR extends BaseCommand {
 	@Override
 	public List<String> getTabCompletions() {
 		if (args.length == 1) {
-			return FoxtrotPlugin.getInstance().getTeamManager().getTeams().stream().map(t -> t.getFriendlyName()).collect(Collectors.toList());
-
+            List<String> list = new ArrayList<>();
+            for (Team team : FoxtrotPlugin.getInstance().getTeamManager().getTeams()) {
+                list.add(team.getFriendlyName());
+            }
+			return list;
 		}
 		return null;
 	}

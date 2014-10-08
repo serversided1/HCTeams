@@ -18,6 +18,7 @@ import java.util.Set;
 
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import net.frozenorb.Utilities.Utils.FaceUtil;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.HostKOTH;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
@@ -40,9 +41,9 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
 import net.frozenorb.utils.hologram.object.CraftHologram;
 import net.frozenorb.utils.hologram.object.HologramManager;
+
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MathHelper;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -55,21 +56,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.ThrownPotion;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Wither;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -133,6 +123,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.base.Function;
@@ -891,7 +882,7 @@ public class FoxListener implements Listener {
 		ItemStack potion = e.getPotion().getItem();
 		int value = (int) potion.getDurability();
 
-		e.getAffectedEntities().forEach(le -> {
+        for (LivingEntity le : e.getAffectedEntities()) {
 			if (le instanceof Player) {
 				Player p = (Player) le;
 
@@ -899,7 +890,7 @@ public class FoxListener implements Listener {
 					e.setIntensity(le, 0D);
 				}
 			}
-		});
+        }
 
 		if (e.getPotion().getShooter() instanceof Player) {
 
@@ -1025,7 +1016,11 @@ public class FoxListener implements Listener {
 
 											List<String> lore = new ArrayList<String>();
 
-											boolean hasForgedMeta = meta.getLore().stream().filter(s -> s.toLowerCase().contains("forged")).collect(Collectors.toList()).size() > 0;
+                                            boolean hasForgedMeta = false;
+                                            for (String s : meta.getLore()) {
+                                                if (s.toLowerCase().contains("forged"))
+                                                    hasForgedMeta = true;
+                                            }
 
 											if (meta.getLore() != null && !hasForgedMeta) {
 												lore = meta.getLore();
@@ -1225,13 +1220,28 @@ public class FoxListener implements Listener {
 		if (e.getClickedBlock() != null && e.getClickedBlock().getType() == Material.SKULL && e.getClickedBlock().getData() == (byte) 3) {
 			Skull sk = (Skull) e.getClickedBlock().getState();
 
-			CraftHologram ch = new CraftHologram(sk.getOwner(), sk.getLocation());
+			Location loc = sk.getLocation().add(0, 1, 0);
+
+			Location to = e.getPlayer().getLocation();
+
+			Vector v = to.toVector().subtract(loc.toVector());
+
+			Location newloc = loc.getBlock().getRelative(FaceUtil.getDirection(v)).getLocation();
+			newloc.setY((loc.getY() + newloc.getY()) / 2D);
+
+			CraftHologram ch = new CraftHologram(sk.getOwner(), newloc);
 
 			HologramManager.addHologram(ch);
 
 			ch.addLine(sk.getOwner());
 			ch.update();
 
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    ch.delete();;
+                }
+            }, 60l);
 		}
 
 		if (e.getClickedBlock() != null && e.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -1435,14 +1445,19 @@ public class FoxListener implements Listener {
 
 			droppedItems.add(id);
 
-			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> droppedItems.remove(id), 60 * 20L);
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+                @Override
+                public void run() {
+                    droppedItems.remove(id);
+                }
+            }, 20L * 60);
 		}
 	}
 
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent e) {
 
-		e.getDrops().forEach(i -> {
+        for (ItemStack i : e.getDrops()) {
 			ItemMeta meta = i.getItemMeta();
 
 			List<String> lore = new ArrayList<String>();
@@ -1454,8 +1469,7 @@ public class FoxListener implements Listener {
 			lore.add("§8PVP Loot");
 			meta.setLore(lore);
 			i.setItemMeta(meta);
-
-		});
+        }
 
 		if (e.getEntity().getLastDamageCause().getCause() == DamageCause.FALL) {
 
@@ -1486,7 +1500,6 @@ public class FoxListener implements Listener {
 					}
 				}
 			}
-
 		}
 
 		e.setDeathMessage(e.getDeathMessage().replace(e.getEntity().getName(), "§c" + e.getEntity().getName() + "§4[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getName()) + "]§e"));
@@ -1524,7 +1537,11 @@ public class FoxListener implements Listener {
 				if (meta.hasLore()) {
 					lore = meta.getLore();
 
-					boolean hasForgedMeta = meta.getLore().stream().filter(s -> s.toLowerCase().contains("forged")).collect(Collectors.toList()).size() > 0;
+                    boolean hasForgedMeta = false;
+                    for (String s : meta.getLore()) {
+                        if (s.toLowerCase().contains("forged"))
+                            hasForgedMeta = true;
+                    }
 
 					if (hasForgedMeta) {
 						killsIndex++;

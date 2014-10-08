@@ -113,11 +113,14 @@ public class Archer extends Kit {
 		p.removePotionEffect(PotionEffectType.SPEED);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
 
-		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
-			if (hasKitOn(p)) {
-				apply(p);
-			}
-			p.removeMetadata("speedBoost", FoxtrotPlugin.getInstance());
+		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+            public void run() {
+                if (hasKitOn(p)) {
+                    apply(p);
+                }
+
+                p.removeMetadata("speedBoost", FoxtrotPlugin.getInstance());
+            }
 		}, 200);
 	}
 

@@ -106,20 +106,20 @@ public class TeamManager {
 		team.setName(name.toLowerCase());
 		team.setFriendlyName(name);
 
-		team.getMembers().forEach(s -> {
-			setTeam(s, team);
-		});
+        for (String member : team.getMembers()) {
+            setTeam(member, team);
+        }
+
 		addTeam(team);
 
 		teamNameMap.remove(oldName.toLowerCase());
 
-		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-			@Override
-			public Object execute(Jedis jedis) {
-				jedis.del("fox_teams." + oldName.toLowerCase());
-				return null;
-			}
-		});
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+            public Object execute(Jedis jedis) {
+                jedis.del("fox_teams." + oldName.toLowerCase());
+                return null;
+            }
+        });
 	}
 
 	public void removeTeam(final String name) {

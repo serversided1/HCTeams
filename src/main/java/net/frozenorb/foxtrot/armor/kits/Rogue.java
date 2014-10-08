@@ -69,7 +69,7 @@ public class Rogue extends Kit {
 
 					p.setItemInHand(new ItemStack(Material.AIR));
 					p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
-					p.playEffect(p.getLocation(), Effect.ITEM_BREAK, Material.GOLD_SWORD);
+					p.playEffect(p.getLocation(), Effect.STEP_SOUND, Material.GOLD_SWORD);
 
 					p.getWorld().playEffect(vic.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
