@@ -24,8 +24,6 @@ public abstract class RedisPersistMap<T> {
 	 */
 	public final void loadFromRedis() {
 		JedisCommand<Object> jdc = new JedisCommand<Object>() {
-
-			@Override
 			public Object execute(Jedis jedis) {
 				for (String key : jedis.keys(keyPrefix + ".*")) {
 					String storedKey = key.substring(key.indexOf('.') + 1);

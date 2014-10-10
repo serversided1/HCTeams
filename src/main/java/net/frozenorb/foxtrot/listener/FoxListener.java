@@ -410,6 +410,7 @@ public class FoxListener implements Listener {
 
 		e.setQuitMessage(null);
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(e.getPlayer());
+        FoxtrotPlugin.getInstance().getChatModeMap().playerQuit(e.getPlayer());
 
 		NametagManager.getTeamMap().remove(e.getPlayer().getName());
 
@@ -509,8 +510,6 @@ public class FoxListener implements Listener {
 			combatLoggers.put(e.getPlayer().getName(), villager);
 
 			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-
-				@Override
 				public void run() {
 					if (!villager.isDead() && villager.isValid()) {
 						villager.remove();
@@ -636,7 +635,10 @@ public class FoxListener implements Listener {
 
 		e.setJoinMessage(null);
 		e.getPlayer().setMetadata("freshJoin", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
+        FoxtrotPlugin.getInstance().getChatModeMap().playerJoined(e.getPlayer());
+
 		if (!e.getPlayer().hasPlayedBefore()) {
 
 			e.getPlayer().sendMessage(ChatColor.YELLOW + "Your PVP Timer has been activated for 30 minutes.");
@@ -819,13 +821,13 @@ public class FoxListener implements Listener {
 
 		Set<String> members = team.getMembers();
 
-		boolean doTeamChat = true;
-		if (e.getMessage().charAt(0) == '!' && !e.getMessage().equalsIgnoreCase("!")) {
-			e.setMessage(e.getMessage().substring(1).trim());
-			doTeamChat = false;
-		}
+		boolean doTeamChat = e.getMessage().startsWith("!@");
+        boolean doGlobalChat = e.getMessage().startsWith("@");
 
-		if (p.hasMetadata("teamChat") && doTeamChat) {
+        if (doTeamChat || doGlobalChat)
+            e.setMessage(e.getMessage().substring(1));
+
+		if (!doGlobalChat && (p.hasMetadata("teamChat") || doTeamChat)) {
 			e.setCancelled(true);
 			for (Player pl : Bukkit.getOnlinePlayers()) {
 				if (members.contains(pl.getName())) {

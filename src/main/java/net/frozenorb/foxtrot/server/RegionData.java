@@ -24,7 +24,6 @@ public class RegionData<T> {
 		return other.region == region && ((data == null && data == null) || other.data.equals(data));
 	}
 
-	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}

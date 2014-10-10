@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -34,7 +35,7 @@ public class Claim implements Iterable<Coordinate> {
 		this.z2 = Math.max(z1, z2);
 	}
 
-	@Override
+    @Override
 	public boolean equals(Object o) {
 		if (o instanceof Claim) {
 

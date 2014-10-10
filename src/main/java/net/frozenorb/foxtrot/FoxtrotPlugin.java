@@ -79,6 +79,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private DeathbanMap deathbanMap;
 	@Getter private JoinTimerMap joinTimerMap;
 	@Getter private KillsMap killsMap;
+    @Getter private ChatModeMap chatModeMap;
 
 	@Override
 	public void onEnable() {
@@ -258,6 +259,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		killsMap = new KillsMap();
 		killsMap.loadFromRedis();
+
+        chatModeMap = new ChatModeMap();
+        chatModeMap.loadFromRedis();
 	}
 
 	/**
