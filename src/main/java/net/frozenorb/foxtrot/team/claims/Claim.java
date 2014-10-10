@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -37,13 +36,8 @@ public class Claim implements Iterable<Coordinate> {
 
     @Override
 	public boolean equals(Object o) {
-		if (o instanceof Claim) {
-
-			return ((Claim) o).getMaximumPoint().equals(getMaximumPoint()) && ((Claim) o).getMinimumPoint().equals(getMinimumPoint());
-		}
-
-		return false;
-	}
+        return o instanceof Claim && ((Claim) o).getMaximumPoint().equals(getMaximumPoint()) && ((Claim) o).getMinimumPoint().equals(getMinimumPoint());
+    }
 
 	/**
 	 * Gets the minimum point of the region
@@ -90,11 +84,8 @@ public class Claim implements Iterable<Coordinate> {
 	 * @return true if the location is within this region, false otherwise
 	 */
 	public boolean contains(Location l) {
-		if (!"world".equals(l.getWorld().getName())) {
-			return false;
-		}
-		return contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
-	}
+        return "world".equals(l.getWorld().getName()) && contains(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+    }
 
 	/**
 	 * Checks if the given Block is contained within the region
