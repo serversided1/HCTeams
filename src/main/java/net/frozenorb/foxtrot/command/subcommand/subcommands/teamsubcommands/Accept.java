@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
 
+import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,6 +34,17 @@ public class Accept extends Subcommand {
 						sender.sendMessage(ChatColor.RED + "You are already on a team!");
 						return;
 					}
+
+                    if (Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()) {
+                        long millisLeft = Leave.getCreateCooldown().get(p) - System.currentTimeMillis();
+
+                        double value = (millisLeft / 1000D);
+                        double sec = Math.round(10.0 * value) / 10.0;
+
+                        p.sendMessage(ChatColor.translateAlternateColorCodes(
+                                '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c seconds!"));
+                        return;
+                    }
 
 					team.getInvitations().remove(p.getName());
 					team.addMember(p.getName());

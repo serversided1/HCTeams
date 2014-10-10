@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
+import net.frozenorb.foxtrot.util.ParticleEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -68,8 +69,8 @@ public class MountainHandler {
 	public static void diamondMined(Block b) {
 		minedDiamonds++;
 		b.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 20);
-		b.getWorld().playEffect(b.getLocation(), Effect.COLOURED_DUST, 2);
-		b.getWorld().playEffect(b.getLocation(), Effect.INSTANT_SPELL, 15);
+        ParticleEffects.sendToLocation(ParticleEffects.RED_DUST, b.getLocation(), 0, 0, 0, 1, 2);
+        ParticleEffects.sendToLocation(ParticleEffects.INSTANT_SPELL, b.getLocation(), 0, 0, 0, 1, 15);
 
 		b.setType(Material.COBBLESTONE);
 		minedBlocks.add(b.getLocation());

@@ -28,11 +28,8 @@ public class CommandRegistrar {
 	private SimpleCommandMap commandMap;
 
 	/**
-	 * Creates a new instance of {@link CommandLoader}, and loads all commands
+	 * Creates a new instance of {@link net.frozenorb.Utilities.CommandSystem.CommandLoader}, and loads all commands
 	 * from a package
-	 * 
-	 * @param commandPackage
-	 *            the package to load commands from
 	 */
 	public CommandRegistrar() {
 		try {

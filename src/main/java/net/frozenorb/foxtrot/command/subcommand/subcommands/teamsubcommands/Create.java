@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,6 +23,16 @@ public class Create extends Subcommand {
 		Player p = (Player) sender;
 		if (args.length == 2) {
 			if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) == null) {
+                if (Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()) {
+                    long millisLeft = Leave.getCreateCooldown().get(p) - System.currentTimeMillis();
+
+                    double value = (millisLeft / 1000D);
+                    double sec = Math.round(10.0 * value) / 10.0;
+
+                    p.sendMessage(ChatColor.translateAlternateColorCodes(
+                            '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int) sec) + "&c seconds!"));
+                    return;
+                }
 				if (!StringUtils.isAlpha(args[1])) {
 					p.sendMessage(ChatColor.GRAY + "Team names can only be alphabetical.");
 					return;

@@ -32,7 +32,6 @@
                     <artifactSet>
                         <includes>
                             <include>mkremins:fanciful</include>
-                            <include>org.json:json</include>
                             <include>org.projectlombok:lombok</include>
                             <include>log4j:log4j</include>
                             <include>org.mongodb:mongo-java-driver</include>
@@ -56,6 +55,10 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>bukkit.jar</exclude>
+                    <exclude>spigot.jar</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>
@@ -76,16 +79,16 @@
         No repository for spigot / bukkit :(
         -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.7.10-R0.1-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/bukkit.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
         </dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>

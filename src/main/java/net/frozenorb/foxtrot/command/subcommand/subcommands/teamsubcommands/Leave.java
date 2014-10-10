@@ -1,8 +1,10 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,6 +17,9 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 @SuppressWarnings("deprecation")
 public class Leave extends Subcommand {
+
+    @Getter
+    private static HashMap<Player, Long> createCooldown = new HashMap<>();
 
 	public Leave(String name, String errorMessage, String... aliases) {
 		super(name, errorMessage, aliases);
@@ -48,8 +53,10 @@ public class Leave extends Subcommand {
 				p.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
 
 				LandBoard.getInstance().clear(team);
+
 			} else {
 				FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(sender.getName());
+
 				team.setChanged(true);
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					if (team.isOnTeam(pl)) {
@@ -61,6 +68,16 @@ public class Leave extends Subcommand {
 
 			NametagManager.reloadPlayer(p);
 			NametagManager.sendTeamsToPlayer(p);
+
+            //Apply proper 15 minute cooldown
+            createCooldown.put(p, (System.currentTimeMillis() + (1000 * (60 * 15))));
+
+            Runnable remove = new Runnable() {
+                public void run() {
+                    createCooldown.remove(p);
+                }
+            };
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), remove, 20 * 60 * 15);
 		}
 
 	}
