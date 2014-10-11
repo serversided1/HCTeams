@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Armor;
 import net.frozenorb.foxtrot.armor.ArmorMaterial;
 import net.frozenorb.foxtrot.armor.Kit;
+import net.frozenorb.foxtrot.util.ParticleEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,7 +30,44 @@ import java.util.List;
 public class Bard extends Kit {
 
     public Bard() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), new BardTask(), 20*5, 20*5);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), new BardTask(), 20, 20);
+
+        Runnable applyNearby = () -> {
+            for (String pName : Kit.getEquippedKits().keySet()) {
+                Player player = Bukkit.getPlayer(pName);
+                if (player == null)
+                    continue;
+
+                if (Kit.getEquippedKits().get(pName) instanceof Bard) {
+                    if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation()))
+                        continue;
+
+                    for (Player p : getNearby(player, true, 15)) {
+                        if (Kit.getEquippedKits().get(p.getName()) instanceof Bard)
+                            continue;
+
+                        apply(p);
+                    }
+                }
+            }
+        };
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), applyNearby, 20, 20);
+
+        Runnable replenishStatics = () -> {
+            for (String pName : Kit.getEquippedKits().keySet()) {
+                Player player = Bukkit.getPlayer(pName);
+                if (player == null)
+                    continue;
+
+                if (Kit.getEquippedKits().get(pName) instanceof Bard) {
+                    if (!(player.hasPotionEffect(PotionEffectType.SPEED)))
+                        player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
+                    if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)))
+                        player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 0));
+                }
+            }
+        };
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(FoxtrotPlugin.getInstance(), replenishStatics, 1, 1);
     }
 
     private static final HashMap<Material, PotionEffect> INSTANT_EFFECTS = new HashMap<>();
@@ -45,20 +83,23 @@ public class Bard extends Kit {
 
         INSTANT_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*5, 7));
         INSTANT_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(3*20, 0));
-        INSTANT_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(3*10, 5));
+        INSTANT_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(5*10, 5));
         INSTANT_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20*2, 0));
         INSTANT_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
         INSTANT_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
         INSTANT_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*10, 5));
         INSTANT_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*10, 0));
+        INSTANT_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*5, 3));
+        INSTANT_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 5, 1));
+        INSTANT_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*5, 1));
 
         INSTANT_EFFECTS.put(Material.SPECKLED_MELON, null);
         INSTANT_EFFECTS.put(Material.EYE_OF_ENDER, null);
         INSTANT_EFFECTS.put(Material.WHEAT, null);
 
-        TIMED_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*5, 0));
-        TIMED_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20*5, 0));
-        TIMED_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*5, 1));
+        TIMED_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
+        TIMED_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20*6, 0));
+        TIMED_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
 
         //Custom code
         //Glistering Melon - Heals 6 Hearts Instantly
@@ -78,9 +119,41 @@ public class Bard extends Kit {
         return "Bard";
     }
 
+    public void applyDuration(Player p, int duration) {
+        remove(p);
+
+        p.addPotionEffect(PotionEffectType.SPEED.createEffect(duration, 0));
+        p.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(duration, 1));
+        p.addPotionEffect(PotionEffectType.REGENERATION.createEffect(duration, 1));
+        p.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(duration, 1));
+    }
+
+    @Override
+    public void apply(Player p) {
+        remove(p);
+
+        p.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
+        p.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
+        p.addPotionEffect(PotionEffectType.REGENERATION.createEffect(Integer.MAX_VALUE, 1));
+        p.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(Integer.MAX_VALUE, 1));
+    }
+
+    @Override
+    public void remove(Player p) {
+        p.removePotionEffect(PotionEffectType.SPEED);
+        p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+        p.removePotionEffect(PotionEffectType.REGENERATION);
+        p.removePotionEffect(PotionEffectType.WEAKNESS);
+    }
+
     @Override
     public int getWarmup() {
-        return 60;
+        return 5;
+    }
+
+    @Override
+    public double getCooldownSeconds() {
+        return 5;
     }
 
     @EventHandler
@@ -111,6 +184,11 @@ public class Bard extends Kit {
             return;
 
         if (INSTANT_EFFECTS.containsKey(holding.getType())) {
+            if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation())) {
+                player.sendMessage(ChatColor.RED+"You cannot use abilities in spawn!");
+                return;
+            }
+
             //Is instant effect
             if (!canUse) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eActivated abilities are on cooldown! &c" + ((duration - System.currentTimeMillis())/1000) + " &9seconds remaining."));
@@ -139,20 +217,32 @@ public class Bard extends Kit {
             }
             if (NEGATIVE_EFFECTS.contains(effect.getType())) {
                 //Is negative effect
-                List<Player> applyTo = getNearby(player, false, 15);
+                List<Player> applyTo = getNearby(player, false, 12);
                 applyTo.add(player);
 
                 for (Player p : applyTo) {
+                    p.removePotionEffect(effect.getType());
                     p.addPotionEffect(effect);
+
+                    playEffect(p, false);
                 }
             } else {
-                List<Player> applyTo = getNearby(player, true, 15);
+                List<Player> applyTo = getNearby(player, true, 12);
                 applyTo.add(player);
 
                 for (Player p : applyTo) {
+                    p.removePotionEffect(effect.getType());
                     p.addPotionEffect(effect);
+
+                    playEffect(p, true);
                 }
-                player.addPotionEffect(effect);
+            }
+
+            if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
+                Runnable reset = () -> {
+                    player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 0));
+                };
+                Bukkit.getScheduler().scheduleSyncDelayedTask(FoxtrotPlugin.getInstance(), reset, effect.getDuration());
             }
 
             //Remove the item the player is holding
@@ -167,15 +257,25 @@ public class Bard extends Kit {
             player.updateInventory();
 
             //Add cooldown as meta
-            player.setMetadata("bardCooldown", new FixedMetadataValue(FoxtrotPlugin.getInstance(), System.currentTimeMillis() + (1000 * 60)));
+            player.setMetadata("bardCooldown", new FixedMetadataValue(FoxtrotPlugin.getInstance(), System.currentTimeMillis() + (1000 * (long)getCooldownSeconds())));
 
             player.playSound(player.getLocation(), Sound.BURP, 1, 1);
             event.setCancelled(true);
         }
     }
 
+    private static void playEffect(Player player, boolean good) {
+        if (good)
+            ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, player.getLocation().add(0.5, 0.5, 0.5), 1, 1, 1, 1, 50);
+        if (!good)
+            ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, player.getLocation().add(0.5, 0.5, 0.5), 1, 1, 1, 1, 50);
+    }
+
     private static boolean hasCooldown(Player player) {
         boolean canUse = true;
+
+        if (player == null)
+            return false;
 
         if (player.hasMetadata("bardCooldown")) {
             canUse = false;
@@ -204,7 +304,7 @@ public class Bard extends Kit {
         boolean hasTeam = FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(player.getName());
 
         for (Player p : nearby) {
-            if (!hasTeam) {
+            if (!hasTeam && !friendly) {
                 official.add(p);
                 continue;
             }
@@ -223,10 +323,15 @@ public class Bard extends Kit {
 
     private class BardTask implements Runnable {
 
-        @Override
+        private int tick = 0;
+
         public void run() {
+            tick++;
+
             for (String pName : Kit.getEquippedKits().keySet()) {
                 Player player = Bukkit.getPlayer(pName);
+                if (player == null)
+                    continue;
 
                 if (Kit.getEquippedKits().get(pName) instanceof Bard) {
                     if (hasCooldown(player))
@@ -235,10 +340,49 @@ public class Bard extends Kit {
                     if (TIMED_EFFECTS.containsKey(player.getItemInHand().getType())) {
                         PotionEffect effect = TIMED_EFFECTS.get(player.getItemInHand().getType());
 
+                        if (hasSpeedOne(player)) {
+                            Runnable setup = () -> {
+                                player.removePotionEffect(effect.getType());
+                                player.addPotionEffect(effect);
+                            };
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(FoxtrotPlugin.getInstance(), setup, 20);
+                            continue;
+                        }
+
+                        if (tick % 5 != 0)
+                            continue;
+
+                        player.removePotionEffect(effect.getType());
                         player.addPotionEffect(effect);
                     }
                 }
+
+                if (!(player.hasPotionEffect(PotionEffectType.SPEED))) {
+                    player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
+                }
+
+                if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE))) {
+                    player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
+                }
+
+                if (player.getItemInHand().getType().equals(Material.FEATHER)) {
+                    List<Player> team = getNearby(player, true, 12);
+                    team.remove(player);
+
+                    for (Player t : team) {
+                        t.removePotionEffect(PotionEffectType.JUMP);
+                        t.addPotionEffect(PotionEffectType.JUMP.createEffect(20*3, 1));
+                    }
+                }
             }
+        }
+
+        private boolean hasSpeedOne(Player p) {
+            for (PotionEffect e : p.getActivePotionEffects()) {
+                if (e.getAmplifier() == 0 && e.getType().equals(PotionEffectType.SPEED))
+                    return true;
+            }
+            return false;
         }
     }
 }
