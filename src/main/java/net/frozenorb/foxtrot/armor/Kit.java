@@ -24,7 +24,7 @@ public abstract class Kit implements Listener {
 
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e" + getWarmup() + "s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("LazyLemons") ? 1 : getWarmup()) {
+		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("IModZombies4Fun") ? 1 : getWarmup()) {
 
 			@Override
 			public void run() {
@@ -33,7 +33,7 @@ public abstract class Kit implements Listener {
 				if (!p.isOnline()) {
 
 					cancel();
-					p.sendMessage("§b" + getName() + " §aEnabled");
+					//p.sendMessage("§b" + getName() + " §aEnabled"); wat...?
 					warmupTasks.remove(p.getName());
 
 				}

@@ -26,6 +26,9 @@ public class ChatModeMap extends RedisPersistMap<Boolean> {
     }
 
     public void playerJoined(Player player) {
+        if (!(contains(player.getName())))
+            return;
+
         boolean isTeamChat = getValue(player.getName());
         if (isTeamChat)
             player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), isTeamChat));
