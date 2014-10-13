@@ -64,6 +64,8 @@ public class Bard extends Kit {
                         player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
                     if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)))
                         player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 0));
+                    if (!(player.hasPotionEffect(PotionEffectType.WEAKNESS)))
+                        player.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(Integer.MAX_VALUE, 1));
                 }
             }
         };
@@ -88,7 +90,7 @@ public class Bard extends Kit {
         INSTANT_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
         INSTANT_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
         INSTANT_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*10, 5));
-        INSTANT_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*10, 0));
+        INSTANT_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*50, 0));
         INSTANT_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*5, 3));
         INSTANT_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 5, 1));
         INSTANT_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*5, 1));
@@ -117,15 +119,6 @@ public class Bard extends Kit {
     @Override
     public String getName() {
         return "Bard";
-    }
-
-    public void applyDuration(Player p, int duration) {
-        remove(p);
-
-        p.addPotionEffect(PotionEffectType.SPEED.createEffect(duration, 0));
-        p.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(duration, 1));
-        p.addPotionEffect(PotionEffectType.REGENERATION.createEffect(duration, 1));
-        p.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(duration, 1));
     }
 
     @Override
@@ -191,7 +184,7 @@ public class Bard extends Kit {
 
             //Is instant effect
             if (!canUse) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eActivated abilities are on cooldown! &c" + ((duration - System.currentTimeMillis())/1000) + " &9seconds remaining."));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eActivated abilities are on cooldown! &c" + ((duration - System.currentTimeMillis())/1000)+1 + " &9seconds remaining."));
                 return;
             }
 

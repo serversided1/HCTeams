@@ -42,7 +42,7 @@ public class Accept extends Subcommand {
                         double sec = Math.round(10.0 * value) / 10.0;
 
                         p.sendMessage(ChatColor.translateAlternateColorCodes(
-                                '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getDurationBreakdown((int)sec) + "&c!"));
+                                '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c!"));
                         return;
                     }
 
