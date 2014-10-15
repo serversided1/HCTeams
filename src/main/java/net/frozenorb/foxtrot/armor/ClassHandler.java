@@ -25,9 +25,8 @@ public class ClassHandler extends BukkitRunnable implements Listener {
 				if (Kit.getEquippedKits().containsKey(p.getName())) {
 					Kit eq = Kit.getEquippedKits().get(p.getName());
 
+                    Kit.getEquippedKits().remove(p.getName());
 					eq.remove(p);
-					Kit.getEquippedKits().remove(p.getName());
-
 				}
 				p.removeMetadata("freshJoin", FoxtrotPlugin.getInstance());
 			}
@@ -46,8 +45,8 @@ public class ClassHandler extends BukkitRunnable implements Listener {
 				Kit eq = Kit.getEquippedKits().get(p.getName());
 
 				if (!eq.qualifies(a)) {
-					eq.remove(p);
 					Kit.getEquippedKits().remove(p.getName());
+                    eq.remove(p);
 				} else {
 					eq.applyRepeat(p);
 				}

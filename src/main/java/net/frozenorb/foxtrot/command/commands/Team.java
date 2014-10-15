@@ -41,6 +41,7 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Deposit("deposit", "§c/t deposit <amount>", "d"));
 		registerSubcommand(new Rename("rename", ""));
 		registerSubcommand(new Map("map", ""));
+        registerSubcommand(new Stuck("stuck", "§c/t stuck", "out"));
 
 		registerSubcommandsToTabCompletions();
 	}

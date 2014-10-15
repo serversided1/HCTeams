@@ -48,15 +48,15 @@ public abstract class BaseCommand implements CommandExecutor, TabExecutor {
 				return false;
 			}
 		}
+
 		if (runSubcommands())
 			return false;
+
 		syncExecute();
 		Bukkit.getScheduler().runTaskAsynchronously(FoxtrotPlugin.getInstance(), new Runnable() {
-
 			@Override
 			public void run() {
 				asyncExecute(arg0, arg1, arg2, arg3);
-
 			}
 		});
 		return false;

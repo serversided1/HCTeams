@@ -302,7 +302,14 @@ public class Bard extends Kit {
                 continue;
             }
 
-            boolean isTeammate = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers().contains(p.getName());
+            boolean isTeammate = false;
+
+            if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()) == null ||
+                    FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers() == null)
+                isTeammate = false;
+            else
+                isTeammate = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers().contains(p.getName());
+
             if (friendly && isTeammate)
                 official.add(p);
 
@@ -348,23 +355,23 @@ public class Bard extends Kit {
                         player.removePotionEffect(effect.getType());
                         player.addPotionEffect(effect);
                     }
-                }
 
-                if (!(player.hasPotionEffect(PotionEffectType.SPEED))) {
-                    player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
-                }
+                    if (!(player.hasPotionEffect(PotionEffectType.SPEED))) {
+                        player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
+                    }
 
-                if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE))) {
-                    player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
-                }
+                    if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE))) {
+                        player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
+                    }
 
-                if (player.getItemInHand().getType().equals(Material.FEATHER)) {
-                    List<Player> team = getNearby(player, true, 12);
-                    team.remove(player);
+                    if (player.getItemInHand().getType().equals(Material.FEATHER)) {
+                        List<Player> team = getNearby(player, true, 12);
+                        team.remove(player);
 
-                    for (Player t : team) {
-                        t.removePotionEffect(PotionEffectType.JUMP);
-                        t.addPotionEffect(PotionEffectType.JUMP.createEffect(20*3, 1));
+                        for (Player t : team) {
+                            t.removePotionEffect(PotionEffectType.JUMP);
+                            t.addPotionEffect(PotionEffectType.JUMP.createEffect(20*3, 1));
+                        }
                     }
                 }
             }
