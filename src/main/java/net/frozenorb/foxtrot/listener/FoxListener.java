@@ -821,8 +821,8 @@ public class FoxListener implements Listener {
 
 		Set<String> members = team.getMembers();
 
-		boolean doTeamChat = e.getMessage().startsWith("!@");
-        boolean doGlobalChat = e.getMessage().startsWith("@");
+		boolean doTeamChat = e.getMessage().startsWith("@");
+        boolean doGlobalChat = e.getMessage().startsWith("!");
 
         if (doTeamChat || doGlobalChat)
             e.setMessage(e.getMessage().substring(1));
