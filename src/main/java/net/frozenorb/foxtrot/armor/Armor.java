@@ -23,7 +23,6 @@ public class Armor {
 			if (!item.getType().name().contains(material.name())) {
 				return false;
 			}
-
 		}
 
 		return is;

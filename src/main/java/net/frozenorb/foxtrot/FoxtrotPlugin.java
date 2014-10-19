@@ -64,6 +64,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 	/*
 	 * ---- FIELDS ----
 	 */
+    public static final Random RANDOM = new Random();
+
 	private JedisPool pool;
 
 	@Getter private TeamManager teamManager;
@@ -153,7 +155,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 				WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
 				Player player = event.getPlayer();
-
 				Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
 
 				if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
@@ -188,7 +189,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 						for (WrappedWatchableObject watch : watcher.read(0)) {
 							if (watch.getIndex() == 6) {
 								if ((Float) watch.getValue() > 0) {
-									watch.setValue(new Random().nextInt((int) ((Damageable) entity).getMaxHealth()) + new Random().nextFloat());
+									watch.setValue(RANDOM.nextInt((int) ((Damageable) entity).getMaxHealth()) + new Random().nextFloat());
 								}
 							}
 						}

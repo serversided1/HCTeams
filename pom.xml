@@ -5,15 +5,20 @@
     <artifactId>Foxtrot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Foxtrot</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <timestamp>${maven.build.timestamp}</timestamp>
-        <computerName>${env.COMPUTERNAME}</computerName>
+        <!-- <computerName>${env.COMPUTERNAME}</computerName> -->
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
+
     <build>
+        <defaultGoal>clean package install</defaultGoal>
+        <finalName>${project.artifactId}</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -56,8 +61,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <excludes>
-                    <exclude>bukkit.jar</exclude>
-                    <exclude>spigot.jar</exclude>
+                    <exclude>jars</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -79,47 +83,75 @@
         No repository for spigot / bukkit :(
         -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>LATEST</version>
+
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/bukkit.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/jars/spigot-api.jar</systemPath>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.8-R0.1-SNAPSHOT</version>
+            <version>LATEST</version>
+
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jars/spigot.jar</systemPath>
         </dependency>
+
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>qUtils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+            <version>LATEST</version>
+
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jars/qUtils.jar</systemPath>
 		</dependency>
+
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+            <version>LATEST</version>
+
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jars/mBasic.jar</systemPath>
 		</dependency>
+
         <dependency>
             <groupId>net.frozenorb</groupId>
             <artifactId>mShared</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>LATEST</version>
+
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/jars/mShared.jar</systemPath>
         </dependency>
+
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>LATEST</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.comphenix.packetwrapper</groupId>
 			<artifactId>PacketWrapper</artifactId>
 			<version>LATEST</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.4</version>
 		</dependency>
+
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -127,6 +159,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

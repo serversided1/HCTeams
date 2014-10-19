@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public abstract class Kit implements Listener {
@@ -21,10 +22,9 @@ public abstract class Kit implements Listener {
 	private HashMap<String, Long> cooldowns = new HashMap<String, Long>();
 
 	public void startWarmup(final Player p) {
-
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e" + getWarmup() + "s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("IModZombies4Fun") ? 1 : getWarmup()) {
+		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("Nauss") ? 1 : getWarmup()) {
 
 			@Override
 			public void run() {

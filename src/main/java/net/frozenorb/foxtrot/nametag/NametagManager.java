@@ -40,6 +40,8 @@ public class NametagManager {
 
 		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
 
+        Bukkit.getOnlinePlayers();
+
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			TeamInfo teamInfo = ENEMY_TEAM;
 
