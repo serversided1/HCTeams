@@ -52,7 +52,7 @@ public class PacketBorder {
 					for (int i = -4; i < 5; i++) {
 						Location check = ll.clone().add(0, i, -0);
 
-						if (check.distanceSquared(p.getLocation()) <= 64D) {
+						if (check.distanceSquared(p.getLocation()) <= (8 * 8)) {
 
 							Block b = check.getBlock();
 							if (!b.getType().isSolid()) {

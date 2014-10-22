@@ -1,15 +1,6 @@
 package net.frozenorb.foxtrot.visual;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import net.frozenorb.Utilities.Types.Scrollable;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Kit;
@@ -21,7 +12,6 @@ import net.frozenorb.foxtrot.visual.scrollers.ConstantScroller;
 import net.frozenorb.foxtrot.visual.scrollers.HeaderScrollable;
 import net.frozenorb.foxtrot.visual.scrollers.ToggleableScrollable;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -30,6 +20,11 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Class that handles the scoreboard of a player.
@@ -151,21 +146,25 @@ public class ScoreboardManager {
 
 			@Override
 			public String next() {
+                System.out.println("class warmup title");
+
 				if (!Kit.getWarmupTasks().containsKey(p.getName())) {
 					return "~5a";
 				}
 				return "§d§lClass Warmup";
 			}
-		}, new Scrollable() {
+		},
 
+        new Scrollable(){
 			@Override
 			public String next() {
+                System.out.println("class warmup - [" + Kit.getWarmupTasks().containsKey(p.getName()) + "]");
+
 				if (!Kit.getWarmupTasks().containsKey(p.getName())) {
 					return "~5i";
 				}
 
 				return "   " + Kit.getWarmupTasks().get(p.getName()).getSeconds() + " seconds";
-
 			}
 		}),
 

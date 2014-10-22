@@ -22,7 +22,6 @@ public class RedisSaveTask extends BukkitRunnable {
 	}
 
 	public void save() {
-
 		System.out.println("Redis save initiated!");
 		JedisCommand<Object> jdc = new JedisCommand<Object>() {
 

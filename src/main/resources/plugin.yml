@@ -1,7 +1,8 @@
 name: Foxtrot
 version: ${timestamp} | ${computerName}
 description: What does the fox say?
-author: Kerem Celik
+authors:
+ - Kerem Celik
+ - Chase King
 main: net.frozenorb.foxtrot.FoxtrotPlugin
 depend: [ProtocolLib]
- 

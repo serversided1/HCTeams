@@ -24,30 +24,30 @@ public abstract class Kit implements Listener {
 	public void startWarmup(final Player p) {
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e" + getWarmup() + "s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, p.getName().equalsIgnoreCase("Nauss") ? 1 : getWarmup()) {
+		warmupTasks.put(p.getName(), new KitTask(this, getWarmup()) {
 
-			@Override
-			public void run() {
-				seconds--;
+            @Override
+            public void run() {
+                seconds--;
 
-				if (!p.isOnline()) {
+                if (!p.isOnline()) {
 
-					cancel();
-					//p.sendMessage("§b" + getName() + " §aEnabled"); wat...?
-					warmupTasks.remove(p.getName());
+                    cancel();
+                    //p.sendMessage("§b" + getName() + " §aEnabled"); wat...?
+                    warmupTasks.remove(p.getName());
 
-				}
+                }
 
-				if (seconds == 0) {
-					apply(p);
-					equippedKits.put(p.getName(), Kit.this);
-					p.sendMessage("§b" + getName() + " §aEnabled");
-					cancel();
-					warmupTasks.remove(p.getName());
-				}
-			}
-		});
-
+                if (seconds == 0) {
+                    apply(p);
+                    equippedKits.put(p.getName(), Kit.this);
+                    p.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
+                    cancel();
+                    warmupTasks.remove(p.getName());
+                }
+            }
+        });
+        
 		warmupTasks.get(p.getName()).runTaskTimer(FoxtrotPlugin.getInstance(), 20, 20);
 	}
 

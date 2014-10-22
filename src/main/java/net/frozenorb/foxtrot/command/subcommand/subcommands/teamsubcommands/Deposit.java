@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -54,6 +55,16 @@ public class Deposit extends Subcommand {
 			try {
 				double deposit = Double.parseDouble(args[1]);
 
+                if(deposit == 0){
+                    p.sendMessage(ChatColor.RED + "You can't deposit $0.0!");
+                    return;
+                }
+
+                if(deposit < 0){
+                    p.sendMessage(ChatColor.RED + "Deposit value must be more than 0!");
+                    return;
+                }
+
 				if (Basic.get().getEconomyManager().getBalance(p.getName()) < deposit && !override) {
 					p.sendMessage("§cYou don't have enough money to do this!");
 					return;
@@ -83,6 +94,6 @@ public class Deposit extends Subcommand {
 
 	@Override
 	public List<String> tabComplete() {
-		return Arrays.asList(new String[] { Basic.get().getEconomyManager().getBalance(sender.getName()) + "" });
+		return Arrays.asList(Basic.get().getEconomyManager().getBalance(sender.getName()) + "");
 	}
 }

@@ -226,19 +226,16 @@ public class FoxtrotPlugin extends JavaPlugin {
 		MountainHandler.reset();
 	}
 
-	public <T> T runJedisCommand(JedisCommand<T> jedis) {
+	public <T> T runJedisCommand(JedisCommand<T> jedis){
 		Jedis j = pool.getResource();
-
 		T obj = null;
 
-		try {
+		try{
 			obj = jedis.execute(j);
 			pool.returnResource(j);
-		}
-		catch (JedisException ex) {
+		} catch(JedisException e){
 			pool.returnBrokenResource(j);
-		}
-		finally {
+		} finally {
 			pool.returnResource(j);
 		}
 

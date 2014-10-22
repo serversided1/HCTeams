@@ -2,12 +2,8 @@ package net.frozenorb.foxtrot.nms;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.server.v1_7_R4.*;
 import org.bukkit.craftbukkit.v1_7_R4.util.UnsafeList;
-
-import net.minecraft.server.v1_7_R4.Entity;
-import net.minecraft.server.v1_7_R4.EntityVillager;
-import net.minecraft.server.v1_7_R4.PathfinderGoalSelector;
-import net.minecraft.server.v1_7_R4.World;
 
 @SuppressWarnings("rawtypes")
 public class FixedVillager extends EntityVillager {
@@ -28,7 +24,12 @@ public class FixedVillager extends EntityVillager {
 		}
 	}
 
-	@Override
+    @Override
+    public EntityAgeable createChild(EntityAgeable entityAgeable) {
+        return null;
+    }
+
+    @Override
 	public void h() {
 		motX = 0D;
 		motY = 0D;

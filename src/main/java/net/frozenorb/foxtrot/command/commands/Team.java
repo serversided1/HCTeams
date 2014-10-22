@@ -70,7 +70,7 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.GRAY + "/team rally - Teleport to the team rally.");
 		p.sendMessage(ChatColor.GRAY + "/team deposit <amount> - Deposit money to team balance.");
 		p.sendMessage(ChatColor.GRAY + "/team map - View the boundaries of teams near you.");
-
+        p.sendMessage("");
 		p.sendMessage(ChatColor.DARK_AQUA + "***Team Captains Only***");
 		p.sendMessage(ChatColor.GRAY + "/team kick [player] - Kick a player from the team.");
 		p.sendMessage(ChatColor.GRAY + "/team claim - Receive the claiming wand.");
@@ -79,7 +79,7 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.GRAY + "/team setrally - Set the team rally warp location.");
 		p.sendMessage(ChatColor.GRAY + "/team sethq - Set the team headquarters warp location.");
 		p.sendMessage(ChatColor.GRAY + "/team withdraw <amount> - Withdraw money from team balance.");
-
+        p.sendMessage("");
 		p.sendMessage(ChatColor.DARK_AQUA + "***Team Leader Only***");
 		p.sendMessage(ChatColor.GRAY + "/team promote -Promotes the targeted player to a Captain.");
 		p.sendMessage(ChatColor.GRAY + "/team demote - Demotes the targeted player to a member.");

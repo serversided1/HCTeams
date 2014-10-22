@@ -15,7 +15,7 @@ import net.frozenorb.Utilities.Serialization.ReflectionSerializer;
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = { ElementType.FIELD })
+@Target(value = { ElementType.TYPE })
 public @interface SerializableField {
 
 	/**

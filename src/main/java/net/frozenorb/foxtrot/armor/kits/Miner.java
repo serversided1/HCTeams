@@ -1,60 +1,90 @@
 package net.frozenorb.foxtrot.armor.kits;
 
-import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.armor.Armor;
+import net.frozenorb.foxtrot.armor.ArmorMaterial;
+import net.frozenorb.foxtrot.armor.Kit;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.frozenorb.foxtrot.armor.Armor;
-import net.frozenorb.foxtrot.armor.ArmorMaterial;
-import net.frozenorb.foxtrot.armor.Kit;
-
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class Miner extends Kit implements Listener {
+    private static final int Y_HEIGHT = 20;
 
     private ConcurrentMap<Player, Integer> noDamage = new ConcurrentHashMap<>();
+    private ConcurrentMap<Player, Integer> invis = new ConcurrentHashMap<>();
 
     public Miner() {
         Runnable run = new Runnable() {
             public void run() {
                 for (Player key : noDamage.keySet()) {
                     int left = noDamage.remove(key);
+
                     if (left == 0) {
-                        //Allow invisibility
+                        if(key.getLocation().getY() > Y_HEIGHT){
+                            invis.put(key, 10);
+                            key.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
+                        }
+
                         continue;
                     }
 
                     noDamage.put(key, left-1);
                 }
 
+                //Manage invisibility
+                for(Player player : invis.keySet()){
+                    if(player != null && player.isOnline()){
+                        int secs = invis.get(player);
+
+                        if(secs == 0){
+                            if(player.getLocation().getY() <= Y_HEIGHT){
+                                if(!(player.hasPotionEffect(PotionEffectType.INVISIBILITY))){
+                                    player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been enabled!");
+                                    player.addPotionEffect(PotionEffectType.INVISIBILITY.createEffect(Integer.MAX_VALUE, 0));
+                                }
+                            }
+                        } else {
+                            invis.put(player, secs - 1);
+                        }
+                    }
+                }
+
+                /*
                 for (String player : Kit.getEquippedKits().keySet()) {
                     Kit on = Kit.getEquippedKits().get(player);
 
                     if (!(on instanceof Miner))
                         continue;
 
-                    Player p = Bukkit.getPlayer(player);
-                    if (p.getLocation().getY() <= 20 && !noDamage.containsKey(p) && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-                        p.addPotionEffect(PotionEffectType.INVISIBILITY.createEffect(Integer.MAX_VALUE, 0));
-                    }
+                    Player p = Bukkit.getPlayerExact(player);
 
-                    if (p.hasPotionEffect(PotionEffectType.INVISIBILITY) && (noDamage.containsKey(p) || p.getLocation().getY() > 20)) {
-                        p.removePotionEffect(PotionEffectType.INVISIBILITY);
+                    if(p != null){
+                        if (p.getLocation().getY() <= 20 && !noDamage.containsKey(p) && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                            p.addPotionEffect(PotionEffectType.INVISIBILITY.createEffect(Integer.MAX_VALUE, 0));
+                        }
+
+                        if (p.hasPotionEffect(PotionEffectType.INVISIBILITY) && (noDamage.containsKey(p) || p.getLocation().getY() > 20)) {
+                            p.removePotionEffect(PotionEffectType.INVISIBILITY);
+                        }
                     }
                 }
+                */
             }
         };
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), run, 20, 20);
         Bukkit.getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
     }
@@ -81,6 +111,7 @@ public class Miner extends Kit implements Listener {
 		p.removePotionEffect(PotionEffectType.FAST_DIGGING);
         p.removePotionEffect(PotionEffectType.INVISIBILITY);
         noDamage.remove(p);
+        invis.remove(p);
 	}
 
 	@Override
@@ -100,6 +131,13 @@ public class Miner extends Kit implements Listener {
         }
 
         noDamage.put(pDamage, 15);
+
+        //Invisibility
+        if(invis.containsKey(pDamage)){
+            invis.put(pDamage, 10);
+            pDamage.removePotionEffect(PotionEffectType.INVISIBILITY);
+            pDamage.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been temporarily removed!");
+        }
     }
 
     @EventHandler
@@ -117,5 +155,26 @@ public class Miner extends Kit implements Listener {
         }
 
         noDamage.put(pDamager, 15);
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event){
+        Player player = event.getPlayer();
+        Location to = event.getTo();
+        Location from = event.getFrom();
+
+        if(to.getBlockY() <= Y_HEIGHT){ //Going below 20
+            if(!(invis.containsKey(player))){
+                invis.put(player, 10);
+                player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
+            }
+        } else if(to.getBlockY() > Y_HEIGHT){ //Going above 20
+            if(invis.containsKey(player)){
+                noDamage.remove(player);
+                invis.remove(player);
+                player.removePotionEffect(PotionEffectType.INVISIBILITY);
+                player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been removed!");
+            }
+        }
     }
 }

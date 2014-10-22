@@ -1,21 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.Set;
-
+import com.comphenix.protocol.ProtocolLibrary;
+import com.google.common.base.Function;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.Utilities.Utils.FaceUtil;
@@ -26,11 +12,7 @@ import net.frozenorb.foxtrot.game.Minigame.State;
 import net.frozenorb.foxtrot.game.games.KingOfTheHill;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.FixedVillager;
-import net.frozenorb.foxtrot.server.LocationTickStore;
-import net.frozenorb.foxtrot.server.PlayerDamagePair;
-import net.frozenorb.foxtrot.server.RegionData;
-import net.frozenorb.foxtrot.server.ServerManager;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.server.*;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -41,16 +23,9 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
 import net.frozenorb.utils.hologram.object.CraftHologram;
 import net.frozenorb.utils.hologram.object.HologramManager;
-
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MathHelper;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -64,59 +39,20 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockSpreadEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityPortalExitEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -125,8 +61,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.google.common.base.Function;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -250,7 +191,6 @@ public class FoxListener implements Listener {
 			final Location tpTo = LocationTickStore.getInstance().recallOldestLocation(e.getPlayer().getName());
 
 			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-
 				@Override
 				public void run() {
 					e.getPlayer().teleport(tpTo);
@@ -289,7 +229,7 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
-	public void onFireSpread(BlockBurnEvent e) {
+	public void onFireBurn(BlockBurnEvent e) {
 		if (FoxtrotPlugin.getInstance().getServerManager().isWarzone(e.getBlock().getLocation())) {
 			e.setCancelled(true);
 			return;
@@ -304,7 +244,7 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
-	public void onFireSpread(BlockIgniteEvent e) {
+	public void onFireIgnite(BlockIgniteEvent e) {
 
 		if (e.getPlayer() != null) {
 			if (FoxtrotPlugin.getInstance().getServerManager().isAdminOverride(e.getPlayer())) {
@@ -334,7 +274,6 @@ public class FoxListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent e) {
 		Location fromLoc = e.getFrom();
-
 		Location toLoc = e.getTo();
 		double toX = toLoc.getX();
 		double toZ = toLoc.getZ();
@@ -354,7 +293,6 @@ public class FoxListener implements Listener {
 					Bukkit.getScheduler().cancelTask(ServerManager.getTasks().get(e.getPlayer().getName()));
 					ServerManager.getTasks().remove(e.getPlayer().getName());
 					e.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
-
 				}
 			}
 
@@ -917,12 +855,10 @@ public class FoxListener implements Listener {
 			ItemStack potion = e.getItem();
 			int value = (int) potion.getDurability();
 
-			for (int i : ServerManager.DISALLOWED_POTIONS) {
-				if (i == value) {
-					e.setCancelled(true);
-					e.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
-				}
-			}
+            if(ServerManager.DISALLOWED_POTIONS.contains(value)){
+                e.setCancelled(true);
+                e.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
+            }
 		}
 	}
 
@@ -1049,9 +985,10 @@ public class FoxListener implements Listener {
 		}
 	}
 
+    private final char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_'".toCharArray();
+
 	private String fixName(String name) {
 		String b = name.toLowerCase().trim();
-		char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_'".toCharArray();
 		char[] charArray = b.toCharArray();
 		StringBuilder result = new StringBuilder();
 		for (char c : charArray) {
@@ -1395,9 +1332,6 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent e) {
-		if (e.getPlayer().getName().equalsIgnoreCase("LazyLemons")) {
-			return;
-		}
 		String hostName = e.getHostname();
 
 		// GameProfile gp = new GameProfile(e.getPlayer().getUniqueId(),
@@ -1458,6 +1392,7 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent e) {
+        Player player = e.getEntity();
 
         for (ItemStack i : e.getDrops()) {
 			ItemMeta meta = i.getItemMeta();
@@ -1473,8 +1408,9 @@ public class FoxListener implements Listener {
 			i.setItemMeta(meta);
         }
 
-		if (e.getEntity().getLastDamageCause().getCause() == DamageCause.FALL) {
+        EntityDamageEvent lastDmg = player.getLastDamageCause();
 
+		if(lastDmg != null && lastDmg.getCause() == DamageCause.FALL) {
 			for (Iterator<Entry<PlayerDamagePair, Long>> it = lastPlayerDamager.entrySet().iterator(); it.hasNext();) {
 				Entry<PlayerDamagePair, Long> entry = it.next();
 
@@ -1521,12 +1457,45 @@ public class FoxListener implements Listener {
 			t.playerDeath(e.getEntity());
 		}
 
+        //Add deaths to armor
+        SimpleDateFormat loreFormat = new SimpleDateFormat("MM.dd.yy HH:mm");
+        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + loreFormat.format(new Date());
+
+        for(ItemStack armor : player.getInventory().getArmorContents()){
+            if(armor != null && armor.getType() != Material.AIR){
+                if(armor.hasItemMeta()){
+                    ItemMeta meta = armor.getItemMeta();
+
+                    if(meta.hasLore() && meta.getLore().size() != 0){
+                        List<String> lore = meta.getLore();
+
+                        lore.add(1, deathMsg);
+
+                        if(lore.size() > 2 + 10){ //Show 10 most recent deaths
+                            lore.remove(lore.size() - 1);
+                        }
+
+                        meta.setLore(lore);
+                    } else {
+                        List<String> lore = new ArrayList<>();
+
+                        lore.add("");
+                        lore.add(ChatColor.RED + "" + ChatColor.BOLD + "Deaths:");
+                        lore.add(deathMsg);
+                        meta.setLore(lore);
+                    }
+
+                    armor.setItemMeta(meta);
+                }
+            }
+        }
+
 		final String m = TimeUtils.getDurationBreakdown(seconds * 1000);
 		if (e.getEntity().getKiller() != null) {
-
 			Player killer = e.getEntity().getKiller();
 			ItemStack sword = killer.getItemInHand();
 
+            //Add kills to sword lore
 			if (sword.getType().name().contains("SWORD")) {
 				int killsIndex = 1;
 				int[] lastKills = { 3, 4, 5 };
@@ -1594,7 +1563,6 @@ public class FoxListener implements Listener {
 				lore.set(firsKill, killer.getDisplayName() + "§e slayed " + e.getEntity().getDisplayName());
 				meta.setLore(lore);
 				sword.setItemMeta(meta);
-
 			}
 
 			FoxtrotPlugin.getInstance().getKillsMap().updateValue(e.getEntity().getKiller().getName(), 1 + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getKiller().getName()));

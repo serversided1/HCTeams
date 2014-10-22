@@ -23,7 +23,7 @@ public abstract class RedisPersistMap<T> {
 	 * in redis with the same prefix.
 	 */
 	public final void loadFromRedis() {
-		JedisCommand<Object> jdc = new JedisCommand<Object>() {
+        JedisCommand<Object> jdc = new JedisCommand<Object>() {
 			public Object execute(Jedis jedis) {
 				for (String key : jedis.keys(keyPrefix + ".*")) {
 					String storedKey = key.substring(key.indexOf('.') + 1);

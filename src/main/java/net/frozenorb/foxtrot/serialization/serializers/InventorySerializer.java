@@ -17,10 +17,11 @@ public class InventorySerializer implements JSONSerializer<Inventory> {
 	public BasicDBObject serialize(Inventory o) {
 		BasicDBObject full = new BasicDBObject();
 		BasicDBObject inv = new BasicDBObject();
+        ItemStackSerializer serializer = new ItemStackSerializer();
 		for (int i = 0; i < o.getSize(); i += 1) {
 			ItemStack item = o.getItem(i);
 			if (item != null && item.getType() != Material.AIR) {
-				inv.put(i + "", new ItemStackSerializer().serialize(item));
+				inv.put(i + "", serializer.serialize(item));
 			}
 		}
 		full.put("inventory", inv);

@@ -39,7 +39,7 @@ public class DefaultValueMap extends HashMap<Class<?>, Object> {
 	public static DefaultValueMap getInstance() {
 		if (instance == null) {
 
-			synchronized (DefaultValueMap.class) {
+			synchronized (DefaultValueMap.class){
 
 				if (instance == null) {
 					instance = new DefaultValueMap();

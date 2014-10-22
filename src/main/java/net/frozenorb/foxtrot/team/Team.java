@@ -21,6 +21,7 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -290,7 +291,9 @@ public class Team {
 		ArrayList<String> pls = new ArrayList<String>();
 
 		for (String m : getMembers()) {
-			if (Bukkit.getPlayerExact(m) == null || Bukkit.getPlayerExact(m).hasMetadata("invisible")) {
+            Player player = Bukkit.getPlayerExact(m);
+
+			if (player == null || player.hasMetadata("invisible")) {
 				pls.add(m);
 			}
 		}
@@ -667,7 +670,7 @@ public class Team {
 		if (memberAmount > 0) {
 			p.sendMessage(members.toString());
 		}
-		p.sendMessage("§eBalance: §7" + getBalance());
+		p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balance == (long) balance ? (long) balance : balance)); //Remove trailing ".0"
 
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
 		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);

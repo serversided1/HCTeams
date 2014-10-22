@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
 import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.BaseCommand;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.util.TimeUtils;
@@ -25,6 +24,9 @@ import java.util.Set;
  * @since 10/14/14
  */
 public class Stuck extends Subcommand implements Listener {
+    private static final double MAX_DISTANCE = 5;
+    private static final double TOTAL_MOVEMENT = 20;
+
 
     private static final Set<Integer> warn = new HashSet<>();
     static {
@@ -59,68 +61,105 @@ public class Stuck extends Subcommand implements Listener {
         Player player = (Player)sender;
 
         if (warping.contains(player)) {
-            player.sendMessage(ChatColor.RED+"You are already being warped!");
+            player.sendMessage(ChatColor.RED +"You are already being warped!");
             return;
         }
 
-        Runnable async = new Runnable() {
-            public void run() {
-                final Location nearest = nearestSafeLocation(player.getLocation());
-                if (nearest == null) {
-                    player.sendMessage(ChatColor.RED+"Could not find a safe location near you!");
+        new BukkitRunnable(){
+            private int seconds = 300;
+
+            Location loc = player.getLocation();
+            private int xStart = (int) loc.getX();
+            private int yStart = (int) loc.getY();
+            private int zStart = (int) loc.getZ();
+
+            private Location nearest;
+            private boolean tpOnceFound = false;
+
+            private Location prevLoc;
+            private double totalMovement = 0;
+
+            @Override
+            public void run(){
+                if(damaged.contains(player)){
+                    player.sendMessage(ChatColor.RED + "You took damage, teleportation cancelled!");
+                    damaged.remove(player);
+                    warping.remove(player);
+                    cancel();
                     return;
                 }
 
-                player.sendMessage(ChatColor.YELLOW + "You will be teleported to the nearest safe area in 5 minutes!");
-                warping.add(player);
+                if(!(player.isOnline())){
+                    warping.remove(player);
+                    cancel();
+                    return;
+                }
 
-                BukkitTask tp = new BukkitRunnable() {
-                    private int seconds = 300;
+                //Begin asynchronously searching for an available location prior to the actual teleport
+                if(seconds == 5){
+                    new BukkitRunnable(){
+                        @Override
+                        public void run(){
+                            nearest = nearestSafeLocation(player.getLocation());
 
-                    private int xStart = (int) player.getLocation().getX();
-                    private int zStart = (int) player.getLocation().getZ();
-
-                    public void run() {
-                        if (damaged.contains(player)) {
-                            player.sendMessage(ChatColor.RED+"You took damage, teleportation cancelled!");
-                            damaged.remove(player);
-                            cancel();
-                            return;
+                            if(tpOnceFound){
+                                new BukkitRunnable(){
+                                    @Override
+                                    public void run(){
+                                        player.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
+                                        player.teleport(nearest);
+                                    }
+                                }.runTask(FoxtrotPlugin.getInstance());
+                            }
                         }
+                    }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+                }
 
-                        if (!(player.isOnline())) {
-                            warping.remove(player);
-                            cancel();
-                            return;
-                        }
-
-                        if (seconds <= 0) {
-                            player.teleport(nearest);
-                            player.sendMessage(ChatColor.GREEN+"Teleported you to the nearest safe area!");
-                            warping.remove(player);
-                            cancel();
-                            return;
-                        }
-
-                        if ((player.getLocation().getX() >= xStart+5 || player.getLocation().getX() <= xStart-5)
-                                || (player.getLocation().getZ() >= zStart+5 || player.getLocation().getZ() <= zStart-5)) {
-
-                            cancel();
-                            player.sendMessage(ChatColor.RED+"You moved more than 5 blocks, teleport cancelled!");
-                            warping.remove(player);
-                            return;
-                        }
-
-                        if (warn.contains(seconds)) {
-                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYou will be teleported in &c&l" + TimeUtils.getMMSS(seconds) + "&r&c!"));
-                        }
-
-                        seconds--;
+                if(seconds <= 0){
+                    if(nearest != null){
+                        player.teleport(nearest);
+                        player.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Still searching for a safe location, this is taking fairly long. Please report this to a staff member.");
+                        player.sendMessage(ChatColor.RED + "You will be teleported once a location is found.");
+                        tpOnceFound = true;
                     }
-                }.runTaskTimer(FoxtrotPlugin.getInstance(), 20l, 20l);
+
+                    warping.remove(player);
+                    cancel();
+                    return;
+                }
+
+                Location loc = player.getLocation();
+
+                //More than 5 blocks away
+                if((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)){
+                    cancel();
+                    player.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
+                    warping.remove(player);
+                    return;
+                }
+
+                //More than 20 blocks of accumulated movement
+                if(prevLoc != null){
+                    totalMovement += loc.distanceSquared(prevLoc);
+                    prevLoc = loc;
+
+                    if(totalMovement >= TOTAL_MOVEMENT * TOTAL_MOVEMENT){
+                        player.sendMessage(ChatColor.RED + "You walked more than " + TOTAL_MOVEMENT + " total meters, teleport cancelled!");
+                        warping.remove(player);
+                        cancel();
+                        return;
+                    }
+                }
+
+                if (warn.contains(seconds)){
+                    player.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED + "" + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.RED + "!");
+                }
+
+                seconds--;
             }
-        };
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(FoxtrotPlugin.getInstance(), async);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     private static Location nearestSafeLocation(Location origin) {
