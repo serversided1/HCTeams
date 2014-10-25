@@ -47,6 +47,11 @@ public class Claim extends Subcommand implements Listener {
 		if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 			p.getInventory().remove(SELECTION_WAND);
 
+            if(team.isRaidaible()){
+                p.sendMessage(ChatColor.RED + "You may not claim land while your faction is raidable!");
+                return;
+            }
+
 			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> p.getInventory().addItem(SELECTION_WAND.clone()), 1L);
 
 			new VisualClaim(p, VisualType.CREATE).draw(false);

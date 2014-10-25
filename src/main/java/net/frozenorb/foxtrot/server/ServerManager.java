@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("deprecation")
 public class ServerManager {
-	public static final int WARZONE_RADIUS = 1000;
+	public static final int WARZONE_RADIUS = 750;
 
 	public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,

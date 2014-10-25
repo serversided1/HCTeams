@@ -29,12 +29,12 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Revoke("revoke", "§c/t revoke"));
 		registerSubcommand(new Unclaim("unclaim", "§c/t unclaim"));
 		registerSubcommand(new Claims("claims", "§c/t claims [team]"));
-		registerSubcommand(new Rally("rally", "§c/t rally"));
-		registerSubcommand(new SetRally("setrally", "§c/t setrally"));
+		//registerSubcommand(new Rally("rally", "§c/t rally"));
+		//registerSubcommand(new SetRally("setrally", "§c/t setrally"));
 		registerSubcommand(new Rank("rank", "§c/t rank <player> <member|captain>", "setrank"));
 		registerSubcommand(new Help("help", ""));
 		registerSubcommand(new Demote("demote", "§c/t demote <player>", "uncaptain"));
-		registerSubcommand(new Promote("promote", "§c/t promote <player>", "p", "captain"));
+		registerSubcommand(new Promote("promote", "§c/t promote <player>", "p", "captain", "officer"));
 		registerSubcommand(new Subclaim("subclaim", "", "sub", "s"));
 		registerSubcommand(new NameClaim("nameclaim", "", "nc", "claimname"));
 		registerSubcommand(new Withdraw("withdraw", "§c/t withdraw <amount>"));
@@ -67,7 +67,7 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.GRAY + "/team claims [team] - View all claims for a team.");
 		p.sendMessage(ChatColor.GRAY + "/team msg <message> - Sends a message to your team.");
 		p.sendMessage(ChatColor.GRAY + "/team hq - Teleport to the team headquarters.");
-		p.sendMessage(ChatColor.GRAY + "/team rally - Teleport to the team rally.");
+		//p.sendMessage(ChatColor.GRAY + "/team rally - Teleport to the team rally.");
 		p.sendMessage(ChatColor.GRAY + "/team deposit <amount> - Deposit money to team balance.");
 		p.sendMessage(ChatColor.GRAY + "/team map - View the boundaries of teams near you.");
         p.sendMessage("");
@@ -76,7 +76,7 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.GRAY + "/team claim - Receive the claiming wand.");
 		p.sendMessage(ChatColor.GRAY + "/team revoke - Revoke all pending invitations.");
 		p.sendMessage(ChatColor.GRAY + "/team invite <player> - Invite a player to the team.");
-		p.sendMessage(ChatColor.GRAY + "/team setrally - Set the team rally warp location.");
+		//p.sendMessage(ChatColor.GRAY + "/team setrally - Set the team rally warp location.");
 		p.sendMessage(ChatColor.GRAY + "/team sethq - Set the team headquarters warp location.");
 		p.sendMessage(ChatColor.GRAY + "/team withdraw <amount> - Withdraw money from team balance.");
         p.sendMessage("");

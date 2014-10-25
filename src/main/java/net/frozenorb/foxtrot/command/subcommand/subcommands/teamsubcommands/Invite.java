@@ -46,8 +46,14 @@ public class Invite extends Subcommand {
 						sender.sendMessage(ChatColor.RED + "That player has already been invited.");
 						return;
 					}
+
+                    if(team.isRaidaible()){
+                        sender.sendMessage(ChatColor.RED + "You may not invite players if your team is raidable! You must boost your DTR!");
+                        return;
+                    }
+
 					team.getInvitations().add(name);
-					Bukkit.getPlayerExact(name).sendMessage(ChatColor.GRAY + "You have been invited to team '§e" + team.getFriendlyName() + "§7'. Type '§3/team accept §e" + team.getFriendlyName() + "§7' to join.");
+					Bukkit.getPlayerExact(name).sendMessage(ChatColor.GRAY + "You have been invited to team '§e" + team.getFriendlyName() + "§7'. Type '§3/team join §e" + team.getFriendlyName() + "§7' to join.");
 					sender.sendMessage("§e" + name + " has been invited to the team!");
 				} else {
 					p.sendMessage(ChatColor.DARK_AQUA + "Player is already on your team.");

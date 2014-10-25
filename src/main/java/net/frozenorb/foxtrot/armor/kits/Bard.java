@@ -69,7 +69,7 @@ public class Bard extends Kit {
                 }
             }
         };
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(FoxtrotPlugin.getInstance(), replenishStatics, 1, 1);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), replenishStatics, 1, 1);
     }
 
     private static final HashMap<Material, PotionEffect> INSTANT_EFFECTS = new HashMap<>();

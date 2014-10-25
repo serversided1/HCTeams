@@ -9,7 +9,7 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 public class Gopple extends BaseCommand {
 
 	public Gopple() {
-		super("gopple");
+		super("gopple", "opple", "goppletime", "oppletime", "goppletimer", "oppletimer");
 	}
 
 	@Override

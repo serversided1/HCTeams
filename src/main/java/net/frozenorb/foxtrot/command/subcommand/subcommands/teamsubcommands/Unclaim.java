@@ -27,9 +27,13 @@ public class Unclaim extends Subcommand {
 			return;
 		}
 		if (team.isOwner(p.getName())) {
+            if(team.isRaidaible()){
+                p.sendMessage(ChatColor.RED + "You may not unclaim land while your faction is raidable!");
+                return;
+            }
 
-			if (args.length > 1) {
-				if (args[1].equalsIgnoreCase("all")) {
+			if(args.length > 1){
+				if(args[1].equalsIgnoreCase("all")){
 					team.getClaims().clear();
 					team.setRally(null, true);
 					team.setHQ(null, true);

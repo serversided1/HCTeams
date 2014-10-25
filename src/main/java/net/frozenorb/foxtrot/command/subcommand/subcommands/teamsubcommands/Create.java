@@ -33,7 +33,7 @@ public class Create extends Subcommand {
                             '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c!"));
                     return;
                 }
-				if (!StringUtils.isAlpha(args[1])) {
+				if (!StringUtils.isAlphanumeric(args[1])) {
 					p.sendMessage(ChatColor.GRAY + "Team names can only be alphabetical.");
 					return;
 				}

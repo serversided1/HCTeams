@@ -101,8 +101,7 @@ public class Archer extends Kit {
                 double perc = mod * 100D;
                 perc = Math.round(10.0 * perc) / 10.0;
 
-                //p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
-
+                p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
             }
         }
     }

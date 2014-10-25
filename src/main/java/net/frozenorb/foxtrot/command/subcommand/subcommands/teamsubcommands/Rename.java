@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import org.bukkit.ChatColor;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
+import net.minecraft.util.org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 public class Rename extends Subcommand {
 
@@ -13,8 +15,40 @@ public class Rename extends Subcommand {
 	}
 
 	@Override
-	public void syncExecute() {
-		if (sender.hasPermission("foxtrot.rename")) {
+	public void syncExecute(){
+        //Usage: /t rename <name>
+        Player player = (Player) sender;
+        Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
+
+        if(team == null){
+            player.sendMessage(ChatColor.GRAY + "You are not on a team!");
+            return;
+        }
+
+        if(!(team.isOwner(player.getName()))){
+            player.sendMessage(ChatColor.RED + "Only team owners can use this command!");
+            return;
+        }
+
+        if(args.length == 2){
+            if(StringUtils.isAlphanumeric(args[1])){
+                if(FoxtrotPlugin.getInstance().getTeamManager().getTeam(args[1]) == null){
+                    FoxtrotPlugin.getInstance().getTeamManager().renameTeam(team, args[1]);
+                    sender.sendMessage(ChatColor.GREEN + "Team renamed to " + args[1]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "A team with that name already exists!");
+                }
+            } else {
+                player.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
+            }
+
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "Please specify a new team name!");
+
+        /*
+		if(sender.hasPermission("foxtrot.rename")){
 			if (args.length == 3) {
 				String teamName = args[1];
 				String newName = args[2];
@@ -39,6 +73,7 @@ public class Rename extends Subcommand {
 		} else {
 			sender.sendMessage(ChatColor.RED + "You are not allowed to do this!");
 		}
+		*/
 	}
 
 }

@@ -1,8 +1,13 @@
 package net.frozenorb.foxtrot;
 
-import java.util.List;
-import java.util.Random;
-
+import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassHandler;
@@ -31,31 +36,18 @@ import net.frozenorb.foxtrot.visual.BossBarManager;
 import net.frozenorb.foxtrot.visual.ScoreboardManager;
 import net.frozenorb.foxtrot.visual.TabHandler;
 import net.frozenorb.mShared.Shared;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wither;
+import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisException;
+
+import java.util.List;
+import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
@@ -82,6 +74,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private JoinTimerMap joinTimerMap;
 	@Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
+    @Getter private ToggleLightningMap toggleLightningMap;
 
 	@Override
 	public void onEnable() {
@@ -260,6 +253,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         chatModeMap = new ChatModeMap();
         chatModeMap.loadFromRedis();
+
+        toggleLightningMap = new ToggleLightningMap();
+        toggleLightningMap.loadFromRedis();
 	}
 
 	/**

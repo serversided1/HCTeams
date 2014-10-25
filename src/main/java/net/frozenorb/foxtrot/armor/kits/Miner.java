@@ -1,9 +1,7 @@
 package net.frozenorb.foxtrot.armor.kits;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.armor.Armor;
-import net.frozenorb.foxtrot.armor.ArmorMaterial;
-import net.frozenorb.foxtrot.armor.Kit;
+import net.frozenorb.foxtrot.armor.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -33,7 +31,7 @@ public class Miner extends Kit implements Listener {
                     int left = noDamage.remove(key);
 
                     if (left == 0) {
-                        if(key.getLocation().getY() > Y_HEIGHT){
+                        if(key.getLocation().getY() <= Y_HEIGHT){
                             invis.put(key, 10);
                             key.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
                         }
@@ -126,6 +124,11 @@ public class Miner extends Kit implements Listener {
             return;
 
         Player pDamage = (Player)damage;
+
+        if(!(hasKitOn(pDamage))){
+            return;
+        }
+
         if (noDamage.containsKey(pDamage)) {
             noDamage.remove(pDamage);
         }
@@ -133,7 +136,7 @@ public class Miner extends Kit implements Listener {
         noDamage.put(pDamage, 15);
 
         //Invisibility
-        if(invis.containsKey(pDamage)){
+        if(invis.containsKey(pDamage) && invis.get(pDamage) != 0){
             invis.put(pDamage, 10);
             pDamage.removePotionEffect(PotionEffectType.INVISIBILITY);
             pDamage.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been temporarily removed!");
@@ -150,7 +153,11 @@ public class Miner extends Kit implements Listener {
 
         Player pDamager = (Player)damager;
 
-        if (noDamage.containsKey(pDamager)) {
+        if(!(hasKitOn(pDamager))){
+            return;
+        }
+
+        if(noDamage.containsKey(pDamager)){
             noDamage.remove(pDamager);
         }
 
@@ -162,6 +169,10 @@ public class Miner extends Kit implements Listener {
         Player player = event.getPlayer();
         Location to = event.getTo();
         Location from = event.getFrom();
+
+        if(!(hasKitOn(player))){
+            return;
+        }
 
         if(to.getBlockY() <= Y_HEIGHT){ //Going below 20
             if(!(invis.containsKey(player))){

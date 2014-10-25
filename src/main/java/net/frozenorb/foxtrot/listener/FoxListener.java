@@ -7,9 +7,12 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.Utilities.Utils.FaceUtil;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.HostKOTH;
+import net.frozenorb.foxtrot.command.commands.ToggleLightning;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.Minigame.State;
 import net.frozenorb.foxtrot.game.games.KingOfTheHill;
+import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
+import net.frozenorb.foxtrot.jedis.persist.ToggleLightningMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.FixedVillager;
 import net.frozenorb.foxtrot.server.*;
@@ -23,14 +26,13 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
 import net.frozenorb.utils.hologram.object.CraftHologram;
 import net.frozenorb.utils.hologram.object.HologramManager;
+import net.minecraft.server.v1_7_R4.EntityLightning;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MathHelper;
+import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityWeather;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
+import org.bukkit.block.*;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -55,6 +57,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
@@ -308,6 +311,13 @@ public class FoxListener implements Listener {
 					return;
 				}
 
+                //PVP Timer
+                if(from.getRegion() == Region.SPAWN){
+                    if(FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(e.getPlayer().getName()) == JoinTimerMap.PENDING_USE){
+                        FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(e.getPlayer(), 30 * 60);
+                    }
+                }
+
 				String fromStr = "§eNow leaving: " + from.getName(e.getPlayer()) + (from.getRegion().isReducedDeathban() ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
 				String toStr = "§eNow entering: " + to.getName(e.getPlayer()) + (to.getRegion().isReducedDeathban() ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
 
@@ -349,6 +359,7 @@ public class FoxListener implements Listener {
 		e.setQuitMessage(null);
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(e.getPlayer());
         FoxtrotPlugin.getInstance().getChatModeMap().playerQuit(e.getPlayer());
+        FoxtrotPlugin.getInstance().getToggleLightningMap().playerQuit(e.getPlayer());
 
 		NametagManager.getTeamMap().remove(e.getPlayer().getName());
 
@@ -533,6 +544,8 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+        String name = player.getName();
 
 		NametagManager.sendPacketsInitialize(e.getPlayer());
 		NametagManager.sendTeamsToPlayer(e.getPlayer());
@@ -576,15 +589,20 @@ public class FoxListener implements Listener {
 
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
         FoxtrotPlugin.getInstance().getChatModeMap().playerJoined(e.getPlayer());
+        FoxtrotPlugin.getInstance().getToggleLightningMap().playerJoined(e.getPlayer());
 
-		if (!e.getPlayer().hasPlayedBefore()) {
-
-			e.getPlayer().sendMessage(ChatColor.YELLOW + "Your PVP Timer has been activated for 30 minutes.");
-			e.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot attack, take damage, or enter other's claims while this is active!");
-			FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(e.getPlayer(), 30 * 60);
-
+        if (!e.getPlayer().hasPlayedBefore()) {
 			e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
 		}
+
+        //PVP timer
+        if(!(FoxtrotPlugin.getInstance().getJoinTimerMap().contains(name))){
+            FoxtrotPlugin.getInstance().getJoinTimerMap().pendingTimer(player);
+        }
+
+        if(FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(name) == -1){
+            player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
+        }
 
 		for (PotionEffect pe : e.getPlayer().getActivePotionEffects()) {
 
@@ -621,11 +639,11 @@ public class FoxListener implements Listener {
 		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getPlayer().getName());
 
 		if (t != null && t.getHQ() != null) {
-			e.setRespawnLocation(t.getHQ());
+			//e.setRespawnLocation(t.getHQ());
 		} else {
-			e.setRespawnLocation(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
 		}
-	}
+        e.setRespawnLocation(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
+    }
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSpawnTagMonitor(EntityDamageByEntityEvent e) {
@@ -1393,6 +1411,7 @@ public class FoxListener implements Listener {
 	@EventHandler
 	public void onPlayerDeath(final PlayerDeathEvent e) {
         Player player = e.getEntity();
+        Date now = new Date();
 
         for (ItemStack i : e.getDrops()) {
 			ItemMeta meta = i.getItemMeta();
@@ -1458,35 +1477,11 @@ public class FoxListener implements Listener {
 		}
 
         //Add deaths to armor
-        SimpleDateFormat loreFormat = new SimpleDateFormat("MM.dd.yy HH:mm");
-        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + loreFormat.format(new Date());
+        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + InvUtils.DEATH_TIME_FORMAT.format(now);
 
         for(ItemStack armor : player.getInventory().getArmorContents()){
             if(armor != null && armor.getType() != Material.AIR){
-                if(armor.hasItemMeta()){
-                    ItemMeta meta = armor.getItemMeta();
-
-                    if(meta.hasLore() && meta.getLore().size() != 0){
-                        List<String> lore = meta.getLore();
-
-                        lore.add(1, deathMsg);
-
-                        if(lore.size() > 2 + 10){ //Show 10 most recent deaths
-                            lore.remove(lore.size() - 1);
-                        }
-
-                        meta.setLore(lore);
-                    } else {
-                        List<String> lore = new ArrayList<>();
-
-                        lore.add("");
-                        lore.add(ChatColor.RED + "" + ChatColor.BOLD + "Deaths:");
-                        lore.add(deathMsg);
-                        meta.setLore(lore);
-                    }
-
-                    armor.setItemMeta(meta);
-                }
+                InvUtils.addDeath(armor, deathMsg);
             }
         }
 
@@ -1595,6 +1590,18 @@ public class FoxListener implements Listener {
 				}
 			}
 
+            //Add player head to item drops
+            if(killer.getName().equals("Nauss") || killer.hasPermission("foxtrot.skulldrop")){
+                ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
+                SkullMeta meta = (SkullMeta) skull.getItemMeta();
+
+                meta.setOwner(player.getName());
+                meta.setDisplayName(ChatColor.YELLOW + player.getName() + "'s Head");
+                meta.setLore(Arrays.asList("", deathMsg));
+                skull.setItemMeta(meta);
+                e.getDrops().add(skull);
+            }
+
 			e.setDeathMessage(e.getDeathMessage().replace(e.getEntity().getKiller().getName(), killerStr));
 			e.setDeathMessage(e.getDeathMessage().replace("using", "using§c"));
 
@@ -1609,7 +1616,7 @@ public class FoxListener implements Listener {
 
 			DateFormat sdf = new SimpleDateFormat("M/d HH:mm:ss");
 
-			lore.add(sdf.format(new Date()).replace(" AM", "").replace(" PM", ""));
+			lore.add(sdf.format(now).replace(" AM", "").replace(" PM", ""));
 
 			meta.setLore(lore);
 			meta.setDisplayName("§dDeath Sign");
@@ -1621,11 +1628,23 @@ public class FoxListener implements Listener {
 
 		}
 
-		for (World w : Bukkit.getWorlds()) {
+        //Lightning
+        Location loc = player.getLocation();
 
-			w.strikeLightningEffect(e.getEntity().getLocation());
-			w.strikeLightningEffect(e.getEntity().getLocation());
-			w.playSound(e.getEntity().getLocation(), Sound.AMBIENCE_THUNDER, 20F, 1F);
+		for(World world : Bukkit.getWorlds()){
+            EntityLightning entity =  new EntityLightning(((CraftWorld) world).getHandle(), loc.getX(), loc.getY(), loc.getZ(), true, false);
+            PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(entity);
+
+            for(Player online : world.getPlayers()){
+                if(online.equals(player)){
+                    continue;
+                }
+
+                if(!(online.hasMetadata(ToggleLightningMap.META))){
+                    ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
+                    online.playSound(loc, Sound.AMBIENCE_THUNDER, 20F, 1F);
+                }
+            }
 		}
 
 		final String deathMessage = e.getDeathMessage();
@@ -1838,6 +1857,61 @@ public class FoxListener implements Listener {
 			}
 		}
 
+        //Crowbar
+        if(!(e.isCancelled())){
+            ItemStack hand = player.getItemInHand();
+            if(hand != null && InvUtils.isSimilar(hand, InvUtils.CROWBAR_NAME)){
+                if(action == Action.LEFT_CLICK_BLOCK || action == Action.RIGHT_CLICK_BLOCK){
+                    Block block = e.getClickedBlock();
+                    Location loc = block.getLocation();
+
+                    if(block.getType() == Material.ENDER_PORTAL_FRAME){
+                        int portals = InvUtils.getCrowbarUsesPortal(hand);
+
+                        if(portals > 0){
+                            loc.getWorld().playEffect(loc, Effect.STEP_SOUND, block.getTypeId());
+                            block.setType(Material.AIR);
+                            loc.getWorld().dropItemNaturally(loc, new ItemStack(Material.ENDER_PORTAL_FRAME));
+                            loc.getWorld().playSound(loc, Sound.ANVIL_USE, 1.0F, 1.0F);
+
+                            portals -= 1;
+
+                            if(portals == 0){
+                                player.setItemInHand(null);
+                                return;
+                            }
+
+                            //Manage crowbar
+                            ItemMeta meta = hand.getItemMeta();
+
+                            meta.setLore(InvUtils.getCrowbarLore(portals, 0));
+                            hand.setItemMeta(meta);
+
+                            //Durability
+                            double max = Material.DIAMOND_HOE.getMaxDurability();
+                            double dura = (max / (double) InvUtils.CROWBAR_PORTALS) * portals;
+
+                            hand.setDurability((short) (max - dura));
+                            player.setItemInHand(hand);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "This crowbar has no more uses!");
+                        }
+                    } else if(block.getType() == Material.MOB_SPAWNER){
+                        CreatureSpawner spawner = (CreatureSpawner) block.getState();
+
+                        //TODO
+
+                        player.sendMessage(ChatColor.RED + "This is coming soon!");
+                        e.setCancelled(true);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Crowbars can only break End Portals and Mob Spawners!");
+                        e.setCancelled(true);
+                        e.setUseInteractedBlock(Result.DENY);
+                        e.setUseItemInHand(Result.DENY);
+                    }
+                }
+            }
+        }
 	}
 
 	@EventHandler

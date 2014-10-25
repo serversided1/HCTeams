@@ -31,7 +31,7 @@ import redis.clients.jedis.Jedis;
 
 public class Team {
 
-	public static final int MAX_TEAM_SIZE = 30;
+	public static final int MAX_TEAM_SIZE = 20;
 
 	private String name;
 
