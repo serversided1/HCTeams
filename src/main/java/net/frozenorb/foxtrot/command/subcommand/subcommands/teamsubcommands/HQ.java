@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.frozenorb.foxtrot.listener.FoxListener;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
@@ -21,16 +22,20 @@ public class HQ extends Subcommand {
 	@Override
 	public void syncExecute() {
 		final Player p = (Player) sender;
-		if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) == null) {
+
+		if(FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) == null){
 			p.sendMessage(ChatColor.DARK_AQUA + "You are not on a team!");
 			return;
 
 		}
+
 		final Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-		if (team.getHQ() == null) {
+
+        if(team.getHQ() == null){
 			sender.sendMessage(ChatColor.RED + "HQ not set.");
 			return;
 		}
+
 		if (p.getWorld().getEnvironment() == Environment.THE_END) {
 			p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
 			return;
@@ -47,7 +52,7 @@ public class HQ extends Subcommand {
 
 	@Override
 	public List<String> tabComplete() {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 }

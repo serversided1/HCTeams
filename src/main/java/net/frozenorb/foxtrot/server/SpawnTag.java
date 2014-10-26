@@ -20,6 +20,7 @@ public class SpawnTag {
 
 	@NonNull private Player player;
 
+    @Getter private long expires;
 	@Getter private int secondsLeft;
 	private boolean inProgress;
 
@@ -47,6 +48,7 @@ public class SpawnTag {
 			SpawnTag spt = spawnTags.get(player.getName());
 
 			spt.secondsLeft = SPAWN_TAG_LENGTH_SECONDS;
+            spt.expires = System.currentTimeMillis() + (spt.secondsLeft * 1000L);
 
 			if (!spt.inProgress) {
 				spt.start();
@@ -55,6 +57,7 @@ public class SpawnTag {
 			SpawnTag spt = new SpawnTag(player);
 
 			spt.secondsLeft = SPAWN_TAG_LENGTH_SECONDS;
+            spt.expires = System.currentTimeMillis() + (spt.secondsLeft * 1000L);
 			spt.start();
 
 			spawnTags.put(player.getName(), spt);
@@ -66,15 +69,17 @@ public class SpawnTag {
 	public static void addSeconds(Player player, int seconds) {
 		if (isTagged(player)) {
 			SpawnTag spt = spawnTags.get(player.getName());
+            int secondsAdd = Math.min(spt.secondsLeft + 16, SPAWN_TAG_LENGTH_SECONDS);
 
-			spt.secondsLeft = Math.min(spt.secondsLeft + 16, SPAWN_TAG_LENGTH_SECONDS);
-
+			spt.secondsLeft = secondsAdd;
+            spt.expires = System.currentTimeMillis() + (spt.secondsLeft * 1000L);
 		} else {
 			player.sendMessage(ChatColor.YELLOW + "You have been spawn-tagged for §c" + seconds + " §eseconds!");
 
 			SpawnTag spt = new SpawnTag(player);
 
 			spt.secondsLeft = seconds;
+            spt.expires = System.currentTimeMillis() + (spt.secondsLeft * 1000L);
 			spt.start();
 
 			spawnTags.put(player.getName(), spt);

@@ -8,10 +8,13 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.commands.Freeze;
+import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R4.PacketPlayOutUpdateSign;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -246,6 +249,27 @@ public class ServerManager {
 			return new RegionData<String>(loc, Region.KOTH_ARENA, n);
 		}
 
+        //Road
+        String road = getRoad(loc);
+
+        if(!(road.equals(""))){
+            Region reg = null;
+
+            if(road.contains("north")){
+                reg = Region.ROAD_NORTH;
+            } else if(road.contains("east")){
+                reg = Region.ROAD_EAST;
+            } else if(road.contains("south")){
+                reg = Region.ROAD_SOUTH;
+            } else if(road.contains("west")){
+                reg = Region.ROAD_WEST;
+            }
+
+            if(reg != null){
+                return new RegionData<Object>(loc, reg, null);
+            }
+        }
+
 		if (isUnclaimed(loc)) {
 			return new RegionData<Object>(loc, Region.WILDNERNESS, null);
 		}
@@ -266,6 +290,11 @@ public class ServerManager {
 			player.teleport(to);
 			return;
 		}
+
+        if(Freeze.isFrozen(player)){
+            player.sendMessage(ChatColor.RED + "You cannot teleport while frozen!");
+            return;
+        }
 
 		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 
@@ -466,6 +495,32 @@ public class ServerManager {
 
 	}
 
+    public boolean isSpawnBufferZone(Location loc){
+        if(loc.getWorld().getEnvironment() != Environment.NORMAL){
+            return false;
+        }
+
+        int radius = 175;
+        int x = loc.getBlockX();
+        int z = loc.getBlockZ();
+
+        return ((x < radius && x > -radius) && (z < radius && z > -radius));
+    }
+
+    public String getRoad(Location loc){
+        for(CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)){
+            if(cr.getName().toLowerCase().startsWith("road_")){
+                return cr.getName();
+            }
+        }
+
+        return "";
+    }
+
+    public boolean isRoad(Location loc){
+        return !(getRoad(loc).equals(""));
+    }
+
 	public ArrayList<Team> getOnlineTeams() {
 		ArrayList<Team> teams = new ArrayList<Team>();
 
@@ -480,7 +535,7 @@ public class ServerManager {
 	}
 
 	public void handleShopSign(Sign sign, Player p) {
-		ItemStack it = Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", ""));
+		ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
 		if (it == null) {
 			System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
@@ -552,6 +607,11 @@ public class ServerManager {
 				removeItem(p, it, amountInInventory);
 				p.updateInventory();
 
+                // - ALPHA EDIT -
+                totalPrice *= 4;
+                p.sendMessage(ChatColor.GOLD + "Sold for 4x as much (Alpha stage).");
+                // - END ALPHA EDIT -
+
 				Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
 
 				String[] msgs = {
@@ -565,6 +625,27 @@ public class ServerManager {
 
 		}
 	}
+
+    public void handleKitSign(Sign sign, Player player){
+        String kit = ChatColor.stripColor(sign.getLine(1));
+
+        if(kit.equalsIgnoreCase("Fishing")){
+            int uses = FoxtrotPlugin.getInstance().getFishingKitMap().uses(player);
+
+            if(uses == 3){
+                showSignPacket(player, sign, new String[]{ "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!"});
+            } else {
+                ItemStack rod = new ItemStack(Material.FISHING_ROD);
+
+                rod.addEnchantment(Enchantment.LURE, 2);
+                player.getInventory().addItem(rod);
+                player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
+                uses += 1;
+                player.setMetadata(FishingKitMap.META, new FixedMetadataValue(FoxtrotPlugin.getInstance(), uses));
+                showSignPacket(player, sign, new String[]{"§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3"});
+            }
+        }
+    }
 
 	public void removeItem(Player p, ItemStack it, int amount) {
 		boolean specialDamage = it.getType().getMaxDurability() == (short) 0;
@@ -630,33 +711,20 @@ public class ServerManager {
 		return amount;
 	}
 
-	public void loadEnchantments() {
-		maxEnchantments.put(Enchantment.PROTECTION_ENVIRONMENTAL, 2);
-		maxEnchantments.put(Enchantment.THORNS, -1);
-		maxEnchantments.put(Enchantment.PROTECTION_PROJECTILE, 4);
-		maxEnchantments.put(Enchantment.PROTECTION_EXPLOSIONS, 4);
-		maxEnchantments.put(Enchantment.PROTECTION_FIRE, 4);
-		maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
-		maxEnchantments.put(Enchantment.DURABILITY, 3);
-		maxEnchantments.put(Enchantment.OXYGEN, 3);
-		maxEnchantments.put(Enchantment.WATER_WORKER, 1);
+	public void loadEnchantments(){
+        //Max armor enchants
+        maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
 
-		maxEnchantments.put(Enchantment.DAMAGE_ALL, 2);
-		maxEnchantments.put(Enchantment.FIRE_ASPECT, 2);
-		maxEnchantments.put(Enchantment.KNOCKBACK, 1);
-		maxEnchantments.put(Enchantment.DAMAGE_ARTHROPODS, 5);
-		maxEnchantments.put(Enchantment.DAMAGE_UNDEAD, 5);
-		maxEnchantments.put(Enchantment.ARROW_DAMAGE, 5);
-		maxEnchantments.put(Enchantment.ARROW_FIRE, 1);
-		maxEnchantments.put(Enchantment.ARROW_INFINITE, 1);
-		maxEnchantments.put(Enchantment.ARROW_KNOCKBACK, 2);
+        //Max bow enchants
+        maxEnchantments.put(Enchantment.ARROW_DAMAGE, 2);
+        maxEnchantments.put(Enchantment.ARROW_INFINITE, 1);
 
-		maxEnchantments.put(Enchantment.DIG_SPEED, 5);
-		maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
-		maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
-		maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
-		maxEnchantments.put(Enchantment.LUCK, 3);
-		maxEnchantments.put(Enchantment.LURE, 3);
-
+        //Max tool enchants
+        maxEnchantments.put(Enchantment.DIG_SPEED, 5);
+        maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+        maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+        maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
+        maxEnchantments.put(Enchantment.LUCK, 3);
+        maxEnchantments.put(Enchantment.LURE, 3);
 	}
 }

@@ -43,6 +43,14 @@ public enum Region {
 
 	}),
 
+    ROAD_NORTH(false, "§cNorth Road", (e) -> true),
+
+    ROAD_EAST(false, "§cEast Road", (e) -> true),
+
+    ROAD_SOUTH(false, "§cSouth Road", (e) -> true),
+
+    ROAD_WEST(false, "§cWest Road", (e) -> true),
+
 	CLAIMED_LAND(false, "", (e) -> {
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getTo());
 

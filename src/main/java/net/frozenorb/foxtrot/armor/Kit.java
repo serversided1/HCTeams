@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.util.TimeUtils;
 
@@ -24,7 +25,7 @@ public abstract class Kit implements Listener {
 	public void startWarmup(final Player p) {
 		p.sendMessage("§aPvE Class: §b" + getName() + "§a Enabled. Warm-up: §e" + getWarmup() + "s");
 
-		warmupTasks.put(p.getName(), new KitTask(this, getWarmup()) {
+		warmupTasks.put(p.getName(), new KitTask(this, getWarmup()){
 
             @Override
             public void run() {
@@ -104,10 +105,16 @@ public abstract class Kit implements Listener {
 
 	public abstract int getWarmup();
 
-	@AllArgsConstructor
 	public abstract static class KitTask extends BukkitRunnable {
-		@Getter private Kit kit;
+		@Getter Kit kit;
 		@Getter int seconds;
+        @Getter long ends;
+
+        public KitTask(Kit kit, int seconds){
+            this.kit = kit;
+            this.seconds = seconds;
+            this.ends = System.currentTimeMillis() + (seconds * 1000L);
+        }
 	}
 
 }

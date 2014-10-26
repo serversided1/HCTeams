@@ -428,6 +428,10 @@ public class VisualClaim implements Listener {
 
 			curPrice += (500 * t.getClaims().size());
 
+            //ALPHA ONLY - REMOVE THIS LINE
+            //HALF PRICE CLAIMS
+            curPrice /= 2.0D;
+
 			return (int) curPrice;
 
 		}

@@ -670,7 +670,10 @@ public class Team {
 		if (memberAmount > 0) {
 			p.sendMessage(members.toString());
 		}
-		p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balance == (long) balance ? (long) balance : balance)); //Remove trailing ".0"
+
+        String balStr = String.valueOf(balance);
+
+		p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
 
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
 		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);

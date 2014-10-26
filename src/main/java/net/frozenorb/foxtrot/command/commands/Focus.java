@@ -1,14 +1,12 @@
 package net.frozenorb.foxtrot.command.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.BaseCommand;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,23 +14,45 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.BaseCommand;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.TeamManager;
-import net.frozenorb.foxtrot.team.claims.Claim;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class Focus extends BaseCommand {
-
-	public static HashMap<String, Focusable> currentTrackers = new HashMap<String, Focusable>();
+	public static HashMap<String, Focusable> currentTrackers = new HashMap<>();
 
 	public Focus() {
 		super("focus", "track", "hunt", "whitepages", "whereismonica");
 	}
 
-	public List<String> tabComplete() {
+    private void focus(Player player, Focusable focusable){
+        if(currentTrackers.containsKey(player.getName())){
+            currentTrackers.remove(player.getName()).cancel();
+        }
 
+        currentTrackers.put(player.getName(), focusable);
+        focusable.start(player);
+        player.sendMessage(ChatColor.YELLOW + "You have begun to focus on " + ChatColor.RED + focusable.data + ChatColor.YELLOW + ".");
+    }
+
+	public List<String> tabComplete(){
+        String action = args.length == 0 ? "" : args[0];
+        List<String> list = new ArrayList<>();
+
+        if("reset".startsWith(action)){
+            list.add("reset");
+        }
+
+        if(FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(sender.getName())){
+            for(Player online : FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(sender.getName()).getOnlineMembers()){
+                if(!(online.equals(sender)) && !(online.hasMetadata("invisible")) && online.getName().startsWith(action)){
+                    list.add(online.getName());
+                }
+            }
+        }
+
+        return list;
+
+        /*
 		LinkedList<String> params = new LinkedList<String>(Arrays.asList(args));
 		LinkedList<String> results = new LinkedList<String>();
 		String action = null;
@@ -83,13 +103,140 @@ public class Focus extends BaseCommand {
 			}
 		}
 
-		return strs;
+        return strs;
+		*/
 	}
 
 	@Override
-	public void syncExecute() {
-		if (args.length > 1) {
+	public void syncExecute(){
+        Player player = (Player) sender;
 
+        if(args.length == 1){
+            //Check for compass
+            if(player.getItemInHand() == null || player.getItemInHand().getType() != Material.COMPASS) {
+                player.sendMessage(ChatColor.RED + "You must be holding a compass to do this!");
+                return;
+            }
+
+            //Check for "reset"
+            if(args[0].equalsIgnoreCase("reset")){
+                Focusable focusable = new Focusable(ChatColor.YELLOW + "the " + ChatColor.RED + "Warzone"){
+                    Location loc = null;
+
+                    @Override
+                    public Location updateLocation(){
+                        if(loc == null){
+                            loc = new Location(Bukkit.getWorlds().get(0), 0, 70, 0);
+                        }
+
+                        return loc;
+                    }
+
+                    @Override
+                    public FocusType getFocusType(){
+                        return FocusType.WARZONE;
+                    }
+                };
+
+                focus(player, focusable);
+                return;
+            }
+
+            //Check for x,z
+            if(args[0].contains(",")){
+                String[] split = args[0].split(",");
+
+                try{
+                    double x = Double.parseDouble(split[0]);
+                    double z = Double.parseDouble(split[1]);
+
+                    Focusable focusable = new Focusable(ChatColor.LIGHT_PURPLE + "(" + ChatColor.AQUA + (int) x + ChatColor.LIGHT_PURPLE + ", " + ChatColor.AQUA + (int) z + ChatColor.LIGHT_PURPLE + ")"){
+                        Location loc = null;
+
+                        @Override
+                        public Location updateLocation(){
+                            if(loc == null){
+                                loc = new Location(Bukkit.getWorlds().get(0), x, 70, z);
+                            }
+
+                            return loc;
+                        }
+
+                        @Override
+                        public FocusType getFocusType(){
+                            return FocusType.LOCATION;
+                        }
+                    };
+
+                    focus(player, focusable);
+                } catch(NumberFormatException e){
+                    player.sendMessage(ChatColor.RED + "Invalid X and Z coordinates!");
+                }
+
+                return;
+            }
+
+            //Check for player
+            Player target = Bukkit.getPlayer(args[0]);
+
+            //Invalid player
+            if(target == null || target.hasMetadata("invisible")){
+                sender.sendMessage(ChatColor.RED + "Player '" + args[0] + "' could not be found.");
+                return;
+            }
+
+            //Team check
+            if(!(FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(player.getName()))){
+                sender.sendMessage(ChatColor.RED + "You are not on a team!");
+                return;
+            }
+
+            if(!(FoxtrotPlugin.getInstance().getServerManager().areOnSameTeam(player.getName(), target.getName()))){
+                sender.sendMessage(ChatColor.RED + "You can only track players that are on the same team as you!");
+                return;
+            }
+
+            if(player.equals(target)){
+                player.sendMessage(ChatColor.RED + "You may not focus on yourself!");
+                return;
+            }
+
+            //World check
+            if(target.getWorld().getEnvironment() != player.getWorld().getEnvironment()){
+                sender.sendMessage(ChatColor.RED + "That player is not in the same world as you!");
+                return;
+            }
+
+            //Start tracking
+            final String cacheName = target.getName();
+
+            Focusable focusable = new Focusable(target.getDisplayName()){
+                @Override
+                public FocusType getFocusType(){
+                    return FocusType.PLAYER;
+                }
+
+                @Override
+                public Location updateLocation(){
+                    Player pss = Bukkit.getPlayerExact(cacheName);
+
+                    if(pss == null){
+                        return null;
+                    }
+
+                    return pss.getLocation();
+                }
+            };
+
+            focus(player, focusable);
+            return;
+        } else {
+            player.sendMessage(ChatColor.RED + "Usage: /" + label + " <reset | teammate | x,z>");
+        }
+
+        //OLD CODE
+        /*
+		if (args.length > 1) {
 			Player p = (Player) sender;
 			TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
 
@@ -197,6 +344,7 @@ public class Focus extends BaseCommand {
 
 			} else if (args[0].toLowerCase().startsWith("loc")) {
 				double x = 0, z = 0;
+
 				if (args.length == 2) {
 					String check1 = args[1];
 
@@ -259,6 +407,7 @@ public class Focus extends BaseCommand {
 		} else {
 			sender.sendMessage("§c/focus <team|player|loc> <teamname|playername|x,z>");
 		}
+		*/
 	}
 
 	@RequiredArgsConstructor
@@ -289,11 +438,13 @@ public class Focus extends BaseCommand {
 					currentTrackers.remove(p.getName());
 					cancel();
 					return;
-				} else if (getFocusType() == FocusType.PLAYER) {
+				} else if(getFocusType() == FocusType.PLAYER){
 					if (lastLocation != null) {
 						p.sendMessage(data + " §elogged out and will be refocused when they log in!");
 					}
-					return;
+
+                    lastLocation = l;
+                    return;
 				}
 			} else {
 				if (lastLocation == null) {

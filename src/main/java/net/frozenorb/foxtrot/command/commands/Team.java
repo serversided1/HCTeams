@@ -42,6 +42,8 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Rename("rename", ""));
 		registerSubcommand(new Map("map", ""));
         registerSubcommand(new Stuck("stuck", "§c/t stuck", "out"));
+        registerSubcommand(new Disband("disband", "§c/t disband"));
+        registerSubcommand(new ForceDisband("forcedisband", "§c/t forcedisband"));
 
 		registerSubcommandsToTabCompletions();
 	}
@@ -83,8 +85,8 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.DARK_AQUA + "***Team Leader Only***");
 		p.sendMessage(ChatColor.GRAY + "/team promote -Promotes the targeted player to a Captain.");
 		p.sendMessage(ChatColor.GRAY + "/team demote - Demotes the targeted player to a member.");
-		p.sendMessage(ChatColor.GRAY + "/team unclaim - Unclaim a claim.");
+		p.sendMessage(ChatColor.GRAY + "/team unclaim - Unclaim land.");
 		p.sendMessage(ChatColor.GRAY + "/team newleader [playerName] - Make a player an owner on your team.");
-
+        p.sendMessage(ChatColor.GRAY + "/team disband - Disband the team. [Warning]");
 	}
 }

@@ -7,7 +7,6 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.Utilities.Utils.FaceUtil;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.HostKOTH;
-import net.frozenorb.foxtrot.command.commands.ToggleLightning;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.Minigame.State;
 import net.frozenorb.foxtrot.game.games.KingOfTheHill;
@@ -24,15 +23,19 @@ import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.NMSMethods;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
+import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mBasic.EconomySystem.EconomyManager;
 import net.frozenorb.utils.hologram.object.CraftHologram;
 import net.frozenorb.utils.hologram.object.HologramManager;
 import net.minecraft.server.v1_7_R4.EntityLightning;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MathHelper;
 import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityWeather;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.*;
+import org.bukkit.command.defaults.EnchantCommand;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
@@ -47,7 +50,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -62,6 +65,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -71,6 +75,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -360,8 +365,12 @@ public class FoxListener implements Listener {
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(e.getPlayer());
         FoxtrotPlugin.getInstance().getChatModeMap().playerQuit(e.getPlayer());
         FoxtrotPlugin.getInstance().getToggleLightningMap().playerQuit(e.getPlayer());
+        FoxtrotPlugin.getInstance().getFishingKitMap().playerQuit(e.getPlayer());
 
 		NametagManager.getTeamMap().remove(e.getPlayer().getName());
+
+        //Remove scoreboard
+        FoxtrotPlugin.getInstance().getScoreboardManager().remove(e.getPlayer());
 
 		boolean enemyWithinRange = false;
 		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
@@ -590,6 +599,7 @@ public class FoxListener implements Listener {
 		FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(e.getPlayer());
         FoxtrotPlugin.getInstance().getChatModeMap().playerJoined(e.getPlayer());
         FoxtrotPlugin.getInstance().getToggleLightningMap().playerJoined(e.getPlayer());
+        FoxtrotPlugin.getInstance().getFishingKitMap().playerJoined(e.getPlayer());
 
         if (!e.getPlayer().hasPlayedBefore()) {
 			e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
@@ -600,7 +610,7 @@ public class FoxListener implements Listener {
             FoxtrotPlugin.getInstance().getJoinTimerMap().pendingTimer(player);
         }
 
-        if(FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(name) == -1){
+        if(FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(name) == JoinTimerMap.PENDING_USE){
             player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
 
@@ -630,7 +640,7 @@ public class FoxListener implements Listener {
 			ex.printStackTrace();
 		}
 
-		FoxtrotPlugin.getInstance().getScoreboardManager().startTask(e.getPlayer());
+		FoxtrotPlugin.getInstance().getScoreboardManager().update(e.getPlayer());
 
 	}
 
@@ -825,14 +835,26 @@ public class FoxListener implements Listener {
 	}
 
 	@EventHandler
-	public void onItemEnchant(EnchantItemEvent e) {
+	public void onItemEnchant(EnchantItemEvent e){
+        for(Entry<Enchantment, Integer> entry : e.getEnchantsToAdd().entrySet()){
+            if(ServerManager.getMaxEnchantments().containsKey(entry)){
+                if(ServerManager.getMaxEnchantments().get(entry) > entry.getValue()){
+                    e.getEnchantsToAdd().put(entry.getKey(), ServerManager.getMaxEnchantments().get(entry));
+                }
+            } else {
+                e.getEnchantsToAdd().remove(entry.getKey());
+            }
+        }
+
+        /*
 		for (Entry<Enchantment, Integer> entry : ServerManager.getMaxEnchantments().entrySet()) {
-			if (e.getEnchantsToAdd().containsKey(entry.getKey())) {
+			if(e.getEnchantsToAdd().containsKey(entry.getKey())){
 				if (e.getEnchantsToAdd().get(entry.getKey()) > entry.getValue()) {
 					e.getEnchantsToAdd().put(entry.getKey(), entry.getValue());
 				}
 			}
 		}
+		*/
 	}
 
 	@EventHandler
@@ -1141,24 +1163,23 @@ public class FoxListener implements Listener {
 			}
 
 			if (e.getMaterial() == Material.ENDER_PEARL) {
+                if(p.getWorld().getEnvironment() != Environment.THE_END){
+                    if (enderpearlCooldown.containsKey(p.getName()) && enderpearlCooldown.get(p.getName()) > System.currentTimeMillis()) {
 
-				if (enderpearlCooldown.containsKey(p.getName()) && enderpearlCooldown.get(p.getName()) > System.currentTimeMillis()) {
+                        long millisLeft = enderpearlCooldown.get(p.getName()) - System.currentTimeMillis();
 
-					long millisLeft = enderpearlCooldown.get(p.getName()) - System.currentTimeMillis();
+                        double value = (millisLeft / 1000D);
+                        double sec = Math.round(10.0 * value) / 10.0;
 
-					double value = (millisLeft / 1000D);
-					double sec = Math.round(10.0 * value) / 10.0;
+                        e.setCancelled(true);
+                        String msg = "§cYou cannot use this for another §l" + sec + "§c seconds!";
+                        p.sendMessage(msg);
+                        p.updateInventory();
 
-					e.setCancelled(true);
-					String msg = "§cYou cannot use this for another §l" + sec + "§c seconds!";
-					p.sendMessage(msg);
-					p.updateInventory();
-
-				} else {
-					enderpearlCooldown.put(p.getName(), System.currentTimeMillis() + 16000);
-
-				}
-
+                    } else {
+                        enderpearlCooldown.put(p.getName(), System.currentTimeMillis() + 16000);
+                    }
+                }
 			}
 
 		}
@@ -1205,9 +1226,13 @@ public class FoxListener implements Listener {
 			if (e.getClickedBlock().getType() == Material.WALL_SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
 				Sign s = (Sign) e.getClickedBlock().getState();
 
-				if (s.getLine(0) != null && FoxtrotPlugin.getInstance().getServerManager().isSpawn(e.getClickedBlock().getLocation())) {
-					FoxtrotPlugin.getInstance().getServerManager().handleShopSign(s, e.getPlayer());
-				}
+                if(FoxtrotPlugin.getInstance().getServerManager().isSpawn(e.getClickedBlock().getLocation())){
+                    if(s.getLine(0).contains("Kit")){
+                        FoxtrotPlugin.getInstance().getServerManager().handleKitSign(s, e.getPlayer());
+                    } else if(s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")){
+                        FoxtrotPlugin.getInstance().getServerManager().handleShopSign(s, e.getPlayer());
+                    }
+                }
 			}
 		}
 
@@ -1235,9 +1260,12 @@ public class FoxListener implements Listener {
 
 	@EventHandler
 	public void onSignPlace(BlockPlaceEvent e) {
-		if (e.getItemInHand().getType() == Material.SIGN) {
-			if (e.getItemInHand().hasItemMeta() && e.getItemInHand().getItemMeta().getLore() != null) {
-				ArrayList<String> lore = (ArrayList<String>) e.getItemInHand().getItemMeta().getLore();
+        Block block = e.getBlock();
+        ItemStack hand = e.getItemInHand();
+
+		if (hand.getType() == Material.SIGN) {
+			if (hand.hasItemMeta() && hand.getItemMeta().getLore() != null) {
+				ArrayList<String> lore = (ArrayList<String>) hand.getItemMeta().getLore();
 
 				if (e.getBlock().getType() == Material.WALL_SIGN || e.getBlock().getType() == Material.SIGN_POST) {
 					Sign s = (Sign) e.getBlock().getState();
@@ -1250,8 +1278,20 @@ public class FoxListener implements Listener {
 
 				}
 			}
+		} else if(hand.getType() == Material.MOB_SPAWNER){
+            if(!(e.isCancelled())){
+                if(hand.hasItemMeta() && hand.getItemMeta().hasDisplayName()){
+                    String name = hand.getItemMeta().getDisplayName();
+                    String entName = name.replace(" Spawner", "");
+                    EntityType type = EntityType.valueOf(entName.toUpperCase().replaceAll(" ", "_"));
+                    CreatureSpawner spawner = (CreatureSpawner) block.getState();
 
-		}
+                    spawner.setSpawnedType(type);
+                    spawner.update();
+                    e.getPlayer().sendMessage(ChatColor.AQUA + "You placed a " + entName + " spawner!");
+                }
+            }
+        }
 	}
 
 	@EventHandler
@@ -1437,7 +1477,7 @@ public class FoxListener implements Listener {
 					it.remove();
 				} else {
 					if (entry.getKey().getDamager() != null && entry.getKey().getVictimUUID().equals(e.getEntity().getUniqueId())) {
-
+                        /*
 						HashMap<DamageModifier, Double> modifiers = new HashMap<DamageModifier, Double>();
 						modifiers.put(DamageModifier.BASE, 10D);
 
@@ -1446,6 +1486,7 @@ public class FoxListener implements Listener {
 
 						EntityDamageByEntityEvent edbee = new EntityDamageByEntityEvent(entry.getKey().getDamager(), entry.getKey().getVictim(), DamageCause.ENTITY_ATTACK, modifiers, modifierFunctions);
 						e.getEntity().setLastDamageCause(edbee);
+						*/
 
 						EntityPlayer ep = ((CraftPlayer) e.getEntity()).getHandle();
 						ep.lastDamager = ((CraftPlayer) entry.getKey().getDamager()).getHandle();
@@ -1462,9 +1503,10 @@ public class FoxListener implements Listener {
 		e.setDeathMessage(e.getDeathMessage().replace(e.getEntity().getName(), "§c" + e.getEntity().getName() + "§4[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getName()) + "]§e"));
 		SpawnTag.removeTag(e.getEntity());
 
-		int seconds = 15 * 60;
+        //                           [          12 Hour         ]
+		int seconds = (int) Math.min(TimeUnit.HOURS.toSeconds(12), FoxtrotPlugin.getInstance().getPlaytimeMap().getValue(player.getName()));
 
-		if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
+		if(FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
 			seconds = 15 * 60;
 		}
 
@@ -1655,6 +1697,16 @@ public class FoxListener implements Listener {
 				p.sendMessage(deathMessage);
 			}
 		}
+
+        //Transfer money
+        double bal = Basic.get().getEconomyManager().getBalance(player.getName());
+
+        Basic.get().getEconomyManager().withdrawPlayer(player.getName(), bal);
+
+        if(player.getKiller() != null){
+            Basic.get().getEconomyManager().depositPlayer(player.getKiller().getName(), bal);
+            player.getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + player.getDisplayName() + ChatColor.GOLD + "!");
+        }
 
 		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
 
@@ -1878,6 +1930,7 @@ public class FoxListener implements Listener {
 
                             if(portals == 0){
                                 player.setItemInHand(null);
+                                loc.getWorld().playSound(loc, Sound.ITEM_BREAK, 1.0F, 1.0F);
                                 return;
                             }
 
@@ -1894,17 +1947,56 @@ public class FoxListener implements Listener {
                             hand.setDurability((short) (max - dura));
                             player.setItemInHand(hand);
                         } else {
-                            player.sendMessage(ChatColor.RED + "This crowbar has no more uses!");
+                            player.sendMessage(ChatColor.RED + "This crowbar has no more uses on diamond hoes!");
                         }
                     } else if(block.getType() == Material.MOB_SPAWNER){
                         CreatureSpawner spawner = (CreatureSpawner) block.getState();
+                        int spawners = InvUtils.getCrowbarUsesSpawner(hand);
 
-                        //TODO
+                        if(spawners > 0){
+                            if(block.getWorld().getEnvironment() == Environment.NETHER){
+                                e.getPlayer().sendMessage(ChatColor.RED + "You cannot break spawners in the nether!");
+                                e.setCancelled(true);
+                                return;
+                            }
 
-                        player.sendMessage(ChatColor.RED + "This is coming soon!");
-                        e.setCancelled(true);
+                            loc.getWorld().playEffect(loc, Effect.STEP_SOUND, block.getTypeId());
+                            block.setType(Material.AIR);
+
+                            ItemStack drop = new ItemStack(Material.MOB_SPAWNER);
+                            ItemMeta meta = drop.getItemMeta();
+
+                            meta.setDisplayName(StringUtils.capitaliseAllWords(spawner.getSpawnedType().toString().toLowerCase().replaceAll("_", " ")) + " Spawner");
+                            drop.setItemMeta(meta);
+                            loc.getWorld().dropItemNaturally(loc, drop);
+                            loc.getWorld().playSound(loc, Sound.ANVIL_USE, 1.0F, 1.0F);
+
+                            spawners -= 1;
+
+                            if(spawners == 0){
+                                player.setItemInHand(null);
+                                loc.getWorld().playSound(loc, Sound.ITEM_BREAK, 1.0F, 1.0F);
+                                return;
+                            }
+
+                            //Manage crowbar
+                            //Should never happen, lol.
+                            meta = hand.getItemMeta();
+                            meta.setLore(InvUtils.getCrowbarLore(0, spawners));
+                            hand.setItemMeta(meta);
+
+                            //Durability
+                            double max = Material.DIAMOND_HOE.getMaxDurability();
+                            double dura = (max / (double) InvUtils.CROWBAR_SPAWNERS) * spawners;
+
+                            hand.setDurability((short) (max - dura));
+                            player.setItemInHand(hand);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "This crowbar has no more uses on mob spawners!");
+                        }
+
                     } else {
-                        player.sendMessage(ChatColor.RED + "Crowbars can only break End Portals and Mob Spawners!");
+                        player.sendMessage(ChatColor.RED + "Crowbars can only break end portals and mob spawners!");
                         e.setCancelled(true);
                         e.setUseInteractedBlock(Result.DENY);
                         e.setUseItemInHand(Result.DENY);
@@ -1958,6 +2050,14 @@ public class FoxListener implements Listener {
 		if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getPlayer().getLocation())) {
 			e.setCancelled(true);
 		}
+
+        if(FoxtrotPlugin.getInstance().getServerManager().isSpawnBufferZone(e.getBlock().getLocation())){
+            e.setCancelled(true);
+        }
+
+        if(FoxtrotPlugin.getInstance().getServerManager().isRoad(e.getBlock().getLocation())){
+            e.setCancelled(true);
+        }
 
 		if (e.getBlock().getType() == Material.MOB_SPAWNER && e.getBlock().getWorld().getEnvironment() == Environment.NETHER) {
 			e.getPlayer().sendMessage(ChatColor.RED + "You cannot break this here!");
@@ -2205,4 +2305,49 @@ public class FoxListener implements Listener {
 	public boolean isAir(ItemStack stack) {
 		return stack == null || stack.getType().equals(Material.AIR);
 	}
+
+    /*
+     ------------------------------------------
+     --- ALPHA EDITS TO SPEED UP PROCESS
+     ------------------------------------------
+     */
+
+    @EventHandler
+    public void onBurn(FurnaceBurnEvent event){
+        Furnace tile = (org.bukkit.block.Furnace)event.getBlock().getState();
+        startUpdate(tile, 3);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockBreakMultiplier(BlockBreakEvent event){
+        if(event.getPlayer().getGameMode() == GameMode.CREATIVE){
+            return;
+        }
+
+        Location loc = event.getBlock().getLocation();
+
+        for(ItemStack drop : event.getBlock().getDrops()){
+            loc.getWorld().dropItemNaturally(loc, drop);
+            loc.getWorld().dropItemNaturally(loc, drop);
+        }
+    }
+
+    @EventHandler
+    public void onEXPMultiplier(PlayerExpChangeEvent event){
+        event.setAmount(event.getAmount() * 3);
+    }
+
+    private void startUpdate(final Furnace tile, final int increase){
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+                if (tile.getCookTime() > 0 || tile.getBurnTime() > 0){
+                    tile.setCookTime((short) (tile.getCookTime() + increase));
+                    tile.update();
+                }else
+                    this.cancel();
+
+            }
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1, 1);
+    }
 }

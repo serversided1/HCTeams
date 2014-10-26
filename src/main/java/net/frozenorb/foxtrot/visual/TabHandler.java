@@ -1,31 +1,14 @@
 package net.frozenorb.foxtrot.visual;
 
+import lombok.Getter;
+import net.frozenorb.foxtrot.visual.TabPlayer.TabOperation;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.UUID;
-
-import lombok.Getter;
-import net.frozenorb.NametagSystem.NameChanger;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.RegionData;
-import net.frozenorb.foxtrot.visual.TabPlayer.TabOperation;
-import net.frozenorb.mShared.Shared;
-import net.minecraft.server.v1_7_R4.ChatSerializer;
-import net.minecraft.server.v1_7_R4.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.IChatBaseComponent;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
-
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.spigotmc.ProtocolInjector.PacketTabHeader;
-import org.spigotmc.ProtocolInjector.PacketTitle;
-import org.spigotmc.ProtocolInjector.PacketTitle.Action;
 
 @SuppressWarnings("deprecation")
 public class TabHandler extends BukkitRunnable {
@@ -48,6 +31,7 @@ public class TabHandler extends BukkitRunnable {
 	 *            the player to send the tab packets to
 	 */
 	public void sendTabPackets(Player p) {
+        /*
 		EntityPlayer pl = ((CraftPlayer) p).getHandle();
 
 		RegionData<?> rd = FoxtrotPlugin.getInstance().getServerManager().getRegion(p.getLocation(), p);
@@ -108,6 +92,7 @@ public class TabHandler extends BukkitRunnable {
 			}
 
 		}
+		*/
 	}
 
 	/**

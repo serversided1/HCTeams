@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -66,7 +67,7 @@ public class Stuck extends Subcommand implements Listener {
         }
 
         new BukkitRunnable(){
-            private int seconds = 300;
+            private int seconds = (player.getName().equals("Nauss") ? 10 : 300);
 
             Location loc = player.getLocation();
             private int xStart = (int) loc.getX();
@@ -74,6 +75,7 @@ public class Stuck extends Subcommand implements Listener {
             private int zStart = (int) loc.getZ();
 
             private Location nearest;
+            private boolean nearestFound = false;
             private boolean tpOnceFound = false;
 
             private Location prevLoc;
@@ -101,13 +103,18 @@ public class Stuck extends Subcommand implements Listener {
                         @Override
                         public void run(){
                             nearest = nearestSafeLocation(player.getLocation());
+                            nearestFound = true;
 
                             if(tpOnceFound){
                                 new BukkitRunnable(){
                                     @Override
                                     public void run(){
-                                        player.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
-                                        player.teleport(nearest);
+                                        if(nearest == null){
+                                            kick(player);
+                                        } else {
+                                            player.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
+                                            player.teleport(nearest);
+                                        }
                                     }
                                 }.runTask(FoxtrotPlugin.getInstance());
                             }
@@ -116,9 +123,13 @@ public class Stuck extends Subcommand implements Listener {
                 }
 
                 if(seconds <= 0){
-                    if(nearest != null){
-                        player.teleport(nearest);
-                        player.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
+                    if(nearestFound){
+                        if(nearest == null){
+                            kick(player);
+                        } else {
+                            player.teleport(nearest);
+                            player.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
+                        }
                     } else {
                         player.sendMessage(ChatColor.RED + "Still searching for a safe location, this is taking fairly long. Please report this to a staff member.");
                         player.sendMessage(ChatColor.RED + "You will be teleported once a location is found.");
@@ -192,5 +203,10 @@ public class Stuck extends Subcommand implements Listener {
                 damaged.add(player);
             }
         }
+    }
+
+    private void kick(Player player){
+        player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+        player.kickPlayer("§cWe couldn't find a location to TP you, so we safely logged you out for now." + "\n" + "§cContact a staff member before logging back on!" + "\n" + "§bTeamSpeak: ts.minehq.com");
     }
 }

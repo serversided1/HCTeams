@@ -33,7 +33,7 @@ import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.visual.BossBarManager;
-import net.frozenorb.foxtrot.visual.ScoreboardManager;
+import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardManager;
 import net.frozenorb.foxtrot.visual.TabHandler;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Bukkit;
@@ -75,6 +75,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
     @Getter private ToggleLightningMap toggleLightningMap;
+    @Getter private FishingKitMap fishingKitMap;
 
 	@Override
 	public void onEnable() {
@@ -256,6 +257,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         toggleLightningMap = new ToggleLightningMap();
         toggleLightningMap.loadFromRedis();
+
+        fishingKitMap = new FishingKitMap();
+        fishingKitMap.loadFromRedis();
 	}
 
 	/**
