@@ -39,7 +39,7 @@ public class Bard extends Kit {
                     continue;
 
                 if (Kit.getEquippedKits().get(pName) instanceof Bard) {
-                    if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation()))
+                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation()))
                         continue;
 
                     for (Player p : getNearby(player, true, 15)) {
@@ -111,6 +111,16 @@ public class Bard extends Kit {
         //Enemy is anyone not in your faction 15 block radius
     }
 
+    HashMap<String, Long> msgCooldown = new HashMap<>();
+
+    @Override
+    public void startWarmup(final Player p){
+        if(!(msgCooldown.containsKey(p.getName())) || msgCooldown.get(p.getName()) < System.currentTimeMillis()){
+            p.sendMessage(ChatColor.RED + "The " + ChatColor.BOLD + "Bard" + ChatColor.RED + " class has been temporarily disabled.");
+            msgCooldown.put(p.getName(), System.currentTimeMillis() + 30000L);
+        }
+    }
+
     @Override
     public boolean qualifies(Armor armor) {
         return armor.isFullSet(ArmorMaterial.GOLD);
@@ -177,7 +187,7 @@ public class Bard extends Kit {
             return;
 
         if (INSTANT_EFFECTS.containsKey(holding.getType())) {
-            if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation())) {
+            if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation())) {
                 player.sendMessage(ChatColor.RED+"You cannot use abilities in spawn!");
                 return;
             }

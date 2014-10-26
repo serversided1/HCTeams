@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 public class Team {
+    public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
 
 	public static final int MAX_TEAM_SIZE = 20;
 
@@ -336,7 +337,7 @@ public class Team {
 	}
 
 	public void playerDeath(String p) {
-		setDtr(Math.max(dtr - 1D, -.99));
+		setDtr(Math.max(dtr - 0.5D, -.99)); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
 
 		if (isRaidaible()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);
@@ -384,7 +385,6 @@ public class Team {
 	public double getMaxDTR() {
 		int size = getSize();
 		return Math.ceil((Math.log10(size / 5D) / Math.log10(2D)) + Math.round(size / 60D)) + 3;
-
 	}
 
 	public void load(String str) {
@@ -673,10 +673,11 @@ public class Team {
 
         String balStr = String.valueOf(balance);
 
-		p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
+		//p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
+        p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
 
 		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
-		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + new DecimalFormat("0.00").format(dtr);
+		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
 
 		if (getOnlineMemberAmount() == 0) {
 			dtrMsg += "§7■";

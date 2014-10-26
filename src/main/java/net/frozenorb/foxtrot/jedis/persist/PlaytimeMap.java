@@ -38,4 +38,11 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 		updateValue(p.getName().toLowerCase(), l + (System.currentTimeMillis() - joinDate.get(p.getName())) / 1000);
 	}
 
+    public long getCurrentSession(String player){
+        if(joinDate.containsKey(player)){
+            return System.currentTimeMillis() - joinDate.get(player);
+        }
+
+        return 0L;
+    }
 }

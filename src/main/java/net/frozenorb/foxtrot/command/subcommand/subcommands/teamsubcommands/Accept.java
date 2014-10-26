@@ -35,7 +35,7 @@ public class Accept extends Subcommand {
 						return;
 					}
 
-                    if (Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()) {
+                    if(!(p.isOp()) && Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()){
                         long millisLeft = Leave.getCreateCooldown().get(p) - System.currentTimeMillis();
 
                         double value = (millisLeft / 1000D);

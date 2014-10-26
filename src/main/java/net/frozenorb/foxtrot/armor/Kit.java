@@ -39,7 +39,7 @@ public abstract class Kit implements Listener {
 
                 }
 
-                if (seconds == 0) {
+                if (seconds == 0){
                     apply(p);
                     equippedKits.put(p.getName(), Kit.this);
                     p.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");

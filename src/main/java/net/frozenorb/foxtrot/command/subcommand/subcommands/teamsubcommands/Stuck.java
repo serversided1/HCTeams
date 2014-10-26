@@ -178,16 +178,16 @@ public class Stuck extends Subcommand implements Listener {
         if (!tm.isTaken(origin))
             return origin.getWorld().getHighestBlockAt(origin).getLocation();
 
-        if (FoxtrotPlugin.getInstance().getServerManager().isSpawn(origin))
+        if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(origin))
             return origin.getWorld().getHighestBlockAt(origin).getLocation();
 
         for (int xPos = 0, xNeg = 0; xPos < 500; xPos++, xNeg--) {
             for (int zPos = 0, zNeg = 0; zPos < 500; zPos++, zNeg--) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
-                if (!(tm.isTaken(atPos)) || FoxtrotPlugin.getInstance().getServerManager().isSpawn(atPos))
+                if (!(tm.isTaken(atPos)) || FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(atPos))
                     return atPos.getWorld().getHighestBlockAt(atPos).getLocation();
-                if (!(tm.isTaken(atNeg)) || FoxtrotPlugin.getInstance().getServerManager().isSpawn(atNeg))
+                if (!(tm.isTaken(atNeg)) || FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(atNeg))
                     return atNeg.getWorld().getHighestBlockAt(atNeg).getLocation();
             }
         }

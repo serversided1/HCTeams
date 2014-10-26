@@ -31,7 +31,7 @@ public class Rename extends Subcommand {
         }
 
         if(args.length == 2){
-            if(StringUtils.isAlphanumeric(args[1])){
+            if(args[1].matches("^[a-zA-Z0-9]*$")){
                 if(FoxtrotPlugin.getInstance().getTeamManager().getTeam(args[1]) == null){
                     FoxtrotPlugin.getInstance().getTeamManager().renameTeam(team, args[1]);
                     sender.sendMessage(ChatColor.GREEN + "Team renamed to " + args[1]);

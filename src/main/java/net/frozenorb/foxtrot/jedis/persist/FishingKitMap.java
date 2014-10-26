@@ -28,6 +28,7 @@ public class FishingKitMap extends RedisPersistMap<Integer> {
     public void playerJoined(Player player){
         if(!(contains(player.getName()))){
             player.setMetadata(META, new FixedMetadataValue(FoxtrotPlugin.getInstance(), 0));
+            return;
         }
 
         int value = getValue(player.getName());

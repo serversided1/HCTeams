@@ -171,7 +171,7 @@ public class ServerManager {
 
 	/**
 	 * Gets whether two names are on the same team
-	 * 
+	 *
 	 * @param s1
 	 *            player1's name
 	 * @param s2
@@ -228,9 +228,13 @@ public class ServerManager {
 
 	public RegionData<?> getRegion(Location loc, Player p) {
 
-		if (isSpawn(loc)) {
+		if (isOverworldSpawn(loc)) {
 			return new RegionData<Object>(loc, Region.SPAWN, null);
 		}
+
+        if(RegionManager.get().isRegionHere(loc, "spawn_nether")){
+            return new RegionData<Object>(loc, Region.SPAWN_NETHER, null);
+        }
 
 		if (isDiamondMountain(loc)) {
 			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
@@ -407,9 +411,19 @@ public class ServerManager {
 		return l;
 	}
 
-	public boolean isSpawn(Location loc) {
-		return RegionManager.get().hasTag(loc, "spawn");
-	}
+    public Location getNetherSpawn(){
+        World w = Bukkit.getWorld("world_nether");
+
+        return new Location(w, 0, 25, 10);
+    }
+
+    public boolean isGlobalSpawn(Location loc) {
+        return RegionManager.get().hasTag(loc, "spawn");
+    }
+
+    public boolean isOverworldSpawn(Location loc) {
+        return RegionManager.get().isRegionHere(loc, "spawn");
+    }
 
 	public boolean isClaimedAndRaidable(Location loc) {
 
@@ -434,7 +448,7 @@ public class ServerManager {
 
 	/**
 	 * Disables a player from attacking for 10 seconds
-	 * 
+	 *
 	 * @param p
 	 *            the player to disable
 	 */
@@ -507,6 +521,18 @@ public class ServerManager {
         return ((x < radius && x > -radius) && (z < radius && z > -radius));
     }
 
+    public boolean isNetherBufferZone(Location loc){
+        if(loc.getWorld().getEnvironment() != Environment.NETHER){
+            return false;
+        }
+
+        int radius = 200;
+        int x = loc.getBlockX();
+        int z = loc.getBlockZ();
+
+        return ((x < radius && x > -radius) && (z < radius && z > -radius));
+    }
+
     public String getRoad(Location loc){
         for(CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)){
             if(cr.getName().toLowerCase().startsWith("road_")){
@@ -557,13 +583,14 @@ public class ServerManager {
 				return;
 			}
 
-			if (Basic.get().getEconomyManager().getBalance(p.getName()) > price) {
+			if (Basic.get().getEconomyManager().getBalance(p.getName()) >= price) {
 
 				if (p.getInventory().firstEmpty() != -1) {
 					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
 
 					it.setAmount(amount);
 					p.getInventory().addItem(it);
+                    p.updateInventory();
 
 					String[] msgs = {
 							"§cBOUGHT§r " + amount,
@@ -721,6 +748,7 @@ public class ServerManager {
 
         //Max tool enchants
         maxEnchantments.put(Enchantment.DIG_SPEED, 5);
+        maxEnchantments.put(Enchantment.DURABILITY, 3);
         maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
         maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
         maxEnchantments.put(Enchantment.SILK_TOUCH, 1);

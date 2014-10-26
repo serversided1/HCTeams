@@ -33,7 +33,8 @@ public class Create extends Subcommand {
                             '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c!"));
                     return;
                 }
-				if (!StringUtils.isAlphanumeric(args[1])) {
+
+				if (!(args[1].matches("^[a-zA-Z0-9]*$"))){
 					p.sendMessage(ChatColor.GRAY + "Team names can only be alphabetical.");
 					return;
 				}
@@ -55,12 +56,13 @@ public class Create extends Subcommand {
 					team.setOwner(p.getName());
 					team.setFriendlyFire(false);
 					team.setFriendlyName(name);
+                    team.setDtr(1);
 					FoxtrotPlugin.getInstance().getTeamManager().addTeam(team);
 					FoxtrotPlugin.getInstance().getTeamManager().setTeam(p.getName(), team);
 					p.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
 					p.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
 
-					Bukkit.broadcastMessage("§eTeam §9" + team.getName() + "§e has been §acreated §eby §f" + p.getDisplayName());
+					Bukkit.broadcastMessage("§eFaction §9" + team.getName() + "§e has been §acreated §eby §f" + p.getDisplayName());
 
 				} else {
 					p.sendMessage(ChatColor.GRAY + "That team already exists!");

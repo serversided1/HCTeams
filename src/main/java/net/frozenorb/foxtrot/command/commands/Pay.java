@@ -37,7 +37,7 @@ public class Pay extends BaseCommand {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerManager().isSpawn(player.getLocation()) && !FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).ownsLocation(player.getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation()) && !FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).ownsLocation(player.getLocation())) {
             sender.sendMessage(ChatColor.RED+"You can only do this in spawn or in your own territory!");
             return;
         }

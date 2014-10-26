@@ -7,6 +7,8 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.BaseCommand;
 import net.frozenorb.foxtrot.util.TimeUtils;
 
+import java.util.concurrent.TimeUnit;
+
 public class Timer extends BaseCommand {
 
 	public Timer() {
@@ -20,8 +22,8 @@ public class Timer extends BaseCommand {
 		if (args.length > 0) {
 
 			if (args[0].equalsIgnoreCase("create") && p.isOp()) {
-				FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(p, 300);
-				p.sendMessage(ChatColor.RED + "You have 5 minutes of PVP Timer!");
+				FoxtrotPlugin.getInstance().getJoinTimerMap().createTimer(p, (int) TimeUnit.MINUTES.toSeconds(30));
+				p.sendMessage(ChatColor.RED + "You have 30 minutes of PVP Timer!");
 				return;
 			}
 

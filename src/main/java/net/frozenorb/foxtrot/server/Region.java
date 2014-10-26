@@ -12,19 +12,19 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Region {
 
-	SPAWN(true, "§aSpawn", (e) -> {
-		if (SpawnTag.isTagged(e.getPlayer())) {
-			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
-			e.setTo(e.getFrom());
-			return false;
+    SPAWN(true, "§aSpawn", (e) -> {
+        if (SpawnTag.isTagged(e.getPlayer())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            e.setTo(e.getFrom());
+            return false;
 
-		}
+        }
 
-		e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
-		e.getPlayer().setFoodLevel(20);
+        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
+        e.getPlayer().setFoodLevel(20);
 
-		return true;
-	}),
+        return true;
+    }),
 
 	WARZONE(false, "§cWarzone", (e) -> true),
 
@@ -42,6 +42,18 @@ public enum Region {
 		return true;
 
 	}),
+
+    SPAWN_NETHER(true, "§aNether Spawn", (e) -> {
+        if (SpawnTag.isTagged(e.getPlayer())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            e.setTo(e.getFrom());
+            return false;
+        }
+
+        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
+        e.getPlayer().setFoodLevel(20);
+        return true;
+    }),
 
     ROAD_NORTH(false, "§cNorth Road", (e) -> true),
 

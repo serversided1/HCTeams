@@ -38,6 +38,7 @@ import net.frozenorb.foxtrot.visual.TabHandler;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.bukkit.entity.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,6 +47,10 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -261,6 +266,27 @@ public class FoxtrotPlugin extends JavaPlugin {
         fishingKitMap = new FishingKitMap();
         fishingKitMap.loadFromRedis();
 	}
+
+    public List<String> getConsoleLog(){
+        List<String> log = new ArrayList<String>();
+
+        try{
+            FileInputStream input = new FileInputStream(new File("logs", "latest.log"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            String strLine;
+
+            while((strLine = br.readLine()) != null){
+                log.add(strLine);
+            }
+
+            br.close();
+            input.close();
+        } catch(Exception e){
+            log.add("Error reading log file!");
+        }
+
+        return log;
+    }
 
 	/**
 	 * Singleton instance getter

@@ -31,7 +31,7 @@ public class Deposit extends Subcommand {
 				return;
 			}
 
-			if (!FoxtrotPlugin.getInstance().getServerManager().isSpawn(p.getLocation()) && !FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()).ownsLocation(p.getLocation())) {
+			if (!FoxtrotPlugin.getInstance().getServerManager().isOverworldSpawn(p.getLocation()) && !FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()).ownsLocation(p.getLocation())) {
 				sender.sendMessage(ChatColor.RED + "You can only do this in spawn or in your own territory!");
 				return;
 			}

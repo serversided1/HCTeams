@@ -36,15 +36,22 @@ public class HQ extends Subcommand {
 			return;
 		}
 
-		if (p.getWorld().getEnvironment() == Environment.THE_END) {
-			p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
-			return;
-		}
+        if (p.getWorld().getEnvironment() == Environment.THE_END) {
+            p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
+            return;
+        }
 
-		if (FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().containsKey(p.getName()) && FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().get(p.getName()) > System.currentTimeMillis()) {
+        if (p.getWorld().getEnvironment() == Environment.NETHER) {
+            p.sendMessage(ChatColor.RED + "You may not ");
+            return;
+        }
+
+        /*
+		if(FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().containsKey(p.getName()) && FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().get(p.getName()) > System.currentTimeMillis()) {
 			p.sendMessage(ChatColor.RED + "You cannot warp to your team home within 15 minutes of warping to rally!");
 			return;
 		}
+		*/
 
 		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getHQ(), 75, TeamLocationType.HOME);
 

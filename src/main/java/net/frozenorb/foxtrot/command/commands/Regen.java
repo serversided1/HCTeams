@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.command.commands;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,8 +13,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
 
 public class Regen extends BaseCommand {
-
-	public Regen() {
+    public Regen() {
 		super("regen", "dtr");
 	}
 
@@ -33,8 +33,10 @@ public class Regen extends BaseCommand {
 			return;
 		}
 
+
+
 		p.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of §d" + team.getMaxDTR() + "§e.");
-		p.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + team.getDTRIncrement().doubleValue() * 60 + "/hr§e.");
+		p.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + Team.DTR_FORMAT.format(team.getDTRIncrement().doubleValue() * 60) + "/hr§e.");
 		p.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + (hrsToRegain(team) == -1 ? "Infinity" : hrsToRegain(team)) + "§eh to fully gain all DTR.");
 		p.sendMessage(ChatColor.YELLOW + "To regain 1 DTR, it would take §d" + (hrTo1(team) == -1 ? "Infinity" : hrTo1(team)) + "h.");
 

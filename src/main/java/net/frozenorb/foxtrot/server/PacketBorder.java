@@ -23,150 +23,150 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 @SuppressWarnings({ "deprecation", "unchecked" })
 public class PacketBorder {
-	private static ConcurrentHashMap<String, ArrayList<Location>> borderBlocksSent = new ConcurrentHashMap<String, ArrayList<Location>>();
-	private ConcurrentLinkedQueue<Claim> regions;
+    private static ConcurrentHashMap<String, ArrayList<Location>> borderBlocksSent = new ConcurrentHashMap<String, ArrayList<Location>>();
+    private ConcurrentLinkedQueue<Claim> regions;
 
-	public PacketBorder(Claim... regions) {
-		this.regions = new ConcurrentLinkedQueue<Claim>(Arrays.asList(regions));
-	}
+    public PacketBorder(Claim... regions) {
+        this.regions = new ConcurrentLinkedQueue<Claim>(Arrays.asList(regions));
+    }
 
-	public void addRegion(Claim rg) {
-		regions.add(rg);
-	}
+    public void addRegion(Claim rg) {
+        regions.add(rg);
+    }
 
-	public void sendToPlayer(Player p) {
+    public void sendToPlayer(Player p) {
 
-		final Collection<Claim> syncregions = Collections.synchronizedCollection(regions);
+        final Collection<Claim> syncregions = Collections.synchronizedCollection(regions);
 
-		synchronized (syncregions) {
+        synchronized (syncregions) {
 
-			for (Claim cr : syncregions) {
+            for (Claim cr : syncregions) {
 
-				final ArrayList<Location> locs = new ArrayList<Location>();
-				for (Coordinate loc : cr) {
+                final ArrayList<Location> locs = new ArrayList<Location>();
+                for (Coordinate loc : cr) {
 
-					int x = loc.getX(), z = loc.getZ();
+                    int x = loc.getX(), z = loc.getZ();
 
-					Location ll = new Location(Bukkit.getWorld("world"), x, p.getLocation().getY(), z);
+                    Location ll = new Location(p.getWorld(), x, p.getLocation().getY(), z);
 
-					for (int i = -4; i < 5; i++) {
-						Location check = ll.clone().add(0, i, -0);
+                    for (int i = -4; i < 5; i++) {
+                        Location check = ll.clone().add(0, i, -0);
 
-						if (check.distanceSquared(p.getLocation()) <= (8 * 8)) {
+                        if (check.distanceSquared(p.getLocation()) <= 64D) {
 
-							Block b = check.getBlock();
-							if (!b.getType().isSolid()) {
+                            Block b = check.getBlock();
+                            if (!b.getType().isSolid()) {
 
-								p.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
-								locs.add(check);
-							}
-						}
+                                p.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
+                                locs.add(check);
+                            }
+                        }
 
-					}
+                    }
 
-				}
+                }
 
-				if (borderBlocksSent.containsKey(p.getName())) {
-					locs.addAll(borderBlocksSent.get(p.getName()));
-				}
+                if (borderBlocksSent.containsKey(p.getName())) {
+                    locs.addAll(borderBlocksSent.get(p.getName()));
+                }
 
-				borderBlocksSent.put(p.getName(), locs);
-			}
+                borderBlocksSent.put(p.getName(), locs);
+            }
 
-		}
+        }
 
-	}
+    }
 
-	public static void clearPlayer(Player p) {
+    public static void clearPlayer(Player p) {
 
-		if (borderBlocksSent.containsKey(p.getName())) {
-			borderBlocksSent.get(p.getName()).forEach(l -> p.sendBlockChange(l, l.getBlock().getType(), l.getBlock().getData()));
-		}
-		borderBlocksSent.remove(p.getName());
-	}
+        if (borderBlocksSent.containsKey(p.getName())) {
+            borderBlocksSent.get(p.getName()).forEach(l -> p.sendBlockChange(l, l.getBlock().getType(), l.getBlock().getData()));
+        }
+        borderBlocksSent.remove(p.getName());
+    }
 
-	public static void checkPlayer(Player p) {
+    public static void checkPlayer(Player p) {
 
-		PacketBorder border = new PacketBorder();
-		Set<CuboidRegion> regionManagerRegions = Collections.synchronizedSet((Set<CuboidRegion>) RegionManager.get().getRegions().clone());
+        PacketBorder border = new PacketBorder();
+        Set<CuboidRegion> regionManagerRegions = Collections.synchronizedSet((Set<CuboidRegion>) RegionManager.get().getRegions().clone());
 
-		int x = p.getLocation().getBlockX(), z = p.getLocation().getBlockZ();
+        int x = p.getLocation().getBlockX(), z = p.getLocation().getBlockZ();
 
-		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
 
-			for (Claim cBack : LandBoard.getInstance().getClaims()) {
-				Claim c = cBack.clone();
-				c.setY1(0);
-				c.setY2(256);
-				if (c.isWithin(x, z, 8)) {
-					border.addRegion(c);
-				}
-			}
+            for (Claim cBack : LandBoard.getInstance().getClaims()) {
+                Claim c = cBack.clone();
+                c.setY1(0);
+                c.setY2(256);
+                if (c.isWithin(x, z, 8)) {
+                    border.addRegion(c);
+                }
+            }
 
-			for (CuboidRegion cr : regionManagerRegions) {
+            for (CuboidRegion cr : regionManagerRegions) {
 
-				if (cr.getName().startsWith("koth_") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                if (cr.getName().startsWith("koth_") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
 
-					CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                    CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
-					Location min = crAdd.getMinimumPoint();
-					Location max = crAdd.getMaximumPoint();
+                    Location min = crAdd.getMinimumPoint();
+                    Location max = crAdd.getMaximumPoint();
 
-					min.setY(0D);
-					max.setY(256D);
+                    min.setY(0D);
+                    max.setY(256D);
 
-					crAdd.setLocation(min, max);
+                    crAdd.setLocation(min, max);
 
-					Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
+                    Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
 
-					border.addRegion(c);
-				}
-			}
+                    border.addRegion(c);
+                }
+            }
 
-		} else if (SpawnTag.isTagged(p)) {
-			for (final CuboidRegion cr : regionManagerRegions) {
+        } else if (SpawnTag.isTagged(p)) {
+            for (final CuboidRegion cr : regionManagerRegions) {
 
-				if (cr.hasTag("spawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                if (cr.hasTag("spawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
 
-					CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                    CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
-					Location min = crAdd.getMinimumPoint();
-					Location max = crAdd.getMaximumPoint();
+                    Location min = crAdd.getMinimumPoint();
+                    Location max = crAdd.getMaximumPoint();
 
-					min.setY(0D);
-					max.setY(256D);
+                    min.setY(0D);
+                    max.setY(256D);
 
-					crAdd.setLocation(min, max);
-					Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
+                    crAdd.setLocation(min, max);
+                    Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
 
-					border.addRegion(c);
-				}
-			}
-		} else {
-			clearPlayer(p);
-			return;
-		}
+                    border.addRegion(c);
+                }
+            }
+        } else {
+            clearPlayer(p);
+            return;
+        }
 
-		border.sendToPlayer(p);
-	}
+        border.sendToPlayer(p);
+    }
 
-	public static class BorderThread extends Thread {
-		@Override
-		public void run() {
-			while (true) {
+    public static class BorderThread extends Thread {
+        @Override
+        public void run() {
+            while (true) {
 
-				for (Player p : Bukkit.getOnlinePlayers()) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
 
-					checkPlayer(p);
+                    checkPlayer(p);
 
-				}
-				try {
-					Thread.sleep(100L);
-				}
-				catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+                }
+                try {
+                    Thread.sleep(100L);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
