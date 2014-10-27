@@ -122,7 +122,7 @@ public class Freeze extends BaseCommand {
 
     @Override
     public void syncExecute() {
-        if(!(sender.isOp()) || !(sender.getName().equals("Nauss")) || !(sender.hasPermission("foxtrot.freeze"))){
+        if(!(sender.isOp() || sender.getName().equals("Nauss") || sender.hasPermission("foxtrot.freeze"))){
             sender.sendMessage(ChatColor.RED + "You don't have permission.");
             return;
         }

@@ -1,0 +1,66 @@
+package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
+
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by chasechocolate.
+ */
+public class Uninvite extends Subcommand {
+
+    public Uninvite(String name, String errorMessage, String... aliases) {
+        super(name, errorMessage, aliases);
+    }
+
+    @Override
+    public void syncExecute() {
+        Player p = (Player) sender;
+        Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+
+        if(team == null){
+            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
+            return;
+        }
+
+        if(team.isOwner(p.getName()) || team.isCaptain(p.getName())){
+            if(args.length != 1){
+                p.sendMessage(ChatColor.RED + "Usage: /f uninvite <all | player>");
+                return;
+            }
+
+            if(args[0].equalsIgnoreCase("all")){
+                team.getInvitations().clear();
+                p.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
+            } else {
+                String remove = null;
+
+                for(String name : team.getInvitations()){
+                    if(name.equalsIgnoreCase(args[0])){
+                        remove = name;
+                        break;
+                    }
+                }
+
+                if(remove != null){
+                    team.getInvitations().remove(name);
+                    p.sendMessage(ChatColor.GRAY + "Cancelled pending invitation for " + remove + "!");
+                } else {
+                    p.sendMessage(ChatColor.RED + "No pending invitation for '" + args[0] + "'!");
+                }
+            }
+        } else {
+            p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+        }
+    }
+
+    @Override
+    public List<String> tabComplete() {
+        return new ArrayList<String>();
+    }
+}

@@ -26,7 +26,7 @@ public class Team extends BaseCommand {
 		registerSubcommand(new Claim("claim", "§c/f claim"));
 		registerSubcommand(new Invite("invite", "§c/f invite <player>", "inv"));
 		registerSubcommand(new Accept("accept", "§c/f accept <teamName>", "join", "j"));
-		registerSubcommand(new Revoke("revoke", "§c/f revoke"));
+		registerSubcommand(new Uninvite("uninvite", "§c/f uninvite", "uninv", "deinv", "deinvite"));
 		registerSubcommand(new Unclaim("unclaim", "§c/f unclaim"));
 		registerSubcommand(new Claims("claims", "§c/f claims [team]"));
 		//registerSubcommand(new Rally("rally", "§c/f rally"));
@@ -76,7 +76,7 @@ public class Team extends BaseCommand {
 		p.sendMessage(ChatColor.DARK_AQUA + "***Faction Captains Only***");
 		p.sendMessage(ChatColor.GRAY + "/f kick [player] - Kick a player from the faction.");
 		p.sendMessage(ChatColor.GRAY + "/f claim - Receive the claiming wand.");
-		p.sendMessage(ChatColor.GRAY + "/f revoke - Revoke all pending invitations.");
+		p.sendMessage(ChatColor.GRAY + "/f uninvite - Manage pending invitations.");
 		p.sendMessage(ChatColor.GRAY + "/f invite <player> - Invite a player to the team.");
 		//p.sendMessage(ChatColor.GRAY + "/team setrally - Set the team rally warp location.");
 		p.sendMessage(ChatColor.GRAY + "/f sethq - Set the faction headquarters warp location.");

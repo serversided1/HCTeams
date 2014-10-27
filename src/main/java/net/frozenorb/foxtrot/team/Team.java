@@ -32,7 +32,7 @@ import redis.clients.jedis.Jedis;
 public class Team {
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
 
-	public static final int MAX_TEAM_SIZE = 20;
+	public static final int MAX_TEAM_SIZE = 25;
 
 	private String name;
 
@@ -329,7 +329,7 @@ public class Team {
 	}
 
 	public boolean isRaidaible() {
-		return dtr <= 0;
+		return dtr < 0;
 	}
 
 	public void playerDeath(Player p) {
@@ -337,7 +337,7 @@ public class Team {
 	}
 
 	public void playerDeath(String p) {
-		setDtr(Math.max(dtr - 0.5D, -.99)); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
+		setDtr(Math.max(dtr - 1.0D, -.99)); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
 
 		if (isRaidaible()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);

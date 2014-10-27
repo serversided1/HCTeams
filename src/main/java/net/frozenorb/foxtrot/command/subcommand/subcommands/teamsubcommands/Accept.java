@@ -35,6 +35,7 @@ public class Accept extends Subcommand {
 						return;
 					}
 
+                    /*
                     if(!(p.isOp()) && Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()){
                         long millisLeft = Leave.getCreateCooldown().get(p) - System.currentTimeMillis();
 
@@ -45,6 +46,7 @@ public class Accept extends Subcommand {
                                 '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c!"));
                         return;
                     }
+                    */
 
 					team.getInvitations().remove(p.getName());
 					team.addMember(p.getName());

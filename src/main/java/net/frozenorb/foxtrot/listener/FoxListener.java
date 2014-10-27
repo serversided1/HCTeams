@@ -49,6 +49,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -1513,8 +1514,8 @@ public class FoxListener implements Listener {
 		SpawnTag.removeTag(e.getEntity());
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        //                           [          12 Hour         ]
-		int seconds = (int) Math.min(TimeUnit.HOURS.toSeconds(12), (playtime.contains(player.getName()) ?  playtime.getValue(player.getName()) + (playtime.getCurrentSession(player.getName()) / 1000L) : playtime.getCurrentSession(player.getName())));
+        //                           [        02 Hour Cap      ]
+		int seconds = (int) Math.max(TimeUnit.HOURS.toSeconds(2), (playtime.contains(player.getName()) ? playtime.getValue(player.getName()) + (playtime.getCurrentSession(player.getName()) / 1000L) : playtime.getCurrentSession(player.getName()) / 1000L));
 
 		if(FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
 			seconds = 15 * 60;
@@ -2325,6 +2326,39 @@ public class FoxListener implements Listener {
 		return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));
 	}
 
+    @EventHandler
+    public void onBlockIgnite(BlockIgniteEvent event){
+        if(event.getCause() == IgniteCause.SPREAD){
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event){
+        if(FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(event.getEntity().getLocation())){
+            if(event.getRemover() instanceof Player){
+                Player player = (Player) event.getRemover();
+
+                if(player.getGameMode() != GameMode.CREATIVE){
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInteractHanging(PlayerInteractEntityEvent event){
+        if(FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(event.getRightClicked().getLocation())){
+            Player player = event.getPlayer();
+
+            if(event.getRightClicked() instanceof ItemFrame){
+                if(player.getGameMode() != GameMode.CREATIVE){
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
     /**
      * Portals
      */
@@ -2355,18 +2389,20 @@ public class FoxListener implements Listener {
 	}
 
     /*
-     ------------------------------------------
-     --- ALPHA EDITS TO SPEED UP PROCESS
-     ------------------------------------------
+     -------------------------------------------
+     ----- ALPHA EDITS TO SPEED UP PROCESS -----
+     -------------------------------------------
      */
 
     @EventHandler
     public void onBurn(FurnaceBurnEvent event){
-        Furnace tile = (org.bukkit.block.Furnace)event.getBlock().getState();
+        Furnace tile = (Furnace) event.getBlock().getState();
+
         startUpdate(tile, 3);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    /*
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreakMultiplier(BlockBreakEvent event){
         if(event.getPlayer().getGameMode() == GameMode.CREATIVE){
             return;
@@ -2385,6 +2421,7 @@ public class FoxListener implements Listener {
             }
         }
     }
+    */
 
     @EventHandler
     public void onEXPMultiplier(PlayerExpChangeEvent event){
