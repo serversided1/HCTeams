@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.nms;
 
-import net.minecraft.server.v1_7_R4.*;
-import org.bukkit.craftbukkit.v1_7_R4.util.UnsafeList;
+import net.minecraft.server.v1_7_R3.*;
+import org.bukkit.craftbukkit.v1_7_R3.util.UnsafeList;
 
 import java.lang.reflect.Field;
 
