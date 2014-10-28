@@ -1793,8 +1793,10 @@ public class FoxListener implements Listener {
             int level = enchants.get(enchantment);
 
             if(ServerManager.getMaxEnchantments().containsKey(enchantment)){
-                if(level > ServerManager.getMaxEnchantments().get(enchantment)){
-                    enchants.put(enchantment, ServerManager.getMaxEnchantments().get(enchantment));
+                int max = ServerManager.getMaxEnchantments().get(enchantment);
+                
+                if(level > max){
+                    item.addUnsafeEnchantment(enchantment, max);
                     fixed = true;
                 }
             } else {
