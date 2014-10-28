@@ -31,14 +31,27 @@ public class Chat extends Subcommand {
 			p.chat("/t create " + sb.toString());
 			return;
 		}
-		if (p.hasMetadata("teamChat")) {
-			p.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
-			p.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
-		} else {
-			p.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-			p.sendMessage(ChatColor.DARK_AQUA + "You are now in team chat only mode.");
-		}
 
+        String chat;
+
+        if(args.length >= 2){
+            if(args[1].equalsIgnoreCase("t") || args[1].equalsIgnoreCase("team") || args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("fac") || args[1].equalsIgnoreCase("faction")){
+                chat = "team";
+            } else if(args[1].equalsIgnoreCase("g") || args[1].equalsIgnoreCase("p") || args[1].equalsIgnoreCase("global") || args[1].equalsIgnoreCase("public")){
+                chat = "public";
+            } else {
+                p.sendMessage(ChatColor.RED + "Invalid chat channel!");
+                return;
+            }
+        } else {
+            if(p.hasMetadata("teamChat")){
+                chat = "public";
+            } else {
+                chat = "team";
+            }
+        }
+
+        setChat(p, chat);
 	}
 
 	@Override
@@ -46,4 +59,31 @@ public class Chat extends Subcommand {
 		return new ArrayList<String>();
 	}
 
+    private void setChat(Player player, String type){
+        boolean curTeam = player.hasMetadata("teamChat");
+
+        if(type != null){
+            if(type.equals("team")){
+                if(!(player.hasMetadata("teamChat"))){
+                    player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                }
+
+                player.sendMessage(ChatColor.DARK_AQUA + "You are now in faction chat only mode.");
+            } else if(type.equals("public")){
+                if(player.hasMetadata("teamChat")){
+                    player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
+                }
+
+                player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
+            }
+        } else {
+            if(curTeam) {
+                player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
+                player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
+            } else {
+                player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                player.sendMessage(ChatColor.DARK_AQUA + "You are now in faction chat only mode.");
+            }
+        }
+    }
 }

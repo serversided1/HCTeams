@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -33,6 +35,40 @@ public class Claim implements Iterable<Coordinate> {
 		this.z1 = Math.min(z1, z2);
 		this.z2 = Math.max(z1, z2);
 	}
+
+    public static int getPrice(Claim claim, Team team){
+        int x = Math.abs(claim.x1 - claim.x2);
+        int z = Math.abs(claim.z1 - claim.z2);
+
+        int blocks = x * z;
+
+        double curPrice = 0D;
+
+        int done = 0;
+        double mod = 0.4D;
+
+        while (blocks > 0) {
+            blocks--;
+            done++;
+
+            curPrice += mod;
+
+            if (done == 250) {
+                done = 0;
+                mod += 0.4D;
+            }
+        }
+
+        if(team != null){
+            curPrice += (500 * team.getClaims().size());
+        }
+
+        //ALPHA ONLY - REMOVE THIS LINE
+        //HALF PRICE CLAIMS
+        curPrice /= 2.0D;
+
+        return (int) curPrice;
+    }
 
     @Override
 	public boolean equals(Object o) {

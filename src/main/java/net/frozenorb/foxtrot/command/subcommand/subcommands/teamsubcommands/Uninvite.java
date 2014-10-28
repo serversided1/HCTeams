@@ -34,14 +34,14 @@ public class Uninvite extends Subcommand {
                 return;
             }
 
-            if(args[0].equalsIgnoreCase("all")){
+            if(args[1].equalsIgnoreCase("all")){
                 team.getInvitations().clear();
                 p.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
             } else {
                 String remove = null;
 
                 for(String name : team.getInvitations()){
-                    if(name.equalsIgnoreCase(args[0])){
+                    if(name.equalsIgnoreCase(args[1])){
                         remove = name;
                         break;
                     }
@@ -51,7 +51,7 @@ public class Uninvite extends Subcommand {
                     team.getInvitations().remove(name);
                     p.sendMessage(ChatColor.GRAY + "Cancelled pending invitation for " + remove + "!");
                 } else {
-                    p.sendMessage(ChatColor.RED + "No pending invitation for '" + args[0] + "'!");
+                    p.sendMessage(ChatColor.RED + "No pending invitation for '" + args[1] + "'!");
                 }
             }
         } else {

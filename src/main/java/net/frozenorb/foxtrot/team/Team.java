@@ -379,7 +379,12 @@ public class Team {
 
 		}
 
-		return curr.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
+		BigDecimal dtr = curr.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
+
+        //DTR regain multiplier
+        dtr = dtr.multiply(new BigDecimal(3));
+
+        return dtr;
 	}
 
 	public double getMaxDTR() {

@@ -42,7 +42,7 @@ public class HQ extends Subcommand {
         }
 
         if (p.getWorld().getEnvironment() == Environment.NETHER) {
-            p.sendMessage(ChatColor.RED + "You may not ");
+            p.sendMessage(ChatColor.RED + "You may not go to faction headquarters from the Nether!");
             return;
         }
 

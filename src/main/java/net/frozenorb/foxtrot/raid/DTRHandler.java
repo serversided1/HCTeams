@@ -57,7 +57,8 @@ public class DTRHandler extends BukkitRunnable {
 					wasOnCooldown.remove(t.getFriendlyName().toLowerCase());
 
 					for (Player pl : t.getOnlineMembers()) {
-						pl.sendMessage(ChatColor.YELLOW + "Your team is no longer on DTR cooldown and is now regenerating DTR!");
+						//pl.sendMessage(ChatColor.YELLOW + "Your team is no longer on DTR cooldown and is now regenerating DTR!");
+                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Your team is now regenerating DTR!");
 					}
 				}
 

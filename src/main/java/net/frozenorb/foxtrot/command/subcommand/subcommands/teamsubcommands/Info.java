@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,18 +18,23 @@ public class Info extends Subcommand {
 	public void syncExecute() {
 		Player p = (Player) sender;
 		if (args.length > 1) {
-			Player target = Bukkit.getServer().getPlayer(args[1]);
+            //Try player
+			Player target = Bukkit.getPlayer(args[1]);
 
-			if (target == null || !((Player) sender).canSee(target)) {
-				String n = args[1];
-				if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(n) == null) {
-					p.sendMessage(ChatColor.GRAY + "That player is not on a team!");
-				} else {
-					net.frozenorb.foxtrot.team.Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(n);
+			if (target == null || !p.canSee(target)) {
+                //Bad player, try faction name
+                Team team = FoxtrotPlugin.getInstance().getTeamManager().getTeam(args[0]);
 
-					team.sendTeamInfo(p);
-
-				}
+                if(team == null){
+                    if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]) == null) {
+                        p.sendMessage(ChatColor.GRAY + "That player is not on a team!");
+                    } else {
+                        team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]);
+                        team.sendTeamInfo(p);
+                    }
+                } else {
+                    team.sendTeamInfo(p);
+                }
 			} else {
 				if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(target.getName()) == null) {
 					p.sendMessage(ChatColor.GRAY + "That player is online, but not on a team!");

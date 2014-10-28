@@ -34,11 +34,19 @@ public class Unclaim extends Subcommand {
 
 			if(args.length > 1){
 				if(args[1].equalsIgnoreCase("all")){
+                    int claims = team.getClaims().size();
+                    double refund = 0.0D;
+
+                    for(net.frozenorb.foxtrot.team.claims.Claim claim : team.getClaims()){
+                        refund += net.frozenorb.foxtrot.team.claims.Claim.getPrice(claim, team);
+                    }
+
+                    team.setBalance(team.getBalance() + refund);
 					team.getClaims().clear();
 					team.setRally(null, true);
 					team.setHQ(null, true);
 					LandBoard.getInstance().clear(team);
-					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims!");
+					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims (" + claims + " total)! Your team was refunded $" + refund + ".");
 					return;
 				}
 			}
@@ -46,13 +54,15 @@ public class Unclaim extends Subcommand {
 			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(p.getLocation()) && team.ownsLocation(p.getLocation())) {
 
 				net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(p.getLocation());
+                int refund = net.frozenorb.foxtrot.team.claims.Claim.getPrice(cc, team);
 
+                team.setBalance(team.getBalance() + refund);
 				team.getClaims().remove(cc);
 				team.flagForSave();
 
 				LandBoard.getInstance().setTeamAt(cc, null);
 
-				p.sendMessage(ChatColor.RED + "You have unclaimed the claim §d" + cc.getFriendlyName() + "§c!");
+				p.sendMessage(ChatColor.RED + "You have unclaimed the claim §d" + cc.getFriendlyName() + "§c! Your team was refunded §d$" + refund + "§c!");
 
 				if (team.getHQ() != null && cc.contains(team.getHQ())) {
 					team.setHQ(null, true);

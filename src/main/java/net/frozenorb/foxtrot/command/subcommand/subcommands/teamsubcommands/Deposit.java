@@ -31,10 +31,12 @@ public class Deposit extends Subcommand {
 				return;
 			}
 
+            /*
 			if (!FoxtrotPlugin.getInstance().getServerManager().isOverworldSpawn(p.getLocation()) && !FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()).ownsLocation(p.getLocation())) {
 				sender.sendMessage(ChatColor.RED + "You can only do this in spawn or in your own territory!");
 				return;
 			}
+			*/
 
 			boolean override = false;
 
@@ -74,7 +76,7 @@ public class Deposit extends Subcommand {
 					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), deposit);
 				}
 
-				p.sendMessage(ChatColor.YELLOW + "You have added §d" + deposit + "§e to the team balance!");
+				p.sendMessage(ChatColor.YELLOW + "You have added §d" + (deposit >= Double.MAX_VALUE ? (long) deposit : deposit) + "§e to the team balance!");
 				team.setBalance(team.getBalance() + deposit);
 
 				if (!override) {

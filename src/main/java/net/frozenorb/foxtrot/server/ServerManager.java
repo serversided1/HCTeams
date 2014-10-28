@@ -289,7 +289,7 @@ public class ServerManager {
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
 
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
 
 			player.teleport(to);
 			return;
@@ -747,7 +747,7 @@ public class ServerManager {
         maxEnchantments.put(Enchantment.DIG_SPEED, 5);
         maxEnchantments.put(Enchantment.DURABILITY, 3);
         maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
-        maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+        maxEnchantments.put(Enchantment.LOOT_BONUS_MOBS, 3);
         maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
         maxEnchantments.put(Enchantment.LUCK, 3);
         maxEnchantments.put(Enchantment.LURE, 3);
