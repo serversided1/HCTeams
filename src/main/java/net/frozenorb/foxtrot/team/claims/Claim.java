@@ -59,6 +59,7 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
+        //TODO - Buying vs. selling
         if(team != null){
             curPrice += (500 * team.getClaims().size());
         }

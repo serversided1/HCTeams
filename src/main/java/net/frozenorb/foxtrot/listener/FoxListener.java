@@ -1020,7 +1020,7 @@ public class FoxListener implements Listener {
 								// meta data
 
 								if (meta != null) {
-									// see whether the item is beeing renamed
+									// see whether the item is being renamed
 									if (meta.hasDisplayName()) {
 
 										String displayName = fixName(meta.getDisplayName());
@@ -1794,7 +1794,7 @@ public class FoxListener implements Listener {
 
             if(ServerManager.getMaxEnchantments().containsKey(enchantment)){
                 int max = ServerManager.getMaxEnchantments().get(enchantment);
-                
+
                 if(level > max){
                     item.addUnsafeEnchantment(enchantment, max);
                     fixed = true;
