@@ -5,30 +5,29 @@ import net.frozenorb.mBasic.Basic;
 
 public class SetBal extends BaseCommand {
 
-	public SetBal() {
-		super("setbal");
-		setPermissionLevel("foxtrot.setbal", "§cYou are not allowed to do this!");
-	}
+    public SetBal() {
+        super("setbal");
+        setPermissionLevel("foxtrot.setbal", "§cYou are not allowed to do this!");
+    }
 
-	@Override
-	public void syncExecute() {
-		if (args.length > 1) {
-			String name = args[0];
+    @Override
+    public void syncExecute() {
+        if (args.length > 1) {
+            String name = args[0];
 
-			try {
-				double amt = Double.parseDouble(args[1]);
+            try {
+                double amt = Double.parseDouble(args[1]);
 
-				Basic.get().getEconomyManager().setBalance(name, amt);
+                Basic.get().getEconomyManager().setBalance(name, amt);
 
-			}
-			catch (NumberFormatException e) {
-				sender.sendMessage(e.getMessage());
-				return;
-			}
+            } catch (NumberFormatException e) {
+                sender.sendMessage(e.getMessage());
+                return;
+            }
 
-		} else {
-			sender.sendMessage("/setbal <player> <amt>");
-		}
+        } else {
+            sender.sendMessage("/setbal <player> <amt>");
+        }
 
-	}
+    }
 }

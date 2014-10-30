@@ -29,7 +29,7 @@ public class Uninvite extends Subcommand {
         }
 
         if(team.isOwner(p.getName()) || team.isCaptain(p.getName())){
-            if(args.length != 1){
+            if(args.length <= 1){
                 p.sendMessage(ChatColor.RED + "Usage: /f uninvite <all | player>");
                 return;
             }
