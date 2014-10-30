@@ -13,6 +13,7 @@ import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.claims.Claim.SpecialTag;
 import net.frozenorb.mBasic.Utilities.ItemDb;
@@ -388,9 +389,8 @@ public class VisualClaim implements Listener {
 			t.getClaims().add(cc);
 
 			p.sendMessage(ChatColor.LIGHT_PURPLE + "You have claimed this land for your team!");
-
 			t.setBalance(t.getBalance() - price);
-			p.sendMessage(ChatColor.YELLOW + "Your team's new balance is §f" + t.getBalance());
+			p.sendMessage(ChatColor.YELLOW + "Your team's new balance is §f" + t.getBalance() + " §d(Price: " + price + ")");
 			cancel(true);
 
 		} else {
@@ -402,38 +402,7 @@ public class VisualClaim implements Listener {
 		if (corner1 != null && corner2 != null) {
 			Claim cc = new Claim(corner1, corner2);
 
-			int x = Math.abs(cc.x1 - cc.x2);
-			int z = Math.abs(cc.z1 - cc.z2);
-
-			int blocks = x * z;
-
-			double curPrice = 0D;
-
-			int done = 0;
-			double mod = 0.4D;
-
-			while (blocks > 0) {
-				blocks--;
-				done++;
-
-				curPrice += mod;
-
-				if (done == 250) {
-					done = 0;
-					mod += 0.4D;
-				}
-			}
-
-			Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-
-			curPrice += (500 * t.getClaims().size());
-
-            //ALPHA ONLY - REMOVE THIS LINE
-            //HALF PRICE CLAIMS
-            curPrice /= 2.0D;
-
-			return (int) curPrice;
-
+            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()));
 		}
 
 		return -1;

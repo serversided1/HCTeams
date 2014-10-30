@@ -16,12 +16,13 @@ public class Revive extends BaseCommand {
 
 	@Override
 	public void syncExecute() {
-		if (canRevive(sender)) {
+		if (sender.isOp()) {
 			if (args.length > 0) {
 				String name = args[0];
 
 				if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(name)) {
 					FoxtrotPlugin.getInstance().getDeathbanMap().updateValue(name, 0L);
+                    sender.sendMessage(ChatColor.GREEN + "Revived " + name + "!");
 				} else {
 					sender.sendMessage(ChatColor.RED + "That player is not deathbanned!");
 				}
@@ -36,9 +37,5 @@ public class Revive extends BaseCommand {
 	@Override
 	public List<String> getTabCompletions() {
 		return FoxtrotPlugin.getInstance().getDeathbanMap().keyList();
-	}
-
-	private boolean canRevive(CommandSender s) {
-		return s.hasPermission("foxtrot.revive");
 	}
 }

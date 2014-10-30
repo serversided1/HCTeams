@@ -289,7 +289,7 @@ public class ServerManager {
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
 
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible")) {
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
 
 			player.teleport(to);
 			return;
@@ -414,7 +414,7 @@ public class ServerManager {
     public Location getNetherSpawn(){
         World w = Bukkit.getWorld("world_nether");
 
-        return new Location(w, 0, 25, 10);
+        return new Location(w, 0, 25, -10);
     }
 
     public boolean isGlobalSpawn(Location loc) {
@@ -526,7 +526,7 @@ public class ServerManager {
             return false;
         }
 
-        int radius = 200;
+        int radius = 150;
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
@@ -696,28 +696,25 @@ public class ServerManager {
 
 	}
 
-	private HashMap<String, BukkitRunnable> showSignTasks = new HashMap<String, BukkitRunnable>();
+	private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();
 
 	public void showSignPacket(Player p, final Sign sign, String[] lines) {
 		PacketPlayOutUpdateSign sgn = new PacketPlayOutUpdateSign(sign.getX(), sign.getY(), sign.getZ(), lines);
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(sgn);
 
-		if (showSignTasks.containsKey(p.getName())) {
-			showSignTasks.remove(p.getName()).cancel();
-		}
+        if(showSignTasks.containsKey(sign)){
+            showSignTasks.remove(sign).cancel();
+        }
 
-		BukkitRunnable br = new BukkitRunnable() {
-
+		BukkitRunnable br = new BukkitRunnable(){
 			@Override
-			public void run() {
-
+			public void run(){
 				sign.update();
-				showSignTasks.remove(p.getName());
-
+				showSignTasks.remove(sign);
 			}
 		};
 
-		showSignTasks.put(p.getName(), br);
+		showSignTasks.put(sign, br);
 		br.runTaskLater(FoxtrotPlugin.getInstance(), 90L);
 
 	}
@@ -750,7 +747,7 @@ public class ServerManager {
         maxEnchantments.put(Enchantment.DIG_SPEED, 5);
         maxEnchantments.put(Enchantment.DURABILITY, 3);
         maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
-        maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
+        maxEnchantments.put(Enchantment.LOOT_BONUS_MOBS, 3);
         maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
         maxEnchantments.put(Enchantment.LUCK, 3);
         maxEnchantments.put(Enchantment.LURE, 3);

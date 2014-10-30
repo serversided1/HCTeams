@@ -8,6 +8,8 @@ import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 
+import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mBasic.EconomySystem.EconomyManager;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -125,6 +127,10 @@ public class TeamManager {
 	public void removeTeam(final String name) {
 		if (teamExists(name)) {
 			Team t = getTeam(name);
+
+            //Refund owner
+            Basic.get().getEconomyManager().depositPlayer(t.getOwner(), t.getBalance());
+
 			for (String names : t.getMembers()) {
 				removePlayerFromTeam(names);
 			}
