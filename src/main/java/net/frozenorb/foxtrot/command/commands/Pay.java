@@ -21,19 +21,31 @@ public class Pay extends BaseCommand {
 
     @Override
     public void syncExecute() {
-        Player player = (Player)sender;
+        Player player = (Player) sender;
 
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
 
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED+"Format: /"+label+" <player> <balance>");
+            sender.sendMessage(ChatColor.RED + "Format: /" + label + " <player> <balance>");
             return;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        String target = args[1];
 
-        if (target.equals(sender)) {
-            sender.sendMessage(ChatColor.RED+"You cannot send money to yourself!");
+        if(!(FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target))){
+            player.sendMessage(ChatColor.RED + target + " has never played before!");
+            return;
+        }
+
+        //Format online players name
+        Player pTarget = Bukkit.getPlayer(target);
+
+        if(pTarget != null){
+            target = pTarget.getName();
+        }
+
+        if(target.equalsIgnoreCase(sender.getName())){
+            sender.sendMessage(ChatColor.RED + "You cannot send money to yourself!");
             return;
         }
 
@@ -49,19 +61,19 @@ public class Pay extends BaseCommand {
         try {
             pay = Double.parseDouble(args[1]);
             if (pay < 50) {
-                sender.sendMessage(ChatColor.RED+"You must deposit at least $50.0!");
+                sender.sendMessage(ChatColor.RED + "You must send at least $50!");
                 return;
             }
 
             if (balance < pay) {
-                sender.sendMessage(ChatColor.RED+"You do not have $"+pay+"!");
+                sender.sendMessage(ChatColor.RED + "You do not have $" + pay + "!");
                 return;
             }
 
-            Basic.get().getEconomyManager().depositPlayer(target.getName(), pay);
+            Basic.get().getEconomyManager().depositPlayer(target, pay);
             Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), pay);
 
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYou sent &d"+ NumberFormat.getCurrencyInstance().format(pay)+"&e to &d"+target.getName()+"&e!"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYou sent &d" + NumberFormat.getCurrencyInstance().format(pay) + "&e to &d" + target + "&e!"));
         } catch (NumberFormatException e) {
             sender.sendMessage(ChatColor.RED + "Number couldn't be parsed!");
             return;

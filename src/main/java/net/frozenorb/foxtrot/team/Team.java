@@ -3,10 +3,7 @@ package net.frozenorb.foxtrot.team;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +46,7 @@ public class Team {
 
 	private String tag;
 
-	@Getter private HashSet<String> invitations = new HashSet<String>();
+	@Getter @Setter private List<String> invitations = new ArrayList<String>();
 
 	@Getter private Location rally;
 

@@ -16,7 +16,7 @@ public class KitManager {
 
 	public void loadKits() {
         kits.add(new Archer());
-        kits.add(new Bard());
+        //kits.add(new Bard());
         kits.add(new Miner());
         kits.add(new Rogue());
 

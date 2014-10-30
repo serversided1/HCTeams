@@ -5,17 +5,17 @@ import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 
 public class Save extends BaseCommand {
 
-	public Save() {
-		super("save", "savemyshit");
-		setPermissionLevel("foxtrot.save", "§cYou are not allowed to do this!");
-	}
+    public Save() {
+        super("save", "savemyshit");
+        setPermissionLevel("foxtrot.save", "§cYou are not allowed to do this!");
+    }
 
-	@Override
-	public void syncExecute() {
-		if (sender.isOp()) {
-			RedisSaveTask.getInstance().save();
-			sender.sendMessage("§cSaved!");
-		}
-	}
+    @Override
+    public void syncExecute() {
+        if (sender.isOp()) {
+            RedisSaveTask.getInstance().save();
+            sender.sendMessage("§cSaved!");
+        }
+    }
 
 }

@@ -1,131 +1,129 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>net.frozenorb</groupId>
-    <artifactId>Foxtrot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Foxtrot</name>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.frozenorb</groupId>
+	<artifactId>Foxtrot</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Foxtrot</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <timestamp>${maven.build.timestamp}</timestamp>
-        <!-- <computerName>${env.COMPUTERNAME}</computerName> -->
-        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
-    </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<!-- <computerName>${env.COMPUTERNAME}</computerName> -->
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+	</properties>
 
-    <build>
-        <defaultGoal>clean package install</defaultGoal>
-        <finalName>${project.artifactId}</finalName>
+	<build>
+		<defaultGoal>clean package install</defaultGoal>
+		<finalName>${project.artifactId}</finalName>
 
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>1.5</version>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>mkremins:fanciful</include>
-                            <include>org.projectlombok:lombok</include>
-                            <include>log4j:log4j</include>
-                            <include>org.mongodb:mongo-java-driver</include>
-                            <include>redis.clients:jedis</include>
-                            <include>commons-pool:commons-pool</include>
-                            <include>com.comphenix.packetwrapper:PacketWrapper</include>
-                        </includes>
-                    </artifactSet>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <excludes>
-                    <exclude>jars</exclude>
-                </excludes>
-            </resource>
-        </resources>
-    </build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.5</version>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>mkremins:fanciful</include>
+							<include>org.projectlombok:lombok</include>
+							<include>log4j:log4j</include>
+							<include>org.mongodb:mongo-java-driver</include>
+							<include>redis.clients:jedis</include>
+							<include>commons-pool:commons-pool</include>
+							<include>com.comphenix.packetwrapper:PacketWrapper</include>
+						</includes>
+					</artifactSet>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<excludes>
+					<exclude>jars</exclude>
+				</excludes>
+			</resource>
+		</resources>
+	</build>
 
-    <repositories>
-        <repository>
-            <id>comphenix-snapshot-repo</id>
-            <url>http://repo.comphenix.net/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>maven-repo</id>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>comphenix-snapshot-repo</id>
+			<url>http://repo.comphenix.net/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>maven-repo</id>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+	</repositories>
 
-    <dependencies>
-        <!--
-        No repository for spigot / bukkit :(
-        -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>LATEST</version>
+	<dependencies>
+		<!-- No repository for spigot / bukkit :( -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>LATEST</version>
 
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jars/spigot-api.jar</systemPath>
-        </dependency>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/jars/spigot-api.jar</systemPath>
+		</dependency>
 
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>LATEST</version>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>LATEST</version>
 
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jars/spigot.jar</systemPath>
-        </dependency>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/jars/spigot.jar</systemPath>
+		</dependency>
 
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>qUtils</artifactId>
-            <version>LATEST</version>
+			<version>LATEST</version>
 
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jars/qUtils.jar</systemPath>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/jars/qUtils.jar</systemPath>
 		</dependency>
 
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
-            <version>LATEST</version>
+			<version>LATEST</version>
 
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jars/mBasic.jar</systemPath>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/jars/mBasic.jar</systemPath>
 		</dependency>
 
-        <dependency>
-            <groupId>net.frozenorb</groupId>
-            <artifactId>mShared</artifactId>
-            <version>LATEST</version>
+		<dependency>
+			<groupId>net.frozenorb</groupId>
+			<artifactId>mShared</artifactId>
+			<version>LATEST</version>
 
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/jars/mShared.jar</systemPath>
-        </dependency>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/jars/mShared.jar</systemPath>
+		</dependency>
 
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
@@ -138,12 +136,12 @@
 			<artifactId>PacketWrapper</artifactId>
 			<version>LATEST</version>
 
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-            </exclusions>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>

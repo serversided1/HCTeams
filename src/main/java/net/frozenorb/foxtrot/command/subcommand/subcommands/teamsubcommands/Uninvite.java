@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class Uninvite extends Subcommand {
         }
 
         if(team.isOwner(p.getName()) || team.isCaptain(p.getName())){
-            if(args.length != 2){
+            if(args.length <= 1){
                 p.sendMessage(ChatColor.RED + "Usage: /f uninvite <all | player>");
                 return;
             }
@@ -48,8 +49,9 @@ public class Uninvite extends Subcommand {
                 }
 
                 if(remove != null){
-                    team.getInvitations().remove(name);
-                    p.sendMessage(ChatColor.GRAY + "Cancelled pending invitation for " + remove + "!");
+                    team.getInvitations().remove(remove);
+                    team.setChanged(true);
+                    p.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");
                 } else {
                     p.sendMessage(ChatColor.RED + "No pending invitation for '" + args[1] + "'!");
                 }
@@ -60,7 +62,20 @@ public class Uninvite extends Subcommand {
     }
 
     @Override
-    public List<String> tabComplete() {
-        return new ArrayList<String>();
+    public List<String> tabComplete(){
+        List<String> players = new ArrayList<>();
+        Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(sender.getName());
+
+        if(team != null){
+            if(team.getInvitations().size() > 0){
+                players.add("all");
+
+                for(String invitation : team.getInvitations()){
+                    players.add(invitation);
+                }
+            }
+        }
+
+        return players;
     }
 }

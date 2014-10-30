@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.nms;
 
 import net.frozenorb.foxtrot.util.ReflectionUtils;
-import net.minecraft.server.v1_7_R4.EntityTypes;
+import net.minecraft.server.v1_7_R3.EntityTypes;
 
 /**
  * Class used to inject custom entities into NMS.

@@ -16,14 +16,14 @@ import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
-import net.minecraft.server.v1_7_R4.PacketPlayOutUpdateSign;
+import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -384,7 +384,10 @@ public class ServerManager {
 		player.teleport(to);
 
 		if (type == TeamLocationType.HOME) {
-			FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+            if(FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)){
+                FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+                player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You lost your PVP Timer by warping to faction home.");
+            }
 		}
 
 		if (type == TeamLocationType.RALLY) {
@@ -666,6 +669,7 @@ public class ServerManager {
 
                 rod.addEnchantment(Enchantment.LURE, 2);
                 player.getInventory().addItem(rod);
+                player.updateInventory();
                 player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
                 uses += 1;
                 player.setMetadata(FishingKitMap.META, new FixedMetadataValue(FoxtrotPlugin.getInstance(), uses));

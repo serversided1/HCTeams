@@ -13,20 +13,20 @@ import org.json.simple.parser.ParseException;
  * Created by chasechocolate.
  */
 public class PasteConsole extends BaseCommand {
-    public PasteConsole(){
+    public PasteConsole() {
         super("pasteconsole");
     }
 
     @Override
-    public void syncExecute(){
-        if(!(sender.isOp())){
+    public void syncExecute() {
+        if (!(sender.isOp())) {
             return;
         }
 
         sender.sendMessage(ChatColor.GRAY + "Pasting console...");
 
-        new BukkitRunnable(){
-            public void run(){
+        new BukkitRunnable() {
+            public void run() {
                 String log = StringUtils.join(FoxtrotPlugin.getInstance().getConsoleLog(), "\n");
                 GistPaste paste = new GistPaste("Console log");
 

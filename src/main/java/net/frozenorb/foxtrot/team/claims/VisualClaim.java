@@ -402,7 +402,7 @@ public class VisualClaim implements Listener {
 		if (corner1 != null && corner2 != null) {
 			Claim cc = new Claim(corner1, corner2);
 
-            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()));
+            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()), true);
 		}
 
 		return -1;

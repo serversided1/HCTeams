@@ -19,15 +19,15 @@ public class World extends BaseCommand {
 
     @Override
     public void syncExecute() {
-        if(!(sender.isOp())){
+        if (!(sender.isOp())) {
             sender.sendMessage(ChatColor.RED + "You don't have permission.");
             return;
         }
 
-        if(args.length == 1){
+        if (args.length == 1) {
             org.bukkit.World world = Bukkit.getWorld(args[0]);
 
-            if(world != null){
+            if (world != null) {
                 ((Player) sender).teleport(world.getSpawnLocation());
             } else {
                 sender.sendMessage(ChatColor.RED + "Unknown world!");
@@ -38,10 +38,10 @@ public class World extends BaseCommand {
     }
 
     @Override
-    public List<String> tabComplete(){
+    public List<String> tabComplete() {
         List<String> list = new ArrayList<>();
 
-        for(org.bukkit.World world : Bukkit.getWorlds()){
+        for (org.bukkit.World world : Bukkit.getWorlds()) {
             list.add(world.getName());
         }
 

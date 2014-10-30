@@ -32,13 +32,15 @@ public class JoinTimerMap extends RedisPersistMap<Long> {
 	}
 
 	public boolean hasTimer(Player p) {
-        if (getValue(p.getName()) != null) {
-            if(getValue(p.getName()) == PENDING_USE){
-                return false;
-            }
+        if(contains(p.getName())){
+            if (getValue(p.getName()) != null) {
+                if(getValue(p.getName()) == PENDING_USE){
+                    return false;
+                }
 
-			return getValue(p.getName()) > System.currentTimeMillis();
-		}
+                return getValue(p.getName()) > System.currentTimeMillis();
+            }
+        }
 		return false;
 	}
 

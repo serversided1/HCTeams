@@ -38,7 +38,7 @@ public class Unclaim extends Subcommand {
                     double refund = 0.0D;
 
                     for(net.frozenorb.foxtrot.team.claims.Claim claim : team.getClaims()){
-                        refund += net.frozenorb.foxtrot.team.claims.Claim.getPrice(claim, team);
+                        refund += net.frozenorb.foxtrot.team.claims.Claim.getPrice(claim, team, false);
                     }
 
                     team.setBalance(team.getBalance() + refund);
@@ -54,7 +54,7 @@ public class Unclaim extends Subcommand {
 			if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(p.getLocation()) && team.ownsLocation(p.getLocation())) {
 
 				net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(p.getLocation());
-                int refund = net.frozenorb.foxtrot.team.claims.Claim.getPrice(cc, team);
+                int refund = net.frozenorb.foxtrot.team.claims.Claim.getPrice(cc, team, false);
 
                 team.setBalance(team.getBalance() + refund);
 				team.getClaims().remove(cc);

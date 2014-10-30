@@ -15,6 +15,6 @@ public class StuckALIAS extends BaseCommand {
 
     @Override
     public void syncExecute() {
-        ((Player)sender).performCommand("f stuck");
+        ((Player) sender).performCommand("f stuck");
     }
 }

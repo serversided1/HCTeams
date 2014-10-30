@@ -36,7 +36,7 @@ public class Claim implements Iterable<Coordinate> {
 		this.z2 = Math.max(z1, z2);
 	}
 
-    public static int getPrice(Claim claim, Team team){
+    public static int getPrice(Claim claim, Team team, boolean buying){
         int x = Math.abs(claim.x1 - claim.x2);
         int z = Math.abs(claim.z1 - claim.z2);
 
@@ -59,9 +59,10 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
-        //TODO - Buying vs. selling
-        if(team != null){
-            curPrice += (500 * team.getClaims().size());
+        if(buying){
+            if(team != null){
+                curPrice += (500 * team.getClaims().size());
+            }
         }
 
         //ALPHA ONLY - REMOVE THIS LINE

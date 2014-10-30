@@ -44,9 +44,7 @@ public class PacketBorder {
 
                 final ArrayList<Location> locs = new ArrayList<Location>();
                 for (Coordinate loc : cr) {
-
                     int x = loc.getX(), z = loc.getZ();
-
                     Location ll = new Location(p.getWorld(), x, p.getLocation().getY(), z);
 
                     for (int i = -4; i < 5; i++) {
@@ -125,21 +123,23 @@ public class PacketBorder {
 
         } else if (SpawnTag.isTagged(p)) {
             for (final CuboidRegion cr : regionManagerRegions) {
+                //TODO - Alternate world check
+                if(cr.getMaximumPoint().getWorld().equals(p.getWorld())){
+                    if (cr.hasTag("spawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
 
-                if (cr.hasTag("spawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
-                    CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                        Location min = crAdd.getMinimumPoint();
+                        Location max = crAdd.getMaximumPoint();
 
-                    Location min = crAdd.getMinimumPoint();
-                    Location max = crAdd.getMaximumPoint();
+                        min.setY(0D);
+                        max.setY(256D);
 
-                    min.setY(0D);
-                    max.setY(256D);
+                        crAdd.setLocation(min, max);
+                        Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
 
-                    crAdd.setLocation(min, max);
-                    Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
-
-                    border.addRegion(c);
+                        border.addRegion(c);
+                    }
                 }
             }
         } else {

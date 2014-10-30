@@ -68,7 +68,7 @@ public class Invite extends Subcommand {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public List<String> tabComplete() {
+	public List<String> tabComplete(){
 		ArrayList<String> pls = new ArrayList<String>();
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
