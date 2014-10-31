@@ -1,10 +1,5 @@
 package net.frozenorb.foxtrot.team;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.*;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
@@ -16,20 +11,23 @@ import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import redis.clients.jedis.Jedis;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class Team {
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
 
-	public static final int MAX_TEAM_SIZE = 25;
+	public static final int MAX_TEAM_SIZE = 30;
 
 	private String name;
 
@@ -139,8 +137,10 @@ public class Team {
 	public void setOwner(String owner) {
 		changed = true;
 		this.owner = owner;
-		members.add(owner);
 
+        if (owner != null) {
+            members.add(owner);
+        }
 	}
 
 	public void setHQ(Location hq, boolean update) {
@@ -278,6 +278,12 @@ public class Team {
 		ArrayList<Player> pls = new ArrayList<Player>();
 
 		for (String m : getMembers()) {
+            // This is here because having a team with 0 members breaks this.
+            // Not quite sure why as I haven't looked too much into Team.java.
+            if (m == null) {
+                continue;
+            }
+
 			if (Bukkit.getPlayerExact(m) != null && !Bukkit.getPlayerExact(m).hasMetadata("invisible")) {
 				pls.add(Bukkit.getPlayerExact(m));
 			}
@@ -290,6 +296,12 @@ public class Team {
 		ArrayList<String> pls = new ArrayList<String>();
 
 		for (String m : getMembers()) {
+            // This is here because having a team with 0 members breaks this.
+            // Not quite sure why as I haven't looked too much into Team.java.
+            if (m == null) {
+                continue;
+            }
+
             Player player = Bukkit.getPlayerExact(m);
 
 			if (player == null || player.hasMetadata("invisible")) {
@@ -586,121 +598,127 @@ public class Team {
 	}
 
 	public void sendTeamInfo(Player p) {
-		String gray = "§7§m" + StringUtils.repeat("-", 53);
+        String gray = "§7§m" + StringUtils.repeat("-", 53);
 
-		p.sendMessage(gray);
+        p.sendMessage(gray);
 
-		Location s = getHQ();
+        // A string comparison is needed here as saving and reload the data results in a string known as 'null', not a null value.
+        if (owner != null && !owner.equalsIgnoreCase("null")) {
+            Location s = getHQ();
 
-		String msg = " §3-§e HQ: ";
-		msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
+            String msg = " §3-§e HQ: ";
+            msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
 
-		p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
-		KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
+            p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
+            KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
 
-		if (Bukkit.getPlayerExact(getOwner()) != null) {
-			p.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
-		} else {
-			p.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
-		}
+            if (Bukkit.getPlayerExact(getOwner()) != null) {
+                p.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
+            } else {
+                p.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
+            }
 
-		boolean first = true;
-		boolean first2 = true;
+            boolean first = true;
+            boolean first2 = true;
 
-		StringBuilder members = new StringBuilder("§eMembers: ");
-		StringBuilder captains = new StringBuilder("§eCaptains: ");
+            StringBuilder members = new StringBuilder("§eMembers: ");
+            StringBuilder captains = new StringBuilder("§eCaptains: ");
 
-		int captainAmount = 0;
-		int memberAmount = 0;
+            int captainAmount = 0;
+            int memberAmount = 0;
 
-		for (Player online : getOnlineMembers()) {
-			StringBuilder toAdd = members;
-			if (isOwner(online.getName())) {
-				continue;
-			}
+            for (Player online : getOnlineMembers()) {
+                StringBuilder toAdd = members;
+                if (isOwner(online.getName())) {
+                    continue;
+                }
 
-			if (isCaptain(online.getName())) {
+                if (isCaptain(online.getName())) {
 
-				toAdd = captains;
-				if (!first2) {
-					toAdd.append("§7, ");
-				}
-				captainAmount++;
+                    toAdd = captains;
+                    if (!first2) {
+                        toAdd.append("§7, ");
+                    }
+                    captainAmount++;
 
-				toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-				first2 = false;
-			} else {
-				if (!first) {
-					toAdd.append("§7, ");
-				}
-				memberAmount++;
+                    toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
+                    first2 = false;
+                } else {
+                    if (!first) {
+                        toAdd.append("§7, ");
+                    }
+                    memberAmount++;
 
-				toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-				first = false;
-			}
-		}
-		for (String offline : getOfflineMembers()) {
-			StringBuilder toAdd = members;
+                    toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
+                    first = false;
+                }
+            }
+            for (String offline : getOfflineMembers()) {
+                StringBuilder toAdd = members;
 
-			if (isOwner(offline)) {
-				continue;
-			}
-			if (isCaptain(offline)) {
+                if (isOwner(offline)) {
+                    continue;
+                }
+                if (isCaptain(offline)) {
 
-				toAdd = captains;
-				if (!first2) {
-					toAdd.append("§7, ");
-				}
+                    toAdd = captains;
+                    if (!first2) {
+                        toAdd.append("§7, ");
+                    }
 
-				captainAmount++;
+                    captainAmount++;
 
-				toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-				first2 = false;
+                    toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+                    first2 = false;
 
-			} else {
-				if (!first) {
-					toAdd.append("§7, ");
-				}
-				memberAmount++;
+                } else {
+                    if (!first) {
+                        toAdd.append("§7, ");
+                    }
+                    memberAmount++;
 
-				toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-				first = false;
+                    toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+                    first = false;
 
-			}
-		}
+                }
+            }
 
-		if (captainAmount > 0) {
-			p.sendMessage(captains.toString());
-		}
+            if (captainAmount > 0) {
+                p.sendMessage(captains.toString());
+            }
 
-		if (memberAmount > 0) {
-			p.sendMessage(members.toString());
-		}
+            if (memberAmount > 0) {
+                p.sendMessage(members.toString());
+            }
 
-        String balStr = String.valueOf(balance);
+            String balStr = String.valueOf(balance);
 
-		//p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
-        p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
+            //p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
+            p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
 
-		String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
-		String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
+            String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
+            String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
 
-		if (getOnlineMemberAmount() == 0) {
-			dtrMsg += "§7■";
-		} else {
-			if (DTRHandler.isRegenerating(this)) {
-				dtrMsg += "§a ▲";
+            if (getOnlineMemberAmount() == 0) {
+                dtrMsg += "§7■";
+            } else {
+                if (DTRHandler.isRegenerating(this)) {
+                    dtrMsg += "§a ▲";
 
-			} else {
-				if (DTRHandler.isOnCD(this)) {
-					dtrMsg += "§c■";
-				} else {
-					dtrMsg += "§a■";
+                } else {
+                    if (DTRHandler.isOnCD(this)) {
+                        dtrMsg += "§c■";
+                    } else {
+                        dtrMsg += "§a■";
 
-				}
-			}
-		}
-		p.sendMessage(dtrMsg);
+                    }
+                }
+            }
+            p.sendMessage(dtrMsg);
+        } else {
+            p.sendMessage(ChatColor.BLUE + getFriendlyName());
+            p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
+        }
 
 		p.sendMessage(gray);
 

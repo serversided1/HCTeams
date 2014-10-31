@@ -43,6 +43,7 @@ public class Team extends BaseCommand {
         registerSubcommand(new Stuck("stuck", "§c/f stuck", "out"));
         registerSubcommand(new Disband("disband", "§c/f disband"));
         registerSubcommand(new ForceDisband("forcedisband", "§c/f forcedisband"));
+        registerSubcommand(new ForceLeave("forceleave", "§c/f forceleave"));
 
         registerSubcommandsToTabCompletions();
     }
