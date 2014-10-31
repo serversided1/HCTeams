@@ -69,8 +69,9 @@ public class Team {
 		this.name = name;
 	}
 
-	public void setDtr(double dtr) {
-		this.dtr = dtr;
+	public void setDtr(double newDTR) {
+        FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+        this.dtr = newDTR;
 		setChanged(true);
 	}
 
@@ -334,10 +335,10 @@ public class Team {
 	}
 
 	public void playerDeath(String p) {
-        double newDTR = Math.max(dtr - 1.0D, -.99);
+        double newDTR = Math.max(dtr - 1.0D, -.99); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
 
-        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "] | Prev DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
-        setDtr(newDTR); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
+        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
+        setDtr(newDTR);
 
 		if (isRaidaible()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);

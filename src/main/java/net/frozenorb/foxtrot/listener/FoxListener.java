@@ -775,7 +775,7 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent e) {
-        if (e.getEntity().getShooter() instanceof Player && !(e.getEntity() instanceof ThrownPotion) && !(e.getEntity() instanceof Arrow) && !(e.getEntity() instanceof EnderPearl) && !(e.getEntity() instanceof Fish) && !(e.getEntity() instanceof Snowball) && !(e.getEntity() instanceof Egg)) {
+        if (e.getEntity().getShooter() instanceof Player && !(e.getEntity() instanceof ThrownPotion) && !(e.getEntity() instanceof Arrow) && !(e.getEntity() instanceof EnderPearl) && !(e.getEntity() instanceof Fish) && !(e.getEntity() instanceof Snowball) && !(e.getEntity() instanceof Egg) && !(e.getEntity() instanceof ThrownExpBottle)) {
             SpawnTag.applyTag((Player) e.getEntity().getShooter());
         }
     }
@@ -1736,7 +1736,7 @@ public class FoxListener implements Listener {
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
 
                 meta.setOwner(player.getName());
-                meta.setDisplayName(ChatColor.YELLOW + player.getName() + "'s Head");
+                meta.setDisplayName(ChatColor.YELLOW + "Head of " + player.getName());
                 meta.setLore(Arrays.asList("", deathMsg));
                 skull.setItemMeta(meta);
                 e.getDrops().add(skull);
