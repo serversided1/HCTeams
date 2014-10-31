@@ -30,7 +30,7 @@ public class Pay extends BaseCommand {
             return;
         }
 
-        String target = args[1];
+        String target = args[0];
 
         if(!(FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target))){
             player.sendMessage(ChatColor.RED + target + " has never played before!");

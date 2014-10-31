@@ -840,11 +840,11 @@ public class FoxListener implements Listener {
         Team team = plugin.getTeamManager().getPlayerTeam(p.getName());
 
         if (team == null) {
-            e.setFormat("%s§f: %s");
+            e.setFormat("§6[§e-§6]%s§f: %s");
             return;
         }
 
-        e.setFormat("§7[§e" + team.getFriendlyName() + "§7] §r%s§f: %s");
+        e.setFormat("§6[§e" + team.getFriendlyName() + "§6]§r%s§f: %s");
 
         Set<String> members = team.getMembers();
 
@@ -862,6 +862,8 @@ public class FoxListener implements Listener {
                     pl.sendMessage(ChatColor.DARK_AQUA + "(Team) " + p.getName() + ":§e " + e.getMessage());
                 }
             }
+
+            Bukkit.getLogger().info("[TeamChat] [" + team.getName() + "] " + p.getName() + ": " + e.getMessage());
             return;
         }
 
@@ -872,7 +874,7 @@ public class FoxListener implements Listener {
             String plMsg = String.format(e.getFormat(), e.getPlayer().getDisplayName(), e.getMessage());
 
             if (team.isOnTeam(pl)) {
-                plMsg = plMsg.replace("§7[§e", "§7[§a");
+                plMsg = plMsg.replace("§6[§e", "§6[§2");
             }
 
             pl.sendMessage(plMsg);
@@ -1258,8 +1260,14 @@ public class FoxListener implements Listener {
             if (e.getClickedBlock().getType() == Material.WALL_SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
                 Sign s = (Sign) e.getClickedBlock().getState();
 
-                if (s.getLine(0) != null && FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(e.getClickedBlock().getLocation())) {
-                    FoxtrotPlugin.getInstance().getServerManager().handleShopSign(s, e.getPlayer());
+                if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(e.getClickedBlock().getLocation())) {
+                    if (s.getLine(0).contains("Kit")) {
+                        FoxtrotPlugin.getInstance().getServerManager().handleKitSign(s, e.getPlayer());
+                    } else if (s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")) {
+                        FoxtrotPlugin.getInstance().getServerManager().handleShopSign(s, e.getPlayer());
+                    }
+
+                    e.setCancelled(true);
                 }
             }
         }
@@ -1529,7 +1537,7 @@ public class FoxListener implements Listener {
             }
         }
 
-        e.setDeathMessage(e.getDeathMessage().replace(e.getEntity().getName(), "§c" + e.getEntity().getName() + "§4[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getName()) + "]§e"));
+        e.setDeathMessage(e.getDeathMessage().replaceFirst(e.getEntity().getName(), "§c" + e.getEntity().getName() + "§4[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getName()) + "]§e"));
         SpawnTag.removeTag(e.getEntity());
 
         int seconds = 15 * 60;
@@ -1996,8 +2004,8 @@ public class FoxListener implements Listener {
     }
 
     @EventHandler
-    public void onLeavesDecay(LeavesDecayEvent e) {
-        e.setCancelled(true);
+    public void onLeavesDecay(LeavesDecayEvent e){
+        //e.setCancelled(true);
     }
 
     @EventHandler
