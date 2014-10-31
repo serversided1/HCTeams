@@ -334,7 +334,10 @@ public class Team {
 	}
 
 	public void playerDeath(String p) {
-		setDtr(Math.max(dtr - 1.0D, -.99)); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
+        double newDTR = Math.max(dtr - 1.0D, -.99);
+
+        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "] | Prev DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+        setDtr(newDTR); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
 
 		if (isRaidaible()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);

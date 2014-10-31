@@ -24,6 +24,7 @@ import net.frozenorb.foxtrot.jedis.persist.*;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.listener.EndListener;
 import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.listener.RoadListener;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
@@ -134,6 +135,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new EndListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RoadListener(), this);
 		Bukkit.getPluginManager().registerEvents(new Subclaim("", ""), this);
 		Bukkit.getPluginManager().registerEvents(new Claim("", ""), this);
 
