@@ -5,10 +5,7 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.Utilities.Utils.FaceUtil;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.HostKOTH;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
-import net.frozenorb.foxtrot.game.Minigame.State;
-import net.frozenorb.foxtrot.game.games.KingOfTheHill;
 import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.ToggleLightningMap;
@@ -22,7 +19,6 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.NMSMethods;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import net.frozenorb.foxtrot.visual.scrollers.MinigameCountdownScroller;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.utils.hologram.object.CraftHologram;
 import net.frozenorb.utils.hologram.object.HologramManager;
@@ -67,7 +63,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
@@ -658,27 +653,12 @@ public class FoxListener implements Listener {
                 v.getLocation().getChunk().load();
             }
 
-            if (v.isDead() || !v.isValid()) {
-                e.getPlayer().getInventory().setArmorContents(null);
-                e.getPlayer().getInventory().clear();
-
-                Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getPlayer().getName());
-
-                if (t != null) {
-                    t.playerDeath(e.getPlayer());
-                }
-                if (t != null && t.getHQ() != null) {
-                    e.getPlayer().teleport(t.getHQ());
-                } else {
-                    e.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
-                }
-            }
-
             if (v.isValid() || !v.isDead()) {
                 e.getPlayer().setHealth(((Damageable) v).getHealth());
                 combatLoggers.get(e.getPlayer().getName()).remove();
-
+                v.remove();
             }
+
             combatLoggers.remove(e.getPlayer().getName());
         }
 
@@ -710,7 +690,7 @@ public class FoxListener implements Listener {
             }
         }
 
-        try {
+        /*try {
             for (Field f : HostKOTH.class.getFields()) {
                 if (f.getType() == KingOfTheHill.class) {
                     KingOfTheHill koth = (KingOfTheHill) f.get(null);
@@ -727,7 +707,7 @@ public class FoxListener implements Listener {
         }
         catch (IllegalArgumentException | IllegalAccessException ex) {
             ex.printStackTrace();
-        }
+        }*/
 
         FoxtrotPlugin.getInstance().getScoreboardManager().update(e.getPlayer());
 
