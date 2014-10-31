@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.visual.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Kit;
+import net.frozenorb.foxtrot.game.games.koth.KOTH;
+import net.frozenorb.foxtrot.game.games.koth.KOTHs;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.server.SpawnTag;
 import org.bukkit.ChatColor;
@@ -93,11 +95,36 @@ public interface ScoreGetter {
         }
     };
 
+    public static final ScoreGetter KOTH_TIMER = new ScoreGetter(){
+        @Override
+        public String getTitle(Player player){
+            for (KOTH koth : KOTHs.getKOTHs()) {
+                if (koth.isActive()) {
+                    return (ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH");
+                }
+            }
+
+            return (ChatColor.RED.toString() + ChatColor.BOLD + "KOTH: Error");
+        }
+
+        @Override
+        public long getMillis(Player player){
+            for (KOTH koth : KOTHs.getKOTHs()) {
+                if (koth.isActive()) {
+                    return (koth.getRemainingCapTime() * 1000L);
+                }
+            }
+
+            return NO_SCORE;
+        }
+    };
+
     public static final ScoreGetter[] SCORES = {
             SPAWN_TAG,
             ENDERPEARL,
             PVP_TIMER,
-            CLASS_WARMUP
+            CLASS_WARMUP,
+            KOTH_TIMER
     };
 
 

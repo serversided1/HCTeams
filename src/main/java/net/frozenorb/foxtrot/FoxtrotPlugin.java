@@ -18,13 +18,11 @@ import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Clai
 import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.MinigameManager;
+import net.frozenorb.foxtrot.game.games.koth.KOTHs;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
-import net.frozenorb.foxtrot.listener.BorderListener;
-import net.frozenorb.foxtrot.listener.EndListener;
-import net.frozenorb.foxtrot.listener.FoxListener;
-import net.frozenorb.foxtrot.listener.RoadListener;
+import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
@@ -97,6 +95,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
 		bossBarManager = new BossBarManager();
+        KOTHs.init();
 
 		RegionManager.register(this);
 		RegionManager.get();
@@ -132,6 +131,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		kitManager = new KitManager();
 		kitManager.loadKits();
 
+        Bukkit.getPluginManager().registerEvents(new KOTHListener(), this);
 		Bukkit.getPluginManager().registerEvents(new EndListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
