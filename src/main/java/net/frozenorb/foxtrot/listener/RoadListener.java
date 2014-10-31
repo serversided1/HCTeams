@@ -93,10 +93,8 @@ public class RoadListener implements Listener {
             return;
         }
 
-        if(event.getClickedBlock() != null){
-            Location loc = event.getClickedBlock().getLocation();
-
-            if(hand.getType() == Material.FLINT_AND_STEEL || hand.getType() == Material.LAVA_BUCKET || (hand.getType() == Material.INK_SACK || hand.getData().getData() == (byte) 15)){
+        if(event.getClickedBlock() != null && isRoad(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation())){
+            if(hand.getType() == Material.FLINT_AND_STEEL || hand.getType() == Material.LAVA_BUCKET || (hand.getType() == Material.INK_SACK && hand.getData().getData() == (byte) 15)){
                 event.setCancelled(true);
             }
         }

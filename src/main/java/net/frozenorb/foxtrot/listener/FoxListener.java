@@ -745,6 +745,9 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent e) {
+        // Give back PvP protection when respawning.
+        FoxtrotPlugin.getInstance().getJoinTimerMap().pendingTimer(e.getPlayer());
+
         Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getPlayer().getName());
 
         if (t != null && t.getHQ() != null) {
