@@ -240,19 +240,6 @@ public class ServerManager {
 			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
 		}
 
-		if (isKOTHArena(loc)) {
-
-			String n = "";
-			for (CuboidRegion rg : RegionManager.get().getApplicableRegions(loc)) {
-				if (rg.getName().startsWith("koth_")) {
-					n = rg.getName().replace("koth_", "");
-					break;
-				}
-			}
-
-			return new RegionData<String>(loc, Region.KOTH_ARENA, n);
-		}
-
         //Road
         String road = getRoad(loc);
 
@@ -278,13 +265,21 @@ public class ServerManager {
 			return new RegionData<Object>(loc, Region.WILDNERNESS, null);
 		}
 
-		if (isWarzone(loc)) {
-			return new RegionData<Object>(loc, Region.WARZONE, null);
-		}
-
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
-		return new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo);
 
+        if (ownerTo != null) {
+            // If we're a 50DTR faction... (KOTH)
+            if (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D) {
+                return new RegionData<String>(loc, Region.KOTH_ARENA, ownerTo.getFriendlyName());
+            }
+
+            return new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo);
+        } else if (isWarzone(loc)) {
+            return new RegionData<Object>(loc, Region.WARZONE, null);
+        }
+
+        // This will never happen.
+        return new RegionData<Object>(loc, Region.WILDNERNESS, null);
 	}
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
@@ -434,6 +429,7 @@ public class ServerManager {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -441,7 +437,7 @@ public class ServerManager {
 
 		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
 
-		return owner != null && owner.isRaidaible();
+		return owner != null && owner.isRaidable();
 
 	}
 
@@ -455,7 +451,6 @@ public class ServerManager {
 
 	public void revivePlayer(String name) {
 		FoxtrotPlugin.getInstance().getDeathbanMap().updateValue(name, 0L);
-
 	}
 
 	/**
@@ -502,12 +497,14 @@ public class ServerManager {
 	}
 
 	public boolean isKOTHArena(Location loc) {
-		for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
-			if (cr.getName().startsWith("koth_")) {
-				return true;
-			}
-		}
-		return false;
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+
+        if (ownerTo == null) {
+            return (false);
+        }
+
+        // If we're a 50DTR faction...
+        return (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D);
 	}
 
 	public boolean isDiamondMountain(Location loc) {

@@ -7,7 +7,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
-import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.TimeUtils;
@@ -339,28 +338,22 @@ public class Team {
 		return getMembers().size();
 	}
 
-	public boolean isRaidaible() {
+	public boolean isRaidable() {
 		return dtr < 0;
 	}
 
-	public void playerDeath(Player p) {
-		playerDeath(p.getName());
-	}
-
-	public void playerDeath(String p) {
-        double newDTR = Math.max(dtr - 1.0D, -.99); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
+	public void playerDeath(String p, double dtrLoss) {
+        double newDTR = Math.max(dtr - dtrLoss, -.99); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
         setDtr(newDTR);
 
-		if (isRaidaible()) {
+		if (isRaidable()) {
 			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);
-
 		}
 
 		DTRHandler.setCooldown(this);
 		deathCooldown = System.currentTimeMillis() + (3600 * 1000);
-
 	}
 
 	/**
@@ -372,30 +365,14 @@ public class Team {
 		double baseHour = DTRHandler.getBaseDTRIncrement(getSize());
 		BigDecimal curr = new BigDecimal(0);
 
-		ServerManager sm = FoxtrotPlugin.getInstance().getServerManager();
-
 		for (Player p : getOnlineMembers()) {
-			double mult = 0;
-
-			Location loc = p.getLocation();
-
-			if (sm.isWarzone(loc)) {
-				mult = 1.25;
-			}
-			if (sm.isUnclaimed(loc)) {
-				mult = 1.05;
-			}
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this) {
-				mult = 1;
-			}
-
-			curr = curr.add(new BigDecimal(baseHour + "").multiply(new BigDecimal(mult + "")));
-
+			curr = curr.add(new BigDecimal(baseHour + "").multiply(new BigDecimal(1 + "")));
 		}
 
 		BigDecimal dtr = curr.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
 
         //DTR regain multiplier
+        //TODO: Remove on non alpha.
         dtr = dtr.multiply(new BigDecimal(3));
 
         return dtr;
@@ -612,8 +589,9 @@ public class Team {
 
             p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
             KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
+            Player owner = Bukkit.getPlayerExact(getOwner());
 
-            if (Bukkit.getPlayerExact(getOwner()) != null) {
+            if (owner != null && !owner.hasMetadata("invisible")) {
                 p.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
             } else {
                 p.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
@@ -629,13 +607,16 @@ public class Team {
             int memberAmount = 0;
 
             for (Player online : getOnlineMembers()) {
+                if (online.hasMetadata("invisible")) {
+                    continue;
+                }
+
                 StringBuilder toAdd = members;
                 if (isOwner(online.getName())) {
                     continue;
                 }
 
                 if (isCaptain(online.getName())) {
-
                     toAdd = captains;
                     if (!first2) {
                         toAdd.append("§7, ");
@@ -695,7 +676,7 @@ public class Team {
             //p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
             p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
 
-            String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
+            String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidable() ? "§4" : "§c";
             String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
 
             boolean dtrMessage = false;
@@ -723,6 +704,12 @@ public class Team {
                 int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
                 p.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds));
             }
+        } else if (getDtr() == 50D) {
+            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " KOTH " + ChatColor.GRAY + "(5-minute Deathban)");
+            p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
+        } else if (getDtr() == 100D) {
+            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(5-minute Deathban, 0.5 DTR loss)");
+            p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
         } else {
             p.sendMessage(ChatColor.BLUE + getFriendlyName());
             p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));

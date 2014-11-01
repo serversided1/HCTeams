@@ -1,25 +1,30 @@
 package net.frozenorb.foxtrot.armor.kits;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Armor;
 import net.frozenorb.foxtrot.armor.ArmorMaterial;
 import net.frozenorb.foxtrot.armor.Kit;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import net.frozenorb.foxtrot.util.TimeUtils;
+import org.bukkit.*;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class Rogue extends Kit {
 
-	public static final double BACKSTAB_ANGLE_DIFF_MAX = 70;
+    HashMap<String, Long> lastSpeedUsage = new HashMap<String, Long>();
+    HashMap<String, Long> lastJumpUsage = new HashMap<String, Long>();
 
 	@Override
 	public boolean qualifies(Armor armor) {
@@ -34,7 +39,7 @@ public class Rogue extends Kit {
 	@Override
 	public void apply(Player p) {
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 0), true);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1), true);
 	}
 
 	@Override
@@ -44,8 +49,69 @@ public class Rogue extends Kit {
 
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2), true);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 0), true);
-
 	}
+
+    @Override
+    public boolean itemConsumed(Player p, Material m) {
+        if (m == Material.SUGAR) {
+            if (lastSpeedUsage.containsKey(p.getName()) && lastSpeedUsage.get(p.getName()) > System.currentTimeMillis()) {
+                Long millisLeft = ((lastSpeedUsage.get(p.getName()) - System.currentTimeMillis()) / 1000L) * 1000L;
+                String msg = TimeUtils.getDurationBreakdown(millisLeft);
+
+                p.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+                return (false);
+            }
+
+            lastSpeedUsage.put(p.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+
+            p.setMetadata("speedBoost", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+
+            p.removePotionEffect(PotionEffectType.SPEED);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 4));
+
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+                public void run() {
+                    if (hasKitOn(p)) {
+                        apply(p);
+                    }
+
+                    p.removeMetadata("speedBoost", FoxtrotPlugin.getInstance());
+                }
+            }, 200);
+        } else {
+            if (lastJumpUsage.containsKey(p.getName()) && lastJumpUsage.get(p.getName()) > System.currentTimeMillis()) {
+                Long millisLeft = ((lastJumpUsage.get(p.getName()) - System.currentTimeMillis()) / 1000L) * 1000L;
+                String msg = TimeUtils.getDurationBreakdown(millisLeft);
+
+                p.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+                return (false);
+            }
+
+            lastJumpUsage.put(p.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+
+            p.setMetadata("jumpBoost", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+
+            p.removePotionEffect(PotionEffectType.JUMP);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 6));
+
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+                public void run() {
+                    if (hasKitOn(p)) {
+                        apply(p);
+                    }
+
+                    p.removeMetadata("jumpBoost", FoxtrotPlugin.getInstance());
+                }
+            }, 200);
+        }
+
+        return (true);
+    }
+
+    @Override
+    public List<Material> getConsumables() {
+        return Arrays.asList(Material.SUGAR, Material.FEATHER);
+    }
 
 	@Override
 	public double getCooldownSeconds() {
@@ -58,19 +124,19 @@ public class Rogue extends Kit {
 			Player p = (Player) e.getDamager();
 			Player vic = (Player) e.getEntity();
 
-			float pYaw = p.getLocation().getYaw();
-			float vicYaw = vic.getLocation().getYaw();
-
-			float diff = Math.abs(Math.abs(pYaw) - Math.abs(vicYaw));
-
 			if (p.getItemInHand() != null && p.getItemInHand().getType() == Material.GOLD_SWORD && hasKitOn(p) && !hasCooldown(p, true)) {
+                Vector playerVector = p.getLocation().getDirection();
+                Vector entityVector = vic.getLocation().getDirection();
 
-				if (diff < BACKSTAB_ANGLE_DIFF_MAX || diff >= 360 - BACKSTAB_ANGLE_DIFF_MAX) {
+                playerVector.setY(0F);
+                entityVector.setY(0F);
 
+                double degrees = playerVector.angle(entityVector);
+
+				if (Math.abs(degrees) < 1.4) {
 					p.setItemInHand(new ItemStack(Material.AIR));
-					p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
-					p.playEffect(p.getLocation(), Effect.STEP_SOUND, Material.GOLD_SWORD);
 
+					p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
 					p.getWorld().playEffect(vic.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
 					e.setDamage(0.5D);
@@ -80,9 +146,7 @@ public class Rogue extends Kit {
 				} else {
 					p.sendMessage(ChatColor.RED + "Backstab failed!");
 				}
-
 			}
-
 		}
 	}
 

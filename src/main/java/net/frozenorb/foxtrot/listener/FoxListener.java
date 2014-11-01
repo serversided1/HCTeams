@@ -234,6 +234,10 @@ public class FoxListener implements Listener {
             } else
                 e.setCancelled(false);
 
+            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+                pl.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
+                e.setCancelled(true);
+            }
         }
     }
 
@@ -456,12 +460,15 @@ public class FoxListener implements Listener {
         }
 
         if (e.getPlayer().hasMetadata("loggedout")) {
-
             e.getPlayer().removeMetadata("loggedout", FoxtrotPlugin.getInstance());
             return;
         }
 
         if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(e.getPlayer().getLocation())) {
+            return;
+        }
+
+        if (e.getPlayer().getLocation().getBlockY() <= 0) {
             return;
         }
 
@@ -1614,7 +1621,8 @@ public class FoxListener implements Listener {
         Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getEntity().getName());
 
         if (t != null) {
-            t.playerDeath(e.getEntity());
+            //TODO: Make this depend on when the player is.
+            t.playerDeath(e.getEntity().getName(), 1D);
         }
 
         // Add deaths to armor
@@ -2123,7 +2131,7 @@ public class FoxListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getPlayer().getLocation())) {
+        if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getPlayer().getLocation()) || FoxtrotPlugin.getInstance().getServerManager().isSpawnBufferZone(e.getBlock().getLocation())) {
             e.setCancelled(true);
             e.setBuild(false);
 

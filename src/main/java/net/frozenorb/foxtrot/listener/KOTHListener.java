@@ -19,14 +19,14 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHActivated(KOTHActivatedEvent event) {
-        Bukkit.broadcastMessage(ChatColor.GRAY + "█████████");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "[KingOfTheHill]");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + ChatColor.YELLOW + event.getKoth().getName() + " KOTH");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "can be contested now.");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
-        Bukkit.broadcastMessage(ChatColor.GRAY + "█████████");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
     }
 
     @EventHandler

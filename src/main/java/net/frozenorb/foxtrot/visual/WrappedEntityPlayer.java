@@ -9,6 +9,7 @@ import net.minecraft.server.v1_7_R3.PlayerInteractManager;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 public class WrappedEntityPlayer extends EntityPlayer {
+
 	public String listName;
 	public int ping = 0;
 

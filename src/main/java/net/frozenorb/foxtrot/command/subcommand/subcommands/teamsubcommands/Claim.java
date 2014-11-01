@@ -47,7 +47,7 @@ public class Claim extends Subcommand implements Listener {
 		if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 			p.getInventory().remove(SELECTION_WAND);
 
-            if(team.isRaidaible()){
+            if(team.isRaidable()){
                 p.sendMessage(ChatColor.RED + "You may not claim land while your faction is raidable!");
                 return;
             }

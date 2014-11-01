@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.visual.scoreboard;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import net.frozenorb.foxtrot.util.WrappedPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,7 +11,7 @@ import org.bukkit.scoreboard.*;
  * Created by chasechocolate.
  */
 public class FoxtrotBoard {
-    public static final String OBJECTIVE_NAME = "smoke_weed";
+    public static final String OBJECTIVE_NAME = "HCTeams";
     public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Alpha]";
 
     @Getter

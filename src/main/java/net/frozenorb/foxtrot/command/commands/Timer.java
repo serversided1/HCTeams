@@ -41,7 +41,7 @@ public class Timer extends BaseCommand {
 
                 int lives = FoxtrotPlugin.getInstance().getServerManager().getLives(sender.getName());
 
-                if (lives > 0) {
+                if (lives == 0) {
                     sender.sendMessage(ChatColor.RED + "You currently have no lives!");
                     return;
                 }

@@ -30,7 +30,6 @@ public class RegionData<T> {
 
 	public String getName(Player p) {
 		if (region.getDisplayName().isEmpty()) {
-
 			if (data instanceof Team) {
 				Team ownerTo = (Team) data;
 
@@ -47,6 +46,7 @@ public class RegionData<T> {
 				return "§b" + (String) data + "§6 KOTH";
 			}
 		}
+
 		return region.getDisplayName();
 	}
 }

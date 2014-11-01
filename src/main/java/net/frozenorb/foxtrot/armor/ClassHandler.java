@@ -75,21 +75,18 @@ public class ClassHandler extends BukkitRunnable implements Listener {
 
 		if (e.getPlayer().getItemInHand() != null) {
 			for (Kit k : FoxtrotPlugin.getInstance().getKitManager().getKits()) {
-
-				if (k.hasKitOn(p) && k.getConsumable() == e.getPlayer().getItemInHand().getType()) {
-
+				if (k.hasKitOn(p) && k.getConsumables() != null && k.getConsumables().contains(e.getPlayer().getItemInHand().getType())) {
 					if (!k.hasCooldown(p, true)) {
+                        if (k.itemConsumed(p, e.getItem().getType())) {
+                            if (p.getItemInHand().getAmount() > 1) {
+                                p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+                            } else {
+                                p.setItemInHand(new ItemStack(Material.AIR));
+                            }
 
-						if (p.getItemInHand().getAmount() > 1) {
-							p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
-						} else {
-							p.setItemInHand(new ItemStack(Material.AIR));
-						}
-
-						k.itemConsumed(p);
-						k.addCooldown(p, k.getCooldownSeconds());
+                            k.addCooldown(p, k.getCooldownSeconds());
+                        }
 					}
-
 				}
 			}
 		}

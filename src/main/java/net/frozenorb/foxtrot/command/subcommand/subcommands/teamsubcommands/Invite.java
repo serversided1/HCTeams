@@ -47,7 +47,7 @@ public class Invite extends Subcommand {
 						return;
 					}
 
-                    if(team.isRaidaible()){
+                    if(team.isRaidable()){
                         sender.sendMessage(ChatColor.RED + "You may not invite players if your team is raidable! You must boost your DTR!");
                         return;
                     }

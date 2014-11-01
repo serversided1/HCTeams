@@ -184,7 +184,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 					Player observer = event.getPlayer();
 					StructureModifier<Entity> entityModifer = event.getPacket().getEntityModifier(observer.getWorld());
 					org.bukkit.entity.Entity entity = entityModifer.read(0);
-					if (entity != null && observer != entity && entity instanceof LivingEntity && !(entity instanceof EnderDragon && entity instanceof Wither) && (entity.getPassenger() == null || entity.getPassenger() != observer)) {
+					if (entity != null && observer != entity && entity instanceof LivingEntity && !(entity instanceof EnderDragon || entity instanceof Wither) && (entity.getPassenger() == null || entity.getPassenger() != observer)) {
 						event.setPacket(event.getPacket().deepClone());
 						StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
 						for (WrappedWatchableObject watch : watcher.read(0)) {

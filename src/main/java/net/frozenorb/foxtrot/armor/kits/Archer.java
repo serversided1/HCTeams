@@ -18,6 +18,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
+import java.util.List;
+
 @SuppressWarnings("deprecation")
 public class Archer extends Kit {
 
@@ -51,8 +54,8 @@ public class Archer extends Kit {
     }
 
     @Override
-    public Material getConsumable() {
-        return Material.SUGAR;
+    public List<Material> getConsumables() {
+        return (Arrays.asList(Material.SUGAR));
     }
 
     private double getMultiplier(double range, Entity hit) {
@@ -73,15 +76,12 @@ public class Archer extends Kit {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityArrowHit(EntityDamageByEntityEvent e) {
-
-        if (e.getDamager() instanceof Arrow && e.getEntity() instanceof Entity) {
+        if (e.getDamager() instanceof Arrow) {
             Arrow a = (Arrow) e.getDamager();
 
             if (a.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) a.getMetadata("firedLoc").get(0).value();
-
                 double range = firedFrom.distance(e.getEntity().getLocation());
-
                 double mod = getMultiplier(range, e.getEntity());
 
                 mod = Math.max(1D, mod);
@@ -90,23 +90,30 @@ public class Archer extends Kit {
                     mod = 0.5D;
 
                     ((Player) e.getEntity()).sendMessage("§eReduced §9Incoming Arrow Damage");
-
                 }
 
-                e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
+                // No mod when shooting into a KOTH.
+                if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
+                    mod = 0F;
+                }
 
                 Player p = (Player) a.getShooter();
-
                 double perc = mod * 100D;
                 perc = Math.round(10.0 * perc) / 10.0;
 
-                p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
+                e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
+
+                if (mod != 0F) {
+                    p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
+                } else {
+                    p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output §cNormalized (KOTH Zone)");
+                }
             }
         }
     }
 
     @Override
-    public void itemConsumed(Player p) {
+    public boolean itemConsumed(Player p, Material m) {
         p.setMetadata("speedBoost", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 
         p.removePotionEffect(PotionEffectType.SPEED);
@@ -121,6 +128,8 @@ public class Archer extends Kit {
                 p.removeMetadata("speedBoost", FoxtrotPlugin.getInstance());
             }
         }, 200);
+
+        return (true);
     }
 
     @Override
