@@ -1,12 +1,11 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 
 public class Info extends Subcommand {
 
@@ -23,17 +22,12 @@ public class Info extends Subcommand {
 
 			if (target == null || !p.canSee(target)) {
                 //Bad player, try faction name
-                Team team = FoxtrotPlugin.getInstance().getTeamManager().getTeam(args[0]);
+                Team team = FoxtrotPlugin.getInstance().getTeamManager().getTeam(args[1]);
 
-                if(team == null){
-                    if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]) == null) {
-                        p.sendMessage(ChatColor.GRAY + "That player is not on a team!");
-                    } else {
-                        team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]);
-                        team.sendTeamInfo(p);
-                    }
-                } else {
+                if(team != null){
                     team.sendTeamInfo(p);
+                } else {
+                    p.sendMessage(ChatColor.GRAY + args[1] + " isn't a team's name.");
                 }
 			} else {
 				if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(target.getName()) == null) {
@@ -46,7 +40,6 @@ public class Info extends Subcommand {
 				}
 			}
 		} else {
-
 			if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()) == null)
 				p.sendMessage(ChatColor.GRAY + "You are not on a team!");
 			else {
