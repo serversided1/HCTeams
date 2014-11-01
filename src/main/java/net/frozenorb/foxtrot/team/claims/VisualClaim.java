@@ -1,10 +1,5 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +8,9 @@ import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.claims.Claim.SpecialTag;
 import net.frozenorb.mBasic.Utilities.ItemDb;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,6 +24,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -186,7 +184,7 @@ public class VisualClaim implements Listener {
 			if (corner2 != null) {
 				Claim check = new Claim(to, corner2);
 
-				if (containsOtherClaim(check)) {
+				if (!p.isOp() && containsOtherClaim(check)) {
 					p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 					return;
 				}
@@ -229,7 +227,7 @@ public class VisualClaim implements Listener {
 			if (corner1 != null) {
 				Claim check = new Claim(corner1, to);
 
-				if (containsOtherClaim(check)) {
+				if (!p.isOp() && containsOtherClaim(check)) {
 					p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 					return;
 				}
@@ -347,7 +345,7 @@ public class VisualClaim implements Listener {
 
 			Claim cc = new Claim(corner1, corner2);
 
-			if (containsOtherClaim(cc)) {
+			if (!p.isOp() && containsOtherClaim(cc)) {
 				p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 				return;
 			}
@@ -476,7 +474,7 @@ public class VisualClaim implements Listener {
 
 				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-					if (!FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}
@@ -484,7 +482,7 @@ public class VisualClaim implements Listener {
 					setLoc(2, e.getClickedBlock().getLocation());
 				} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 
-					if (!FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}

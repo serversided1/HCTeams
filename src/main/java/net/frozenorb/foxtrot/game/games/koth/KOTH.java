@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.libs.com.google.gson.annotations.SerializedName;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -156,16 +156,27 @@ public class KOTH {
                     FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 
-                this.remainingCapTime -= 0.1;
+                this.remainingCapTime -= 0.05;
             }
         } else {
-            List<Player> allOnline = Arrays.asList(FoxtrotPlugin.getInstance().getServer().getOnlinePlayers());
-            Collections.shuffle(allOnline); // Fix players who joined first having cap priority.
+            List<Player> onCap = new ArrayList<Player>();
 
-            for (Player player : allOnline) {
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (onCap(player) && !player.isDead() && player.getGameMode() != GameMode.CREATIVE) {
-                    startCapping(player);
-                    break;
+                    onCap.add(player);
+                }
+            }
+
+            Collections.shuffle(onCap);
+
+            if (onCap.size() != 0) {
+                startCapping(onCap.get(0));
+            }
+
+            for (Player player : onCap) {
+                if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+                    FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+                    player.sendMessage(ChatColor.YELLOW + "You have walked onto a KOTH cap zone and your pvp protection has been removed.");
                 }
             }
         }

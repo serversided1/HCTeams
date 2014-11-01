@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,8 +57,8 @@ public class Team {
 
 	private ArrayList<Claim> claims = new ArrayList<Claim>();
 
-	@Getter private long raidableCooldown;
-	@Getter private long deathCooldown;
+	@Getter @Setter private long raidableCooldown;
+	@Getter @Setter private long deathCooldown;
 
 	@Getter @Setter private double balance;
 
@@ -691,13 +692,13 @@ public class Team {
                 p.sendMessage(members.toString());
             }
 
-            String balStr = String.valueOf(balance);
-
             //p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
             p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
 
             String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
             String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
+
+            boolean dtrMessage = false;
 
             if (getOnlineMemberAmount() == 0) {
                 dtrMsg += "§7■";
@@ -708,13 +709,20 @@ public class Team {
                 } else {
                     if (DTRHandler.isOnCD(this)) {
                         dtrMsg += "§c■";
+                        dtrMessage = true;
                     } else {
                         dtrMsg += "§a■";
-
                     }
                 }
             }
+
             p.sendMessage(dtrMsg);
+
+            if (dtrMessage) {
+                long till = Math.max(getRaidableCooldown(), getDeathCooldown());
+                int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+                p.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds));
+            }
         } else {
             p.sendMessage(ChatColor.BLUE + getFriendlyName());
             p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));

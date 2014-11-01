@@ -1,5 +1,9 @@
 package net.frozenorb.foxtrot.armor.kits;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.armor.Armor;
+import net.frozenorb.foxtrot.armor.ArmorMaterial;
+import net.frozenorb.foxtrot.armor.Kit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,11 +17,6 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.armor.Armor;
-import net.frozenorb.foxtrot.armor.ArmorMaterial;
-import net.frozenorb.foxtrot.armor.Kit;
 
 @SuppressWarnings("deprecation")
 public class Archer extends Kit {

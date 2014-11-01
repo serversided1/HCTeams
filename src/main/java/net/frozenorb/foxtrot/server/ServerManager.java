@@ -428,6 +428,15 @@ public class ServerManager {
         return RegionManager.get().isRegionHere(loc, "spawn");
     }
 
+    public boolean isEndSpawn(Location loc) {
+        for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
+            if (cr.hasTag("endspawn")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 	public boolean isClaimedAndRaidable(Location loc) {
 
 		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);

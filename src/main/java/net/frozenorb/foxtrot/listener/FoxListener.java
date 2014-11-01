@@ -376,6 +376,11 @@ public class FoxListener implements Listener {
                     return;
                 }
 
+                if (FoxtrotPlugin.getInstance().getServerManager().isEndSpawn(toLoc)) {
+                    // Using e.setTo(e.getFrom()) allows them to glitch through.
+                    e.setCancelled(true);
+                }
+
                 // PVP Timer
                 if (from.getRegion() == Region.SPAWN) {
                     if (FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(e.getPlayer().getName()) == JoinTimerMap.PENDING_USE) {
@@ -1272,14 +1277,14 @@ public class FoxListener implements Listener {
                             return;
                         }
                     }
-                }
 
-                if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(p.getLocation())) {
-                    e.setCancelled(true);
-                    e.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
-                    e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-                    e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
-                    e.getPlayer().updateInventory();
+                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(p.getLocation())) {
+                        e.setCancelled(true);
+                        e.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
+                        e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+                        e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+                        e.getPlayer().updateInventory();
+                    }
                 }
             }
         }

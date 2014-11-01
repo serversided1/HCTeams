@@ -1,14 +1,13 @@
 package net.frozenorb.foxtrot.raid;
 
-import java.util.HashSet;
-
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashSet;
 
 public class DTRHandler extends BukkitRunnable {
 

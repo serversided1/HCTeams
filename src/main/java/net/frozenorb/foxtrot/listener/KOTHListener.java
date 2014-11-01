@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.game.games.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.game.games.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +19,14 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHActivated(KOTHActivatedEvent event) {
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "The " + ChatColor.YELLOW + event.getKoth().getName() + " KOTH" + ChatColor.GOLD + " is now able to be controlled.");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█████████");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "[KingOfTheHill]");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + ChatColor.YELLOW + event.getKoth().getName() + " KOTH");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "can be contested now.");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█████████");
     }
 
     @EventHandler

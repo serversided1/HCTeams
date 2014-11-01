@@ -27,7 +27,12 @@ public class Info extends Subcommand {
                 if(team != null){
                     team.sendTeamInfo(p);
                 } else {
-                    p.sendMessage(ChatColor.GRAY + args[1] + " isn't a team's name.");
+                    if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]) == null) {
+                        p.sendMessage(ChatColor.GRAY + "Couldn't find a faction or player by that name.");
+                    } else {
+                        team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(args[1]);
+                        team.sendTeamInfo(p);
+                    }
                 }
 			} else {
 				if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(target.getName()) == null) {
