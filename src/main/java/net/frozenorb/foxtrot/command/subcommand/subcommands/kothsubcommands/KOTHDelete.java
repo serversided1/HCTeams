@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.kothsubcommands;
 
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.game.games.koth.KOTH;
+import net.frozenorb.foxtrot.game.games.koth.KOTHs;
 import org.bukkit.ChatColor;
 
 /**
@@ -20,7 +22,16 @@ public class KOTHDelete extends Subcommand {
                 return;
             }
 
-            sender.sendMessage(ChatColor.RED + "KOTH deleting currently isn't possible...");
+            KOTH koth = KOTHs.getKOTH(args[1]);
+
+            if (koth == null) {
+                sender.sendMessage(ChatColor.RED + "No KOTH named " + args[1] + " found.");
+                return;
+            }
+
+            KOTHs.getKOTHs().remove(koth);
+            KOTHs.saveKOTHs();
+            sender.sendMessage(ChatColor.GRAY + "Deleted KOTH " + koth.getName() + ".");
         }
     }
 

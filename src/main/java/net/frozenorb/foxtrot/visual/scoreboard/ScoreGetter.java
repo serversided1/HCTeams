@@ -100,18 +100,19 @@ public interface ScoreGetter {
         public String getTitle(Player player){
             for (KOTH koth : KOTHs.getKOTHs()) {
                 if (koth.isActive()) {
-                    return (ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH");
+                    KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
+                    return (KOTH.LAST_ACTIVE_KOTH);
                 }
             }
 
-            return (ChatColor.RED.toString() + ChatColor.BOLD + "KOTH: Error");
+            return (KOTH.LAST_ACTIVE_KOTH);
         }
 
         @Override
         public long getMillis(Player player){
             for (KOTH koth : KOTHs.getKOTHs()) {
                 if (koth.isActive()) {
-                    return (koth.getRemainingCapTime() * 1000L);
+                    return ((long) (koth.getRemainingCapTime() * 1000F));
                 }
             }
 

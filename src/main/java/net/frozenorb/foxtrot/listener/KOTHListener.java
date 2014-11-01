@@ -24,14 +24,17 @@ public class KOTHListener implements Listener {
     @EventHandler
     public void onKOTHCap(KOTHCapturedEvent event) {
         Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(event.getPlayer().getName());
-        String teamName = ChatColor.RED + "[-]";
+        String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
         if (team != null) {
-            teamName = ChatColor.RED + "[" + team.getFriendlyName() + ChatColor.RED + "]";
+            teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]";
         }
 
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "The " + ChatColor.YELLOW + event.getKoth().getName() + " KOTH" + ChatColor.GOLD + " has been controlled by " + ChatColor.RED + teamName + " " + event.getPlayer().getDisplayName() + ChatColor.GOLD + ".");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "Reward: " + ChatColor.YELLOW + "One key for... something.");
+        for (int i = 0; i < 6; i++) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage("");
+        }
+
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "has been captured by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
     }
 
     @EventHandler
@@ -43,8 +46,10 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHControlTick(KOTHControlTickEvent event) {
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " is trying to be controlled.");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS(event.getKoth().getRemainingCapTime()));
+        if (event.getKoth().getRemainingCapTime() <= (event.getKoth().getCapTime() - 30)) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " is trying to be controlled.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS((int) event.getKoth().getRemainingCapTime()));
+        }
     }
 
 }

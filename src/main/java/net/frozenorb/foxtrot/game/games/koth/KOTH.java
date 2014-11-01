@@ -20,6 +20,10 @@ public class KOTH {
 
     //***************************//
 
+    public static String LAST_ACTIVE_KOTH = "";
+
+    //***************************//
+
     @SerializedName("Name")
     @Getter
     private String name;
@@ -37,7 +41,7 @@ public class KOTH {
     @Getter
     private transient String currentCapper;
     @Getter
-    private transient int remainingCapTime;
+    private transient float remainingCapTime;
 
     //***************************//
 
@@ -142,17 +146,17 @@ public class KOTH {
             if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL) {
                 resetCapTime();
             } else {
-                if (remainingCapTime == 0) {
+                if (remainingCapTime % 10 == 0 && remainingCapTime > 1) {
+                    capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
+                }
+
+                if (remainingCapTime <= 0) {
                     finishCapping();
                 } else if (remainingCapTime % (60 * 3) == 0) {
                     FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 
-                if (remainingCapTime % 10 == 0) {
-                    capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Attempting to control " + ChatColor.WHITE + getName() + ChatColor.YELLOW + ".");
-                }
-
-                this.remainingCapTime--;
+                this.remainingCapTime -= 0.1;
             }
         } else {
             List<Player> allOnline = Arrays.asList(FoxtrotPlugin.getInstance().getServer().getOnlinePlayers());

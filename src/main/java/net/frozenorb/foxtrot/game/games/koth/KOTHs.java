@@ -29,7 +29,7 @@ public class KOTHs {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 2L, 2L);
     }
 
     public static void loadKOTHs() {

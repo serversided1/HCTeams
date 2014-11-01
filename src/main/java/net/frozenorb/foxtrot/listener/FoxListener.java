@@ -78,7 +78,8 @@ public class FoxListener implements Listener {
     @Getter private static HashMap<String, Long> enderpearlCooldown = new HashMap<String, Long>();
 
     private HashMap<String, Integer> mobSpawns = new HashMap<String, Integer>();
-    private HashMap<String, Villager> combatLoggers = new HashMap<String, Villager>();
+    // This is static so villagers can be removed in onDisable.
+    @Getter private static HashMap<String, Villager> combatLoggers = new HashMap<String, Villager>();
     private HashMap<PlayerDamagePair, Long> lastPlayerDamager = new HashMap<PlayerDamagePair, Long>();
     private HashSet<Integer> droppedItems = new HashSet<Integer>();
 
@@ -758,8 +759,19 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent e) {
+        // What... is this?
         if (e.getEntity().getShooter() instanceof Player && !(e.getEntity() instanceof ThrownPotion) && !(e.getEntity() instanceof Arrow) && !(e.getEntity() instanceof EnderPearl) && !(e.getEntity() instanceof Fish) && !(e.getEntity() instanceof Snowball) && !(e.getEntity() instanceof Egg) && !(e.getEntity() instanceof ThrownExpBottle)) {
             SpawnTag.applyTag((Player) e.getEntity().getShooter());
+        }
+
+        if (!(e.getEntity().getShooter() instanceof Player)) {
+            return;
+        }
+
+        Player shooter = (Player) e.getEntity().getShooter();
+
+        if (e.getEntity() instanceof EnderPearl) {
+            enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000);
         }
     }
 
@@ -1216,59 +1228,60 @@ public class FoxListener implements Listener {
     public void onProjetileInteract(PlayerInteractEvent e) {
         Player p = e.getPlayer();
 
-        if (e.getItem() != null && e.getItem().getType() == Material.POTION) {
-            ItemStack i = e.getItem();
-
-            Potion pot = Potion.fromItemStack(i);
-            if (i.getAmount() > 1 && pot.isSplash()) {
-                e.setCancelled(true);
-
-                e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-                e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
-                e.getPlayer().updateInventory();
-            }
-
-            if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(p.getLocation()) && pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
-                e.setCancelled(true);
-
-                e.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
-
-                e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-                e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
-                e.getPlayer().updateInventory();
-            }
-        }
-
-        if (p.getItemInHand() != null && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-
-            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+        if (e.getItem() != null && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            // What is this?
+            /*if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
                 if (Arrays.asList(PROJECTILE_MATERIALS).contains(e.getMaterial())) {
                     p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active! Type '§e/pvptimer remove§c' to remove your timer.");
                     e.setCancelled(true);
                 }
+            }*/
 
-            }
-
+            // Setting cooldown moved to ProjectileLaunch
             if (e.getMaterial() == Material.ENDER_PEARL) {
-                if (p.getWorld().getEnvironment() != Environment.THE_END) {
-                    if (enderpearlCooldown.containsKey(p.getName()) && enderpearlCooldown.get(p.getName()) > System.currentTimeMillis()) {
+                if (enderpearlCooldown.containsKey(p.getName()) && enderpearlCooldown.get(p.getName()) > System.currentTimeMillis()) {
+                    long millisLeft = enderpearlCooldown.get(p.getName()) - System.currentTimeMillis();
 
-                        long millisLeft = enderpearlCooldown.get(p.getName()) - System.currentTimeMillis();
+                    double value = (millisLeft / 1000D);
+                    double sec = Math.round(10.0 * value) / 10.0;
 
-                        double value = (millisLeft / 1000D);
-                        double sec = Math.round(10.0 * value) / 10.0;
-
-                        e.setCancelled(true);
-                        String msg = "§cYou cannot use this for another §l" + sec + "§c seconds!";
-                        p.sendMessage(msg);
-                        p.updateInventory();
-
-                    } else {
-                        enderpearlCooldown.put(p.getName(), System.currentTimeMillis() + 16000);
-                    }
+                    e.setCancelled(true);
+                    String msg = "§cYou cannot use this for another §l" + sec + "§c seconds!";
+                    p.sendMessage(msg);
+                    p.updateInventory();
                 }
             }
 
+            if (e.getItem().getType() == Material.POTION) {
+                ItemStack i = e.getItem();
+                Potion pot = Potion.fromItemStack(i);
+
+                if (i.getAmount() > 1 && pot.isSplash()) {
+                    e.setCancelled(true);
+
+                    e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+                    e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+                    e.getPlayer().updateInventory();
+                }
+
+                if (pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
+                    if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+                        if (Arrays.asList(PROJECTILE_MATERIALS).contains(e.getMaterial())) {
+                            p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active! Type '§e/pvptimer remove§c' to remove your timer.");
+                            e.setCancelled(true);
+                            return;
+                        }
+                    }
+                }
+
+                if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(p.getLocation())) {
+                    e.setCancelled(true);
+                    e.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
+                    e.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+                    e.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+                    e.getPlayer().updateInventory();
+                }
+            }
         }
     }
 
@@ -2372,7 +2385,9 @@ public class FoxListener implements Listener {
 
         }
         if (!FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(target) || !FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(from)) {
-            SpawnTag.addSeconds(event.getPlayer(), 16);
+            if (event.getPlayer().getWorld().getEnvironment() != Environment.THE_END) {
+                SpawnTag.addSeconds(event.getPlayer(), 16);
+            }
         }
 
         Material mat = event.getTo().getBlock().getType();

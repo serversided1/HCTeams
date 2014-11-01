@@ -223,6 +223,11 @@ public class FoxtrotPlugin extends JavaPlugin {
 			Kit.getEquippedKits().get(str).remove(p);
 		}
 
+        // Remove combat loggers on shutdown.
+        for (Villager v : FoxListener.getCombatLoggers().values()) {
+            v.remove();
+        }
+
 		RedisSaveTask.getInstance().save();
 		MountainHandler.reset();
 	}

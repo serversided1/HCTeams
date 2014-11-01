@@ -158,7 +158,7 @@ public class Team {
 	}
 
 	public boolean isOwner(String name) {
-		return owner.equalsIgnoreCase(name);
+		return owner != null && owner.equalsIgnoreCase(name);
 	}
 
 	public String getActualPlayerName(String pName) {
