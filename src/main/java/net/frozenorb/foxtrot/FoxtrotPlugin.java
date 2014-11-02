@@ -13,15 +13,15 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassHandler;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.armor.KitManager;
+import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Claim;
 import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
-import net.frozenorb.foxtrot.game.MinigameManager;
-import net.frozenorb.foxtrot.koth.KOTHs;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
@@ -32,8 +32,8 @@ import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.visual.BossBarManager;
-import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardManager;
 import net.frozenorb.foxtrot.visual.TabHandler;
+import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardManager;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -70,7 +70,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Getter private BossBarManager bossBarManager;
 	@Getter private ScoreboardManager scoreboardManager;
-	@Getter private MinigameManager minigameManager;
 
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;
@@ -95,7 +94,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
 		bossBarManager = new BossBarManager();
-        KOTHs.init();
+
+        KOTHHandler.init();
+        CommandHandler.init();
 
 		RegionManager.register(this);
 		RegionManager.get();
@@ -119,9 +120,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 		LandBoard.getInstance().loadFromTeams();
 
 		serverManager = new ServerManager();
-
-		minigameManager = new MinigameManager();
-
 		scoreboardManager = new ScoreboardManager();
 
 		setupPersistence();

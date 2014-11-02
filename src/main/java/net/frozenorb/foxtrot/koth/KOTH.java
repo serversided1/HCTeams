@@ -56,8 +56,8 @@ public class KOTH {
         this.capDistance = 3;
         this.capTime = 60 * 15;
 
-        KOTHs.getKOTHs().add(this);
-        KOTHs.saveKOTHs();
+        KOTHHandler.getKOTHs().add(this);
+        KOTHHandler.saveKOTHs();
     }
 
     //***************************//
@@ -65,17 +65,17 @@ public class KOTH {
     public void setLocation(Location location) {
         this.capLocation = location.toVector().toBlockVector();
         this.world = location.getWorld().getName();
-        KOTHs.saveKOTHs();
+        KOTHHandler.saveKOTHs();
     }
 
     public void setCapDistance(int capDistance) {
         this.capDistance = capDistance;
-        KOTHs.saveKOTHs();
+        KOTHHandler.saveKOTHs();
     }
 
     public void setCapTime(int capTime) {
         this.capTime = capTime;
-        KOTHs.saveKOTHs();
+        KOTHHandler.saveKOTHs();
     }
 
     public boolean isActive() {

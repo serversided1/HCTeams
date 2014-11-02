@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.visual.scoreboard;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.server.SpawnTag;
 import org.bukkit.ChatColor;
@@ -98,7 +98,7 @@ public interface ScoreGetter {
     public static final ScoreGetter KOTH_TIMER = new ScoreGetter(){
         @Override
         public String getTitle(Player player){
-            for (KOTH koth : KOTHs.getKOTHs()) {
+            for (KOTH koth : KOTHHandler.getKOTHs()) {
                 if (koth.isActive()) {
                     if (koth.getName().equalsIgnoreCase("Citadel")) {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
@@ -115,7 +115,7 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player){
-            for (KOTH koth : KOTHs.getKOTHs()) {
+            for (KOTH koth : KOTHHandler.getKOTHs()) {
                 if (koth.isActive()) {
                     return ((long) (koth.getRemainingCapTime() * 1000F));
                 }

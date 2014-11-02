@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Created by macguy8 on 10/31/2014.
  */
-public class KOTHs {
+public class KOTHHandler {
 
     private static Set<KOTH> KOTHs = new HashSet<KOTH>();
 

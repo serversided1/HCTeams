@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.kothsubcommands;
 
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import org.bukkit.ChatColor;
 
 /**
@@ -22,7 +22,7 @@ public class KOTHSetCapTime extends Subcommand {
                 return;
             }
 
-            KOTH koth = KOTHs.getKOTH(args[1]);
+            KOTH koth = KOTHHandler.getKOTH(args[1]);
 
             if (koth == null) {
                 sender.sendMessage(ChatColor.RED + "No KOTH named " + args[1] + " found.");
