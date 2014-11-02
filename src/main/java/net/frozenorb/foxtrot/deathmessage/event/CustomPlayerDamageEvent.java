@@ -1,6 +1,6 @@
-package net.frozenorb.foxtrot.damage.event;
+package net.frozenorb.foxtrot.deathmessage.event;
 
-import net.frozenorb.foxtrot.damage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

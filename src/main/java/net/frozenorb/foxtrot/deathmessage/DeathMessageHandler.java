@@ -1,9 +1,9 @@
-package net.frozenorb.foxtrot.damage;
+package net.frozenorb.foxtrot.deathmessage;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.damage.listeners.DamageListener;
-import net.frozenorb.foxtrot.damage.objects.Damage;
-import net.frozenorb.foxtrot.damage.trackers.*;
+import net.frozenorb.foxtrot.deathmessage.listeners.DamageListener;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.trackers.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

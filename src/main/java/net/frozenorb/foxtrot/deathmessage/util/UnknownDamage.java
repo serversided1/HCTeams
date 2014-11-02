@@ -1,6 +1,6 @@
-package net.frozenorb.foxtrot.damage.util;
+package net.frozenorb.foxtrot.deathmessage.util;
 
-import net.frozenorb.foxtrot.damage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import org.bukkit.ChatColor;
 
 public class UnknownDamage extends Damage {

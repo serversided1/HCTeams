@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.damage.util;
+package net.frozenorb.foxtrot.deathmessage.util;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;

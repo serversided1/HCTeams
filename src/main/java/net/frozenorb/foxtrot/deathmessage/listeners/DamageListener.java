@@ -1,13 +1,12 @@
-package net.frozenorb.foxtrot.damage.listeners;
+package net.frozenorb.foxtrot.deathmessage.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.damage.event.CustomPlayerDamageEvent;
-import net.frozenorb.foxtrot.damage.objects.Damage;
-import net.frozenorb.foxtrot.damage.util.UnknownDamage;
+import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -36,27 +35,27 @@ public class DamageListener implements Listener {
         if (event2.isCancelled()) {
             event.setCancelled(true);
         } else {
-            net.frozenorb.foxtrot.damage.DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
+            net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
         }
     }
 
-    @EventHandler(priority= EventPriority.MONITOR)
+    @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getDeathMessage() == null || event.getDeathMessage().isEmpty()) {
             return;
         }
 
-        List<Damage> record = net.frozenorb.foxtrot.damage.DeathMessageHandler.getDamage(event.getEntity());
+        List<Damage> record = net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.getDamage(event.getEntity());
 
         if (record == null || record.isEmpty()) {
-            event.setDeathMessage(ChatColor.GOLD + event.getEntity().getName() + ChatColor.RED + " died.");
+            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getName()) + "]" + ChatColor.YELLOW + " died.");
             return;
         }
 
         Damage deathCause = record.get(record.size() - 1);
         event.setDeathMessage(deathCause.getDeathMessage());
 
-        net.frozenorb.foxtrot.damage.DeathMessageHandler.clearDamage(event.getEntity());
+        net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.clearDamage(event.getEntity());
     }
 
     //***************************//

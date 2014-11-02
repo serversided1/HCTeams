@@ -1,9 +1,9 @@
-package net.frozenorb.foxtrot.damage.trackers;
+package net.frozenorb.foxtrot.deathmessage.trackers;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.damage.event.CustomPlayerDamageEvent;
-import net.frozenorb.foxtrot.damage.objects.PlayerDamage;
-import net.frozenorb.foxtrot.damage.util.MobUtil;
+import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.deathmessage.util.MobUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

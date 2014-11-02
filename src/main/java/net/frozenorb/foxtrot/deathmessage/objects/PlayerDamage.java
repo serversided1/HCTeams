@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.damage.objects;
+package net.frozenorb.foxtrot.deathmessage.objects;
 
 public abstract class PlayerDamage extends Damage {
 
