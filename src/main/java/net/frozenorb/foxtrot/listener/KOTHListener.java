@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.game.games.koth.events.KOTHActivatedEvent;
-import net.frozenorb.foxtrot.game.games.koth.events.KOTHCapturedEvent;
-import net.frozenorb.foxtrot.game.games.koth.events.KOTHControlLostEvent;
-import net.frozenorb.foxtrot.game.games.koth.events.KOTHControlTickEvent;
+import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
+import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
+import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
+import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;

@@ -1,21 +1,21 @@
-package net.frozenorb.foxtrot.game.games.koth.events;
+package net.frozenorb.foxtrot.koth.events;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.game.games.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTH;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
  * Created by macguy8 on 10/31/2014.
  */
-public class KOTHDeactivatedEvent extends Event {
+public class KOTHControlLostEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
     @Getter
     private KOTH koth;
 
-    public KOTHDeactivatedEvent(KOTH koth) {
+    public KOTHControlLostEvent(KOTH koth) {
         this.koth = koth;
     }
 

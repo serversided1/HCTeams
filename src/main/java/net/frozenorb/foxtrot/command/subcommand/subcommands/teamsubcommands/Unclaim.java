@@ -1,15 +1,14 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Unclaim extends Subcommand {
 
@@ -43,8 +42,7 @@ public class Unclaim extends Subcommand {
 
                     team.setBalance(team.getBalance() + refund);
 					team.getClaims().clear();
-					team.setRally(null, true);
-					team.setHQ(null, true);
+					team.setHQ(null);
 					LandBoard.getInstance().clear(team);
 					sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims (" + claims + " total)! Your team was refunded $" + refund + ".");
 					return;
@@ -64,14 +62,11 @@ public class Unclaim extends Subcommand {
 
 				p.sendMessage(ChatColor.RED + "You have unclaimed the claim §d" + cc.getFriendlyName() + "§c! Your team was refunded §d$" + refund + "§c!");
 
-				if (team.getHQ() != null && cc.contains(team.getHQ())) {
-					team.setHQ(null, true);
+				if (team.getHq() != null && cc.contains(team.getHq())) {
+					team.setHQ(null);
 					sender.sendMessage(ChatColor.RED + "Your HQ was in this claim, so it has been unset.");
 				}
-				if (team.getRally() != null && cc.contains(team.getRally())) {
-					team.setRally(null, true);
-					sender.sendMessage(ChatColor.RED + "Your rally was in this claim, so it has been unset.");
-				}
+
 				return;
 			}
 

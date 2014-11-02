@@ -40,7 +40,7 @@ public class Invite extends Subcommand {
 				return;
 			}
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
-				if (!team.isOnTeam(name)) {
+				if (!team.isMember(name)) {
 
 					if (team.getInvitations().contains(name)) {
 						sender.sendMessage(ChatColor.RED + "That player has already been invited.");

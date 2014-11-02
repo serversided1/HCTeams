@@ -1,6 +1,7 @@
-package net.frozenorb.foxtrot.game.games.koth;
+package net.frozenorb.foxtrot.koth;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.koth.KOTH;
 import net.minecraft.util.com.google.gson.Gson;
 import net.minecraft.util.org.apache.commons.io.IOUtils;
 import org.bukkit.scheduler.BukkitRunnable;

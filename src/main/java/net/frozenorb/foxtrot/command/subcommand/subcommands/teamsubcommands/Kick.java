@@ -1,16 +1,15 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class Kick extends Subcommand {
@@ -35,7 +34,7 @@ public class Kick extends Subcommand {
 				return;
 			}
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
-				if (team.isOnTeam(name)) {
+				if (team.isMember(name)) {
 
 					if (team.isOwner(name)) {
 						sender.sendMessage(ChatColor.RED + "You cannot kick the team leader!");
@@ -50,12 +49,12 @@ public class Kick extends Subcommand {
 					}
 
 					for (Player pl : Bukkit.getOnlinePlayers()) {
-						if (team.isOnTeam(pl)) {
+						if (team.isMember(pl)) {
 							pl.sendMessage(ChatColor.DARK_AQUA + team.getActualPlayerName(name) + " was kicked by " + p.getName() + "!");
 						}
 					}
 
-					if (team.remove(name))
+					if (team.removeMember(name))
 						FoxtrotPlugin.getInstance().getTeamManager().removeTeam(team.getName());
 
 					FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(name);

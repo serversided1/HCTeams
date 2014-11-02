@@ -114,84 +114,37 @@ public class ServerManager {
 	public boolean isBannedPotion(int value) {
 		for (int i : DISALLOWED_POTIONS) {
 			if (i == value) {
-				return true;
+				return (true);
 			}
 		}
-		return false;
+
+		return (false);
 	}
 
 	public boolean isWarzone(Location loc) {
-
 		if (loc.getWorld().getEnvironment() != Environment.NORMAL) {
-			return false;
+			return (false);
 		}
 
 		int x = loc.getBlockX();
 		int z = loc.getBlockZ();
 
 		return ((x < WARZONE_RADIUS && x > -WARZONE_RADIUS) && (z < WARZONE_RADIUS && z > -WARZONE_RADIUS));
-
 	}
 
-	public boolean canWarp(Player player) {
-		int max = 26;
-		List<Entity> nearbyEntities = player.getNearbyEntities(max, max, max);
-
-		if (player.getGameMode() == GameMode.CREATIVE) {
-			return true;
-		}
-		Team warpeeTeam = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
-
-		for (Entity e : nearbyEntities) {
-			if ((e instanceof Player)) {
-				Player p = (Player) e;
-				if (!p.canSee(player)) {
-					return true;
-				}
-				if (!player.canSee(p)) {
-					continue;
-				}
-
-				Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-
-				if (team == null || warpeeTeam == null) {
-					return false;
-				}
-				if (team != warpeeTeam)
-					return false;
-
-				if (team == warpeeTeam)
-					continue;
-
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Gets whether two names are on the same team
-	 *
-	 * @param s1
-	 *            player1's name
-	 * @param s2
-	 *            player2's name
-	 * @return same team
-	 */
 	public boolean areOnSameTeam(String s1, String s2) {
 		Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(s1);
 		Team warpeeTeam = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(s2);
 
 		if (team == null || warpeeTeam == null) {
-			return false;
+			return (false);
 		}
-		if (team != warpeeTeam)
-			return false;
 
-		if (team == warpeeTeam)
-			return true;
-		return false;
+		if (team == warpeeTeam) {
+            return (true);
+        }
 
+		return (false);
 	}
 
 	public void startLogoutSequence(final Player player) {
@@ -222,8 +175,8 @@ public class ServerManager {
 		if (tasks.containsKey(player.getName())) {
 			Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
 		}
-		tasks.put(player.getName(), taskid.getTaskId());
 
+		tasks.put(player.getName(), taskid.getTaskId());
 	}
 
 	public RegionData<?> getRegion(Location loc, Player p) {
@@ -428,9 +381,9 @@ public class ServerManager {
 
         if (ownerTo != null) {
             if (ownerTo.getDtr() == 50D) {
-                return (60 * 5);
+                return ((int) TimeUnit.MINUTES.toSeconds(5));
             } else if (ownerTo.getDtr() == 100D) {
-                return (60 * 15);
+                return ((int) TimeUnit.MINUTES.toSeconds(15));
             }
         }
 
@@ -481,6 +434,7 @@ public class ServerManager {
 
 			}
 		};
+
 		Bukkit.getPluginManager().registerEvents(l, FoxtrotPlugin.getInstance());
 		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
 			public void run() {
@@ -496,7 +450,7 @@ public class ServerManager {
             return (false);
         }
 
-        // If we're a 50DTR faction...
+        // If we're a 50DTR or 100DTR faction.
         return (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D);
 	}
 
@@ -512,8 +466,8 @@ public class ServerManager {
 	}
 
     public boolean isSpawnBufferZone(Location loc){
-        if(loc.getWorld().getEnvironment() != Environment.NORMAL){
-            return false;
+        if (loc.getWorld().getEnvironment() != Environment.NORMAL){
+            return (false);
         }
 
         int radius = 175;
@@ -524,8 +478,8 @@ public class ServerManager {
     }
 
     public boolean isNetherBufferZone(Location loc){
-        if(loc.getWorld().getEnvironment() != Environment.NETHER){
-            return false;
+        if (loc.getWorld().getEnvironment() != Environment.NETHER){
+            return (false);
         }
 
         int radius = 150;
@@ -545,23 +499,6 @@ public class ServerManager {
         return "";
     }
 
-    public boolean isRoad(Location loc){
-        return !(getRoad(loc).equals(""));
-    }
-
-	public ArrayList<Team> getOnlineTeams() {
-		ArrayList<Team> teams = new ArrayList<Team>();
-
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
-
-			if (t != null) {
-				teams.add(t);
-			}
-		}
-		return teams;
-	}
-
 	public void handleShopSign(Sign sign, Player p) {
 		ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
@@ -571,9 +508,9 @@ public class ServerManager {
 		}
 
 		if (sign.getLine(0).toLowerCase().contains("buy")) {
-
 			int price = 0;
 			int amount = 0;
+
 			try {
 				price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
 				amount = Integer.parseInt(sign.getLine(1));
@@ -586,7 +523,6 @@ public class ServerManager {
 			}
 
 			if (Basic.get().getEconomyManager().getBalance(p.getName()) >= price) {
-
 				if (p.getInventory().firstEmpty() != -1) {
 					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
 
@@ -605,15 +541,13 @@ public class ServerManager {
 					showSignPacket(p, sign, new String[] { "§c§lError!", "",
 							"§cNo space", "§cin inventory!" });
 				}
-
 			} else {
 				showSignPacket(p, sign, new String[] { "§cInsufficient",
 						"§cfunds for", sign.getLine(2), sign.getLine(3) });
 			}
-
 		} else if (sign.getLine(0).toLowerCase().contains("sell")) {
-
 			int price = 0;
+
 			try {
 				int totalStackPrice = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
 				int amount = Integer.parseInt(sign.getLine(1));
@@ -651,17 +585,16 @@ public class ServerManager {
 
 				showSignPacket(p, sign, msgs);
 			}
-
 		}
 	}
 
     public void handleKitSign(Sign sign, Player player){
         String kit = ChatColor.stripColor(sign.getLine(1));
 
-        if(kit.equalsIgnoreCase("Fishing")){
+        if (kit.equalsIgnoreCase("Fishing")){
             int uses = FoxtrotPlugin.getInstance().getFishingKitMap().uses(player);
 
-            if(uses == 3){
+            if (uses == 3){
                 showSignPacket(player, sign, new String[]{ "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!"});
             } else {
                 ItemStack rod = new ItemStack(Material.FISHING_ROD);
@@ -690,7 +623,6 @@ public class ServerManager {
 						} else {
 							i.setAmount(i.getAmount() - 1);
 							break;
-
 						}
 					}
 				}
@@ -719,13 +651,13 @@ public class ServerManager {
 
 		showSignTasks.put(sign, br);
 		br.runTaskLater(FoxtrotPlugin.getInstance(), 90L);
-
 	}
 
 	public int countItems(Player player, Material material, int damageValue) {
 		PlayerInventory inventory = player.getInventory();
 		ItemStack[] items = inventory.getContents();
 		int amount = 0;
+
 		for (ItemStack item : items) {
 			if (item != null) {
 				boolean specialDamage = material.getMaxDurability() == (short) 0;
@@ -735,7 +667,8 @@ public class ServerManager {
 				}
 			}
 		}
-		return amount;
+
+		return (amount);
 	}
 
 	public void loadEnchantments(){

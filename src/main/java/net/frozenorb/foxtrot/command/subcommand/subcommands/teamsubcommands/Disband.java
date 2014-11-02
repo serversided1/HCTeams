@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -32,6 +31,11 @@ public class Disband extends Subcommand {
         //Owner check
         if(!(team.isOwner(player.getName()))){
             player.sendMessage(ChatColor.RED + "You must be the leader of the team to disband it!");
+            return;
+        }
+
+        if (team.isRaidable()) {
+            player.sendMessage(ChatColor.RED + "You cannot disband your team while raidable.");
             return;
         }
 

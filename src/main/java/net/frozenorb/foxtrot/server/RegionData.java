@@ -33,7 +33,7 @@ public class RegionData<T> {
 			if (data instanceof Team) {
 				Team ownerTo = (Team) data;
 
-				if (ownerTo.isOnTeam(p)) {
+				if (ownerTo.isMember(p)) {
 					return "§a" + ownerTo.getFriendlyName();
 
 				} else {

@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.kothsubcommands;
 
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.game.games.koth.KOTH;
-import net.frozenorb.foxtrot.game.games.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHs;
 import org.bukkit.ChatColor;
 
 /**

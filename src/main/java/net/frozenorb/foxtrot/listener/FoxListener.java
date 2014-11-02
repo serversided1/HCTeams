@@ -325,7 +325,7 @@ public class FoxListener implements Listener {
         if (FoxtrotPlugin.getInstance().getTeamManager().isTaken(e.getBlock().getLocation())) {
             Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getBlock().getLocation());
 
-            if (e.getCause() == IgniteCause.FLINT_AND_STEEL && owner.isOnTeam(e.getPlayer())) {
+            if (e.getCause() == IgniteCause.FLINT_AND_STEEL && owner.isMember(e.getPlayer())) {
                 return;
             }
             e.setCancelled(true);
@@ -343,7 +343,7 @@ public class FoxListener implements Listener {
         double fromZ = fromLoc.getZ();
         double fromY = fromLoc.getY();
 
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer()) && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()) != null && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()).isOnTeam(e.getPlayer().getName())) {
+        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer()) && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()) != null && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()).isMember(e.getPlayer().getName())) {
             FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(e.getPlayer().getName(), -1L);
         }
 
@@ -696,11 +696,6 @@ public class FoxListener implements Listener {
         // Give back PvP protection when respawning.
         FoxtrotPlugin.getInstance().getJoinTimerMap().pendingTimer(e.getPlayer());
 
-        Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(e.getPlayer().getName());
-
-        if (t != null && t.getHQ() != null) {
-            // e.setRespawnLocation(t.getHQ());
-        } else {}
         e.setRespawnLocation(FoxtrotPlugin.getInstance().getServerManager().getSpawnLocation());
     }
 
@@ -810,12 +805,9 @@ public class FoxListener implements Listener {
 
                     Team team = plugin.getTeamManager().getPlayerTeam(p.getName());
 
-                    if (!team.isFriendlyFire()) {
-                        if (plugin.getTeamManager().getPlayerTeam(name) == team)
-                            e.setCancelled(true);
-                    } else
-                        e.setCancelled(false);
-
+                    if (plugin.getTeamManager().getPlayerTeam(name) == team) {
+                        e.setCancelled(true);
+                    }
                 }
 
                 if (e.getEntity() instanceof Player) {
@@ -880,7 +872,7 @@ public class FoxListener implements Listener {
 
             String plMsg = String.format(e.getFormat(), e.getPlayer().getDisplayName(), e.getMessage());
 
-            if (team.isOnTeam(pl)) {
+            if (team.isMember(pl)) {
                 plMsg = plMsg.replace("§6[§e", "§6[§2");
             }
 
@@ -1133,7 +1125,7 @@ public class FoxListener implements Listener {
 
         Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getBlockClicked().getRelative(e.getBlockFace()).getLocation());
 
-        if (owner != null && !owner.isOnTeam(e.getPlayer())) {
+        if (owner != null && !owner.isMember(e.getPlayer())) {
 
             e.setCancelled(true);
             e.getBlockClicked().getRelative(e.getBlockFace()).setType(Material.AIR);
@@ -1993,7 +1985,7 @@ public class FoxListener implements Listener {
                 return;
             }
 
-            if (t != null && !t.isOnTeam(e.getPlayer())) {
+            if (t != null && !t.isMember(e.getPlayer())) {
                 if (Arrays.asList(NO_INTERACT).contains(e.getClickedBlock().getType())) {
                     e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're in a team's land");
                     e.setCancelled(true);
@@ -2022,7 +2014,7 @@ public class FoxListener implements Listener {
                 }
 
             } else if (e.getMaterial() == Material.LAVA_BUCKET) {
-                if (t != null && t.isOnTeam(player)){
+                if (t != null && t.isMember(player)){
                 } else {
                     e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're not in your team's land");
                     e.setCancelled(true);
@@ -2098,7 +2090,7 @@ public class FoxListener implements Listener {
 
         Team team = FoxtrotPlugin.getInstance().getTeamManager().getOwner(b.getLocation());
 
-        if (team != null && !team.isOnTeam(p)) {
+        if (team != null && !team.isMember(p)) {
 
             e.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot place blocks in §c" + team.getFriendlyName() + "§e's territory!");
             e.setCancelled(true);
@@ -2159,7 +2151,7 @@ public class FoxListener implements Listener {
 
         Team team = FoxtrotPlugin.getInstance().getTeamManager().getOwner(b.getLocation());
 
-        if (team != null && !team.isOnTeam(p)) {
+        if (team != null && !team.isMember(p)) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot break blocks in §c" + team.getFriendlyName() + "§e's territory!");
 

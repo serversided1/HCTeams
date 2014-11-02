@@ -33,7 +33,7 @@ public class Promote extends Subcommand {
 				return;
 			}
 			if (team.isOwner(p.getName()) || p.isOp()) {
-				if (team.isOnTeam(name)) {
+				if (team.isMember(name)) {
 
 					if (team.isCaptain(name)) {
 						p.sendMessage(ChatColor.RED + "That player is already a Captain!");

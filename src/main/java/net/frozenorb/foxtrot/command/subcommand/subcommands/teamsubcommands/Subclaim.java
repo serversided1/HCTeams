@@ -69,7 +69,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 						return;
 					}
 
-					if (t.isOnTeam(player)) {
+					if (t.isMember(player)) {
 
 						if (toChange.isMember(player)) {
 							sender.sendMessage(ChatColor.RED + "The player already has access to that subclaim!");
@@ -103,7 +103,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 						return;
 					}
 
-					if (t.isOnTeam(player)) {
+					if (t.isMember(player)) {
 
 						if (toChange.getManager().equalsIgnoreCase(player)) {
 							sender.sendMessage(ChatColor.RED + "You cannot revoke the manager's access!");
@@ -144,7 +144,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 					}
 					String oldName = toChange.getFriendlyColoredName();
 
-					if (t.isOnTeam(newOwner)) {
+					if (t.isMember(newOwner)) {
 
 						if (t.getSubclaim(t.getActualPlayerName(newOwner) + "/" + toChange.getName(), true) != null) {
 							sender.sendMessage(ChatColor.RED + "A subclaim with the same name already belongs to " + t.getActualPlayerName(newOwner) + "!");
@@ -238,7 +238,7 @@ public class Subclaim extends Subcommand implements Listener, CompletionHandler 
 						return;
 					}
 
-					if (t.isOnTeam(managerName)) {
+					if (t.isMember(managerName)) {
 						if (t.getSubclaim(managerName + "/" + subclaimName, true) != null) {
 							sender.sendMessage(ChatColor.RED + "Your team already has a subclaim with that name!");
 							return;

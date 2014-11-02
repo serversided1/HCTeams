@@ -19,23 +19,22 @@ public class DTRHandler extends BukkitRunnable {
 			.164, .162, .16, .158, .156, .154, .152, .15, .148, .146, .144,
 			.142 };
 
-	private static HashSet<String> wasOnCooldown = new HashSet<String>();
+	private static Set<String> wasOnCooldown = new HashSet<String>();
 
 	public DTRHandler() {
 		instance = this;
 	}
 
 	public static double getBaseDTRIncrement(int teamsize) {
-		return BASE_DTR_INCREMENT[teamsize - 1];
+		return (BASE_DTR_INCREMENT[teamsize - 1]);
 	}
 
 	public static boolean isOnCD(Team team) {
-		return wasOnCooldown.contains(team.getFriendlyName().toLowerCase());
-
+		return (wasOnCooldown.contains(team.getFriendlyName().toLowerCase()));
 	}
 
 	public static boolean isRegenerating(Team team) {
-		return !wasOnCooldown.contains(team.getFriendlyName().toLowerCase()) && team.getDtr() != team.getMaxDTR();
+		return (!wasOnCooldown.contains(team.getFriendlyName().toLowerCase()) && team.getDtr() != team.getMaxDTR());
 	}
 
 	public static void setCooldown(Team team) {
@@ -62,7 +61,6 @@ public class DTRHandler extends BukkitRunnable {
                         wasOnCooldown.remove(playerTeam.getFriendlyName().toLowerCase());
 
                         for (Player pl : playerTeam.getOnlineMembers()) {
-                            //pl.sendMessage(ChatColor.YELLOW + "Your team is no longer on DTR cooldown and is now regenerating DTR!");
                             pl.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
                         }
                     }

@@ -65,7 +65,7 @@ public enum Region {
 	CLAIMED_LAND(false, "", (e) -> {
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getTo());
 
-		if (ownerTo == null || !ownerTo.isOnTeam(e.getPlayer())) {
+		if (ownerTo == null || !ownerTo.isMember(e.getPlayer())) {
 			if (e.getPlayer().getInventory().contains(net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim.SELECTION_WAND)) {
 				e.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
 

@@ -343,6 +343,11 @@ public class VisualClaim implements Listener {
 				return;
 			}
 
+            if (t.isRaidable()) {
+                p.sendMessage(ChatColor.RED + "You cannot claim land while raidable.");
+                return;
+            }
+
 			Claim cc = new Claim(corner1, corner2);
 
 			if (!p.isOp() && containsOtherClaim(cc)) {
@@ -516,21 +521,15 @@ public class VisualClaim implements Listener {
 			return Material.IRON_BLOCK;
 		}
 
-		if (LandBoard.getInstance().getTeamAt(claim) != null) {
-			if (LandBoard.getInstance().getTeamAt(claim).isOnTeam("LazyLemons")) {
-				return Material.TNT;
-			}
-		}
-
 		while (iteration >= MAP_MATERIALS.length) {
 			iteration = iteration - MAP_MATERIALS.length;
 		}
-		return MAP_MATERIALS[iteration];
 
+		return (MAP_MATERIALS[iteration]);
 	}
 
 	public static VisualClaim getVisualClaim(String name) {
-		return visualClaims.get(name);
+		return (visualClaims.get(name));
 	}
 
 	public static enum VisualType {
@@ -538,4 +537,5 @@ public class VisualClaim implements Listener {
 		RESIZE,
 		CREATE
 	}
+
 }

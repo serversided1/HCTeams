@@ -39,7 +39,7 @@ public class Rank extends Subcommand {
 
 			if (team.isOwner(p.getName()) || p.isOp()) {
 
-				if (team.isOnTeam(name)) {
+				if (team.isMember(name)) {
 
 					if (team.isOwner(name)) {
 						sender.sendMessage(ChatColor.RED + "You cannot use this on the team leader!");

@@ -1,19 +1,18 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class Leave extends Subcommand {
@@ -34,7 +33,7 @@ public class Leave extends Subcommand {
 			p.sendMessage(ChatColor.GRAY + "You are not on a team!");
 		} else {
 
-			if (team.isOwner(p.getName()) && team.getMemberAmount() > 1) {
+			if (team.isOwner(p.getName()) && team.getSize() > 1) {
 
 				p.sendMessage(ChatColor.RED + "Please choose a new leader before leaving your team!");
 				return;
@@ -47,7 +46,7 @@ public class Leave extends Subcommand {
 
 			p.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
 
-			if (team.remove(sender.getName())) {
+			if (team.removeMember(sender.getName())) {
 				FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(sender.getName());
 				FoxtrotPlugin.getInstance().getTeamManager().removeTeam(team.getName());
 				p.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
@@ -59,7 +58,7 @@ public class Leave extends Subcommand {
 
 				team.setChanged(true);
 				for (Player pl : Bukkit.getOnlinePlayers()) {
-					if (team.isOnTeam(pl)) {
+					if (team.isMember(pl)) {
 						pl.sendMessage(ChatColor.YELLOW + p.getName() + " has left the team.");
 					}
 				}

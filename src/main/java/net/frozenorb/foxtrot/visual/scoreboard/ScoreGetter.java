@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.visual.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Kit;
-import net.frozenorb.foxtrot.game.games.koth.KOTH;
-import net.frozenorb.foxtrot.game.games.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHs;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.server.SpawnTag;
 import org.bukkit.ChatColor;

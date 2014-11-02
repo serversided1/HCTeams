@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.kothsubcommands;
 
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.game.games.koth.KOTH;
-import net.frozenorb.foxtrot.game.games.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHs;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -30,7 +30,7 @@ public class KOTHSetCapLocation extends Subcommand {
                 return;
             }
 
-            koth.setLocation(((Player) sender).getLocation().toVector().toBlockVector());
+            koth.setLocation(((Player) sender).getLocation());
             sender.sendMessage(ChatColor.GRAY + "Set cap location for the " + koth.getName() + " KOTH.");
         }
     }

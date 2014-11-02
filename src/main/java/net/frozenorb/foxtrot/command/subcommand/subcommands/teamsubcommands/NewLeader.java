@@ -34,10 +34,10 @@ public class NewLeader extends Subcommand {
 				return;
 			}
 			if (team.isOwner(p.getName())) {
-				if (team.isOnTeam(name)) {
+				if (team.isMember(name)) {
 					name = team.getActualPlayerName(name);
 					for (Player pl : Bukkit.getOnlinePlayers()) {
-						if (team.isOnTeam(pl)) {
+						if (team.isMember(pl)) {
 							pl.sendMessage(ChatColor.DARK_AQUA + name + " is now the new leader!");
 						}
 					}

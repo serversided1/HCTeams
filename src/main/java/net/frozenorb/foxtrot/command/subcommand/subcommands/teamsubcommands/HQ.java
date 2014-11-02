@@ -1,17 +1,16 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.frozenorb.foxtrot.listener.FoxListener;
-import org.bukkit.ChatColor;
-import org.bukkit.World.Environment;
-import org.bukkit.entity.Player;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.subcommand.Subcommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import org.bukkit.ChatColor;
+import org.bukkit.World.Environment;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HQ extends Subcommand {
 
@@ -31,7 +30,7 @@ public class HQ extends Subcommand {
 
 		final Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
 
-        if(team.getHQ() == null){
+        if (team.getHq() == null){
 			sender.sendMessage(ChatColor.RED + "HQ not set.");
 			return;
 		}
@@ -46,6 +45,13 @@ public class HQ extends Subcommand {
             return;
         }
 
+        Team inClaim = LandBoard.getInstance().getTeamAt(p.getLocation());
+
+        if (inClaim != null && inClaim.getDtr() == 100D) {
+            p.sendMessage(ChatColor.RED + "You may not go to faction headquarters from inside Citadel!");
+            return;
+        }
+
         /*
 		if(FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().containsKey(p.getName()) && FoxtrotPlugin.getInstance().getServerManager().getFHomeCooldown().get(p.getName()) > System.currentTimeMillis()) {
 			p.sendMessage(ChatColor.RED + "You cannot warp to your team home within 15 minutes of warping to rally!");
@@ -53,7 +59,7 @@ public class HQ extends Subcommand {
 		}
 		*/
 
-		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getHQ(), 75, TeamLocationType.HOME);
+		FoxtrotPlugin.getInstance().getServerManager().beginWarp(p, team.getHq(), 75, TeamLocationType.HOME);
 
 	}
 

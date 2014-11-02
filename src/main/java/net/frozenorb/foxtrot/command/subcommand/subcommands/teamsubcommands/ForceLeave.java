@@ -34,7 +34,7 @@ public class ForceLeave extends Subcommand {
         }
 
         player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
-        team.remove(sender.getName());
+        team.removeMember(sender.getName());
         team.setOwner(null);
         FoxtrotPlugin.getInstance().getTeamManager().removePlayerFromTeam(sender.getName());
         player.sendMessage(ChatColor.GRAY + "Force-left your team.");

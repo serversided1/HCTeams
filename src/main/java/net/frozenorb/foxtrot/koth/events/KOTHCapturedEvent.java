@@ -1,8 +1,8 @@
-package net.frozenorb.foxtrot.game.games.koth.events;
+package net.frozenorb.foxtrot.koth.events;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.frozenorb.foxtrot.game.games.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTH;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;

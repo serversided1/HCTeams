@@ -1,17 +1,16 @@
 package net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.subcommand.Subcommand;
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.subcommand.Subcommand;
-import net.frozenorb.foxtrot.team.Team;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class SetHQ extends Subcommand {
@@ -38,10 +37,10 @@ public class SetHQ extends Subcommand {
 					sender.sendMessage(ChatColor.RED + "You cannot set warps in the end!");
 					return;
 				}
-				team.setHQ(p.getLocation(), true);
+				team.setHQ(p.getLocation());
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
-					if (team.isOnTeam(pl)) {
+					if (team.isMember(pl)) {
 						pl.sendMessage(ChatColor.ITALIC + "" + ChatColor.DARK_AQUA + p.getName() + " has updated the team's HQ point!");
 					}
 				}
@@ -49,7 +48,7 @@ public class SetHQ extends Subcommand {
 				p.sendMessage(ChatColor.DARK_AQUA + "Headquarters Set");
 				return;
 
-			} else if (team.isOnTeam(p)) {
+			} else if (team.isMember(p)) {
 				sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
 				return;
 			}

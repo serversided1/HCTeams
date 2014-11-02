@@ -1,10 +1,11 @@
-package net.frozenorb.foxtrot.game.games.koth;
+package net.frozenorb.foxtrot.koth;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.game.games.koth.events.*;
+import net.frozenorb.foxtrot.koth.events.*;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.com.google.gson.annotations.SerializedName;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
@@ -30,6 +31,9 @@ public class KOTH {
     @SerializedName("Location")
     @Getter
     private BlockVector capLocation;
+    @SerializedName("World")
+    @Getter
+    private String world;
     @SerializedName("MaxDistance")
     @Getter
     private int capDistance;
@@ -45,9 +49,10 @@ public class KOTH {
 
     //***************************//
 
-    public KOTH(String name, BlockVector location) {
+    public KOTH(String name, Location location) {
         this.name = name;
-        this.capLocation = location;
+        this.capLocation = location.toVector().toBlockVector();
+        this.world = location.getWorld().getName();
         this.capDistance = 3;
         this.capTime = 60 * 15;
 
@@ -57,8 +62,9 @@ public class KOTH {
 
     //***************************//
 
-    public void setLocation(BlockVector location) {
-        this.capLocation = location;
+    public void setLocation(Location location) {
+        this.capLocation = location.toVector().toBlockVector();
+        this.world = location.getWorld().getName();
         KOTHs.saveKOTHs();
     }
 
@@ -183,6 +189,10 @@ public class KOTH {
     }
 
     public boolean onCap(Player player) {
+        if (!player.getWorld().getName().equalsIgnoreCase(world)) {
+            return (false);
+        }
+
         int yDistance = player.getLocation().getBlockY() - capLocation.getBlockY();
         return (Math.abs(player.getLocation().getBlockX() - capLocation.getBlockX()) <= capDistance && yDistance >= 0 && yDistance <= 5  && Math.abs(player.getLocation().getBlockZ() - capLocation.getBlockZ()) <= capDistance);
     }

@@ -28,7 +28,7 @@ public class RedisSaveTask extends BukkitRunnable {
 			@Override
 			public Object execute(Jedis jedis) {
 				for (Team t : FoxtrotPlugin.getInstance().getTeamManager().getTeams()) {
-					if (t.hasChanged()) {
+					if (t.isChanged()) {
 						t.save(jedis);
 					}
 				}

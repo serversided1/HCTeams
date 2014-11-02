@@ -9,7 +9,6 @@ import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamManager;
 
-import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -53,7 +52,7 @@ public class Accept extends Subcommand {
 					FoxtrotPlugin.getInstance().getTeamManager().setTeam(p.getName(), team);
 
 					for (Player ps : Bukkit.getOnlinePlayers()) {
-						if (team.isOnTeam(ps)) {
+						if (team.isMember(ps)) {
 							ps.sendMessage(ChatColor.YELLOW + p.getName() + " has joined the team!");
 						}
 					}

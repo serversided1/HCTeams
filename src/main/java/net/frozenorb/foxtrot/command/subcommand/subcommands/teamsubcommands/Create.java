@@ -52,7 +52,6 @@ public class Create extends Subcommand {
 				if (!FoxtrotPlugin.getInstance().getTeamManager().teamExists(name)) {
 					net.frozenorb.foxtrot.team.Team team = new net.frozenorb.foxtrot.team.Team(name);
 					team.setOwner(p.getName());
-					team.setFriendlyFire(false);
 					team.setFriendlyName(name);
                     team.setDtr(1);
 					FoxtrotPlugin.getInstance().getTeamManager().addTeam(team);

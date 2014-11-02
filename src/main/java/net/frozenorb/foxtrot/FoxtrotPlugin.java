@@ -18,7 +18,7 @@ import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Clai
 import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.game.MinigameManager;
-import net.frozenorb.foxtrot.game.games.koth.KOTHs;
+import net.frozenorb.foxtrot.koth.KOTHs;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
