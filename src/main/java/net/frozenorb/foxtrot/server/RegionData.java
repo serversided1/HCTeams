@@ -1,11 +1,11 @@
 package net.frozenorb.foxtrot.server;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import net.frozenorb.foxtrot.team.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 @AllArgsConstructor
 @Data
@@ -43,10 +43,15 @@ public class RegionData<T> {
 			}
 
 			if (region == Region.KOTH_ARENA) {
-				return "§b" + (String) data + "§6 KOTH";
+                if (((String) data).equalsIgnoreCase("Citadel")) {
+                    return (ChatColor.DARK_PURPLE + "Citadel");
+                } else {
+                    return (ChatColor.AQUA + (String) data + ChatColor.GOLD + " KOTH");
+                }
 			}
 		}
 
-		return region.getDisplayName();
+		return (region.getDisplayName());
 	}
+
 }

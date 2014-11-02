@@ -6,13 +6,15 @@ import net.frozenorb.foxtrot.server.SpawnTag;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityCreatePortalEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityPortalEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +40,10 @@ public class EndListener implements Listener {
 
             if (team != null) {
                 teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]";
+            }
+
+            for (int i = 0; i < 6; i++) {
+                Bukkit.broadcastMessage("");
             }
 
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
@@ -77,12 +83,57 @@ public class EndListener implements Listener {
         }
     }
 
+    // Disallow block breaking/placing
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    // Disallow block breaking/placing
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    // Fix end spawning (for some reason it doesn't use the world's spawn location)
+    @EventHandler
+    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END && event.getPlayer().getLocation().distanceSquared(new Location(event.getPlayer().getWorld(), 100, 49, 0)) < 4) {
+            event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+        }
+    }
+
+    // Disallow clicking fence gates
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.FENCE_GATE) {
+            if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+                if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                    return;
+                }
+
+                event.setCancelled(true);
+            }
+        }
+    }
+
     // Cancel the exit portal being spawned when the dragon is killed.
     @EventHandler
     public void onCreatePortal(EntityCreatePortalEvent event) {
-        switch (event.getEntityType()) {
-            case ENDER_DRAGON:
-                event.setCancelled(true);
+        if (event.getEntity().getType() == EntityType.ENDER_DRAGON) {
+            event.setCancelled(true);
         }
     }
 
@@ -95,43 +146,8 @@ public class EndListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // Don't let players enter the end while it's not activated (and they're not in gamemode)
-        if (!endActive && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            // Let them leave even if they're not in gamemode.
-            if (event.getTo().getWorld().getEnvironment() != World.Environment.THE_END) {
-                return;
-            }
-
-            event.setCancelled(true);
-
-            if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "The End is currently in beta and will be publicly released soon.");
-                msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
-            }
-        }
-
-        // Don't let players enter the end while they have their PvP timer (or haven't activated it)
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
-            event.setCancelled(true);
-
-            if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you have pvp protection.");
-                msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
-            }
-        }
-
-        // Don't let players leave the end while the dragon is still alive.
-        // Don't let players leave the end while combat tagged
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) {
-            if (event.getFrom().getWorld().getEntitiesByClass(EnderDragon.class).size() != 0) {
-                event.setCancelled(true);
-
-                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot leave the end before the dragon is killed.");
-                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
-                }
-            }
-
+            // Don't let players leave the end while combat tagged
             if (SpawnTag.isTagged(event.getPlayer())) {
                 event.setCancelled(true);
 
@@ -140,6 +156,55 @@ public class EndListener implements Listener {
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
             }
+
+            // Don't let players leave the end while the dragon is still alive.
+            if (event.getFrom().getWorld().getEntitiesByClass(EnderDragon.class).size() != 0) {
+                event.setCancelled(true);
+
+                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot leave the end before the dragon is killed.");
+                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+        } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
+            // Don't let players enter the end while combat tagged
+            if (SpawnTag.isTagged(event.getPlayer())) {
+                event.setCancelled(true);
+
+                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while spawn tagged.");
+                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+
+            // Don't let players enter the end while they have their PvP timer (or haven't activated it)
+            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
+                event.setCancelled(true);
+
+                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you have pvp protection.");
+                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+
+            // Don't let players enter the end while it's not activated (and they're not in gamemode)
+            if (!endActive && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                event.setCancelled(true);
+
+                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "The End is currently in beta and will be publicly released soon.");
+                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+        }
+    }
+
+    // Always prevent enderdragons breaking blocks (?)
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        if (event.getEntity() instanceof EnderDragon) {
+            event.blockList().clear();
+            event.setCancelled(true);
         }
     }
 

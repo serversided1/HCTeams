@@ -19,10 +19,12 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHActivated(KOTHActivatedEvent event) {
+        boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
+
         Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
-        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "[KingOfTheHill]");
-        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + ChatColor.YELLOW + event.getKoth().getName() + " KOTH");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]"));
+        Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + ChatColor.YELLOW + event.getKoth().getName() + (citadel ? "" : " KOTH"));
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.GOLD + "can be contested now.");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
         Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
@@ -42,20 +44,23 @@ public class KOTHListener implements Listener {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage("");
         }
 
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "has been captured by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
+        boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " has been captured by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
     }
 
     @EventHandler
     public void onKOTHControlList(KOTHControlLostEvent event) {
         if (event.getKoth().getRemainingCapTime() <= (event.getKoth().getCapTime() - 30)) {
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " lost.");
+            boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + " Control of " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " lost.");
         }
     }
 
     @EventHandler
     public void onKOTHControlTick(KOTHControlTickEvent event) {
         if (event.getKoth().getRemainingCapTime() <= (event.getKoth().getCapTime() - 30)) {
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " is trying to be controlled.");
+            boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + " " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " is trying to be controlled.");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS((int) event.getKoth().getRemainingCapTime()));
         }
     }

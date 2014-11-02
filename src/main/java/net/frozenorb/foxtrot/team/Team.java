@@ -702,13 +702,13 @@ public class Team {
             if (dtrMessage) {
                 long till = Math.max(getRaidableCooldown(), getDeathCooldown());
                 int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
-                p.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds));
+                p.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
             }
         } else if (getDtr() == 50D) {
-            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " KOTH " + ChatColor.GRAY + "(5-minute Deathban)");
+            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " KOTH " + ChatColor.GRAY + "(5m Deathban)");
             p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
         } else if (getDtr() == 100D) {
-            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(5-minute Deathban, 0.5 DTR loss)");
+            p.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(15m Deathban, 0.5 DTR Loss, 60s Pearl Cooldown)");
             p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
         } else {
             p.sendMessage(ChatColor.BLUE + getFriendlyName());

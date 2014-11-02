@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -95,6 +96,7 @@ public class RoadListener implements Listener {
 
         if(event.getClickedBlock() != null && isRoad(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation())){
             if(hand.getType() == Material.FLINT_AND_STEEL || hand.getType() == Material.LAVA_BUCKET || (hand.getType() == Material.INK_SACK && hand.getData().getData() == (byte) 15)){
+                event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're on the road!");
                 event.setCancelled(true);
             }
         }

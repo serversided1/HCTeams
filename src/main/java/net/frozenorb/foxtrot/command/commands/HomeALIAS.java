@@ -4,17 +4,16 @@ import net.frozenorb.foxtrot.command.BaseCommand;
 import org.bukkit.entity.Player;
 
 /**
- * @author Connor Hollasch
- * @since 10/14/14
+ * Created by macguy8 on 11/1/2014.
  */
-public class StuckALIAS extends BaseCommand {
+public class HomeALIAS extends BaseCommand {
 
-    public StuckALIAS() {
-        super("stuck");
+    public HomeALIAS() {
+        super("home");
     }
 
     @Override
     public void syncExecute() {
-        ((Player) sender).performCommand("f stuck");
+        ((Player) sender).performCommand("f home");
     }
 }

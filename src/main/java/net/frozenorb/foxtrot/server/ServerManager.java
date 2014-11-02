@@ -10,6 +10,8 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.Freeze;
 import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
+import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
+import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamLocationType;
@@ -27,14 +29,11 @@ import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -46,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("deprecation")
@@ -283,9 +283,7 @@ public class ServerManager {
 	}
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
-
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
-
 			player.teleport(to);
 			return;
 		}
@@ -305,28 +303,20 @@ public class ServerManager {
 				return;
 			}
 		} else {
-
 			double bal = Basic.get().getEconomyManager().getBalance(player.getName());
 
 			if (bal < price) {
 				player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while you have §e$" + bal + "§c!");
 				return;
 			}
-
 		}
 
-		if (type == TeamLocationType.HOME && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
-			player.sendMessage("You cannot warp home with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
-			return;
+        // Remove their PvP timer.
+		if (type == TeamLocationType.HOME && (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE)) {
+            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
 		}
 
-		if (type == TeamLocationType.RALLY) {
-			if (SpawnTag.isTagged(player)) {
-				player.sendMessage(ChatColor.RED + "You cannot warp to rally while spawn-tagged!");
-				return;
-			}
-
-		}
+        // Disallow warping while on enderpearl cooldown.
 		if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
 			player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
 			return;
@@ -346,24 +336,21 @@ public class ServerManager {
 					enemyWithinRange = true;
                     break;
 				}
-
 			}
 		}
 
 		if (enemyWithinRange) {
 			player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
 			return;
-
 		}
-		if (((Damageable) player).getHealth() != ((Damageable) player).getMaxHealth()) {
+
+		if (((Damageable) player).getHealth() <= (((Damageable) player).getMaxHealth() - 1D)) {
 			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
 			return;
-
 		}
 
 		if (player.getFoodLevel() != 20) {
 			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
-
 			return;
 		}
 
@@ -373,23 +360,9 @@ public class ServerManager {
 		} else {
 			Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
 			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
-
 		}
 
 		player.teleport(to);
-
-		if (type == TeamLocationType.HOME) {
-            if(FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)){
-                FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
-                player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "You lost your PVP Timer by warping to faction home.");
-            }
-		}
-
-		if (type == TeamLocationType.RALLY) {
-			fHomeCooldown.put(player.getName(), System.currentTimeMillis() + 15 * 60_000);
-		}
-		return;
-
 	}
 
 	public boolean isUnclaimed(Location loc) {
@@ -434,12 +407,45 @@ public class ServerManager {
     }
 
 	public boolean isClaimedAndRaidable(Location loc) {
-
 		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
-
 		return owner != null && owner.isRaidable();
-
 	}
+
+    public float getDTRLossAt(Location loc) {
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+
+        if (ownerTo != null) {
+            if (ownerTo.getDtr() == 100D) {
+                return (0.5F);
+            }
+        }
+
+        return (1F);
+    }
+
+    public int getDeathBanAt(String playerName, Location loc){
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+
+        if (ownerTo != null) {
+            if (ownerTo.getDtr() == 50D) {
+                return (60 * 5);
+            } else if (ownerTo.getDtr() == 100D) {
+                return (60 * 15);
+            }
+        }
+
+        PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
+        long max = TimeUnit.HOURS.toSeconds(2);
+        long ban;
+
+        if (Bukkit.getPlayerExact(playerName) != null && playtime.contains(playerName)){
+            ban = playtime.getValue(playerName) + playtime.getCurrentSession(playerName) / 1000L;
+        } else {
+            ban = playtime.getCurrentSession(playerName) / 1000L;
+        }
+
+        return (int) Math.min(max, ban);
+    }
 
 	public int getLives(String name) {
 		return 0;
@@ -471,19 +477,6 @@ public class ServerManager {
 					if (((Player) e.getDamager()).getName().equals(p.getName())) {
 						e.setCancelled(true);
 					}
-				}
-
-			}
-
-			@EventHandler(priority = EventPriority.HIGHEST,
-					ignoreCancelled = true)
-			public void onProjectileLaunch(ProjectileLaunchEvent e) {
-
-				if (e.getEntityType() == EntityType.ENDER_PEARL) {
-					Player p = (Player) e.getEntity().getShooter();
-					e.setCancelled(true);
-					p.getInventory().addItem(new ItemStack(Material.ENDER_PEARL));
-					p.updateInventory();
 				}
 
 			}

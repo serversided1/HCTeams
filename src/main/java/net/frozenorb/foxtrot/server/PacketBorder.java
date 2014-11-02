@@ -83,7 +83,27 @@ public class PacketBorder {
 
         int x = p.getLocation().getBlockX(), z = p.getLocation().getBlockZ();
 
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+        if (p.getWorld().getEnvironment() == World.Environment.THE_END) {
+            int found = 0;
+
+            for (final CuboidRegion cr : regionManagerRegions) {
+                //TODO - Alternate world check
+                if(cr.getMaximumPoint().getWorld().equals(p.getWorld())){
+                    if (cr.hasTag("endspawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !cr.contains(p.getLocation()) && p.getGameMode() != GameMode.CREATIVE) {
+                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                        Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
+
+                        border.addRegion(c);
+                        found++;
+                    }
+                }
+            }
+
+            // If we don't find any regions (IE the end spawn), clear the player's data.
+            if (found == 0) {
+                clearPlayer(p);
+            }
+        } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
 
             for (Claim cBack : LandBoard.getInstance().getClaims()) {
                 Claim c = cBack.clone();
@@ -114,43 +134,7 @@ public class PacketBorder {
                 }
             }
 
-        } else if (p.getWorld().getEnvironment() == World.Environment.THE_END) {
-            int found = 0;
-
-            for (final CuboidRegion cr : regionManagerRegions) {
-                //TODO - Alternate world check
-                if(cr.getMaximumPoint().getWorld().equals(p.getWorld())){
-                    if (cr.hasTag("endspawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !cr.contains(p.getLocation()) && p.getGameMode() != GameMode.CREATIVE) {
-                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-                        Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
-
-                        border.addRegion(c);
-                        found++;
-                    }
-
-                    if (cr.hasTag("spawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
-                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-
-                        Location min = crAdd.getMinimumPoint();
-                        Location max = crAdd.getMaximumPoint();
-
-                        min.setY(0D);
-                        max.setY(256D);
-
-                        crAdd.setLocation(min, max);
-                        Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
-
-                        border.addRegion(c);
-                        found++;
-                    }
-                }
-            }
-
-            // If we don't find any regions (IE the end spawn), clear the player's data.
-            if (found == 0) {
-                clearPlayer(p);
-            }
-        }else if (SpawnTag.isTagged(p)) {
+        } else if (SpawnTag.isTagged(p)) {
             for (final CuboidRegion cr : regionManagerRegions) {
                 //TODO - Alternate world check
                 if(cr.getMaximumPoint().getWorld().equals(p.getWorld())){

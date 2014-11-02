@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class DTRHandler extends BukkitRunnable {
 
@@ -43,27 +44,33 @@ public class DTRHandler extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		for (Team t : FoxtrotPlugin.getInstance().getTeamManager().getTeams()) {
+        Set<Team> recentlyTicked = new HashSet<Team>();
 
-			if (t.getOnlineMembers().size() > 0) {
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
 
-				if (t.getDeathCooldown() > System.currentTimeMillis() || t.getRaidableCooldown() > System.currentTimeMillis()) {
-					wasOnCooldown.add(t.getFriendlyName().toLowerCase());
-					continue;
-				}
+            if (playerTeam != null && !recentlyTicked.contains(playerTeam)) {
+                recentlyTicked.add(playerTeam);
 
-				if (wasOnCooldown.contains(t.getFriendlyName().toLowerCase())) {
-					wasOnCooldown.remove(t.getFriendlyName().toLowerCase());
+                if (playerTeam.getOwner() != null && !playerTeam.getOwner().equalsIgnoreCase("null")) {
+                    if (playerTeam.getDeathCooldown() > System.currentTimeMillis() || playerTeam.getRaidableCooldown() > System.currentTimeMillis()) {
+                        wasOnCooldown.add(playerTeam.getFriendlyName().toLowerCase());
+                        continue;
+                    }
 
-					for (Player pl : t.getOnlineMembers()) {
-						//pl.sendMessage(ChatColor.YELLOW + "Your team is no longer on DTR cooldown and is now regenerating DTR!");
-                        pl.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Your team is now regenerating DTR!");
-					}
-				}
+                    if (wasOnCooldown.contains(playerTeam.getFriendlyName().toLowerCase())) {
+                        wasOnCooldown.remove(playerTeam.getFriendlyName().toLowerCase());
 
-				t.setDtr(Math.min(t.getDtr() + t.getDTRIncrement().doubleValue(), t.getMaxDTR()));
+                        for (Player pl : playerTeam.getOnlineMembers()) {
+                            //pl.sendMessage(ChatColor.YELLOW + "Your team is no longer on DTR cooldown and is now regenerating DTR!");
+                            pl.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                        }
+                    }
 
-			}
-		}
+                    playerTeam.setDtr(Math.min(playerTeam.getDtr() + playerTeam.getDTRIncrement().doubleValue(), playerTeam.getMaxDTR()));
+                }
+            }
+        }
 	}
+
 }

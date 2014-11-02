@@ -100,7 +100,12 @@ public interface ScoreGetter {
         public String getTitle(Player player){
             for (KOTH koth : KOTHs.getKOTHs()) {
                 if (koth.isActive()) {
-                    KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
+                    if (koth.getName().equalsIgnoreCase("Citadel")) {
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
+                    } else {
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
+                    }
+
                     return (KOTH.LAST_ACTIVE_KOTH);
                 }
             }

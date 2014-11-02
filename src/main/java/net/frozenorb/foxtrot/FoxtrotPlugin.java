@@ -103,7 +103,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		LocationTickStore.getInstance().runTaskTimer(this, 1L, 1L);
 
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
-		new RedisSaveTask().runTaskTimer(this, 13200L, 13200L);
+		new RedisSaveTask().runTaskTimerAsynchronously(this, 13200L, 13200L);
 
 		ClassHandler chandler = new ClassHandler();
 

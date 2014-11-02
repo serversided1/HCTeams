@@ -24,7 +24,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class Archer extends Kit {
 
-    public static final double MAX_FINAL_DAMAGE = 130D;
+    public static final double MAX_FINAL_DAMAGE = 85D;
 
     @Override
     public boolean qualifies(Armor armor) {
@@ -76,7 +76,7 @@ public class Archer extends Kit {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityArrowHit(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Arrow) {
+        if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
             Arrow a = (Arrow) e.getDamager();
 
             if (a.hasMetadata("firedLoc")) {
@@ -94,7 +94,7 @@ public class Archer extends Kit {
 
                 // No mod when shooting into a KOTH.
                 if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
-                    mod = 0F;
+                    mod = 1F;
                 }
 
                 Player p = (Player) a.getShooter();
@@ -103,7 +103,20 @@ public class Archer extends Kit {
 
                 e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
 
-                if (mod != 0F) {
+                /*if (((Player) e.getEntity()).getHealth() > (((Player) e.getEntity()).getMaxHealth() - 4)) {
+                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(e.getEntity().getLocation())) {
+                        return;
+                    }
+
+                    if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer((Player) e.getEntity())) {
+                        return;
+                    }
+
+                    e.setDamage(0F);
+                    ((Player) e.getEntity()).setHealth(Math.min(((Player) e.getEntity()).getMaxHealth() - (perc / 100), 4));
+                }*/
+
+                if (!FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
                     p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
                 } else {
                     p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output §cNormalized (KOTH Zone)");

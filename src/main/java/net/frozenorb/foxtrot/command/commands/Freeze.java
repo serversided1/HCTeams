@@ -75,6 +75,7 @@ public class Freeze extends BaseCommand {
             @EventHandler
             public void onPlayerInteract(PlayerInteractEvent event) {
                 if (isFrozen(event.getPlayer())) {
+                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're frozen!");
                     event.setCancelled(true);
                     event.setUseItemInHand(Event.Result.DENY);
                     event.setUseInteractedBlock(Event.Result.DENY);
