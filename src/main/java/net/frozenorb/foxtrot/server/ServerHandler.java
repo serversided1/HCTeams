@@ -8,14 +8,14 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.Freeze;
+import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
 import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.TeamLocationType;
-import net.frozenorb.foxtrot.team.TeamManager;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("deprecation")
-public class ServerManager {
+public class ServerHandler {
 	public static final int WARZONE_RADIUS = 750;
 
 	public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(8225, 16417, 16449, 16386,
@@ -64,7 +64,7 @@ public class ServerManager {
 
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
 
-	public ServerManager() {
+	public ServerHandler() {
 		try {
 			File f = new File("usedNames.json");
 			if (!f.exists()) {
@@ -133,8 +133,8 @@ public class ServerManager {
 	}
 
 	public boolean areOnSameTeam(String s1, String s2) {
-		Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(s1);
-		Team warpeeTeam = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(s2);
+		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(s1);
+		Team warpeeTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(s2);
 
 		if (team == null || warpeeTeam == null) {
 			return (false);
@@ -218,7 +218,7 @@ public class ServerManager {
 			return new RegionData<Object>(loc, Region.WILDNERNESS, null);
 		}
 
-		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
             // If we're a 50DTR faction... (KOTH)
@@ -241,12 +241,12 @@ public class ServerManager {
 			return;
 		}
 
-        if(Freeze.isFrozen(player)){
+        if(FreezeCommand.isFrozen(player)){
             player.sendMessage(ChatColor.RED + "You cannot teleport while frozen!");
             return;
         }
 
-		TeamManager tm = FoxtrotPlugin.getInstance().getTeamManager();
+		TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
 
 		if (type == TeamLocationType.HOME) {
 			double bal = tm.getPlayerTeam(player.getName()).getBalance();
@@ -319,7 +319,7 @@ public class ServerManager {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return !FoxtrotPlugin.getInstance().getTeamManager().isTaken(loc) && !isWarzone(loc);
+		return !FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc);
 	}
 
 	public boolean isAdminOverride(Player p) {
@@ -360,12 +360,12 @@ public class ServerManager {
     }
 
 	public boolean isClaimedAndRaidable(Location loc) {
-		Team owner = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+		Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 		return owner != null && owner.isRaidable();
 	}
 
     public float getDTRLossAt(Location loc) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
             if (ownerTo.getDtr() == 100D) {
@@ -377,7 +377,7 @@ public class ServerManager {
     }
 
     public int getDeathBanAt(String playerName, Location loc){
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
             if (ownerTo.getDtr() == 50D) {
@@ -444,7 +444,7 @@ public class ServerManager {
 	}
 
 	public boolean isKOTHArena(Location loc) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc);
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo == null) {
             return (false);

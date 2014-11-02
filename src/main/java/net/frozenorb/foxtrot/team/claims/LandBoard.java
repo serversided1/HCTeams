@@ -1,17 +1,11 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.bukkit.Location;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.Location;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class LandBoard {
 	private static LandBoard instance;
@@ -27,8 +21,7 @@ public class LandBoard {
 	private Map<Claim, Team> backedSyncMap = Collections.synchronizedMap(boardMap);
 
 	public void loadFromTeams() {
-
-		for (Team team : FoxtrotPlugin.getInstance().getTeamManager().getTeams()) {
+		for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
 			for (Claim cc : team.getClaims()) {
 				System.out.println(cc.getFriendlyName() + "");
 				System.out.println(team.getName());

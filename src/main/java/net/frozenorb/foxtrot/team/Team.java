@@ -152,11 +152,11 @@ public class Team {
 	}
 
 	public boolean ownsLocation(Location loc) {
-		return (FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this);
+		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
 	}
 
 	public boolean ownsClaim(Claim cc) {
-		return (FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) == this);
+		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(cc) == this);
 	}
 
 	public boolean removeMember(String name) {

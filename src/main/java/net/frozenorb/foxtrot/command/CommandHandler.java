@@ -68,6 +68,8 @@ public class CommandHandler implements Listener {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), 5L);
 
+        (new CommandRegistrar()).register();
+
         registerTransformer(int.class, new ParamTransformer() {
 
             @Override
@@ -275,9 +277,16 @@ public class CommandHandler implements Listener {
 
         event.setCancelled(true);
 
-        if (!event.getPlayer().hasPermission(found.getPermissionNode())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
-            return;
+        if (found.getPermissionNode().equals("op")) {
+            if (!event.getPlayer().isOp()) {
+                event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
+                return;
+            }
+        } else if (!found.getPermissionNode().equals("")) {
+            if (!event.getPlayer().hasPermission(found.getPermissionNode())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
+                return;
+            }
         }
 
         ArrayList<Object> transformedParams = new ArrayList<Object>();

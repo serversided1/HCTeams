@@ -33,7 +33,7 @@ public class SpawnTag {
 
 	public static void applyTag(Player player) {
 
-		if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation())) {
+		if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
 			return;
 		}
 

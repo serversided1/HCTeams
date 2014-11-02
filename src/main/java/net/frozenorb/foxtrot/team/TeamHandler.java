@@ -1,29 +1,69 @@
 package net.frozenorb.foxtrot.team;
 
-import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.CommandHandler;
+import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
+import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-
 import net.frozenorb.mBasic.Basic;
-import net.frozenorb.mBasic.EconomySystem.EconomyManager;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.plugin.java.JavaPlugin;
-
+import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-public class TeamManager {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class TeamHandler {
+
 	private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
 	private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
 
-	public TeamManager(JavaPlugin plugin) {
+	public TeamHandler() {
+        CommandHandler.registerTransformer(Team.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                if (source.equalsIgnoreCase("self") || source.equals("")) {
+                    return (getPlayerTeam(sender.getName()));
+                }
+
+                Team team = getTeam(source);
+
+                if (team == null) {
+                    sender.sendMessage(ChatColor.RED + "No team with the name " + source + " found.");
+                    return (null);
+                }
+
+                return (team);
+            }
+
+        });
+
+        CommandHandler.registerTabCompleter(Team.class, new ParamTabCompleter() {
+
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (Team team : getTeams()) {
+                    if (StringUtils.startsWithIgnoreCase(team.getFriendlyName(), source)) {
+                        completions.add(team.getFriendlyName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
+
 		loadTeams();
 	}
 
-	public ArrayList<Team> getTeams() {
+	public List<Team> getTeams() {
 		return new ArrayList<>(teamNameMap.values());
 	}
 

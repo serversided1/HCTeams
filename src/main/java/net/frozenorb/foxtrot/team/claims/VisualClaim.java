@@ -138,15 +138,15 @@ public class VisualClaim implements Listener {
 		CuboidRegion cr = new CuboidRegion("", c.getMinimumPoint(), c.getMaximumPoint());
 
 		boolean claimed = false;
-		if (!FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(cr.getMaximumPoint())) {
+		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(cr.getMaximumPoint())) {
 			claimed = true;
 		}
-		if (!FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(cr.getMinimumPoint())) {
+		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(cr.getMinimumPoint())) {
 			claimed = true;
 		}
 
 		for (Location l : cr) {
-			if (!FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(l)) {
+			if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(l)) {
 				claimed = true;
 			}
 		}
@@ -171,13 +171,13 @@ public class VisualClaim implements Listener {
 
 	public void setLoc(int loc, Location to) {
 
-		if (!FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(p.getName())) {
+		if (!FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(p.getName())) {
 			p.sendMessage(ChatColor.RED + "You have to be on a team to claim land!");
 			cancel(true);
 			return;
 		}
 
-		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
 
 		if (loc == 1) {
 
@@ -293,7 +293,7 @@ public class VisualClaim implements Listener {
 		}
 
 		if (type != VisualType.MAP) {
-			p.getInventory().remove(net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Claim.SELECTION_WAND);
+			p.getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim.SELECTION_WAND);
 		}
 
 		HandlerList.unregisterAll(this);
@@ -317,7 +317,7 @@ public class VisualClaim implements Listener {
 	}
 
 	public void purchaseClaim() {
-		if (!FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(p.getName())) {
+		if (!FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(p.getName())) {
 			p.sendMessage(ChatColor.RED + "You have to be on a team to claim land!");
 			cancel(true);
 			return;
@@ -326,7 +326,7 @@ public class VisualClaim implements Listener {
 		if (corner1 != null && corner2 != null) {
 			int price = getPrice();
 
-			Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName());
+			Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
 
 			if (t.getClaims().size() >= t.getMaxClaimAmount()) {
 				p.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + t.getMaxClaimAmount());
@@ -405,7 +405,7 @@ public class VisualClaim implements Listener {
 		if (corner1 != null && corner2 != null) {
 			Claim cc = new Claim(corner1, corner2);
 
-            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName()), true);
+            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()), true);
 		}
 
 		return -1;
@@ -479,7 +479,7 @@ public class VisualClaim implements Listener {
 
 				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}
@@ -487,7 +487,7 @@ public class VisualClaim implements Listener {
 					setLoc(2, e.getClickedBlock().getLocation());
 				} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 
-					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerManager().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}

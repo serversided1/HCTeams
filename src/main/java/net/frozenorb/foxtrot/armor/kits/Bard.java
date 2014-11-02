@@ -39,7 +39,7 @@ public class Bard extends Kit {
                     continue;
 
                 if (Kit.getEquippedKits().get(pName) instanceof Bard) {
-                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation()))
+                    if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))
                         continue;
 
                     for (Player p : getNearby(player, true, 15)) {
@@ -187,7 +187,7 @@ public class Bard extends Kit {
             return;
 
         if (INSTANT_EFFECTS.containsKey(holding.getType())) {
-            if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation())) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
                 player.sendMessage(ChatColor.RED+"You cannot use abilities in spawn!");
                 return;
             }
@@ -304,7 +304,7 @@ public class Bard extends Kit {
             nearby.add((Player)ent);
         }
 
-        boolean hasTeam = FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(player.getName());
+        boolean hasTeam = FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(player.getName());
 
         for (Player p : nearby) {
             if (!hasTeam && !friendly) {
@@ -314,11 +314,11 @@ public class Bard extends Kit {
 
             boolean isTeammate = false;
 
-            if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()) == null ||
-                    FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers() == null)
+            if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()) == null ||
+                    FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()).getMembers() == null)
                 isTeammate = false;
             else
-                isTeammate = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers().contains(p.getName());
+                isTeammate = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()).getMembers().contains(p.getName());
 
             if (friendly && isTeammate)
                 official.add(p);

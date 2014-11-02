@@ -46,7 +46,7 @@ public class DTRHandler extends BukkitRunnable {
         Set<Team> recentlyTicked = new HashSet<Team>();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            Team playerTeam = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
             if (playerTeam != null && !recentlyTicked.contains(playerTeam)) {
                 recentlyTicked.add(playerTeam);

@@ -10,10 +10,10 @@ import java.util.HashMap;
 /**
  * Created by chasechocolate.
  */
-public class ScoreboardManager {
+public class ScoreboardHandler {
     private HashMap<String, FoxtrotBoard> boards = new HashMap<>();
 
-    public ScoreboardManager(){
+    public ScoreboardHandler(){
         new BukkitRunnable(){
             @Override
             public void run(){

@@ -63,13 +63,13 @@ public enum Region {
     ROAD_WEST(false, "§cWest Road", (e) -> true),
 
 	CLAIMED_LAND(false, "", (e) -> {
-		Team ownerTo = FoxtrotPlugin.getInstance().getTeamManager().getOwner(e.getTo());
+		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(e.getTo());
 
 		if (ownerTo == null || !ownerTo.isMember(e.getPlayer())) {
-			if (e.getPlayer().getInventory().contains(net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim.SELECTION_WAND)) {
+			if (e.getPlayer().getInventory().contains(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND)) {
 				e.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
 
-				e.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim.SELECTION_WAND);
+				e.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND);
 			}
 		}
 

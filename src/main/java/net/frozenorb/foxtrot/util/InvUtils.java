@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.frozenorb.foxtrot.server.ServerManager;
+import net.frozenorb.foxtrot.server.ServerHandler;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,7 +33,7 @@ public class InvUtils {
     }
 
 	public static void fixItem(ItemStack item) {
-		for (Entry<Enchantment, Integer> entry : ServerManager.getMaxEnchantments().entrySet()) {
+		for (Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
 
 			if (item != null && item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
 				if (entry.getValue() == -1) {

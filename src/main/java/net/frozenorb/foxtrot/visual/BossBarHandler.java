@@ -1,24 +1,16 @@
 package net.frozenorb.foxtrot.visual;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import net.frozenorb.Utilities.Types.Scrollable;
-import net.frozenorb.foxtrot.visual.scrollers.ImportantScrollable;
-import net.minecraft.server.v1_7_R3.DataWatcher;
-import net.minecraft.server.v1_7_R3.Entity;
-import net.minecraft.server.v1_7_R3.EntityEnderDragon;
-import net.minecraft.server.v1_7_R3.EntityPlayer;
-import net.minecraft.server.v1_7_R3.Packet;
-import net.minecraft.server.v1_7_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_7_R3.PacketPlayOutSpawnEntityLiving;
-
+import net.minecraft.server.v1_7_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 /**
  * Class that handles the setting of the boss health bar, as well as timing it.
@@ -27,7 +19,7 @@ import org.bukkit.entity.Player;
  * 
  */
 @SuppressWarnings("deprecation")
-public class BossBarManager implements Runnable {
+public class BossBarHandler implements Runnable {
 	private static final int ENTITY_ID_MODIFIER = 1236912369;
 
 	private HashMap<String, Scrollable> messages = new HashMap<String, Scrollable>();
@@ -39,12 +31,6 @@ public class BossBarManager implements Runnable {
 		}
 	}
 
-	/**
-	 * Updates the boss bar of a player, and sets to the current string
-	 * 
-	 * @param p
-	 *            the player to set to
-	 */
 	public void setBar(Player p) {
 		if (messages.containsKey(p.getName())) {
 			Scrollable display = messages.get(p.getName());
@@ -59,46 +45,6 @@ public class BossBarManager implements Runnable {
 		}
 	}
 
-	public Scrollable getMessage(Player p) {
-		return messages.get(p.getName());
-	}
-
-	/**
-	 * Adds the scrollable to the player, and sets their bar.
-	 * 
-	 * @param player
-	 *            the player to register String to
-	 * @param scrollable
-	 *            the scrollable to register
-	 */
-	public void registerMessage(Player player, Scrollable scrollable) {
-		if (messages.containsKey(player.getName()) && (messages.get(player.getName()) instanceof ImportantScrollable && !((ImportantScrollable) messages.get(player.getName())).canFinish())) {
-			return;
-		}
-		messages.put(player.getName(), scrollable);
-		PacketPlayOutEntityDestroy pac = new PacketPlayOutEntityDestroy(player.getEntityId() + ENTITY_ID_MODIFIER);
-		((CraftPlayer) player).getHandle().playerConnection.sendPacket(pac);
-		setBar(player);
-	}
-
-	/**
-	 * Removes a player from the bar map, and removes the bar
-	 * 
-	 * @param player
-	 *            the player to remove the bar on
-	 */
-	public void unregisterPlayer(Player player) {
-		if (messages.containsKey(player.getName()) && (messages.get(player.getName()) instanceof ImportantScrollable && !((ImportantScrollable) messages.get(player.getName())).canFinish())) {
-			return;
-		}
-		messages.remove(player.getName());
-		PacketPlayOutEntityDestroy pac = new PacketPlayOutEntityDestroy(player.getEntityId() + ENTITY_ID_MODIFIER);
-		((CraftPlayer) player).getHandle().playerConnection.sendPacket(pac);
-	}
-
-	/*
-	 * ------------PRIVATE PACKET METHODS---------------
-	 */
 	private void spawnNewPlate(Player player, String display) {
 		displayTextBar(display, player);
 	}

@@ -35,7 +35,7 @@ public class EndListener implements Listener {
 	@EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof EnderDragon) {
-            Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(event.getEntity().getKiller().getName());
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
             String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
             if (team != null) {

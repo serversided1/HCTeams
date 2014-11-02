@@ -93,7 +93,7 @@ public class Archer extends Kit {
                 }
 
                 // No mod when shooting into a KOTH.
-                if (FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
+                if (FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getEntity().getLocation())) {
                     mod = 1F;
                 }
 
@@ -104,7 +104,7 @@ public class Archer extends Kit {
                 e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
 
                 /*if (((Player) e.getEntity()).getHealth() > (((Player) e.getEntity()).getMaxHealth() - 4)) {
-                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(e.getEntity().getLocation())) {
+                    if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation())) {
                         return;
                     }
 
@@ -116,7 +116,7 @@ public class Archer extends Kit {
                     ((Player) e.getEntity()).setHealth(Math.min(((Player) e.getEntity()).getMaxHealth() - (perc / 100), 4));
                 }*/
 
-                if (!FoxtrotPlugin.getInstance().getServerManager().isKOTHArena(e.getEntity().getLocation())) {
+                if (!FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getEntity().getLocation())) {
                     p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
                 } else {
                     p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output §cNormalized (KOTH Zone)");

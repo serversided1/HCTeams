@@ -56,7 +56,7 @@ public class RoadListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event){
         Player player = event.getPlayer();
 
-        if(FoxtrotPlugin.getInstance().getServerManager().isAdminOverride(player)){
+        if(FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(player)){
             return;
         }
 
@@ -69,7 +69,7 @@ public class RoadListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event){
         Player player = event.getPlayer();
 
-        if(FoxtrotPlugin.getInstance().getServerManager().isAdminOverride(player)){
+        if(FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(player)){
             return;
         }
 
@@ -90,7 +90,7 @@ public class RoadListener implements Listener {
         Player player = event.getPlayer();
         ItemStack hand = player.getItemInHand();
 
-        if(FoxtrotPlugin.getInstance().getServerManager().isAdminOverride(player)){
+        if(FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(player)){
             return;
         }
 

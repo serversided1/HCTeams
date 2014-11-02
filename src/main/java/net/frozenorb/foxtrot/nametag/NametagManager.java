@@ -38,14 +38,14 @@ public class NametagManager {
 	 */
 	public static void reloadPlayer(Player player) {
 
-		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
+		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         Bukkit.getOnlinePlayers();
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			TeamInfo teamInfo = ENEMY_TEAM;
 
-			if (t != null && t == FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName())) {
+			if (t != null && t == FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName())) {
 				teamInfo = FRIENDLY_TEAM;
 			}
 
@@ -115,12 +115,12 @@ public class NametagManager {
 	 * 
 	 */
 	public static void sendTeamsToPlayer(Player player) {
-		Team t = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName());
+		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			TeamInfo teamInfo = ENEMY_TEAM;
 
-			if (t != null && t == FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(p.getName())) {
+			if (t != null && t == FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName())) {
 				teamInfo = FRIENDLY_TEAM;
 			}
 

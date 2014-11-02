@@ -12,11 +12,11 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassHandler;
 import net.frozenorb.foxtrot.armor.Kit;
-import net.frozenorb.foxtrot.armor.KitManager;
+import net.frozenorb.foxtrot.armor.KitHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
-import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Claim;
-import net.frozenorb.foxtrot.command.subcommand.subcommands.teamsubcommands.Subclaim;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -28,12 +28,12 @@ import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.server.LocationTickStore;
 import net.frozenorb.foxtrot.server.PacketBorder.BorderThread;
-import net.frozenorb.foxtrot.server.ServerManager;
-import net.frozenorb.foxtrot.team.TeamManager;
+import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.visual.BossBarManager;
+import net.frozenorb.foxtrot.visual.BossBarHandler;
 import net.frozenorb.foxtrot.visual.TabHandler;
-import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardManager;
+import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardHandler;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -64,12 +64,12 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	private JedisPool pool;
 
-	@Getter private TeamManager teamManager;
-	@Getter private ServerManager serverManager;
-	@Getter private KitManager kitManager;
+	@Getter private TeamHandler teamHandler;
+	@Getter private ServerHandler serverHandler;
+	@Getter private KitHandler kitHandler;
 
-	@Getter private BossBarManager bossBarManager;
-	@Getter private ScoreboardManager scoreboardManager;
+	@Getter private BossBarHandler bossBarHandler;
+	@Getter private ScoreboardHandler scoreboardHandler;
 
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;
@@ -93,7 +93,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		instance = this;
 		pool = new JedisPool(new JedisPoolConfig(), "localhost");
-		bossBarManager = new BossBarManager();
+		bossBarHandler = new BossBarHandler();
 
         KOTHHandler.init();
         CommandHandler.init();
@@ -111,23 +111,23 @@ public class FoxtrotPlugin extends JavaPlugin {
 		chandler.runTaskTimer(this, 2L, 2L);
 		Bukkit.getPluginManager().registerEvents(chandler, this);
 
-		Bukkit.getScheduler().runTaskTimer(this, bossBarManager, 20L, 20L);
+		Bukkit.getScheduler().runTaskTimer(this, bossBarHandler, 20L, 20L);
 		Bukkit.getScheduler().runTaskTimer(this, new TabHandler(), 0, 10);
 
 		new CommandRegistrar().register();
 
-		teamManager = new TeamManager(this);
+		teamHandler = new TeamHandler();
 		LandBoard.getInstance().loadFromTeams();
 
-		serverManager = new ServerManager();
-		scoreboardManager = new ScoreboardManager();
+		serverHandler = new ServerHandler();
+		scoreboardHandler = new ScoreboardHandler();
 
 		setupPersistence();
 
 		new BorderThread().start();
 
-		kitManager = new KitManager();
-		kitManager.loadKits();
+		kitHandler = new KitHandler();
+		kitHandler.loadKits();
 
         Bukkit.getPluginManager().registerEvents(new KOTHListener(), this);
 		Bukkit.getPluginManager().registerEvents(new EndListener(), this);

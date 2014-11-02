@@ -33,7 +33,7 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHCap(KOTHCapturedEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(event.getPlayer().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
         if (team != null) {

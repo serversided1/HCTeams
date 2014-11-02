@@ -34,7 +34,7 @@ public class TabHandler extends BukkitRunnable {
         /*
 		EntityPlayer pl = ((CraftPlayer) p).getHandle();
 
-		RegionData<?> rd = FoxtrotPlugin.getInstance().getServerManager().getRegion(p.getLocation(), p);
+		RegionData<?> rd = FoxtrotPlugin.getInstance().getServerHandler().getRegion(p.getLocation(), p);
 
 		if (pl.playerConnection.networkManager.getVersion() >= 47) {
 			pl.playerConnection.sendPacket(new PacketTabHeader((IChatBaseComponent) ChatSerializer.a("{\"text\":\"§6HCTeams\"}"), (IChatBaseComponent) ChatSerializer.a("{\"text\":\"§eCurrently at " + rd.getRegion().getDisplayName() + "\"}")));
