@@ -30,13 +30,12 @@ public class Kick {
 			}
 			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
 				if (team.isMember(name)) {
-
 					if (team.isOwner(name)) {
 						sender.sendMessage(ChatColor.RED + "You cannot kick the team leader!");
 						return;
 					}
 
-					if (team.isOwner(name) || team.isCaptain(name)) {
+					if (team.isCaptain(name)) {
 						if (team.isCaptain(p.getName())) {
 							p.sendMessage(ChatColor.RED + "Only the leader can kick other captains!");
 							return;

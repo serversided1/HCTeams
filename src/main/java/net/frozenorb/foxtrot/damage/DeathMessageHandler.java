@@ -1,9 +1,9 @@
-package net.skylandhub.SkylandCommons.damage;
+package net.frozenorb.foxtrot.damage;
 
-import net.skylandhub.SkylandCommons.SkylandCommons;
-import net.skylandhub.SkylandCommons.damage.objects.Damage;
-import net.skylandhub.SkylandCommons.damage.listeners.DamageListener;
-import net.skylandhub.SkylandCommons.damage.trackers.*;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.damage.listeners.DamageListener;
+import net.frozenorb.foxtrot.damage.objects.Damage;
+import net.frozenorb.foxtrot.damage.trackers.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -16,24 +16,18 @@ import java.util.Map;
  */
 public class DeathMessageHandler {
 
-    //***************************//
-
     private static Map<String, List<Damage>> damage = new HashMap<String, List<Damage>>();
 
-    //***************************//
-
     public static void init() {
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new DamageListener(), SkylandCommons.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new DamageListener(), FoxtrotPlugin.getInstance());
 
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new GeneralTracker(), SkylandCommons.getInstance());
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new PVPTracker(), SkylandCommons.getInstance());
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new EntityTracker(), SkylandCommons.getInstance());
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new FallTracker(), SkylandCommons.getInstance());
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new ArrowTracker(), SkylandCommons.getInstance());
-        SkylandCommons.getInstance().getServer().getPluginManager().registerEvents(new VoidTracker(), SkylandCommons.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new GeneralTracker(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new PVPTracker(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new EntityTracker(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new FallTracker(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new ArrowTracker(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new VoidTracker(), FoxtrotPlugin.getInstance());
     }
-
-    //***************************//
 
     public static List<Damage> getDamage(Player player) {
         return (damage.get(player.getName()));
@@ -50,7 +44,5 @@ public class DeathMessageHandler {
     public static void clearDamage(Player player) {
         damage.remove(player.getName());
     }
-
-    //***************************//
 
 }
