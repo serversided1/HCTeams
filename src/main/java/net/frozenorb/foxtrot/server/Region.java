@@ -17,7 +17,6 @@ public enum Region {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
-
         }
 
         e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());

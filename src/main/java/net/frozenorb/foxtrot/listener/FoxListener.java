@@ -1790,9 +1790,20 @@ public class FoxListener implements Listener {
                 return;
             }
 
-            long twelveHr = 12 * 60 * 60 * 1000;
-            FoxtrotPlugin.getInstance().getOppleMap().updateValue(e.getPlayer().getName(), System.currentTimeMillis() + twelveHr);
+            long oppleCooldown = 8 * 60 * 60 * 1000;
+            FoxtrotPlugin.getInstance().getOppleMap().updateValue(e.getPlayer().getName(), System.currentTimeMillis() + oppleCooldown);
+        }
+    }
 
+    @EventHandler
+    public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (event.getMessage().toLowerCase().startsWith("/kill")) {
+            if (event.getPlayer().isOp()) {
+                event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "");
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
+            }
         }
     }
 

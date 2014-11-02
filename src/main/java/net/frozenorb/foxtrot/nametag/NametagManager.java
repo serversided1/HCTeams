@@ -30,7 +30,7 @@ public class NametagManager {
 	@Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
 	private static final TeamInfo FRIENDLY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "FRIENDLY", "§a", "");
-	private static final TeamInfo ENEMY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "ENEMY", "§e", "");
+	private static final TeamInfo ENEMY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "ENEMY", "§c", "");
 
 	/**
 	 * This is player team packet -> p

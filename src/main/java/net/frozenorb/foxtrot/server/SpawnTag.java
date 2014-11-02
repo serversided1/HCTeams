@@ -1,16 +1,14 @@
 package net.frozenorb.foxtrot.server;
 
-import java.util.HashMap;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.visual.scrollers.ImportantScrollable;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
 
 @RequiredArgsConstructor
 public class SpawnTag {
@@ -105,23 +103,6 @@ public class SpawnTag {
 				}
 			}
 		}.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
-	}
-
-	public ImportantScrollable createScrollable() {
-		ImportantScrollable scrol = new ImportantScrollable() {
-
-			@Override
-			public String next() {
-				return "§a§lSpawn-Tag:§d " + secondsLeft + " §eseconds left";
-			}
-
-			@Override
-			public boolean canFinish() {
-				return secondsLeft <= 0;
-			}
-		};
-
-		return scrol;
 	}
 
 }
