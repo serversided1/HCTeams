@@ -134,8 +134,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
 		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
         Bukkit.getPluginManager().registerEvents(new RoadListener(), this);
-		Bukkit.getPluginManager().registerEvents(new Subclaim("", ""), this);
-		Bukkit.getPluginManager().registerEvents(new Claim("", ""), this);
+		Bukkit.getPluginManager().registerEvents(new Subclaim(), this);
+		Bukkit.getPluginManager().registerEvents(new Claim(), this);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);

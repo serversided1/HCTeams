@@ -1680,7 +1680,7 @@ public class FoxListener implements Listener {
             }
 
             // Add player head to item drops
-            if (killer.getName().equals("Nauss") || killer.hasPermission("foxtrot.skulldrop")) {
+            if (killer.hasPermission("foxtrot.skulldrop")) {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
 

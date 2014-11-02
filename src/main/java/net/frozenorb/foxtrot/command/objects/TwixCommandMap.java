@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.command.objects;
 
 import net.frozenorb.foxtrot.command.CommandHandler;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -36,7 +37,19 @@ public class TwixCommandMap extends SimpleCommandMap {
 
             CmdLoop:
             for (CommandData command : CommandHandler.getCommands()) {
-                if (((Player) sender).hasMetadata(command.getPermissionNode())) {
+                boolean permission = true;
+
+                if (command.getPermissionNode().equals("op")) {
+                    if (!player.isOp()) {
+                        permission = false;
+                    }
+                } else if (!command.getPermissionNode().equals("")) {
+                    if (!player.hasPermission(command.getPermissionNode())) {
+                        permission = false;
+                    }
+                }
+
+                if (permission) {
                     for (String alias : command.getNames()) {
                         String split = alias.split(" ")[0];
 

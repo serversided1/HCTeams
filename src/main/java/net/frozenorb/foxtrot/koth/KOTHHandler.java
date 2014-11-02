@@ -1,13 +1,20 @@
 package net.frozenorb.foxtrot.koth;
 
+import com.mysql.jdbc.StringUtils;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.command.CommandHandler;
+import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
+import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.minecraft.util.com.google.gson.Gson;
 import net.minecraft.util.org.apache.commons.io.IOUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,6 +26,38 @@ public class KOTHHandler {
 
     public static void init() {
         loadKOTHs();
+
+        CommandHandler.registerTransformer(KOTH.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                KOTH koth = getKOTH(source);
+
+                if (koth == null) {
+                    sender.sendMessage(ChatColor.RED + "No KOTH with the name " + source + " found.");
+                    return (null);
+                }
+
+                return (koth);
+            }
+
+        });
+
+        CommandHandler.registerTabCompleter(KOTH.class, new ParamTabCompleter() {
+
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (KOTH koth : getKOTHs()) {
+                    if (StringUtils.startsWithIgnoreCase(koth.getName(), source)) {
+                        completions.add(koth.getName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
 
         new BukkitRunnable() {
 
