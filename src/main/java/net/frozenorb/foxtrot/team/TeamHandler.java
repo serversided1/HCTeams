@@ -63,7 +63,7 @@ public class TeamHandler {
 		loadTeams();
 	}
 
-	public List<Team> getTeams() {
+	public ArrayList<Team> getTeams() {
 		return new ArrayList<>(teamNameMap.values());
 	}
 

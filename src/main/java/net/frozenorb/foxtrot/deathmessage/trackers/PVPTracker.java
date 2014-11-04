@@ -20,10 +20,6 @@ public class PVPTracker implements Listener {
 
     //***************************//
 
-    public static String[] DEATH_VERBS = new String[] { "rekt", "destroyed", "shanked", "shrekt", "killed", "obliterated" };
-
-    //***************************//
-
     @EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
         if (event.getCause() instanceof EntityDamageByEntityEvent) {
@@ -44,13 +40,19 @@ public class PVPTracker implements Listener {
 
         //***************************//
 
-        private String item;
+        private String itemString;
 
         //***************************//
 
         public PVPDamage(String damaged, double damage, String damager, ItemStack itemStack) {
             super(damaged, damage, damager);
-            this.item = (itemStack.getType() == Material.AIR ? "their fists" : "a " + MobUtil.getItemName(itemStack));
+            this.itemString = "Error";
+
+            if (itemStack.getType() == Material.AIR) {
+                itemString = "their fists";
+            } else {
+                itemString = MobUtil.getItemName(itemStack);
+            }
         }
 
         //***************************//
@@ -60,7 +62,7 @@ public class PVPTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " was " + DEATH_VERBS[FoxtrotPlugin.RANDOM.nextInt(DEATH_VERBS.length)] + " by " + ChatColor.GOLD + getDamager() + ChatColor.RED + " using " + item + ChatColor.RED + ".");
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
         }
 
         //***************************//

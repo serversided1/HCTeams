@@ -9,11 +9,8 @@ public class Map {
 
     @Command(names={ "team map", "t map", "f map", "faction map", "fac map", "map" }, permissionNode="")
     public static void teamInvite(Player sender) {
-		final Player p = (Player) sender;
-
-		VisualClaim vc = new VisualClaim(p, VisualType.MAP);
+		VisualClaim vc = new VisualClaim(sender, VisualType.MAP, false);
 		vc.draw(false);
-
 	}
 
 }

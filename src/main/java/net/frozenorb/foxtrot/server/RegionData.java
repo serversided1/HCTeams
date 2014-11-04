@@ -21,7 +21,7 @@ public class RegionData<T> {
 
 		RegionData<?> other = (RegionData<?>) obj;
 
-		return other.region == region && ((data == null && data == null) || other.data.equals(data));
+		return other.region == region && ((data == null) || other.data.equals(data));
 	}
 
 	public int hashCode() {

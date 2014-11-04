@@ -104,36 +104,16 @@ public class PacketBorder {
                 clearPlayer(p);
             }
         } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
-
             for (Claim cBack : LandBoard.getInstance().getClaims()) {
                 Claim c = cBack.clone();
+
                 c.setY1(0);
                 c.setY2(256);
+
                 if (c.isWithin(x, z, 8)) {
                     border.addRegion(c);
                 }
             }
-
-            for (CuboidRegion cr : regionManagerRegions) {
-
-                if (cr.getName().startsWith("koth_") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
-
-                    CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-
-                    Location min = crAdd.getMinimumPoint();
-                    Location max = crAdd.getMaximumPoint();
-
-                    min.setY(0D);
-                    max.setY(256D);
-
-                    crAdd.setLocation(min, max);
-
-                    Claim c = new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint());
-
-                    border.addRegion(c);
-                }
-            }
-
         } else if (SpawnTag.isTagged(p)) {
             for (final CuboidRegion cr : regionManagerRegions) {
                 //TODO - Alternate world check

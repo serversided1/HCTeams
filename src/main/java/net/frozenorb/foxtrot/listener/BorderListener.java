@@ -42,10 +42,6 @@ public class BorderListener implements Listener {
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent e) {
-		if (!e.getTo().getChunk().isLoaded()) {
-			e.getTo().getChunk().load();
-		}
-
 		if (e.getTo().getWorld().getName().equals(e.getFrom().getWorld().getName())) {
 			if (e.getTo().distance(e.getFrom()) > 0) {
 				Location locs = e.getTo();
@@ -57,7 +53,6 @@ public class BorderListener implements Listener {
 						locs.setZ(BORDER_SIZE - 2);
 					e.setTo(e.getFrom());
 					e.getPlayer().setVelocity(new Vector(0, 0, 0));
-
 				}
 			}
 		}

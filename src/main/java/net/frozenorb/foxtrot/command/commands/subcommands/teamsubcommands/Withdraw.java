@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class Withdraw {
 
-    @Command(names={ "team withdraw", "t withdraw", "f withdraw", "faction withdraw", "fac withdraw" }, permissionNode="")
+    @Command(names={ "team withdraw", "t withdraw", "f withdraw", "faction withdraw", "fac withdraw", "team w", "t w", "f w", "faction w", "fac w" }, permissionNode="")
     public static void teamInvite(Player sender, @Param(name="Parameter") String params) {
         String[] args = ("arg1 " + params).split(" ");
 		final Player p = (Player) sender;

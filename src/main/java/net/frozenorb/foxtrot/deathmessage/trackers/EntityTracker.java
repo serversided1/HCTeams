@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
 import org.bukkit.ChatColor;
@@ -46,7 +47,7 @@ public class EntityTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " was killed by a " + ChatColor.GOLD + getMobType().getName() + ChatColor.RED + ".");
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "was slain by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + ".");
         }
 
         //***************************//

@@ -36,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -43,7 +44,9 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerHandler {
 	public static final int WARZONE_RADIUS = 750;
 
+    // NEXT MAP //
 	public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(8225, 16417, 16449, 16386,
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
 			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16458, 8204,
@@ -180,23 +184,20 @@ public class ServerHandler {
 	}
 
 	public RegionData<?> getRegion(Location loc, Player p) {
-
 		if (isOverworldSpawn(loc)) {
 			return new RegionData<Object>(loc, Region.SPAWN, null);
-		}
-
-        if(RegionManager.get().isRegionHere(loc, "spawn_nether")){
+		} else if (isNetherSpawn(loc)){
             return new RegionData<Object>(loc, Region.SPAWN_NETHER, null);
-        }
-
-		if (isDiamondMountain(loc)) {
+        } else if (isEndSpawn(loc)){
+            return new RegionData<Object>(loc, Region.SPAWN_END, null);
+        } else if (isDiamondMountain(loc)) {
 			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
 		}
 
         //Road
         String road = getRoad(loc);
 
-        if(!(road.equals(""))){
+        if (!(road.equals(""))) {
             Region reg = null;
 
             if(road.contains("north")){
@@ -209,13 +210,13 @@ public class ServerHandler {
                 reg = Region.ROAD_WEST;
             }
 
-            if(reg != null){
-                return new RegionData<Object>(loc, reg, null);
+            if (reg != null){
+                return (new RegionData<Object>(loc, reg, null));
             }
         }
 
 		if (isUnclaimed(loc)) {
-			return new RegionData<Object>(loc, Region.WILDNERNESS, null);
+			return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
 		}
 
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
@@ -223,16 +224,16 @@ public class ServerHandler {
         if (ownerTo != null) {
             // If we're a 50DTR faction... (KOTH)
             if (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D) {
-                return new RegionData<String>(loc, Region.KOTH_ARENA, ownerTo.getFriendlyName());
+                return (new RegionData<String>(loc, Region.KOTH_ARENA, ownerTo.getFriendlyName()));
             }
 
-            return new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo);
+            return (new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo));
         } else if (isWarzone(loc)) {
-            return new RegionData<Object>(loc, Region.WARZONE, null);
+            return (new RegionData<Object>(loc, Region.WARZONE, null));
         }
 
         // This will never happen.
-        return new RegionData<Object>(loc, Region.WILDNERNESS, null);
+        return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
 	}
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
@@ -265,7 +266,7 @@ public class ServerHandler {
 		}
 
         // Remove their PvP timer.
-		if (type == TeamLocationType.HOME && (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE)) {
+		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
             FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
 		}
 
@@ -327,36 +328,23 @@ public class ServerHandler {
 	}
 
 	public Location getSpawnLocation() {
-		World w = Bukkit.getWorld("world");
-
-		Location l = w.getSpawnLocation().add(new Vector(0.5, 1, 0.5));
-		l.setWorld(Bukkit.getServer().getWorlds().get(0));
-
-		return l;
+		return (Bukkit.getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
 	}
 
-    public Location getNetherSpawn(){
-        World w = Bukkit.getWorld("world_nether");
-
-        return new Location(w, 0, 25, -10);
-    }
-
     public boolean isGlobalSpawn(Location loc) {
-        return RegionManager.get().hasTag(loc, "spawn");
+        return (isOverworldSpawn(loc) || isNetherSpawn(loc) || isEndSpawn(loc));
     }
 
     public boolean isOverworldSpawn(Location loc) {
-        return RegionManager.get().isRegionHere(loc, "spawn");
+        return (RegionManager.get().hasTag(loc, "overworldspawn"));
+    }
+
+    public boolean isNetherSpawn(Location loc) {
+        return (RegionManager.get().hasTag(loc, "netherspawn"));
     }
 
     public boolean isEndSpawn(Location loc) {
-        for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
-            if (cr.hasTag("endspawn")) {
-                return true;
-            }
-        }
-
-        return false;
+        return (RegionManager.get().hasTag(loc, "endspawn"));
     }
 
 	public boolean isClaimedAndRaidable(Location loc) {
@@ -455,14 +443,13 @@ public class ServerHandler {
 	}
 
 	public boolean isDiamondMountain(Location loc) {
-
 		for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
 			if (cr.getName().toLowerCase().startsWith("diamond")) {
-				return true;
+				return (true);
 			}
 		}
-		return false;
 
+		return (false);
 	}
 
     public boolean isSpawnBufferZone(Location loc){
@@ -631,6 +618,27 @@ public class ServerHandler {
 
 	}
 
+    public ItemStack generateDeathSign(String killed, String killer) {
+        ItemStack deathsign = new ItemStack(Material.SIGN);
+        ItemMeta meta = deathsign.getItemMeta();
+
+        ArrayList<String> lore = new ArrayList<String>();
+
+        lore.add("§4" + killed);
+        lore.add("§eSlain By:");
+        lore.add("§a" + killer);
+
+        DateFormat sdf = new SimpleDateFormat("M/d HH:mm:ss");
+
+        lore.add(sdf.format(new Date()).replace(" AM", "").replace(" PM", ""));
+
+        meta.setLore(lore);
+        meta.setDisplayName("§dDeath Sign");
+        deathsign.setItemMeta(meta);
+
+        return (deathsign);
+    }
+
 	private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();
 
 	public void showSignPacket(Player p, final Sign sign, String[] lines) {
@@ -671,6 +679,7 @@ public class ServerHandler {
 		return (amount);
 	}
 
+    // NEXT MAP //
 	public void loadEnchantments(){
         //Max armor enchants
         maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);

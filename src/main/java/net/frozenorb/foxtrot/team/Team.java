@@ -321,8 +321,7 @@ public class Team {
 
     // What the hell is this doing. Seriously. What the hell.
 	public double getMaxDTR() {
-		int size = getSize();
-		return (Math.ceil((Math.log10(size / 5D) / Math.log10(2D)) + Math.round(size / 60D)) + 3);
+		return (DTRHandler.getMaxDTR(getSize()));
 	}
 
 	public void load(String str) {
@@ -604,7 +603,7 @@ public class Team {
 
             if (dtr / getMaxDTR() <= 0.25) {
                 if (isRaidable()) {
-                    dtrColor = ChatColor.RED;
+                    dtrColor = ChatColor.DARK_RED;
                 } else {
                     dtrColor = ChatColor.YELLOW;
                 }
@@ -615,18 +614,18 @@ public class Team {
 
             if (getOnlineMemberAmount() == 0) {
                 // No players online.
-                dtrMsg += ChatColor.GRAY + " ■";
+                dtrMsg += ChatColor.GRAY + "■";
             } else {
                 if (DTRHandler.isRegenerating(this)) {
                     // Regenerating
-                    dtrMsg += ChatColor.GREEN + " ▲";
+                    dtrMsg += ChatColor.GREEN + "▲";
                 } else {
                     if (DTRHandler.isOnCD(this)) {
                         // On cooldown
-                        dtrMsg += ChatColor.RED + " ■";
+                        dtrMsg += ChatColor.RED + "■";
                         showTimeUntilRegen = true;
                     } else {
-                        dtrMsg += ChatColor.GREEN + " ■";
+                        dtrMsg += ChatColor.GREEN + "■";
                     }
                 }
             }

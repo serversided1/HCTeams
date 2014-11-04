@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
@@ -65,7 +66,7 @@ public class VoidTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " fell into the void.");
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " fell into the void.");
         }
 
         //***************************//
@@ -94,7 +95,7 @@ public class VoidTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " was " + (knocked ? "thrown" : "shot") + " out of the world by " + ChatColor.GOLD + getDamager() + ChatColor.RED + ".");
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " fell into the void thanks to " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + ".");
         }
 
         //***************************//

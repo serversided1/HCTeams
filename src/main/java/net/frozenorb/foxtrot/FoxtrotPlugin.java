@@ -17,6 +17,7 @@ import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -97,6 +98,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         KOTHHandler.init();
         CommandHandler.init();
+        DeathMessageHandler.init();
 
 		RegionManager.register(this);
 		RegionManager.get();
@@ -129,13 +131,16 @@ public class FoxtrotPlugin extends JavaPlugin {
 		kitHandler = new KitHandler();
 		kitHandler.loadKits();
 
-        Bukkit.getPluginManager().registerEvents(new KOTHListener(), this);
-		Bukkit.getPluginManager().registerEvents(new EndListener(), this);
-		Bukkit.getPluginManager().registerEvents(new BorderListener(), this);
-		Bukkit.getPluginManager().registerEvents(new FoxListener(), this);
-        Bukkit.getPluginManager().registerEvents(new RoadListener(), this);
-		Bukkit.getPluginManager().registerEvents(new Subclaim(), this);
-		Bukkit.getPluginManager().registerEvents(new Claim(), this);
+        getServer().getPluginManager().registerEvents(new KOTHListener(), this);
+        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
+        getServer().getPluginManager().registerEvents(new EndListener(), this);
+        getServer().getPluginManager().registerEvents(new BorderListener(), this);
+        getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
+        getServer().getPluginManager().registerEvents(new FoxListener(), this);
+        getServer().getPluginManager().registerEvents(new RoadListener(), this);
+
+        getServer().getPluginManager().registerEvents(new Subclaim(), this);
+        getServer().getPluginManager().registerEvents(new Claim(), this);
 
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerJoined(p);
@@ -220,11 +225,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 			Kit.getEquippedKits().get(str).remove(p);
 		}
-
-        // Remove combat loggers on shutdown.
-        for (Villager v : FoxListener.getCombatLoggers().values()) {
-            v.remove();
-        }
 
 		RedisSaveTask.getInstance().save();
 		MountainHandler.reset();

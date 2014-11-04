@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.util;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import org.bukkit.ChatColor;
 
@@ -18,7 +19,7 @@ public class UnknownDamage extends Damage {
     }
 
     public String getDeathMessage() {
-        return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " died.");
+        return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " died.");
     }
 
     //***************************//

@@ -46,15 +46,39 @@ public class Claim implements Listener {
 
 			Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> p.getInventory().addItem(SELECTION_WAND.clone()), 1L);
 
-			new VisualClaim(p, VisualType.CREATE).draw(false);
+			new VisualClaim(p, VisualType.CREATE, false).draw(false);
 
 			if (!VisualClaim.getCurrentMaps().containsKey(p.getName())) {
-				new VisualClaim(p, VisualType.MAP).draw(false);
+				new VisualClaim(p, VisualType.MAP, false).draw(false);
 			}
 		} else
 			p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
-
 	}
+
+    @Command(names={ "team opclaim", "t opclaim", "f opclaim", "faction opclaim", "fac opclaim" }, permissionNode="op")
+    public static void teamOpClaim(Player sender) {
+        final Player p = (Player) sender;
+
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
+        if (team == null) {
+            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
+            return;
+        }
+
+        if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
+            p.getInventory().remove(SELECTION_WAND);
+
+
+            Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> p.getInventory().addItem(SELECTION_WAND.clone()), 1L);
+
+            new VisualClaim(p, VisualType.CREATE, true).draw(false);
+
+            if (!VisualClaim.getCurrentMaps().containsKey(p.getName())) {
+                new VisualClaim(p, VisualType.MAP, true).draw(false);
+            }
+        } else
+            p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+    }
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent e) {

@@ -37,7 +37,7 @@ public class NewLeader {
 					}
 
 					team.setOwner(name);
-
+                    team.addCaptain(sender.getName());
 				} else {
 					p.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");
 				}

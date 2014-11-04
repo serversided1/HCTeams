@@ -49,6 +49,7 @@ public class VisualClaim implements Listener {
 
 	@Getter @NonNull private Player p;
 	@NonNull private VisualType type;
+    @NonNull private boolean bypass;
 
 	@Setter private Claim outline;
 
@@ -184,7 +185,7 @@ public class VisualClaim implements Listener {
 			if (corner2 != null) {
 				Claim check = new Claim(to, corner2);
 
-				if (!p.isOp() && containsOtherClaim(check)) {
+				if (!bypass && containsOtherClaim(check)) {
 					p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 					return;
 				}
@@ -227,7 +228,7 @@ public class VisualClaim implements Listener {
 			if (corner1 != null) {
 				Claim check = new Claim(corner1, to);
 
-				if (!p.isOp() && containsOtherClaim(check)) {
+				if (!bypass && containsOtherClaim(check)) {
 					p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 					return;
 				}
@@ -350,7 +351,7 @@ public class VisualClaim implements Listener {
 
 			Claim cc = new Claim(corner1, corner2);
 
-			if (!p.isOp() && containsOtherClaim(cc)) {
+			if (!bypass && containsOtherClaim(cc)) {
 				p.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
 				return;
 			}
@@ -479,7 +480,7 @@ public class VisualClaim implements Listener {
 
 				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 
-					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!bypass && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}
@@ -487,7 +488,7 @@ public class VisualClaim implements Listener {
 					setLoc(2, e.getClickedBlock().getLocation());
 				} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
 
-					if (!p.isOp() && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
+					if (!bypass && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						p.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
 					}

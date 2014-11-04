@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,17 +15,6 @@ public class Create {
 		Player p = (Player) sender;
 		if (args.length == 2) {
 			if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()) == null) {
-                if (!p.isOp() && Leave.getCreateCooldown().containsKey(p) && Leave.getCreateCooldown().get(p) > System.currentTimeMillis()) {
-                    long millisLeft = Leave.getCreateCooldown().get(p) - System.currentTimeMillis();
-
-                    double value = (millisLeft / 1000D);
-                    double sec = Math.round(10.0 * value) / 10.0;
-
-                    p.sendMessage(ChatColor.translateAlternateColorCodes(
-                            '&', "&cYou cannot join a team for another &c&l" + TimeUtils.getMMSS((int)sec) + "&c!"));
-                    return;
-                }
-
 				if (!(args[1].matches("^[a-zA-Z0-9]*$"))){
 					p.sendMessage(ChatColor.GRAY + "Team names can only be alphabetical.");
 					return;

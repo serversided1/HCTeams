@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -34,13 +35,11 @@ public class RoadListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event){
-        Block block = event.getBlock();
-        Block targetBlock = block.getRelative(event.getDirection(), event.getLength() + 1);
-        Location loc = targetBlock.getLocation();
+        Block targetBlock = event.getBlock().getRelative(event.getDirection(), event.getLength() + 1);
 
-        if(isRoad(loc)){
+        if(isRoad(targetBlock.getLocation())){
             event.setCancelled(true);
         }
     }

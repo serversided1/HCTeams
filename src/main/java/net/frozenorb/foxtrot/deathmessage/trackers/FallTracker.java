@@ -16,10 +16,6 @@ public class FallTracker implements Listener {
 
     //***************************//
 
-    public static String[] ENDERPEARL_MESSAGES = new String[] { "pearled to their death.", "threw a death pearl." };
-
-    //***************************//
-
     @EventHandler(priority=EventPriority.LOW)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
         if (event.getCause().getCause() != EntityDamageEvent.DamageCause.FALL) {
@@ -77,11 +73,7 @@ public class FallTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            if (distance == 0) {
-                return (ChatColor.GOLD + getDamaged() + " " + ChatColor.RED + ENDERPEARL_MESSAGES[FoxtrotPlugin.RANDOM.nextInt(ENDERPEARL_MESSAGES.length)]);
-            } else {
-                return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " fell from " + distance + " block" + (distance == 1 ? "" : "s") + ".");
-            }
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "hit the ground too hard.");
         }
 
         //***************************//
@@ -115,11 +107,7 @@ public class FallTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            if (distance == 0) {
-                return (ChatColor.GOLD + getDamaged() + " " + ChatColor.RED + ENDERPEARL_MESSAGES[FoxtrotPlugin.RANDOM.nextInt(ENDERPEARL_MESSAGES.length)]);
-            } else {
-                return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " fell from " + distance + " block" + (distance == 1 ? "" : "s") + " thanks to " + ChatColor.GOLD + getDamager() + ChatColor.RED + ".");
-            }
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "hit the ground too hard thanks to " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + ".");
         }
 
         //***************************//

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("deprecation")
 public class Accept {
 
-    @Command(names={ "team accept", "t accept", "f accept", "faction accept", "fac accept", "team a", "t a", "f a", "faction a", "fac a" }, permissionNode="")
+    @Command(names={ "team accept", "t accept", "f accept", "faction accept", "fac accept", "team a", "t a", "f a", "faction a", "fac a", "team join", "t join", "f join", "faction join", "fac join" }, permissionNode="")
     public static void teamAccept(Player sender, @Param(name="Parameter") String params) {
         String[] args = ("arg1 " + params).split(" ");
 

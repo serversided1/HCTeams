@@ -81,7 +81,7 @@ public class TwixCommandMap extends SimpleCommandMap {
 
                                 break CmdLoop;
                             } else {
-                                completions.add(split.toLowerCase().replaceAll(alias.split(" ")[0].toLowerCase(), "").trim());
+                                completions.add(split.toLowerCase().replaceFirst(alias.split(" ")[0].toLowerCase(), "").trim());
                             }
                         }
                     }

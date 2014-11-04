@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  */
 public class Uninvite {
 
-    @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite" }, permissionNode="")
+    @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
     public static void teamInvite(Player sender, @Param(name="Parameter") String params) {
         String[] args = ("arg1 " + params).split(" ");
         Player p = (Player) sender;

@@ -25,6 +25,24 @@ public enum Region {
         return true;
     }),
 
+    SPAWN_NETHER(true, "§aNether Spawn", (e) -> {
+        if (SpawnTag.isTagged(e.getPlayer())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            e.setTo(e.getFrom());
+            return false;
+        }
+
+        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
+        e.getPlayer().setFoodLevel(20);
+        return true;
+    }),
+
+    SPAWN_END(true, "§aNether Spawn", (e) -> {
+        e.getPlayer().sendMessage(ChatColor.RED + "You cannot re-enter the end spawn.");
+        e.setTo(e.getFrom());
+        return false;
+    }),
+
 	WARZONE(false, "§cWarzone", (e) -> true),
 
 	DIAMOND_MOUNTAIN(true, "§bDiamond Mountain", (e) -> true),
@@ -41,18 +59,6 @@ public enum Region {
 		return true;
 
 	}),
-
-    SPAWN_NETHER(true, "§aNether Spawn", (e) -> {
-        if (SpawnTag.isTagged(e.getPlayer())) {
-            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
-            e.setTo(e.getFrom());
-            return false;
-        }
-
-        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
-        e.getPlayer().setFoodLevel(20);
-        return true;
-    }),
 
     ROAD_NORTH(false, "§cNorth Road", (e) -> true),
 
