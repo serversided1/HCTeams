@@ -15,13 +15,12 @@ public class Disband {
     public static void teamDisband(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-        if(team == null){
+        if (team == null){
             player.sendMessage(ChatColor.RED + "You are not on a team!");
             return;
         }
 
-        //Owner check
-        if(!(team.isOwner(player.getName()))){
+        if (!team.isOwner(player.getName())) {
             player.sendMessage(ChatColor.RED + "You must be the leader of the team to disband it!");
             return;
         }
@@ -31,9 +30,8 @@ public class Disband {
             return;
         }
 
-        //Disband team
-        for(Player online : team.getOnlineMembers()){
-            online.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + player.getName() + " has disbanded the team.");
+        for (Player online : team.getOnlineMembers()) {
+            online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + " has disbanded the team.");
         }
 
         FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());

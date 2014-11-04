@@ -10,7 +10,6 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
-import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.Team;
@@ -27,7 +26,6 @@ import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -265,11 +263,6 @@ public class ServerHandler {
 			}
 		}
 
-        // Remove their PvP timer.
-		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
-            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
-		}
-
         // Disallow warping while on enderpearl cooldown.
 		if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
 			player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
@@ -298,7 +291,7 @@ public class ServerHandler {
 			return;
 		}
 
-		if (((Damageable) player).getHealth() <= (((Damageable) player).getMaxHealth() - 1D)) {
+		if (player.getHealth() <= player.getMaxHealth() - 1D) {
 			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
 			return;
 		}
@@ -307,6 +300,11 @@ public class ServerHandler {
 			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
 			return;
 		}
+
+        // Remove their PvP timer.
+        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), System.currentTimeMillis());
+        }
 
 		if (type == TeamLocationType.HOME) {
 			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");

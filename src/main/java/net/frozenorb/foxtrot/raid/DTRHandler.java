@@ -59,7 +59,7 @@ public class DTRHandler extends BukkitRunnable {
             if (playerTeam != null && !recentlyTicked.contains(playerTeam)) {
                 recentlyTicked.add(playerTeam);
 
-                if (playerTeam.getOwner() != null && !playerTeam.getOwner().equalsIgnoreCase("null")) {
+                if (playerTeam.getSize() != 0) {
                     if (playerTeam.getDeathCooldown() > System.currentTimeMillis() || playerTeam.getRaidableCooldown() > System.currentTimeMillis()) {
                         wasOnCooldown.add(playerTeam.getFriendlyName().toLowerCase());
                         continue;

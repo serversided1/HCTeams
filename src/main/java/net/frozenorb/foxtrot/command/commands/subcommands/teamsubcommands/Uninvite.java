@@ -13,45 +13,38 @@ import org.bukkit.entity.Player;
 public class Uninvite {
 
     @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
-    public static void teamInvite(Player sender, @Param(name="Parameter") String params) {
-        String[] args = ("arg1 " + params).split(" ");
-        Player p = (Player) sender;
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
+    public static void teamInvite(Player sender, @Param(name="all | player") String name) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-        if(team == null){
+        if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if(team.isOwner(p.getName()) || team.isCaptain(p.getName())){
-            if(args.length <= 1){
-                p.sendMessage(ChatColor.RED + "Usage: /f uninvite <all | player>");
-                return;
-            }
-
-            if(args[1].equalsIgnoreCase("all")){
+        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+            if (name.equalsIgnoreCase("all")) {
                 team.getInvitations().clear();
-                p.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
+                sender.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
             } else {
                 String remove = null;
 
-                for(String name : team.getInvitations()){
-                    if(name.equalsIgnoreCase(args[1])){
-                        remove = name;
+                for (String possibleName : team.getInvitations()) {
+                    if (possibleName.equalsIgnoreCase(name)) {
+                        remove = possibleName;
                         break;
                     }
                 }
 
-                if(remove != null){
+                if (remove != null) {
                     team.getInvitations().remove(remove);
                     team.setChanged(true);
-                    p.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");
+                    sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");
                 } else {
-                    p.sendMessage(ChatColor.RED + "No pending invitation for '" + args[1] + "'!");
+                    sender.sendMessage(ChatColor.RED + "No pending invitation for '" + name + "'!");
                 }
             }
         } else {
-            p.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }
     }
 

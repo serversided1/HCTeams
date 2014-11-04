@@ -10,81 +10,30 @@ import org.bukkit.entity.Player;
 
 public class Deposit {
 
-    @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permissionNode="")
-    public static void teamDisband(Player sender, @Param(name="Parameter") String params) {
-        String[] args = ("arg1 " + params).split(" ");
-		final Player p = (Player) sender;
+    @Command(names={ "team deposit", "t deposit", "f deposit", "faction deposit", "fac deposit" }, permissionNode="")
+    public static void teamDeposit(Player sender, @Param(name="amount") int amount) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-		if (args.length > 1) {
+        if (team == null) {
+            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
+            return;
+        }
 
-			Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
+        if (amount <= 0) {
+            sender.sendMessage(ChatColor.RED + "You can't deposit $0.0 (or less)!");
+            return;
+        }
 
-			if (team == null) {
-				sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
-				return;
-			}
+        if (Basic.get().getEconomyManager().getBalance(sender.getName()) < amount) {
+            sender.sendMessage(ChatColor.RED + "You don't have enough money to do this!");
+            return;
+        }
 
-            /*
-			if (!FoxtrotPlugin.getInstance().getServerHandler().isOverworldSpawn(p.getLocation()) && !FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()).ownsLocation(p.getLocation())) {
-				sender.sendMessage(ChatColor.RED + "You can only do this in spawn or in your own territory!");
-				return;
-			}
-			*/
+        Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), amount);
 
-			boolean override = false;
-
-			if (sender.hasPermission("foxtrot.override.team.balance") && args.length > 2) {
-				String teamName = args[2];
-				override = true;
-
-				if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(teamName) == null) {
-					p.sendMessage(ChatColor.RED + "No such team could be found!");
-					return;
-				} else {
-					team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(teamName);
-					override = true;
-				}
-
-			}
-
-			try {
-				double deposit = Double.parseDouble(args[1]);
-
-                if(deposit == 0){
-                    p.sendMessage(ChatColor.RED + "You can't deposit $0.0!");
-                    return;
-                }
-
-                if(deposit < 0){
-                    p.sendMessage(ChatColor.RED + "Deposit value must be more than 0!");
-                    return;
-                }
-
-				if (Basic.get().getEconomyManager().getBalance(p.getName()) < deposit && !override) {
-					p.sendMessage("§cYou don't have enough money to do this!");
-					return;
-				}
-
-				if (!override) {
-					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), deposit);
-				}
-
-				p.sendMessage(ChatColor.YELLOW + "You have added §d" + (deposit >= Double.MAX_VALUE ? (long) deposit : deposit) + "§e to the team balance!");
-				team.setBalance(team.getBalance() + deposit);
-
-				if (!override) {
-					team.getOnlineMembers().forEach(pe -> pe.sendMessage("§e" + p.getName() + " deposited §d" + deposit + " §einto the team balance."));
-				}
-
-			}
-			catch (NumberFormatException e) {
-				p.sendMessage(ChatColor.RED + "Number couldn't be parsed: " + e.getMessage());
-			}
-
-		} else {
-
-		}
-
+        sender.sendMessage(ChatColor.YELLOW + "You have added " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " to the team balance!");
+        team.setBalance(team.getBalance() + amount);
+        team.getOnlineMembers().forEach(pe -> pe.sendMessage("§e" + sender.getName() + " deposited §d" + amount + " §einto the team balance."));
 	}
 
 }

@@ -11,35 +11,27 @@ import org.bukkit.entity.Player;
 public class NameClaim {
 
     @Command(names={ "team nameclaim", "t nameclaim", "f nameclaim", "faction nameclaim", "fac nameclaim" }, permissionNode="")
-    public static void teamNameClaim(Player sender, @Param(name="Parameter") String params) {
-        String[] args = ("arg1 " + params).split(" ");
-		final Player p = (Player) sender;
+    public static void teamNameClaim(Player sender, @Param(name="name") String name) {
+		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
 		if (team == null) {
 			sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
 			return;
 		}
-		if (team.isOwner(p.getName())) {
 
-			if (args.length > 1) {
+		if (team.isOwner(sender.getName())) {
+            if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(sender.getLocation()) && team.ownsLocation(sender.getLocation())) {
+                net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(sender.getLocation());
 
-				if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(p.getLocation()) && team.ownsLocation(p.getLocation())) {
+                cc.setName(name);
+                sender.sendMessage(ChatColor.YELLOW + "You have renamed this claim to: " + ChatColor.WHITE + name);
+                return;
+            }
 
-					net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(p.getLocation());
-
-					cc.setName(args[1]);
-					p.sendMessage(ChatColor.YELLOW + "You have renamed this claim to: §f" + args[1]);
-					return;
-				}
-
-				p.sendMessage(ChatColor.RED + "You do not own this claims. To unclaim all claims, type '§e/t unclaim all§c'.");
-			} else {
-				p.sendMessage(ChatColor.RED + "/t nameclaim <name>");
-			}
-		} else
-			p.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");
-
+            sender.sendMessage(ChatColor.RED + "You do not own this claims. To unclaim all claims, type '§e/t unclaim all§c'.");
+		} else {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");
+        }
 	}
 
 }

@@ -8,9 +8,8 @@ import org.bukkit.entity.Player;
 public class Map {
 
     @Command(names={ "team map", "t map", "f map", "faction map", "fac map", "map" }, permissionNode="")
-    public static void teamInvite(Player sender) {
-		VisualClaim vc = new VisualClaim(sender, VisualType.MAP, false);
-		vc.draw(false);
+    public static void teamMap(Player sender) {
+        (new VisualClaim(sender, VisualType.MAP, false)).draw(false);
 	}
 
 }

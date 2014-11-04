@@ -29,14 +29,19 @@ public class BorderListener implements Listener {
 	@EventHandler
 	public void onPortal(PlayerPortalEvent e) {
 		Location locs = e.getTo();
-		if (Math.abs(locs.getBlockX()) > BORDER_SIZE || Math.abs(locs.getBlockZ()) > BORDER_SIZE) {
-			e.getPlayer().sendMessage(ChatColor.RED + "That portal's location is past the border.");
-			if (locs.getX() > BORDER_SIZE)
-				locs.setX(BORDER_SIZE - 2);
-			if (locs.getZ() > BORDER_SIZE)
-				locs.setZ(BORDER_SIZE - 2);
-			e.setCancelled(true);
 
+		if (Math.abs(locs.getBlockX()) > BORDER_SIZE || Math.abs(locs.getBlockZ()) > BORDER_SIZE) {
+			e.getPlayer().sendMessage(ChatColor.RED + "That portal's location is past the border...  Resizing...");
+
+			if (locs.getX() > BORDER_SIZE) {
+                locs.setX(BORDER_SIZE - 2);
+            }
+
+			if (locs.getZ() > BORDER_SIZE) {
+                locs.setZ(BORDER_SIZE - 2);
+            }
+
+			e.setTo(locs);
 		}
 	}
 

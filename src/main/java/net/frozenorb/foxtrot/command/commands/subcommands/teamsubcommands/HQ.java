@@ -12,48 +12,37 @@ import org.bukkit.entity.Player;
 public class HQ {
 
     @Command(names={ "team hq", "t hq", "f hq", "faction hq", "fac hq", "team home", "t home", "f home", "faction home", "fac home", "home" }, permissionNode="")
-    public static void teamForceLeave(Player sender) {
-        Player p = sender;
-
-		if(FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()) == null){
-			p.sendMessage(ChatColor.DARK_AQUA + "You are not on a team!");
+    public static void teamHQ(Player sender) {
+		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
+			sender.sendMessage(ChatColor.DARK_AQUA + "You are not on a team!");
 			return;
-
 		}
 
-		final Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
+		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-        if (team.getHq() == null){
+        if (team.getHq() == null) {
 			sender.sendMessage(ChatColor.RED + "HQ not set.");
 			return;
 		}
 
-        if (p.getWorld().getEnvironment() == Environment.THE_END) {
-            p.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
+        if (sender.getWorld().getEnvironment() == Environment.THE_END) {
+            sender.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
             return;
         }
 
-        if (p.getWorld().getEnvironment() == Environment.NETHER) {
-            p.sendMessage(ChatColor.RED + "You may not go to faction headquarters from the Nether!");
+        if (sender.getWorld().getEnvironment() == Environment.NETHER) {
+            sender.sendMessage(ChatColor.RED + "You may not go to faction headquarters from the Nether!");
             return;
         }
 
-        Team inClaim = LandBoard.getInstance().getTeamAt(p.getLocation());
+        Team inClaim = LandBoard.getInstance().getTeamAt(sender.getLocation());
 
         if (inClaim != null && inClaim.getDtr() == 100D) {
-            p.sendMessage(ChatColor.RED + "You may not go to faction headquarters from inside Citadel!");
+            sender.sendMessage(ChatColor.RED + "You may not go to the faction headquarters from inside Citadel!");
             return;
         }
 
-        /*
-		if(FoxtrotPlugin.getInstance().getServerHandler().getFHomeCooldown().containsKey(p.getName()) && FoxtrotPlugin.getInstance().getServerHandler().getFHomeCooldown().get(p.getName()) > System.currentTimeMillis()) {
-			p.sendMessage(ChatColor.RED + "You cannot warp to your team home within 15 minutes of warping to rally!");
-			return;
-		}
-		*/
-
-		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(p, team.getHq(), 75, TeamLocationType.HOME);
-
+		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team.getHq(), 75, TeamLocationType.HOME);
 	}
 
 }

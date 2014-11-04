@@ -5,50 +5,38 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("deprecation")
 public class SetHQ {
 
     @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome" }, permissionNode="")
-    public static void teamInvite(Player sender) {
-		Player p = (Player) sender;
+    public static void teamSetHQ(Player sender) {
+		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
+		if (team == null) {
+            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
+            return;
+        }
 
-		if (team != null) {
-			if (team.isOwner(p.getName()) || team.isCaptain(p.getName())) {
+        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+            if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(sender.getLocation()) != team) {
+                sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
+                return;
+            }
 
-				if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(p.getLocation()) != team) {
-					sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
-					return;
-				}
-				Location loc = ((Player) sender).getLocation();
-				if (loc.getWorld().getEnvironment() == Environment.THE_END) {
-					sender.sendMessage(ChatColor.RED + "You cannot set warps in the end!");
-					return;
-				}
-				team.setHQ(p.getLocation());
+            team.setHQ(sender.getLocation());
 
-				for (Player pl : Bukkit.getOnlinePlayers()) {
-					if (team.isMember(pl)) {
-						pl.sendMessage(ChatColor.ITALIC + "" + ChatColor.DARK_AQUA + p.getName() + " has updated the team's HQ point!");
-					}
-				}
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
+                }
+            }
 
-				p.sendMessage(ChatColor.DARK_AQUA + "Headquarters Set");
-				return;
-
-			} else if (team.isMember(p)) {
-				sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
-				return;
-			}
-		} else {
-			sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
-		}
-
+            sender.sendMessage(ChatColor.DARK_AQUA + "Headquarters set.");
+        } else {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+        }
 	}
 
 }

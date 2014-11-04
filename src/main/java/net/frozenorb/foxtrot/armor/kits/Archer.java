@@ -74,8 +74,12 @@ public class Archer extends Kit {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityArrowHit(EntityDamageByEntityEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+
         if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
             Arrow a = (Arrow) e.getDamager();
 

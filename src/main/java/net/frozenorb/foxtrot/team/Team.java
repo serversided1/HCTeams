@@ -295,6 +295,20 @@ public class Team {
 	public void playerDeath(String p, double dtrLoss) {
         double newDTR = Math.max(dtr - dtrLoss, -.99);
 
+        ChatColor dtrColor = ChatColor.GREEN;
+
+        if (dtr / getMaxDTR() <= 0.25) {
+            if (isRaidable()) {
+                dtrColor = ChatColor.DARK_RED;
+            } else {
+                dtrColor = ChatColor.YELLOW;
+            }
+        }
+
+        for (Player player : getOnlineMembers()) {
+            player.sendMessage(ChatColor.YELLOW + "DTR: " + dtrColor + newDTR);
+        }
+
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
         setDtr(newDTR);
 

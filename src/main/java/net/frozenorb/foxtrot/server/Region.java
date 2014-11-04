@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Damageable;
 
 import lombok.AllArgsConstructor;
@@ -37,9 +38,12 @@ public enum Region {
         return true;
     }),
 
-    SPAWN_END(true, "§aNether Spawn", (e) -> {
-        e.getPlayer().sendMessage(ChatColor.RED + "You cannot re-enter the end spawn.");
-        e.setTo(e.getFrom());
+    SPAWN_END(true, "§aEnd Spawn", (e) -> {
+        if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot re-enter the end spawn.");
+            e.setTo(e.getFrom());
+        }
+
         return false;
     }),
 

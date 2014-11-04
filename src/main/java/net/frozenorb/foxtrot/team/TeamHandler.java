@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.mBasic.Basic;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -29,14 +30,30 @@ public class TeamHandler {
             @Override
             public Object transform(Player sender, String source) {
                 if (source.equalsIgnoreCase("self") || source.equals("")) {
-                    return (getPlayerTeam(sender.getName()));
+                    Team team = getPlayerTeam(sender.getName());
+
+                    if (team == null) {
+                        sender.sendMessage(ChatColor.GRAY + "You're not on a team!");
+                    }
+
+                    return (team);
                 }
 
                 Team team = getTeam(source);
 
                 if (team == null) {
-                    sender.sendMessage(ChatColor.RED + "No team with the name " + source + " found.");
-                    return (null);
+                    Player bukkitPlayer = Bukkit.getPlayer(source);
+
+                    if (bukkitPlayer != null) {
+                        source = bukkitPlayer.getName();
+                    }
+
+                    team =  getPlayerTeam(source);
+
+                    if (team == null) {
+                        sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
+                        return (null);
+                    }
                 }
 
                 return (team);
@@ -52,6 +69,12 @@ public class TeamHandler {
                 for (Team team : getTeams()) {
                     if (StringUtils.startsWithIgnoreCase(team.getFriendlyName(), source)) {
                         completions.add(team.getFriendlyName());
+                    }
+                }
+
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
+                        completions.add(player.getName());
                     }
                 }
 

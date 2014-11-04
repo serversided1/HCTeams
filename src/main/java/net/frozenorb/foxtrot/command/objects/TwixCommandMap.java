@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.command.objects;
 
 import net.frozenorb.foxtrot.command.CommandHandler;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
@@ -88,7 +87,20 @@ public class TwixCommandMap extends SimpleCommandMap {
                 }
             }
 
-            return (new ArrayList<String>(completions));
+            List<String> completionList = new ArrayList<String>(completions);
+            List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine);
+
+            if (vanillaCompletionList == null) {
+                vanillaCompletionList = new ArrayList<String>();
+            }
+
+            for (String vanillaCompletion : vanillaCompletionList) {
+                completionList.add(vanillaCompletion);
+            }
+
+            completionList.remove("w");
+
+            return (completionList);
         } catch (Exception e) {
             e.printStackTrace();
             return (new ArrayList<String>());

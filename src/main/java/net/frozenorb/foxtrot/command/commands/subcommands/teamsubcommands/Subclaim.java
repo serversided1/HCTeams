@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Subclaim implements Listener {
+
 	private static HashMap<String, Selection> selections = new HashMap<String, Subclaim.Selection>();
 	public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_SPADE);
 

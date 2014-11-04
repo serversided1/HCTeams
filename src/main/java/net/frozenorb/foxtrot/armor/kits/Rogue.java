@@ -4,9 +4,10 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Armor;
 import net.frozenorb.foxtrot.armor.ArmorMaterial;
 import net.frozenorb.foxtrot.armor.Kit;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.*;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -121,12 +122,12 @@ public class Rogue extends Kit {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityArrowHit(EntityDamageByEntityEvent e) {
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-			Player p = (Player) e.getDamager();
-			Player vic = (Player) e.getEntity();
+			Player damager = (Player) e.getDamager();
+			Player victim = (Player) e.getEntity();
 
-			if (p.getItemInHand() != null && p.getItemInHand().getType() == Material.GOLD_SWORD && hasKitOn(p) && !hasCooldown(p, true)) {
-                Vector playerVector = p.getLocation().getDirection();
-                Vector entityVector = vic.getLocation().getDirection();
+			if (damager.getItemInHand() != null && damager.getItemInHand().getType() == Material.GOLD_SWORD && hasKitOn(damager) && !hasCooldown(damager, true)) {
+                Vector playerVector = damager.getLocation().getDirection();
+                Vector entityVector = victim.getLocation().getDirection();
 
                 playerVector.setY(0F);
                 entityVector.setY(0F);
@@ -134,21 +135,44 @@ public class Rogue extends Kit {
                 double degrees = playerVector.angle(entityVector);
 
 				if (Math.abs(degrees) < 1.4) {
-					p.setItemInHand(new ItemStack(Material.AIR));
+					damager.setItemInHand(new ItemStack(Material.AIR));
 
-					p.playSound(p.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
-					p.getWorld().playEffect(vic.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
+					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
+					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
 					e.setDamage(0.5D);
-					vic.setHealth(Math.max(0.5D, ((Damageable) vic).getHealth() - 7D));
+					victim.setHealth(Math.max(0.5D, victim.getHealth() - 7D));
+                    DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
 					
-					addCooldown(p, getCooldownSeconds());
+					addCooldown(damager, getCooldownSeconds());
 				} else {
-					p.sendMessage(ChatColor.RED + "Backstab failed!");
+					damager.sendMessage(ChatColor.RED + "Backstab failed!");
 				}
 			}
 		}
 	}
+
+    public class BackstabDamage extends PlayerDamage {
+
+        //***************************//
+
+        public BackstabDamage(String damaged, double damage, String damager) {
+            super(damaged, damage, damager);
+        }
+
+        //***************************//
+
+        public String getDescription() {
+            return ("Killed by " + getDamager());
+        }
+
+        public String getDeathMessage() {
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was backstabbed by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + ".");
+        }
+
+        //***************************//
+
+    }
 
 	@Override
 	public int getWarmup() {

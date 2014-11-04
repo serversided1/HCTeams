@@ -183,7 +183,7 @@ public class CombatLoggerListener implements Listener {
 
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
             if ((enemyWithinRange && !event.getPlayer().isDead()) || !event.getPlayer().isOnGround()) {
-                String playerName = ChatColor.GREEN.name() + event.getPlayer().getName();
+                String playerName = ChatColor.GREEN.toString() + event.getPlayer().getName();
 
                 ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
                 ItemStack[] inv = event.getPlayer().getInventory().getContents();
@@ -209,7 +209,7 @@ public class CombatLoggerListener implements Listener {
 
                     m.invoke(world, fixedVillager);
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    ex.printStackTrace();
+
                 }
 
                 final Villager villager = (Villager) fixedVillager.getBukkitEntity();

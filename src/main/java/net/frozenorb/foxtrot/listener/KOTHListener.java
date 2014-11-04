@@ -45,7 +45,7 @@ public class KOTHListener implements Listener {
         }
 
         boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " has been captured by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.BLUE + " " + event.getKoth().getName() + ChatColor.YELLOW + " has been captured by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
     }
 
     @EventHandler

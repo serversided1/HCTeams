@@ -19,7 +19,7 @@ public class Mute {
     public static HashMap<String, String> factionMutes = new HashMap<String, String>();
 
     @Command(names={ "team mute", "t mute", "f mute", "faction mute", "fac mute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamMuteFaction(Player sender, @Param(name="Target") final Team target, @Param(name="Time") String time, @Param(name="Reason") String reason) {
+    public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="Time") String time, @Param(name="Reason") String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (Player player : target.getOnlineMembers()) {
@@ -44,7 +44,7 @@ public class Mute {
     }
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamUnmuteFaction(Player sender, @Param(name="Target") final Team target) {
+    public static void teamUnmuteFaction(Player sender, @Param(name="team") final Team target) {
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (factionMutes.containsKey(player.getName()) && factionMutes.get(player.getName()).equals(target.getFriendlyName())) {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has been removed!");

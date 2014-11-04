@@ -24,7 +24,6 @@ public class PvPCommand {
 
             if (args[0].equalsIgnoreCase("enable") || args[0].equalsIgnoreCase("remove")) {
                 if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(sender)) {
-
                     FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(sender.getName(), -1L);
                     sender.sendMessage(ChatColor.RED + "Your PVP Timer has been removed!");
                 } else {

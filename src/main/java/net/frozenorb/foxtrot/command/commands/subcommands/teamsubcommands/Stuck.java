@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -24,11 +23,12 @@ import java.util.Set;
  * @since 10/14/14
  */
 public class Stuck implements Listener {
+
     private static final double MAX_DISTANCE = 5;
     private static final double TOTAL_MOVEMENT = 20;
 
-
     private static final Set<Integer> warn = new HashSet<>();
+
     static {
         warn.add(300);
         warn.add(270);
@@ -47,25 +47,23 @@ public class Stuck implements Listener {
         warn.add(2);
         warn.add(1);
 
-        Bukkit.getPluginManager().registerEvents(new Stuck(), FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new Stuck(), FoxtrotPlugin.getInstance());
     }
 
-    private static List<Player> warping = Lists.newArrayList();
-    private static List<Player> damaged = Lists.newArrayList();
+    private static List<String> warping = Lists.newArrayList();
+    private static List<String> damaged = Lists.newArrayList();
 
     @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck" }, permissionNode="")
-    public static void teamInvite(Player sender) {
-        Player player = (Player)sender;
-
-        if (warping.contains(player)) {
-            player.sendMessage(ChatColor.RED +"You are already being warped!");
+    public static void teamStuck(Player sender) {
+        if (warping.contains(sender.getName())) {
+            sender.sendMessage(ChatColor.RED +"You are already being warped!");
             return;
         }
 
         new BukkitRunnable(){
             private int seconds = 300;
 
-            Location loc = player.getLocation();
+            Location loc = sender.getLocation();
             private int xStart = (int) loc.getX();
             private int yStart = (int) loc.getY();
             private int zStart = (int) loc.getZ();
@@ -79,16 +77,16 @@ public class Stuck implements Listener {
 
             @Override
             public void run(){
-                if(damaged.contains(player)){
-                    player.sendMessage(ChatColor.RED + "You took damage, teleportation cancelled!");
-                    damaged.remove(player);
-                    warping.remove(player);
+                if(damaged.contains(sender.getName())){
+                    sender.sendMessage(ChatColor.RED + "You took damage, teleportation cancelled!");
+                    damaged.remove(sender.getName());
+                    warping.remove(sender.getName());
                     cancel();
                     return;
                 }
 
-                if(!(player.isOnline())){
-                    warping.remove(player);
+                if (!sender.isOnline()) {
+                    warping.remove(sender.getName());
                     cancel();
                     return;
                 }
@@ -98,7 +96,7 @@ public class Stuck implements Listener {
                     new BukkitRunnable(){
                         @Override
                         public void run(){
-                            nearest = nearestSafeLocation(player.getLocation());
+                            nearest = nearestSafeLocation(sender.getLocation());
                             nearestFound = true;
 
                             if(tpOnceFound){
@@ -106,10 +104,10 @@ public class Stuck implements Listener {
                                     @Override
                                     public void run(){
                                         if(nearest == null){
-                                            kick(player);
+                                            kick(sender);
                                         } else {
-                                            player.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
-                                            player.teleport(nearest);
+                                            sender.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
+                                            sender.teleport(nearest);
                                         }
                                     }
                                 }.runTask(FoxtrotPlugin.getInstance());
@@ -121,29 +119,29 @@ public class Stuck implements Listener {
                 if(seconds <= 0){
                     if(nearestFound){
                         if(nearest == null){
-                            kick(player);
+                            kick(sender);
                         } else {
-                            player.teleport(nearest);
-                            player.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
+                            sender.teleport(nearest);
+                            sender.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "Still searching for a safe location, this is taking fairly long. Please report this to a staff member.");
-                        player.sendMessage(ChatColor.RED + "You will be teleported once a location is found.");
+                        sender.sendMessage(ChatColor.RED + "Still searching for a safe location, this is taking fairly long. Please report this to a staff member.");
+                        sender.sendMessage(ChatColor.RED + "You will be teleported once a location is found.");
                         tpOnceFound = true;
                     }
 
-                    warping.remove(player);
+                    warping.remove(sender.getName());
                     cancel();
                     return;
                 }
 
-                Location loc = player.getLocation();
+                Location loc = sender.getLocation();
 
                 //More than 5 blocks away
                 if((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)){
                     cancel();
-                    player.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
-                    warping.remove(player);
+                    sender.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
+                    warping.remove(sender.getName());
                     return;
                 }
 
@@ -153,15 +151,15 @@ public class Stuck implements Listener {
                     prevLoc = loc;
 
                     if(totalMovement >= TOTAL_MOVEMENT * TOTAL_MOVEMENT){
-                        player.sendMessage(ChatColor.RED + "You walked more than " + TOTAL_MOVEMENT + " total meters, teleport cancelled!");
-                        warping.remove(player);
+                        sender.sendMessage(ChatColor.RED + "You walked more than " + TOTAL_MOVEMENT + " total meters, teleport cancelled!");
+                        warping.remove(sender.getName());
                         cancel();
                         return;
                     }
                 }
 
                 if (warn.contains(seconds)){
-                    player.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED + "" + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.RED + "!");
+                    sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED + "" + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.RED + "!");
                 }
 
                 seconds--;
@@ -195,8 +193,8 @@ public class Stuck implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player)event.getEntity();
-            if (warping.contains(player)) {
-                damaged.add(player);
+            if (warping.contains(player.getName())) {
+                damaged.add(player.getName());
             }
         }
     }

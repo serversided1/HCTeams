@@ -10,63 +10,41 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class Chat {
 
     @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c" }, permissionNode="")
-    public static void teamChat(Player sender, @Param(name="Parameter") String params) {
-        String[] args = ("arg1 " + params).split(" ");
-		final Player p = (Player) sender;
-
-		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()) == null) {
-			boolean first = true;
-			StringBuilder sb = new StringBuilder();
-			for (String a : args) {
-				if (!first)
-					sb.append(a + " ");
-				first = false;
-			}
-			p.chat("/t create " + sb.toString());
-			return;
+    public static void teamChat(Player sender, @Param(name="chat mode", defaultValue="toggle") String params) {
+		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
+            sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
 		}
 
-        String chat;
+        String chat = "";
 
-        if(args.length >= 2){
-            if(args[1].equalsIgnoreCase("t") || args[1].equalsIgnoreCase("team") || args[1].equalsIgnoreCase("f") || args[1].equalsIgnoreCase("fac") || args[1].equalsIgnoreCase("faction")){
-                chat = "team";
-            } else if(args[1].equalsIgnoreCase("g") || args[1].equalsIgnoreCase("p") || args[1].equalsIgnoreCase("global") || args[1].equalsIgnoreCase("public")){
-                chat = "public";
-            } else {
-                p.sendMessage(ChatColor.RED + "Invalid chat channel!");
-                return;
-            }
-        } else {
-            if(p.hasMetadata("teamChat")){
-                chat = "public";
-            } else {
-                chat = "team";
-            }
+        if (params.equalsIgnoreCase("t") || params.equalsIgnoreCase("team") || params.equalsIgnoreCase("f") || params.equalsIgnoreCase("fac") || params.equalsIgnoreCase("faction")) {
+            chat = "team";
+        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public")){
+            chat = "public";
         }
 
-        setChat(p, chat);
+        setChat(sender, chat);
 	}
 
     private static void setChat(Player player, String type){
         boolean curTeam = player.hasMetadata("teamChat");
 
-        if(type != null){
-            if(type.equals("team")){
-                if(!(player.hasMetadata("teamChat"))){
+        if (type != null) {
+            if (type.equals("team")) {
+                if (!(player.hasMetadata("teamChat"))) {
                     player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
                 }
 
                 player.sendMessage(ChatColor.DARK_AQUA + "You are now in faction chat only mode.");
-            } else if(type.equals("public")){
-                if(player.hasMetadata("teamChat")){
+            } else if(type.equals("public")) {
+                if (player.hasMetadata("teamChat")) {
                     player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
                 }
 
                 player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
             }
         } else {
-            if(curTeam) {
+            if (curTeam) {
                 player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
                 player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
             } else {
@@ -75,4 +53,5 @@ public class Chat {
             }
         }
     }
+
 }
