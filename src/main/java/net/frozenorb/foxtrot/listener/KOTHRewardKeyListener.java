@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +39,12 @@ public class KOTHRewardKeyListener implements Listener {
                     Chest chest = (Chest) block.getState();
                     ItemStack[] lootTables = chest.getBlockInventory().getContents();
                     List<ItemStack> loot = new ArrayList<ItemStack>();
-
                     int given = 0;
+                    int tries = 0;
 
-                    while (given < 5) {
+                    while (given < 5 && tries < 500) {
+                        tries++;
+
                         ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
 
                         if (chosenItem == null || chosenItem.getType() == Material.AIR) {
@@ -63,7 +66,6 @@ public class KOTHRewardKeyListener implements Listener {
                     StringBuilder builder = new StringBuilder();
 
                     for (ItemStack itemStack : loot) {
-                        event.getPlayer().getInventory().addItem(itemStack);
                         String displayName = itemStack.getItemMeta().hasDisplayName() ? ChatColor.RED.toString() + ChatColor.ITALIC + ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()) : ChatColor.BLUE.toString() + itemStack.getAmount() + "x " + ChatColor.YELLOW + WordUtils.capitalize(itemStack.getType().name().replace("_", " ").toLowerCase());
 
                         builder.append(ChatColor.YELLOW).append(displayName).append(ChatColor.GOLD).append(", ");
@@ -73,9 +75,20 @@ public class KOTHRewardKeyListener implements Listener {
                         builder.setLength(builder.length() - 2);
                     }
 
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a level " + tier + " key obtained from " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + ".");
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Loot: " + builder.toString());
-                    event.getPlayer().updateInventory();
+                    new BukkitRunnable() {
+
+                        public void run() {
+                            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a level " + tier + " key obtained from " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + ".");
+                            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Loot: " + builder.toString());
+
+                            for (ItemStack lootItem : loot) {
+                                event.getPlayer().getInventory().addItem(lootItem);
+                            }
+
+                            event.getPlayer().updateInventory();
+                        }
+
+                    }.runTaskLater(FoxtrotPlugin.getInstance(), 20 * 5L);
                 }
             }
         }

@@ -80,18 +80,18 @@ public class FoxListener implements Listener {
             Material.FISHING_ROD };
 
     private static final Material[] NO_INTERACT = { Material.FENCE_GATE,
-            Material.FURNACE, Material.BREWING_STAND, Material.CHEST,
+            Material.FURNACE, Material.BURNING_FURNACE, Material.BREWING_STAND, Material.CHEST,
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH };
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH, Material.BED_BLOCK };
 
     private static final Material[] NO_INTERACT_IN_SPAWN = { Material.FENCE_GATE,
-            Material.FURNACE, Material.BREWING_STAND, Material.CHEST,
+            Material.FURNACE, Material.BURNING_FURNACE, Material.BREWING_STAND, Material.CHEST,
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH };
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH, Material.BED_BLOCK };
 
     public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
@@ -196,7 +196,7 @@ public class FoxListener implements Listener {
                 e.setCancelled(true);
             }
         }
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
+        if (e.getEntity() instanceof Player && e.getDamager() instanceof Projectile) {
             if (e.isCancelled()) {
                 return;
             }
@@ -206,10 +206,12 @@ public class FoxListener implements Listener {
             }
 
             Player p = (Player) e.getEntity();
-            if (!(((Arrow) e.getDamager()).getShooter() instanceof Player)) {
+
+            if (!(((Projectile) e.getDamager()).getShooter() instanceof Player)) {
                 return;
             }
-            Player pl = ((Player) ((Arrow) e.getDamager()).getShooter());
+
+            Player pl = ((Player) ((Projectile) e.getDamager()).getShooter());
 
             if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName()) == null)
                 return;

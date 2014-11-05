@@ -102,6 +102,8 @@ public interface ScoreGetter {
                 if (koth.isActive()) {
                     if (koth.getName().equalsIgnoreCase("Citadel")) {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
+                    } else if (koth.getName().equalsIgnoreCase("EOTW")) {
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EOTW";
                     } else {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
                     }

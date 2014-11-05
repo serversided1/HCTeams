@@ -35,12 +35,9 @@ public class PacketBorder {
         while (bordersIterator.hasNext()) {
             Map.Entry<Location, Long> border = bordersIterator.next();
 
-            if (System.currentTimeMillis() > border.getValue() + 3000L) {
+            if (System.currentTimeMillis() >= border.getValue() + 200L) {
                 try {
-                    if (border.getKey().getChunk().isLoaded()) {
-                        player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
-                    }
-
+                    player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
                     bordersIterator.remove();
                 } catch (Exception e) {
 

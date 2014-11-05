@@ -63,27 +63,27 @@ public class CombatLoggerListener implements Listener {
 
                 // Add the death sign.
                 event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(playerName, event.getEntity().getKiller().getName()));
-
-                Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(playerName);
-
-                if (target == null) {
-                    //Create an entity to load the player data
-                    MinecraftServer server = ((CraftServer) FoxtrotPlugin.getInstance().getServer()).getServer();
-                    EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(playerName).getUniqueId()), new PlayerInteractManager(server.getWorldServer(0)));
-                    target = entity.getBukkitEntity();
-
-                    if (target != null) {
-                        target.loadData();
-                    }
-                }
-
-                EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
-
-                target.getInventory().clear();
-                target.getInventory().setArmorContents(null);
-                humanTarget.setHealth(0);
-                target.saveData();
             }
+
+            Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(playerName);
+
+            if (target == null) {
+                //Create an entity to load the player data
+                MinecraftServer server = ((CraftServer) FoxtrotPlugin.getInstance().getServer()).getServer();
+                EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(playerName).getUniqueId()), new PlayerInteractManager(server.getWorldServer(0)));
+                target = entity.getBukkitEntity();
+
+                if (target != null) {
+                    target.loadData();
+                }
+            }
+
+            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+
+            target.getInventory().clear();
+            target.getInventory().setArmorContents(null);
+            humanTarget.setHealth(0);
+            target.saveData();
         }
     }
 
@@ -129,18 +129,14 @@ public class CombatLoggerListener implements Listener {
             Villager villager = (Villager) event.getEntity();
             String playerName = villager.getCustomName().substring(2);
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(villager.getLocation())) {
                 event.setCancelled(true);
-                return;
-            }
-
-            if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()) == null || FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName) == null) {
                 return;
             }
 
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
 
-            if (team.isMember(playerName)) {
+            if (team != null && !team.isMember(player.getName())) {
                 event.setCancelled(true);
             }
         }
@@ -182,7 +178,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
-            if ((enemyWithinRange && !event.getPlayer().isDead()) || !event.getPlayer().isOnGround()) {
+            if (enemyWithinRange && !event.getPlayer().isDead()) {
                 String playerName = ChatColor.GREEN.toString() + event.getPlayer().getName();
 
                 ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();

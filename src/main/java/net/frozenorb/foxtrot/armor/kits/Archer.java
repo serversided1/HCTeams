@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,7 +57,7 @@ public class Archer extends Kit {
         return (Arrays.asList(Material.SUGAR));
     }
 
-    private double getMultiplier(double range, Entity hit) {
+    private double getMultiplier(double range) {
         return range > 10 ? range > 105 ? 1D : ((range) * .07D) + (range > 25 ? .5 : 0) : 1D;
     }
 
@@ -86,7 +85,7 @@ public class Archer extends Kit {
             if (a.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) a.getMetadata("firedLoc").get(0).value();
                 double range = firedFrom.distance(e.getEntity().getLocation());
-                double mod = getMultiplier(range, e.getEntity());
+                double mod = getMultiplier(range);
 
                 mod = Math.max(1D, mod);
 

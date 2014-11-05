@@ -58,7 +58,7 @@ public class ServerHandler {
 			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
 			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16458, 8204,
 			8236, 8268, 16396, 16428, 16460, 16398, 16462, 8257, 8193, 16385,
-			16424, 16430, 8270, 8238);
+			16424, 8270);
 
 	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
 	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
@@ -189,7 +189,7 @@ public class ServerHandler {
         } else if (isEndSpawn(loc)){
             return new RegionData<Object>(loc, Region.SPAWN_END, null);
         } else if (isEndExit(loc)){
-            return new RegionData<Object>(loc, Region.SPAWN_END, null);
+            return new RegionData<Object>(loc, Region.EXIT_END, null);
         } else if (isDiamondMountain(loc)) {
 			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
 		}

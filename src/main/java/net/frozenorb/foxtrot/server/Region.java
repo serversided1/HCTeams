@@ -42,6 +42,7 @@ public enum Region {
         if (e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot re-enter the end spawn.");
             e.setTo(e.getFrom());
+            return false;
         }
 
         return true;
@@ -49,7 +50,7 @@ public enum Region {
 
     EXIT_END(true, "§aEnd Exit", (e) -> {
         if (SpawnTag.isTagged(e.getPlayer())) {
-            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end exit while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
         }

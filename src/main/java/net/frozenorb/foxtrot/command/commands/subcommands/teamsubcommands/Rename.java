@@ -23,6 +23,16 @@ public class Rename {
             return;
         }
 
+        if (name.length() > 16) {
+            sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
+            return;
+        }
+
+        if (name.length() < 3) {
+            sender.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
+            return;
+        }
+
         if (name.matches("^[a-zA-Z0-9]*$")) {
             if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
                 FoxtrotPlugin.getInstance().getTeamHandler().renameTeam(team, name);

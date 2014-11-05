@@ -20,6 +20,8 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -204,6 +206,20 @@ public class EndListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "The End is currently in beta and will be publicly released soon.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
+            }
+        }
+
+        if (event.getPlayer().hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
+            boolean found = false;
+
+            for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
+                if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE) && potionEffect.getDuration() < 20 * 10) {
+                    found = true;
+                }
+            }
+
+            if (found) {
+                event.getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
             }
         }
     }
