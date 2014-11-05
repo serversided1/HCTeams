@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
  */
 public class KOTHDeactivate {
 
-    @Command(names={ "KOTH Dectivate", "KOTH Inactive" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH Deactivate", "KOTH Inactive" }, permissionNode="foxtrot.koth")
     public static void kothDectivate(Player sender, @Param(name="KOTH") KOTH target) {
-        target.deactivate(false);
+        target.deactivate();
         sender.sendMessage(ChatColor.GRAY + "Deactivated " + target.getName() + " KOTH.");
     }
 

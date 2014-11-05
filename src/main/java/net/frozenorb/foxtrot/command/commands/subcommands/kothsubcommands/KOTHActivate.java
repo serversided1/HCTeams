@@ -13,7 +13,7 @@ public class KOTHActivate {
 
     @Command(names={ "KOTH Activate", "KOTH Active" }, permissionNode="foxtrot.koth")
     public static void kothActivate(Player sender, @Param(name="KOTH") KOTH target) {
-        target.activate(false);
+        target.activate();
         sender.sendMessage(ChatColor.GRAY + "Activated " + target.getName() + " KOTH.");
     }
 

@@ -44,7 +44,17 @@ public enum Region {
             e.setTo(e.getFrom());
         }
 
-        return false;
+        return true;
+    }),
+
+    EXIT_END(true, "§aEnd Exit", (e) -> {
+        if (SpawnTag.isTagged(e.getPlayer())) {
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            e.setTo(e.getFrom());
+            return false;
+        }
+
+        return true;
     }),
 
 	WARZONE(false, "§cWarzone", (e) -> true),

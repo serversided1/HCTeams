@@ -132,6 +132,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		kitHandler.loadKits();
 
         getServer().getPluginManager().registerEvents(new KOTHListener(), this);
+        getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
         getServer().getPluginManager().registerEvents(new EndListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);

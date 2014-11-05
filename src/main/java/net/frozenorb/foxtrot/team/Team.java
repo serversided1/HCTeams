@@ -306,7 +306,7 @@ public class Team {
         }
 
         for (Player player : getOnlineMembers()) {
-            player.sendMessage(ChatColor.YELLOW + "DTR: " + dtrColor + newDTR);
+            player.sendMessage(ChatColor.YELLOW + "DTR: " + dtrColor + DTR_FORMAT.format(newDTR));
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");

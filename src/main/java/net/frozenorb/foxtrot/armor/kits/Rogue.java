@@ -140,7 +140,7 @@ public class Rogue extends Kit {
 					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
 					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
-					e.setDamage(0.5D);
+					e.setDamage(0D);
 					victim.setHealth(Math.max(0.5D, victim.getHealth() - 7D));
                     DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
 					

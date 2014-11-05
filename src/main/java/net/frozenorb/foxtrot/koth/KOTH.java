@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.koth;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.events.*;
 import org.bukkit.ChatColor;
@@ -46,6 +47,8 @@ public class KOTH {
     private transient String currentCapper;
     @Getter
     private transient float remainingCapTime;
+    @Getter @Setter
+    private transient int tier;
 
     //***************************//
 
@@ -55,6 +58,7 @@ public class KOTH {
         this.world = location.getWorld().getName();
         this.capDistance = 3;
         this.capTime = 60 * 15;
+        this.tier = 2;
 
         KOTHHandler.getKOTHs().add(this);
         KOTHHandler.saveKOTHs();
@@ -82,7 +86,7 @@ public class KOTH {
         return (active);
     }
 
-    public boolean activate(boolean silent) {
+    public boolean activate() {
         if (active) {
             return (false);
         }
@@ -92,11 +96,12 @@ public class KOTH {
         this.active = true;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
+        this.tier = 2;
 
         return (true);
     }
 
-    public boolean deactivate(boolean silent) {
+    public boolean deactivate() {
         if (!active) {
             return (false);
         }
@@ -106,6 +111,7 @@ public class KOTH {
         this.active = false;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
+        this.tier = 2;
 
         return (true);
     }
@@ -134,7 +140,7 @@ public class KOTH {
             return (false);
         }
 
-        deactivate(true);
+        deactivate();
         return (true);
     }
 

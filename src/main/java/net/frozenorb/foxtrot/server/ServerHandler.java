@@ -188,6 +188,8 @@ public class ServerHandler {
             return new RegionData<Object>(loc, Region.SPAWN_NETHER, null);
         } else if (isEndSpawn(loc)){
             return new RegionData<Object>(loc, Region.SPAWN_END, null);
+        } else if (isEndExit(loc)){
+            return new RegionData<Object>(loc, Region.SPAWN_END, null);
         } else if (isDiamondMountain(loc)) {
 			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
 		}
@@ -330,7 +332,7 @@ public class ServerHandler {
 	}
 
     public boolean isGlobalSpawn(Location loc) {
-        return (isOverworldSpawn(loc) || isNetherSpawn(loc) || isEndSpawn(loc));
+        return (isOverworldSpawn(loc) || isNetherSpawn(loc) || isEndSpawn(loc) || isEndExit(loc));
     }
 
     public boolean isOverworldSpawn(Location loc) {
@@ -343,6 +345,10 @@ public class ServerHandler {
 
     public boolean isEndSpawn(Location loc) {
         return (RegionManager.get().hasTag(loc, "endspawn"));
+    }
+
+    public boolean isEndExit(Location loc) {
+        return (RegionManager.get().hasTag(loc, "endexit"));
     }
 
 	public boolean isClaimedAndRaidable(Location loc) {
@@ -681,6 +687,9 @@ public class ServerHandler {
 	public void loadEnchantments(){
         //Max armor enchants
         maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
+
+        //Max sword enchants
+        //maxEnchantments.put(Enchantment.DAMAGE_ALL, 1);
 
         //Max bow enchants
         maxEnchantments.put(Enchantment.ARROW_DAMAGE, 2);

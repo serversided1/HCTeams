@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -72,6 +73,14 @@ public class EndListener implements Listener {
             if (!event.getEntity().getKiller().getInventory().contains(Material.DRAGON_EGG)) {
                 event.getDrops().add(dragonEgg);
             }
+        }
+    }
+
+    // Prevent items dropped through from creating the obsidian platform.
+    @EventHandler
+    public void onEntityCreatePortal(EntityCreatePortalEvent event) {
+        if (event.getEntity() instanceof Item && event.getPortalType() == PortalType.ENDER) {
+            event.getBlocks().clear();
         }
     }
 

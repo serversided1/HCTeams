@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by macguy8 on 11/2/2014.
@@ -19,7 +21,7 @@ public class Mute {
     public static HashMap<String, String> factionMutes = new HashMap<String, String>();
 
     @Command(names={ "team mute", "t mute", "f mute", "faction mute", "fac mute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="Time") String time, @Param(name="Reason") String reason) {
+    public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason") String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (Player player : target.getOnlineMembers()) {
@@ -31,7 +33,7 @@ public class Mute {
 
             public void run() {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (factionMutes.containsKey(player.getName()) && factionMutes.get(player.getName()).equals(target.getFriendlyName())) {
+                    if (factionMutes.containsKey(player.getName()) && factionMutes.get(player.getName()).equalsIgnoreCase(target.getFriendlyName())) {
                         player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has expired!");
                         factionMutes.remove(player.getName());
                     }
@@ -45,10 +47,19 @@ public class Mute {
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnmuteFaction(Player sender, @Param(name="team") final Team target) {
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (factionMutes.containsKey(player.getName()) && factionMutes.get(player.getName()).equals(target.getFriendlyName())) {
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has been removed!");
-                factionMutes.remove(player.getName());
+        Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
+
+        while (mutesIterator.hasNext()) {
+            Map.Entry<String, String> mute = mutesIterator.next();
+
+            if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+                Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(mute.getKey());
+
+                if (bukkitPlayer != null) {
+                    bukkitPlayer.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has been removed!");
+                }
+
+                mutesIterator.remove();
             }
         }
 

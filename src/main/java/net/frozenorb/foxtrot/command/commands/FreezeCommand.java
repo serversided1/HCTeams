@@ -28,107 +28,101 @@ public class FreezeCommand {
     private static Set<String> frozen = new HashSet<String>();
     private static boolean listener = false;
 
-    public static void checkListener() {
-        if (!listener) {
-            listener = true;
+    static {
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onPlayerMove(PlayerMoveEvent event) {
+                Player player = event.getPlayer();
+                Location from = event.getFrom();
+                Location to = event.getTo();
 
-            Bukkit.getPluginManager().registerEvents(new Listener() {
-                @EventHandler
-                public void onPlayerMove(PlayerMoveEvent event) {
-                    Player player = event.getPlayer();
-                    Location from = event.getFrom();
-                    Location to = event.getTo();
+                if (isFrozen(player)) {
+                    if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
+                        Location newLoc = from.getBlock().getLocation().add(0.5, 0, 0.5);
 
-                    if (isFrozen(player)) {
-                        if (from.getX() != to.getX() || from.getZ() != to.getZ()) {
-                            Location newLoc = from.getBlock().getLocation().add(0.5, 0, 0.5);
-
-                            newLoc.setPitch(to.getPitch());
-                            newLoc.setYaw(to.getYaw());
-                            event.setTo(newLoc);
-                            //player.sendMessage(FROZEN_MESSAGE);
-                        }
+                        newLoc.setPitch(to.getPitch());
+                        newLoc.setYaw(to.getYaw());
+                        event.setTo(newLoc);
+                        //player.sendMessage(FROZEN_MESSAGE);
                     }
                 }
+            }
 
-                @EventHandler
-                public void onEntityDamage(EntityDamageEvent event) {
-                    if (event.getEntity() instanceof Player) {
-                        Player player = (Player) event.getEntity();
-
-                        if (isFrozen(player)) {
-                            event.setCancelled(true);
-                            player.sendMessage(FROZEN_MESSAGE);
-                        }
-                    }
-                }
-
-                @EventHandler
-                public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-                    if (event.getDamager() instanceof Player) {
-                        Player damager = (Player) event.getDamager();
-
-                        if (isFrozen(damager)) {
-                            event.setCancelled(true);
-                            damager.sendMessage(FROZEN_MESSAGE);
-                        }
-                    }
-                }
-
-                @EventHandler
-                public void onPlayerInteract(PlayerInteractEvent event) {
-                    if (isFrozen(event.getPlayer())) {
-                        event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're frozen!");
-                        event.setCancelled(true);
-                        event.setUseItemInHand(Event.Result.DENY);
-                        event.setUseInteractedBlock(Event.Result.DENY);
-                    }
-                }
-
-                @EventHandler
-                public void onInventoryClick(InventoryClickEvent event) {
-                    if (isFrozen((Player) event.getWhoClicked())) {
-                        event.setCancelled(true);
-                        ((Player) event.getWhoClicked()).sendMessage(FROZEN_MESSAGE);
-                    }
-                }
-
-                @EventHandler
-                public void onPlayerJoin(PlayerJoinEvent event) {
-                    if (isFrozen(event.getPlayer())) {
-                        event.getPlayer().sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You have previously been frozen by a staff member, and are still frozen.");
-                    }
-                }
-
-                @EventHandler
-                public void onPlayerTeleport(PlayerTeleportEvent event) {
-                    if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
-                        if (isFrozen(event.getPlayer())) {
-                            event.setCancelled(true);
-                            event.setTo(event.getFrom());
-                            event.getPlayer().sendMessage(FROZEN_MESSAGE);
-                        }
-                    }
-                }
-
-                @EventHandler
-                public void onItemDrop(PlayerDropItemEvent event) {
-                    Player player = event.getPlayer();
+            @EventHandler
+            public void onEntityDamage(EntityDamageEvent event) {
+                if (event.getEntity() instanceof Player) {
+                    Player player = (Player) event.getEntity();
 
                     if (isFrozen(player)) {
                         event.setCancelled(true);
-                        player.updateInventory();
                         player.sendMessage(FROZEN_MESSAGE);
                     }
                 }
-            }, FoxtrotPlugin.getInstance());
-        }
+            }
+
+            @EventHandler
+            public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+                if (event.getDamager() instanceof Player) {
+                    Player damager = (Player) event.getDamager();
+
+                    if (isFrozen(damager)) {
+                        event.setCancelled(true);
+                        damager.sendMessage(FROZEN_MESSAGE);
+                    }
+                }
+            }
+
+            @EventHandler
+            public void onPlayerInteract(PlayerInteractEvent event) {
+                if (isFrozen(event.getPlayer())) {
+                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're frozen!");
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                }
+            }
+
+            @EventHandler
+            public void onInventoryClick(InventoryClickEvent event) {
+                if (isFrozen((Player) event.getWhoClicked())) {
+                    event.setCancelled(true);
+                    ((Player) event.getWhoClicked()).sendMessage(FROZEN_MESSAGE);
+                }
+            }
+
+            @EventHandler
+            public void onPlayerJoin(PlayerJoinEvent event) {
+                if (isFrozen(event.getPlayer())) {
+                    event.getPlayer().sendMessage(ChatColor.AQUA + "" + ChatColor.BOLD + "You have previously been frozen by a staff member, and are still frozen.");
+                }
+            }
+
+            @EventHandler
+            public void onPlayerTeleport(PlayerTeleportEvent event) {
+                if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+                    if (isFrozen(event.getPlayer())) {
+                        event.setCancelled(true);
+                        event.setTo(event.getFrom());
+                        event.getPlayer().sendMessage(FROZEN_MESSAGE);
+                    }
+                }
+            }
+
+            @EventHandler
+            public void onItemDrop(PlayerDropItemEvent event) {
+                Player player = event.getPlayer();
+
+                if (isFrozen(player)) {
+                    event.setCancelled(true);
+                    player.updateInventory();
+                    player.sendMessage(FROZEN_MESSAGE);
+                }
+            }
+        }, FoxtrotPlugin.getInstance());
     }
 
     @Command(names={ "freeze" }, permissionNode="foxtrot.freeze")
     public static void spawn(Player sender, @Param(name="Params") String argString) {
-        checkListener();
-
         String[] args = argString.split(" ");
 
         if (args.length != 1) {

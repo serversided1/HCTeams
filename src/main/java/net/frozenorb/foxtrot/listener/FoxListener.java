@@ -86,6 +86,13 @@ public class FoxListener implements Listener {
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
             Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH };
 
+    private static final Material[] NO_INTERACT_IN_SPAWN = { Material.FENCE_GATE,
+            Material.FURNACE, Material.BREWING_STAND, Material.CHEST,
+            Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
+            Material.STONE_BUTTON, Material.WOOD_BUTTON,
+            Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH };
+
     public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
             Material.FENCE_GATE };
@@ -539,29 +546,36 @@ public class FoxListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onBlockPlace2(BlockPlaceEvent event) {
+        if (event.getBlock().getType() == Material.DIAMOND_ORE) {
+            event.getBlock().setMetadata("DiamondPlaced", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+        }
+    }
+
     @EventHandler(priority=EventPriority.MONITOR)
     public void onBlockBreak2(BlockBreakEvent event) {
         if (event.isCancelled()) {
             return;
         }
 
-        if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH) && !event.getBlock().hasMetadata("DiamondBroadcasted")) {
+        if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
             int diamonds = 0;
 
-            for (int x = -10; x < 10; x++) {
+            for (int x = -5; x < 5; x++) {
                 for (int y = -5; y < 5; y++) {
-                    for (int z = -10; z < 10; z++) {
+                    for (int z = -5; z < 5; z++) {
                         Block block = event.getBlock().getLocation().add(x, y, z).getBlock();
 
-                        if (block.getType() == Material.DIAMOND_ORE && !block.hasMetadata("DiamondBroadcasted")) {
+                        if (block.getType() == Material.DIAMOND_ORE && !block.hasMetadata("DiamondPlaced")) {
                             diamonds++;
-                            block.setMetadata("DiamondBroadcasted", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                            block.setMetadata("DiamondPlaced", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
                         }
                     }
                 }
             }
 
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage("[FD] " + ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
         }
     }
 
@@ -639,12 +653,6 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent e) {
-        if (Mute.factionMutes.containsKey(e.getPlayer().getName())) {
-            e.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
-            e.setCancelled(true);
-            return;
-        }
-
         Player p = e.getPlayer();
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
 
@@ -678,8 +686,12 @@ public class FoxListener implements Listener {
 
         e.setCancelled(true);
 
-        for (Player pl : Bukkit.getOnlinePlayers()) {
+        if (Mute.factionMutes.containsKey(e.getPlayer().getName())) {
+            e.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
+            return;
+        }
 
+        for (Player pl : Bukkit.getOnlinePlayers()) {
             String plMsg = String.format(e.getFormat(), e.getPlayer().getDisplayName(), e.getMessage());
 
             if (team.isMember(pl)) {
@@ -779,123 +791,111 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onAnvilClick(InventoryClickEvent e) {
-        if (!e.isCancelled()) {
-            HumanEntity ent = e.getWhoClicked();
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onAnvilClick(InventoryClickEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
 
-            // not really necessary
-            if (ent instanceof Player) {
-                Player player = (Player) ent;
-                Inventory inv = e.getInventory();
+        HumanEntity humanEntity = event.getWhoClicked();
 
-                if (e.getInventory().getType() == InventoryType.MERCHANT) {
-                    for (ItemStack item : e.getInventory()) {
-                        if (item != null) {
-                            InvUtils.fixItem(item);
-                        }
-                    }
-                }
+        // not really necessary
+        if (!(humanEntity instanceof Player)) {
+            return;
+        }
 
-                // see if the event is about an anvil
-                if (inv instanceof AnvilInventory) {
-                    InventoryView view = e.getView();
-                    int rawSlot = e.getRawSlot();
+        Player player = (Player) humanEntity;
+        Inventory inventory = event.getInventory();
 
-                    // compare the raw slot with the inventory view to make sure
-                    // we are talking about the upper inventory
-                    if (rawSlot == view.convertSlot(rawSlot)) {
-						/*
-						 * slot 0 = left item slot slot 1 = right item slot slot
-						 * 2 = result item slot
-						 *
-						 * see if the player clicked in the result item slot of
-						 * the anvil inventory
-						 */
-                        if (rawSlot == 2) {
-							/*
-							 * get the current item in the result slot I think
-							 * inv.getItem(rawSlot) would be possible too
-							 */
-                            ItemStack item = e.getCurrentItem();
-                            ItemStack baseItem = inv.getItem(0);
-
-                            // check if there is an item in the result slot
-                            if (item != null) {
-                                boolean book = item.getType() == Material.ENCHANTED_BOOK;
-
-                                for (Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
-
-                                    if (book) {
-                                        EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
-                                        if (esm.hasStoredEnchant(entry.getKey()) && esm.getStoredEnchantLevel(entry.getKey()) > entry.getValue()) {
-                                            player.sendMessage(ChatColor.RED + "That book would be too strong to use!");
-                                            e.setCancelled(true);
-                                            return;
-                                        }
-
-                                    } else {
-                                        if (item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
-                                            if (entry.getValue() == -1) {
-                                                item.addEnchantment(Enchantment.DURABILITY, entry.getValue());
-                                            } else {
-                                                item.addEnchantment(entry.getKey(), entry.getValue());
-                                            }
-                                        }
-                                    }
-                                }
-                                ItemMeta meta = item.getItemMeta();
-
-                                // it is possible that the item does not have
-                                // meta data
-
-                                if (meta != null) {
-                                    // see whether the item is beeing renamed
-                                    if (meta.hasDisplayName()) {
-
-                                        String displayName = fixName(meta.getDisplayName());
-
-                                        if (baseItem.hasItemMeta() && baseItem.getItemMeta().getDisplayName() != null && FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().contains(fixName(baseItem.getItemMeta().getDisplayName())) && !baseItem.getItemMeta().getDisplayName().equals(meta.getDisplayName())) {
-                                            e.setCancelled(true);
-                                            player.sendMessage(ChatColor.RED + "You cannot rename an item with a name!");
-                                            return;
-                                        }
-
-                                        if (FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().contains(displayName) && (baseItem.hasItemMeta() && baseItem.getItemMeta().getDisplayName() != null ? !baseItem.getItemMeta().getDisplayName().equals(meta.getDisplayName()) : true)) {
-                                            e.setCancelled(true);
-                                            player.sendMessage(ChatColor.RED + "An item with that name already exists.");
-
-                                        } else {
-                                            List<String> lore = new ArrayList<String>();
-                                            boolean hasForgedMeta = false;
-
-                                            for (String s : meta.getLore()) {
-                                                if (s.toLowerCase().contains("forged"))
-                                                    hasForgedMeta = true;
-                                            }
-
-                                            if (meta.getLore() != null && !hasForgedMeta) {
-                                                lore = meta.getLore();
-                                            }
-
-                                            DateFormat sdf = DateFormat.getDateTimeInstance();
-
-                                            lore.add(0, "§eForged by " + player.getDisplayName() + "§e on " + sdf.format(new Date()));
-
-                                            meta.setLore(lore);
-                                            item.setItemMeta(meta);
-
-                                            FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().add(displayName);
-                                            FoxtrotPlugin.getInstance().getServerHandler().save();
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                    }
+        if (event.getInventory().getType() == InventoryType.MERCHANT) {
+            for (ItemStack item : event.getInventory()) {
+                if (item != null) {
+                    InvUtils.fixItem(item);
                 }
             }
+        }
+
+        if (!(inventory instanceof AnvilInventory)) {
+            return;
+        }
+
+        InventoryView view = event.getView();
+
+        // Upper inventory
+        if (event.getRawSlot() != view.convertSlot(event.getRawSlot())) {
+            return;
+        }
+
+        // The 'result' slot
+        if (event.getRawSlot() != 2) {
+            return;
+        }
+
+        ItemStack item = event.getCurrentItem();
+        ItemStack baseItem = inventory.getItem(0);
+
+        // Make sure there's an item in the repair slot.
+        if (item == null) {
+            return;
+        }
+
+        boolean book = item.getType() == Material.ENCHANTED_BOOK;
+
+        for (Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
+            if (book) {
+                EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
+
+                if (esm.hasStoredEnchant(entry.getKey()) && esm.getStoredEnchantLevel(entry.getKey()) > entry.getValue()) {
+                    player.sendMessage(ChatColor.RED + "That book would be too strong to use!");
+                    event.setCancelled(true);
+                    return;
+                }
+            } else {
+                if (item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
+                    item.addEnchantment(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        ItemMeta meta = item.getItemMeta();
+
+        if (meta == null || !meta.hasDisplayName()) {
+            return;
+        }
+
+        String displayName = fixName(meta.getDisplayName());
+
+        if (baseItem.hasItemMeta() && baseItem.getItemMeta().getDisplayName() != null && FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().contains(fixName(baseItem.getItemMeta().getDisplayName())) && !baseItem.getItemMeta().getDisplayName().equals(meta.getDisplayName())) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You cannot rename an item with a name!");
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().contains(displayName) && (baseItem.hasItemMeta() && baseItem.getItemMeta().getDisplayName() != null ? !baseItem.getItemMeta().getDisplayName().equals(meta.getDisplayName()) : true)) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "An item with that name already exists.");
+        } else {
+            List<String> lore = new ArrayList<String>();
+            boolean hasForgedMeta = false;
+
+            for (String s : meta.getLore()) {
+                if (s.toLowerCase().contains("forged"))
+                    hasForgedMeta = true;
+            }
+
+            if (meta.getLore() != null && !hasForgedMeta) {
+                lore = meta.getLore();
+            }
+
+            DateFormat sdf = DateFormat.getDateTimeInstance();
+
+            lore.add(0, "§eForged by " + player.getDisplayName() + "§e on " + sdf.format(new Date()));
+
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+
+            FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().add(displayName);
+            FoxtrotPlugin.getInstance().getServerHandler().save();
         }
     }
 
@@ -905,6 +905,7 @@ public class FoxListener implements Listener {
         String b = name.toLowerCase().trim();
         char[] charArray = b.toCharArray();
         StringBuilder result = new StringBuilder();
+
         for (char c : charArray) {
             for (char a : allowed) {
                 if (c == a) {
@@ -913,12 +914,11 @@ public class FoxListener implements Listener {
             }
         }
 
-        return result.toString();
+        return (result.toString());
     }
 
     @EventHandler
     public void onBlockCombust(BlockBurnEvent e) {
-
         if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(e.getBlock().getLocation())) {
             e.setCancelled(true);
         }
@@ -1432,11 +1432,9 @@ public class FoxListener implements Listener {
         }, 2L);
     }
 
-
-
     @EventHandler
     public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.getMessage().toLowerCase().startsWith("/kill")) {
+        if (event.getMessage().toLowerCase().startsWith("/kill") || event.getMessage().toLowerCase().startsWith("/slay") || event.getMessage().toLowerCase().startsWith("/bukkit:kill") || event.getMessage().toLowerCase().startsWith("/bukkit:slay")) {
             if (!event.getPlayer().isOp()) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
@@ -1586,7 +1584,7 @@ public class FoxListener implements Listener {
                     FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(e.getPlayer(), 1);
                 }
 
-                if (Arrays.asList(NO_INTERACT).contains(e.getClickedBlock().getType())) {
+                if (Arrays.asList(NO_INTERACT_IN_SPAWN).contains(e.getClickedBlock().getType())) {
                     e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're in spawn");
                     e.setCancelled(true);
                     e.setUseInteractedBlock(Result.DENY);
@@ -1703,7 +1701,7 @@ public class FoxListener implements Listener {
             if ((target.getTypeId() != 8) && (target.getTypeId() != 9)) {
                 player.sendMessage(ChatColor.RED + "You can only place a boat on water!");
                 e.setCancelled(true);
-                e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're placeing an invalid boat!");
+                e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're placing an invalid boat!");
             }
         }
     }
@@ -1723,7 +1721,7 @@ public class FoxListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getPlayer().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(e.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(e.getBlock().getLocation())) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getPlayer().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(e.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(e.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getBlock().getLocation())) {
             e.setCancelled(true);
             e.setBuild(false);
 
@@ -2097,14 +2095,14 @@ public class FoxListener implements Listener {
                     boolean northSouth;
 
                     if (portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL) {
-                        northSouth = false;
-                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
                         northSouth = true;
+                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
+                        northSouth = false;
                     } else {
                         return;
                     }
 
-                    if (northSouth) {
+                    if (!northSouth) {
                         for (int y = 0; y < 3; y++) {
                             portalBlock.getRelative(BlockFace.NORTH).getLocation().clone().add(0, y, 0).getBlock().setType(Material.AIR);
                             portalBlock.getRelative(BlockFace.NORTH).getLocation().clone().add(-1, y, 0).getBlock().setType(Material.AIR);
@@ -2132,16 +2130,16 @@ public class FoxListener implements Listener {
                     boolean northSouth;
 
                     if (portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL) {
-                        northSouth = false;
-                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
                         northSouth = true;
+                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
+                        northSouth = false;
                     } else {
                         return;
                     }
 
                     portalBlock = portalBlock.getRelative(BlockFace.DOWN);
 
-                    if (!northSouth) {
+                    if (northSouth) {
                         for (int x = 1; x > -3; x--) {
                             for (int z = -4; z <= 4; z++) {
                                 if (z == 0) {

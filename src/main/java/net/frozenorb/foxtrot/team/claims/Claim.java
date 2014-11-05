@@ -16,7 +16,6 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class Claim implements Iterable<Coordinate> {
 	int x1, y1, z1, x2, y2, z2;
-	SpecialTag tag;
 
 	String name;
 
@@ -336,11 +335,6 @@ public class Claim implements Iterable<Coordinate> {
 			}
 		}
 
-	}
-
-	public static enum SpecialTag {
-		SPAWN,
-		KOTH
 	}
 
 }
