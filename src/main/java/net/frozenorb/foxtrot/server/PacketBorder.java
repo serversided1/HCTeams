@@ -24,47 +24,47 @@ public class PacketBorder {
     }
 
     public void sendToPlayer(Player player) {
-        final Collection<Claim> syncRegions = Collections.synchronizedCollection(regions);
+        try {
+            final Collection<Claim> syncRegions = Collections.synchronizedCollection(regions);
 
-        if (!borderBlocksSent.containsKey(player.getName())) {
-            borderBlocksSent.put(player.getName(), new HashMap<Location, Long>());
-        }
+            if (!borderBlocksSent.containsKey(player.getName())) {
+                borderBlocksSent.put(player.getName(), new HashMap<Location, Long>());
+            }
 
-        Iterator<Map.Entry<Location, Long>> bordersIterator = borderBlocksSent.get(player.getName()).entrySet().iterator();
+            Iterator<Map.Entry<Location, Long>> bordersIterator = borderBlocksSent.get(player.getName()).entrySet().iterator();
 
-        while (bordersIterator.hasNext()) {
-            Map.Entry<Location, Long> border = bordersIterator.next();
+            while (bordersIterator.hasNext()) {
+                Map.Entry<Location, Long> border = bordersIterator.next();
 
-            if (System.currentTimeMillis() >= border.getValue() + 200L) {
-                try {
+                if (System.currentTimeMillis() >= border.getValue() + 200L) {
                     player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
                     bordersIterator.remove();
-                } catch (Exception e) {
-
                 }
             }
-        }
 
-        for (Claim cr : syncRegions) {
-            for (Coordinate loc : cr) {
-                int x = loc.getX();
-                int z = loc.getZ();
+            for (Claim cr : syncRegions) {
+                for (Coordinate loc : cr) {
+                    int x = loc.getX();
+                    int z = loc.getZ();
 
-                Location playerYLocation = new Location(player.getWorld(), x, player.getLocation().getY(), z);
+                    Location playerYLocation = new Location(player.getWorld(), x, player.getLocation().getY(), z);
 
-                for (int i = -4; i < 5; i++) {
-                    Location check = playerYLocation.clone().add(0, i, 0);
+                    for (int i = -4; i < 5; i++) {
+                        Location check = playerYLocation.clone().add(0, i, 0);
 
-                    if (cr.contains(check.getBlockX(), check.getBlockY(), check.getBlockZ())) {
-                        if (check.distanceSquared(player.getLocation()) <= 64D) {
-                            if (!check.getBlock().getType().isSolid()) {
-                                player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
-                                borderBlocksSent.get(player.getName()).put(check, System.currentTimeMillis());
+                        if (cr.contains(check.getBlockX(), check.getBlockY(), check.getBlockZ())) {
+                            if (check.distanceSquared(player.getLocation()) <= 64D) {
+                                if (!check.getBlock().getType().isSolid()) {
+                                    player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
+                                    borderBlocksSent.get(player.getName()).put(check, System.currentTimeMillis());
+                                }
                             }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

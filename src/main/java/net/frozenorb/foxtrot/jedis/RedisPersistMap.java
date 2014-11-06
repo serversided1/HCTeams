@@ -1,14 +1,14 @@
 package net.frozenorb.foxtrot.jedis;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import redis.clients.jedis.Jedis;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import redis.clients.jedis.Jedis;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public abstract class RedisPersistMap<T> {
@@ -71,7 +71,6 @@ public abstract class RedisPersistMap<T> {
 	}
 
 	public void executeSave(Jedis jedis) {
-
 		int done = 0;
 
 		for (String key : updatedKeys) {
@@ -84,7 +83,6 @@ public abstract class RedisPersistMap<T> {
 		updatedKeys.clear();
 
 		System.out.println("Successfully saved " + done + " key-value pairs with prefix '" + keyPrefix + "'");
-
 	}
 
 	public void updateValue(String key, T value) {

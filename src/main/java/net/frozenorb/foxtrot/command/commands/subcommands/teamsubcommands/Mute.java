@@ -32,10 +32,19 @@ public class Mute {
         new BukkitRunnable() {
 
             public void run() {
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (factionMutes.containsKey(player.getName()) && factionMutes.get(player.getName()).equalsIgnoreCase(target.getFriendlyName())) {
-                        player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has expired!");
-                        factionMutes.remove(player.getName());
+                Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
+
+                while (mutesIterator.hasNext()) {
+                    Map.Entry<String, String> mute = mutesIterator.next();
+
+                    if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+                        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(mute.getKey());
+
+                        if (bukkitPlayer != null) {
+                            bukkitPlayer.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction's mute has expired!");
+                        }
+
+                        mutesIterator.remove();
                     }
                 }
             }

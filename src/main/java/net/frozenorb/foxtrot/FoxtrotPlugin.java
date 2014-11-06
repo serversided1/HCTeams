@@ -1,13 +1,9 @@
 package net.frozenorb.foxtrot;
 
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassHandler;
@@ -33,13 +29,12 @@ import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.visual.BossBarHandler;
-import net.frozenorb.foxtrot.visual.TabHandler;
 import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardHandler;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
@@ -81,12 +76,15 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private ToggleLightningMap toggleLightningMap;
     @Getter private FishingKitMap fishingKitMap;
 
+    @Getter private SoulboundLivesMap soulboundLivesMap;
+    @Getter private FriendLivesMap friendLivesMap;
+    @Getter private TransferableLivesMap transferableLivesMap;
+
 	@Override
 	public void onEnable() {
 		try {
 			EntityRegistrar.registerCustomEntities();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -106,15 +104,14 @@ public class FoxtrotPlugin extends JavaPlugin {
 		LocationTickStore.getInstance().runTaskTimer(this, 1L, 1L);
 
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
-		new RedisSaveTask().runTaskTimerAsynchronously(this, 13200L, 13200L);
+		new RedisSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L);
 
 		ClassHandler chandler = new ClassHandler();
 
 		chandler.runTaskTimer(this, 2L, 2L);
-		Bukkit.getPluginManager().registerEvents(chandler, this);
+		getServer().getPluginManager().registerEvents(chandler, this);
 
-		Bukkit.getScheduler().runTaskTimer(this, bossBarHandler, 20L, 20L);
-		Bukkit.getScheduler().runTaskTimer(this, new TabHandler(), 0, 10);
+		getServer().getScheduler().runTaskTimer(this, bossBarHandler, 20L, 20L);
 
 		new CommandRegistrar().register();
 
@@ -131,79 +128,53 @@ public class FoxtrotPlugin extends JavaPlugin {
 		kitHandler = new KitHandler();
 		kitHandler.loadKits();
 
+        getServer().getPluginManager().registerEvents(new AlphaMapListener(), this);
+        getServer().getPluginManager().registerEvents(new BorderListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
+        getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
+        getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
+        getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new EnderpearlListener(), this);
+        getServer().getPluginManager().registerEvents(new EndListener(), this);
+        getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
+        getServer().getPluginManager().registerEvents(new FoxListener(), this);
+        getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
         getServer().getPluginManager().registerEvents(new KOTHListener(), this);
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
-        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
-        getServer().getPluginManager().registerEvents(new EndListener(), this);
-        getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
-        getServer().getPluginManager().registerEvents(new FoxListener(), this);
+        getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
+        getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new RoadListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnListener(), this);
+        getServer().getPluginManager().registerEvents(new TeamListener(), this);
 
         getServer().getPluginManager().registerEvents(new Subclaim(), this);
         getServer().getPluginManager().registerEvents(new Claim(), this);
 
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			playtimeMap.playerJoined(p);
-			NametagManager.sendPacketsInitialize(p);
+		for (Player player : getServer().getOnlinePlayers()) {
+			playtimeMap.playerJoined(player);
 
-			NametagManager.reloadPlayer(p);
+			NametagManager.sendPacketsInitialize(player);
+			NametagManager.reloadPlayer(player);
 
-			p.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
-
+			player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
 		}
 
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
 
+            // No sign GUI when placing death signs.
 			@Override
 			public void onPacketSending(PacketEvent event) {
-
 				WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
 				Player player = event.getPlayer();
 				Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
 
 				if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
 					event.setCancelled(true);
-
-				}
-
-			}
-		});
-		/*
-		 * ProtocolLibrary.getProtocolManager().addPacketListener(new
-		 * PacketAdapter(this, PacketType.Play.Server.PLAYER_INFO) {
-		 * 
-		 * @Override public void onPacketSending(PacketEvent event) {
-		 * 
-		 * String name = event.getPacket().getStrings().read(0);
-		 * 
-		 * if (!name.endsWith(" ")) { event.setCancelled(true); } else {
-		 * event.getPacket().getStrings().write(0, name); }
-		 * 
-		 * } });
-		 */
-		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
-			public void onPacketSending(PacketEvent event) {
-				try {
-					Player observer = event.getPlayer();
-					StructureModifier<Entity> entityModifer = event.getPacket().getEntityModifier(observer.getWorld());
-					org.bukkit.entity.Entity entity = entityModifer.read(0);
-					if (entity != null && observer != entity && entity instanceof LivingEntity && !(entity instanceof EnderDragon || entity instanceof Wither) && (entity.getPassenger() == null || entity.getPassenger() != observer)) {
-						event.setPacket(event.getPacket().deepClone());
-						StructureModifier<List<WrappedWatchableObject>> watcher = event.getPacket().getWatchableCollectionModifier();
-						for (WrappedWatchableObject watch : watcher.read(0)) {
-							if (watch.getIndex() == 6) {
-								if ((Float) watch.getValue() > 0) {
-									watch.setValue(RANDOM.nextInt((int) ((Damageable) entity).getMaxHealth()) + new Random().nextFloat());
-								}
-							}
-						}
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
+
 		});
 
 		MountainHandler.load();
@@ -211,20 +182,18 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			playtimeMap.playerQuit(p);
-			NametagManager.getTeamMap().remove(p.getName());
-			NametagManager.cleanupTeams(p);
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			playtimeMap.playerQuit(player);
 
-			p.setMetadata("loggedout", new FixedMetadataValue(this, true));
-			p.removeMetadata("subTitle", this);
+			NametagManager.getTeamMap().remove(player.getName());
+			NametagManager.cleanupTeams(player);
 
+			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
 
 		for (String str : Kit.getEquippedKits().keySet()) {
-			Player p = Bukkit.getPlayerExact(str);
-
-			Kit.getEquippedKits().get(str).remove(p);
+			Player player = getServer().getPlayerExact(str);
+			Kit.getEquippedKits().get(str).remove(player);
 		}
 
 		RedisSaveTask.getInstance().save();
@@ -271,6 +240,15 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         fishingKitMap = new FishingKitMap();
         fishingKitMap.loadFromRedis();
+
+        soulboundLivesMap = new SoulboundLivesMap();
+        soulboundLivesMap.loadFromRedis();
+
+        friendLivesMap = new FriendLivesMap();
+        friendLivesMap.loadFromRedis();
+
+        transferableLivesMap = new TransferableLivesMap();
+        transferableLivesMap.loadFromRedis();
 	}
 
     public List<String> getConsoleLog(){
@@ -294,11 +272,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         return log;
     }
 
-	/**
-	 * Singleton instance getter
-	 * 
-	 * @return instance
-	 */
 	public static FoxtrotPlugin getInstance() {
 		return instance;
 	}

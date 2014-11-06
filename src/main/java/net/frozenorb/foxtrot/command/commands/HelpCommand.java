@@ -7,6 +7,7 @@ public class HelpCommand {
 
     @Command(names={ "Help" }, permissionNode="")
     public static void help(Player sender) {
+        // ALPHA
         sender.sendMessage("§eWelcome to Operation Foxtrot Alpha Testing! Please contact an admin for help.");
     }
 

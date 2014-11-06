@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
+package net.frozenorb.foxtrot.command.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
  */
 public class ForceLeave {
 
-    @Command(names={ "team forceleave", "t forceleave", "f forceleave", "faction forceleave", "fac forceleave" }, permissionNode="")
-    public static void teamForceLeave(Player player) {
+    @Command(names={ "forceleave" }, permissionNode="op")
+    public static void forceLeave(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         if (team == null) {

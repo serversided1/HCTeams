@@ -329,22 +329,22 @@ public class VisualClaim implements Listener {
 
 			Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName());
 
-			if (t.getClaims().size() >= t.getMaxClaimAmount()) {
+			if (!bypass && t.getClaims().size() >= t.getMaxClaimAmount()) {
 				p.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + t.getMaxClaimAmount());
 				return;
 			}
 
-			if (!t.isCaptain(p.getName()) && !t.isOwner(p.getName())) {
+			if (!bypass && !t.isCaptain(p.getName()) && !t.isOwner(p.getName())) {
 				p.sendMessage(ChatColor.RED + "Only team captains can claim land.");
 				return;
 			}
 
-			if (t.getBalance() < price) {
+			if (!bypass && t.getBalance() < price) {
 				p.sendMessage(ChatColor.RED + "Your team does not have enough money to do this!");
 				return;
 			}
 
-            if (t.isRaidable()) {
+            if (!bypass && t.isRaidable()) {
                 p.sendMessage(ChatColor.RED + "You cannot claim land while raidable.");
                 return;
             }

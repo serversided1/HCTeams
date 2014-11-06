@@ -10,8 +10,9 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
+import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
-import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.TeamLocationType;
@@ -51,6 +52,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
+
+    // NEXT MAP //
 	public static final int WARZONE_RADIUS = 750;
 
     // NEXT MAP //
@@ -238,6 +241,10 @@ public class ServerHandler {
 
 	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
+            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
+                FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+            }
+
 			player.teleport(to);
 			return;
 		}
@@ -266,7 +273,7 @@ public class ServerHandler {
 		}
 
         // Disallow warping while on enderpearl cooldown.
-		if (FoxListener.getEnderpearlCooldown().containsKey(player.getName()) && FoxListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
+		if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
 			player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
 			return;
 		}
@@ -304,8 +311,8 @@ public class ServerHandler {
 		}
 
         // Remove their PvP timer.
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
-            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), System.currentTimeMillis());
+        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
+            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
         }
 
 		if (type == TeamLocationType.HOME) {
@@ -392,24 +399,6 @@ public class ServerHandler {
         return (int) Math.min(max, ban);
     }
 
-	public int getLives(String name) {
-		return 0;
-	}
-
-	public void setLives(String name, int lives) {
-
-	}
-
-	public void revivePlayer(String name) {
-		FoxtrotPlugin.getInstance().getDeathbanMap().updateValue(name, 0L);
-	}
-
-	/**
-	 * Disables a player from attacking for 10 seconds
-	 *
-	 * @param p
-	 *            the player to disable
-	 */
 	public void disablePlayerAttacking(final Player p, int seconds) {
 		if (seconds == 10) {
 			p.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
@@ -561,10 +550,10 @@ public class ServerHandler {
 				removeItem(p, it, amountInInventory);
 				p.updateInventory();
 
-                // - ALPHA EDIT -
+                // ALPHA
                 totalPrice *= 4;
                 p.sendMessage(ChatColor.GOLD + "Sold for 4x as much (Alpha stage).");
-                // - END ALPHA EDIT -
+                // ALPHA
 
 				Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
 

@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.armor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.kits.Archer;
+import net.frozenorb.foxtrot.armor.kits.Bard;
 import net.frozenorb.foxtrot.armor.kits.Miner;
 import net.frozenorb.foxtrot.armor.kits.Rogue;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ public class KitHandler {
 
 	public void loadKits() {
         kits.add(new Archer());
-        //kits.add(new Bard());
+        kits.add(new Bard());
         kits.add(new Miner());
         kits.add(new Rogue());
 

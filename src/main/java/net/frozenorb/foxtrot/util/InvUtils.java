@@ -38,11 +38,7 @@ public class InvUtils {
 		for (Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
 
 			if (item != null && item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
-				if (entry.getValue() == -1) {
-					item.addEnchantment(Enchantment.DURABILITY, entry.getValue());
-				} else {
-					item.addEnchantment(entry.getKey(), entry.getValue());
-				}
+                item.addEnchantment(entry.getKey(), entry.getValue());
 			}
 		}
 	}

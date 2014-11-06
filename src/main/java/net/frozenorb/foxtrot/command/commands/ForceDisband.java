@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
+package net.frozenorb.foxtrot.command.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
  */
 public class ForceDisband {
 
-    @Command(names={ "team forcedisband", "t forcedisband", "f forcedisband", "faction forcedisband", "fac forcedisband" }, permissionNode="")
-    public static void teamForceDisband(Player sender, @Param(name="team") Team target) {
+    @Command(names={ "forcedisband" }, permissionNode="op")
+    public static void forceDisband(Player sender, @Param(name="team") Team target) {
         for (Player online : target.getOnlineMembers()) {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force-disbanded the team.");
         }

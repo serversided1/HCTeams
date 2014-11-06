@@ -94,7 +94,7 @@ public class Miner extends Kit implements Listener {
 
 	@Override
 	public String getName() {
-		return "Miner";
+		return ("Miner");
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class Miner extends Kit implements Listener {
 
 	@Override
 	public int getWarmup() {
-		return 10;
+		return (10);
 	}
 
     @EventHandler

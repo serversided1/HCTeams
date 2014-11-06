@@ -67,9 +67,11 @@ public class Team {
 	}
 
 	public void setDtr(double newDTR) {
-        FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
-        this.dtr = newDTR;
-		setChanged(true);
+        if (dtr != newDTR) {
+            FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+            this.dtr = newDTR;
+            setChanged(true);
+        }
 	}
 
 	public void setFriendlyName(String friendlyName) {
@@ -295,18 +297,13 @@ public class Team {
 	public void playerDeath(String p, double dtrLoss) {
         double newDTR = Math.max(dtr - dtrLoss, -.99);
 
-        ChatColor dtrColor = ChatColor.GREEN;
-
-        if (dtr / getMaxDTR() <= 0.25) {
-            if (isRaidable()) {
-                dtrColor = ChatColor.DARK_RED;
-            } else {
-                dtrColor = ChatColor.YELLOW;
-            }
-        }
-
         for (Player player : getOnlineMembers()) {
-            player.sendMessage(ChatColor.YELLOW + "DTR: " + dtrColor + DTR_FORMAT.format(newDTR));
+            player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
+            player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+
+            if (newDTR < 0) {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.RED + "You are raidable NOW!");
+            }
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
@@ -491,7 +488,8 @@ public class Team {
 		teamString.append("Claims:").append(claims.toString()).append('\n');
 
 		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
-		j.disconnect();
+        // What does this do?
+		//j.disconnect();
 	}
 
 	public int getMaxClaimAmount() {

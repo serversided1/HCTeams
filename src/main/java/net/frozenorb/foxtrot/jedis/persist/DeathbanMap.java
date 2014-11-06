@@ -39,7 +39,7 @@ public class DeathbanMap extends RedisPersistMap<Long> {
 	}
 
 	public void deathban(String player, long seconds) {
-		updateValue(player.toLowerCase(), System.currentTimeMillis() + seconds * 1000);
+		updateValue(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
 	}
 
 }

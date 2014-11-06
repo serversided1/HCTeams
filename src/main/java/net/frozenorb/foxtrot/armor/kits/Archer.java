@@ -44,7 +44,6 @@ public class Archer extends Kit {
     public void remove(Player p) {
         p.removePotionEffect(PotionEffectType.SPEED);
         p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2), true);
-
     }
 
     @Override
@@ -84,6 +83,12 @@ public class Archer extends Kit {
 
             if (a.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) a.getMetadata("firedLoc").get(0).value();
+                boolean intoEvent = FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getEntity().getLocation()) != FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(firedFrom);
+
+                if (intoEvent) {
+                    firedFrom.setY(e.getEntity().getLocation().getY());
+                }
+
                 double range = firedFrom.distance(e.getEntity().getLocation());
                 double mod = getMultiplier(range);
 
@@ -95,16 +100,11 @@ public class Archer extends Kit {
                     ((Player) e.getEntity()).sendMessage("§eReduced §9Incoming Arrow Damage");
                 }
 
-                // No mod when shooting into a KOTH.
-                if (FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getEntity().getLocation())) {
-                    mod = 1F;
-                }
-
                 Player p = (Player) a.getShooter();
                 double perc = mod * 100D;
                 perc = Math.round(10.0 * perc) / 10.0;
 
-                e.setDamage(Math.min(MAX_FINAL_DAMAGE, e.getDamage() * mod));
+                e.setDamage(Math.min(intoEvent ? MAX_FINAL_DAMAGE / 2 : MAX_FINAL_DAMAGE, e.getDamage() * mod));
 
                 /*if (((Player) e.getEntity()).getHealth() > (((Player) e.getEntity()).getMaxHealth() - 4)) {
                     if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation())) {
@@ -119,11 +119,7 @@ public class Archer extends Kit {
                     ((Player) e.getEntity()).setHealth(Math.min(((Player) e.getEntity()).getMaxHealth() - (perc / 100), 4));
                 }*/
 
-                if (!FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(e.getEntity().getLocation())) {
-                    p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
-                } else {
-                    p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output §cNormalized (KOTH Zone)");
-                }
+                p.sendMessage("§e[§9Arrow Range§e (§c" + (int) range + "§e)] Damage Output => §9§l" + perc + "%");
             }
         }
     }

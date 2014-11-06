@@ -56,7 +56,6 @@ public class Kick {
                     NametagManager.reloadPlayer(bukkitPlayer);
                     NametagManager.sendTeamsToPlayer(bukkitPlayer);
                 }
-
             } else {
                 sender.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");
             }

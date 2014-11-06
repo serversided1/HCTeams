@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.server.SpawnTag;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
@@ -15,7 +14,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -28,11 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class EndListener implements Listener {
 
     public static boolean endActive = true;
-    private HashMap<String, Long> msgCooldown = new HashMap<>();
+    private Map<String, Long> msgCooldown = new HashMap<>();
 
     // Display a message and give the killer the egg (when the dragon is killed)
 	@EventHandler
@@ -126,20 +125,6 @@ public class EndListener implements Listener {
         }
     }
 
-    // Disallow clicking fence gates
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.FENCE_GATE) {
-            if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
-                if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
-                    return;
-                }
-
-                event.setCancelled(true);
-            }
-        }
-    }
-
     // Cancel the exit portal being spawned when the dragon is killed.
     @EventHandler
     public void onCreatePortal(EntityCreatePortalEvent event) {
@@ -189,7 +174,7 @@ public class EndListener implements Listener {
             }
 
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
-            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
+            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
@@ -203,12 +188,13 @@ public class EndListener implements Listener {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "The End is currently in beta and will be publicly released soon.");
+                    event.getPlayer().sendMessage(ChatColor.RED + "The End is currently disabled.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
             }
         }
 
+        // Remove Strength II
         if (event.getPlayer().hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
             boolean found = false;
 

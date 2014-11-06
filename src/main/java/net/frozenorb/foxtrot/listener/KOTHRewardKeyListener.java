@@ -25,73 +25,90 @@ public class KOTHRewardKeyListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null && event.getItem() != null && event.getClickedBlock().getType() == Material.ENDER_CHEST && FoxtrotPlugin.getInstance().getServerHandler().isOverworldSpawn(event.getClickedBlock().getLocation())) {
-            if (InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
-                int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
+        if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation()) || !InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
+            return;
+        }
 
-                event.setCancelled(true);
-                event.getPlayer().setItemInHand(null);
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
+        event.setCancelled(true);
 
-                Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, tier + 3);
+        int open = 0;
 
-                if (block.getType() == Material.CHEST) {
-                    Chest chest = (Chest) block.getState();
-                    ItemStack[] lootTables = chest.getBlockInventory().getContents();
-                    List<ItemStack> loot = new ArrayList<ItemStack>();
-                    int given = 0;
-                    int tries = 0;
-
-                    while (given < 5 && tries < 500) {
-                        tries++;
-
-                        ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
-
-                        if (chosenItem == null || chosenItem.getType() == Material.AIR) {
-                            continue;
-                        }
-
-                        given++;
-
-                        if (chosenItem.getAmount() > 1) {
-                            ItemStack targetClone = chosenItem.clone();
-
-                            targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosenItem.getAmount()));
-                            loot.add(targetClone);
-                        } else {
-                            loot.add(chosenItem);
-                        }
-                    }
-
-                    StringBuilder builder = new StringBuilder();
-
-                    for (ItemStack itemStack : loot) {
-                        String displayName = itemStack.getItemMeta().hasDisplayName() ? ChatColor.RED.toString() + ChatColor.ITALIC + ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()) : ChatColor.BLUE.toString() + itemStack.getAmount() + "x " + ChatColor.YELLOW + WordUtils.capitalize(itemStack.getType().name().replace("_", " ").toLowerCase());
-
-                        builder.append(ChatColor.YELLOW).append(displayName).append(ChatColor.GOLD).append(", ");
-                    }
-
-                    if (builder.length() > 2) {
-                        builder.setLength(builder.length() - 2);
-                    }
-
-                    new BukkitRunnable() {
-
-                        public void run() {
-                            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a level " + tier + " key obtained from " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + ".");
-                            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Loot: " + builder.toString());
-
-                            for (ItemStack lootItem : loot) {
-                                event.getPlayer().getInventory().addItem(lootItem);
-                            }
-
-                            event.getPlayer().updateInventory();
-                        }
-
-                    }.runTaskLater(FoxtrotPlugin.getInstance(), 20 * 5L);
-                }
+        for (ItemStack itemStack : event.getPlayer().getInventory().getContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                open++;
             }
         }
+
+        if (open < 5) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You must have at least 5 open slots to use a KOTH reward key!");
+            return;
+        }
+
+        int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
+
+        event.getPlayer().setItemInHand(null);
+        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
+
+        Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, tier + 3);
+
+        if (block.getType() != Material.CHEST) {
+            return;
+        }
+
+        Chest chest = (Chest) block.getState();
+        ItemStack[] lootTables = chest.getBlockInventory().getContents();
+        List<ItemStack> loot = new ArrayList<ItemStack>();
+        int given = 0;
+        int tries = 0;
+
+        while (given < 5 && tries < 500) {
+            tries++;
+
+            ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
+
+            if (chosenItem == null || chosenItem.getType() == Material.AIR) {
+                continue;
+            }
+
+            given++;
+
+            if (chosenItem.getAmount() > 1) {
+                ItemStack targetClone = chosenItem.clone();
+
+                targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosenItem.getAmount()));
+                loot.add(targetClone);
+            } else {
+                loot.add(chosenItem);
+            }
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (ItemStack itemStack : loot) {
+            String displayName = itemStack.getItemMeta().hasDisplayName() ? ChatColor.RED.toString() + ChatColor.ITALIC + ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()) : ChatColor.BLUE.toString() + itemStack.getAmount() + "x " + ChatColor.YELLOW + WordUtils.capitalize(itemStack.getType().name().replace("_", " ").toLowerCase());
+
+            builder.append(ChatColor.YELLOW).append(displayName).append(ChatColor.GOLD).append(", ");
+        }
+
+        if (builder.length() > 2) {
+            builder.setLength(builder.length() - 2);
+        }
+
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 3) + ChatColor.YELLOW + ".");
+
+        new BukkitRunnable() {
+
+            public void run() {
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " obtained " + builder.toString() + ChatColor.GOLD + "," + ChatColor.YELLOW + " from a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + ".");
+
+                for (ItemStack lootItem : loot) {
+                    event.getPlayer().getInventory().addItem(lootItem);
+                }
+
+                event.getPlayer().updateInventory();
+            }
+
+        }.runTaskLater(FoxtrotPlugin.getInstance(), 20 * 5L);
     }
 
 }

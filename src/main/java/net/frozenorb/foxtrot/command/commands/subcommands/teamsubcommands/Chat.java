@@ -21,6 +21,8 @@ public class Chat {
             chat = "team";
         } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public")){
             chat = "public";
+        } else {
+            chat = null;
         }
 
         setChat(sender, chat);

@@ -11,12 +11,14 @@ import org.bukkit.scoreboard.*;
  * Created by chasechocolate.
  */
 public class FoxtrotBoard {
-    public static final String OBJECTIVE_NAME = "HCTeams";
+
+    // NEXT MAP
+    //public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Map #]";
+    // ALPHA
     public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Alpha]";
 
     @Getter
     private Player player;
-
     @Getter
     private Objective obj;
 
@@ -25,7 +27,7 @@ public class FoxtrotBoard {
 
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        obj = board.registerNewObjective(OBJECTIVE_NAME, "dummy");
+        obj = board.registerNewObjective("HCTeams", "dummy");
         obj.setDisplayName(SCOREBOARD_TITLE);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -34,18 +36,18 @@ public class FoxtrotBoard {
     }
 
     public void update(){
-        if(!(player.isOnline())){
+        if (!(player.isOnline())) {
             return;
         }
 
         int scores = 0;
         int nextVal = 14;
 
-        for(ScoreGetter getter : ScoreGetter.SCORES){
+        for (ScoreGetter getter : ScoreGetter.SCORES) {
             String title = getter.getTitle(player);
             long millis = getter.getMillis(player);
 
-            if(millis == ScoreGetter.NO_SCORE){
+            if (millis == ScoreGetter.NO_SCORE) {
                 removeTeam(title);
                 obj.getScoreboard().resetScores(title);
             } else {
@@ -58,7 +60,7 @@ public class FoxtrotBoard {
             }
         }
 
-        if(scores > 0){
+        if (scores > 0) {
             obj.getScore(ChatColor.RESET + " ").setScore(15);
         } else {
             obj.getScoreboard().resetScores(ChatColor.RESET + " ");
@@ -69,15 +71,14 @@ public class FoxtrotBoard {
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
-        if(team == null){
+        if (team == null) {
             team = obj.getScoreboard().registerNewTeam(name);
         }
-
 
         String time;
         double secs = (millis / 1000.0D);
 
-        if(secs >= 60){
+        if (secs >= 60) {
             time = TimeUtils.getMMSS((int) secs);
         } else {
             time = Math.round(10.0D * secs) / 10.0D + "s";
@@ -85,15 +86,17 @@ public class FoxtrotBoard {
 
         //team.setPrefix("» "); //Do we want this?
         team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
-        return team;
+
+        return (team);
     }
 
-    private void removeTeam(String title){
+    private void removeTeam(String title) {
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
-        if(team != null){
+        if (team != null) {
             team.unregister();
         }
     }
+
 }

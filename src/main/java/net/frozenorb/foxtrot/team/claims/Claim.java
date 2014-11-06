@@ -16,7 +16,7 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class Claim implements Iterable<Coordinate> {
 	int x1, y1, z1, x2, y2, z2;
-
+    SpecialTag tag;
 	String name;
 
 	public Claim(Location corner1, Location corner2) {
@@ -61,8 +61,7 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
-        //ALPHA ONLY - REMOVE THIS LINE
-        //HALF PRICE CLAIMS
+        // ALPHA
         curPrice /= 2.0D;
 
         return (int) curPrice;
@@ -336,5 +335,10 @@ public class Claim implements Iterable<Coordinate> {
 		}
 
 	}
+
+    public static enum SpecialTag {
+        SPAWN,
+        KOTH
+    }
 
 }

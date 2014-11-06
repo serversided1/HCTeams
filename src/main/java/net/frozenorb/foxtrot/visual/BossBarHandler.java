@@ -41,6 +41,7 @@ public class BossBarHandler implements Runnable {
 				((CraftPlayer) p).getHandle().playerConnection.sendPacket(pac);
 				return;
 			}
+
 			spawnNewPlate(p, msg);
 		}
 	}
@@ -114,4 +115,5 @@ public class BossBarHandler implements Runnable {
 		PacketPlayOutSpawnEntityLiving mobPacket = getMobPacket(player, text, player.getLocation());
 		sendPacket(player, mobPacket);
 	}
+
 }

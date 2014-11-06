@@ -66,8 +66,8 @@ public enum Region {
 
 	KOTH_ARENA(true, "", (e) -> {
 		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
-			e.setTo(e.getFrom());
-			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the KOTH arena with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a KOTH arena with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+            e.setTo(e.getFrom());
 			return false;
 		}
 
@@ -89,7 +89,6 @@ public enum Region {
 		if (ownerTo == null || !ownerTo.isMember(e.getPlayer())) {
 			if (e.getPlayer().getInventory().contains(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND)) {
 				e.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-
 				e.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND);
 			}
 		}
@@ -99,6 +98,7 @@ public enum Region {
 			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter claims with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
 			return false;
 		}
+
 		return true;
 	});
 
