@@ -6,6 +6,8 @@ import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.command.objects.*;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -156,6 +158,67 @@ public class CommandHandler implements Listener {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
                         completions.add(player.getName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
+
+        registerTransformer(OfflinePlayer.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                if (source.equalsIgnoreCase("self") || source.equals("")) {
+                    return (sender);
+                }
+
+                return (FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(source));
+            }
+
+        });
+
+        registerTabCompleter(OfflinePlayer.class, new ParamTabCompleter() {
+
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
+                        completions.add(player.getName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
+
+        registerTransformer(World.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                World world = FoxtrotPlugin.getInstance().getServer().getWorld(source);
+
+                if (world == null) {
+                    sender.sendMessage(ChatColor.RED + "No world with the name " + source + " found.");
+                    return (null);
+                }
+
+                return (world);
+            }
+
+        });
+
+        registerTabCompleter(World.class, new ParamTabCompleter() {
+
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
+                    if (StringUtils.startsWithIgnoreCase(world.getName(), source)) {
+                        completions.add(world.getName());
                     }
                 }
 

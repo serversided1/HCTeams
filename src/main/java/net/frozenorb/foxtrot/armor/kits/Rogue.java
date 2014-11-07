@@ -141,8 +141,8 @@ public class Rogue extends Kit {
 					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
 					e.setDamage(0D);
-					victim.setHealth(Math.max(0.5D, victim.getHealth() - 7D));
                     DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
+					victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
 					
 					addCooldown(damager, getCooldownSeconds());
 				} else {

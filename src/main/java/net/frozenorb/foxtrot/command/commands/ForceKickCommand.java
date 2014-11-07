@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by macguy8 on 11/5/2014.
  */
-public class ForceKick {
+public class ForceKickCommand {
 
     @Command(names={ "forcekick" }, permissionNode="op")
     public static void forceKick(Player player, @Param(name="Player") String name) {

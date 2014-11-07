@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Mute;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.ShadowMute;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class ChatListener implements Listener {
         }
 
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? ChatColor.DARK_PURPLE + "[HighRoller]" : "";
 
         if (team == null) {
             if (Mute.factionMutes.containsKey(event.getPlayer().getName())) {
@@ -33,11 +35,11 @@ public class ChatListener implements Listener {
                 return;
             }
 
-            event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+            event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
             return;
         }
 
-        event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+        event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
 
         Set<String> members = team.getMembers();
         boolean doTeamChat = event.getMessage().startsWith("@");
@@ -56,6 +58,7 @@ public class ChatListener implements Listener {
                 }
             }
 
+            FactionActionTracker.logAction(team, "chat", event.getPlayer().getName() + ": " + event.getMessage());
             FoxtrotPlugin.getInstance().getServer().getLogger().info("[TeamChat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
             return;
         }

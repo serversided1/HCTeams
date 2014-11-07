@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -22,13 +23,17 @@ public class ShadowMute {
     public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason") String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
-        for (Player player : target.getOnlineMembers()) {
-            factionShadowMutes.put(player.getName(), target.getFriendlyName());
+        for (String player : target.getMembers()) {
+            factionShadowMutes.put(player, target.getFriendlyName());
         }
+
+        FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
+                FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute expired.");
+
                 Iterator<java.util.Map.Entry<String, String>> mutesIterator = factionShadowMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
@@ -47,6 +52,7 @@ public class ShadowMute {
 
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnShadowmuteFaction(Player sender, @Param(name="team") final Team target) {
+        FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute removed. [Unmuted by: " + sender.getName() + "]");
         Iterator<java.util.Map.Entry<String, String>> mutesIterator = factionShadowMutes.entrySet().iterator();
 
         while (mutesIterator.hasNext()) {

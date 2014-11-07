@@ -5,10 +5,12 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
 import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
@@ -68,10 +70,14 @@ public class ServerHandler {
 	@Getter private HashMap<String, Long> fHomeCooldown = new HashMap<String, Long>();
 
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
+    @Getter private HashSet<String> highRollers = new HashSet<String>();
+
+    @Getter @Setter private boolean EOTW = false;
 
 	public ServerHandler() {
 		try {
 			File f = new File("usedNames.json");
+
 			if (!f.exists()) {
 				f.createNewFile();
 			}
@@ -83,18 +89,53 @@ public class ServerHandler {
 					usedNames.add((String) o);
 				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
+
+        try {
+            File f = new File("highRollers.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
+
+            if (dbo != null) {
+                for (Object o : (BasicDBList) dbo.get("names")) {
+                    highRollers.add((String) o);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        new BukkitRunnable() {
+
+            public void run() {
+                StringBuilder highRollers = new StringBuilder();
+
+                for (String highRoller : FoxtrotPlugin.getInstance().getServerHandler().getHighRollers()) {
+                    highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
+                }
+
+                if (highRollers.length() > 2) {
+                    highRollers.setLength(highRollers.length() - 2);
+                }
+
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
+            }
+
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
 
 		loadEnchantments();
 	}
 
 	public void save() {
-
 		try {
 			File f = new File("usedNames.json");
+
 			if (!f.exists()) {
 				f.createNewFile();
 			}
@@ -108,12 +149,29 @@ public class ServerHandler {
 
 			dbo.put("names", list);
 			FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
-
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
+        try {
+            File f = new File("highRollers.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+
+            BasicDBObject dbo = new BasicDBObject();
+            BasicDBList list = new BasicDBList();
+
+            for (String n : highRollers) {
+                list.add(n);
+            }
+
+            dbo.put("names", list);
+            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 	public boolean isBannedPotion(int value) {
@@ -239,13 +297,13 @@ public class ServerHandler {
         return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
 	}
 
-	public void beginWarp(final Player player, final Location to, int price, TeamLocationType type) {
+	public void beginWarp(final Player player, final Team team, int price, TeamLocationType type) {
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
             if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
                 FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
             }
 
-			player.teleport(to);
+			player.teleport(team.getHq());
 			return;
 		}
 
@@ -323,7 +381,8 @@ public class ServerHandler {
 			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
 		}
 
-		player.teleport(to);
+        FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
+		player.teleport(team.getHq());
 	}
 
 	public boolean isUnclaimed(Location loc) {
@@ -375,7 +434,11 @@ public class ServerHandler {
         return (1F);
     }
 
-    public int getDeathBanAt(String playerName, Location loc){
+    public int getDeathBanAt(String playerName, Location loc) {
+        if (isEOTW()) {
+            return ((int) TimeUnit.DAYS.toSeconds(10));
+        }
+
         Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
@@ -630,6 +693,27 @@ public class ServerHandler {
         deathsign.setItemMeta(meta);
 
         return (deathsign);
+    }
+
+    public ItemStack generateKOTHSign(String koth, String capper) {
+        ItemStack kothsign = new ItemStack(Material.SIGN);
+        ItemMeta meta = kothsign.getItemMeta();
+
+        ArrayList<String> lore = new ArrayList<String>();
+
+        lore.add("§4" + koth);
+        lore.add("§eCaptured By:");
+        lore.add("§a" + capper);
+
+        DateFormat sdf = new SimpleDateFormat("M/d HH:mm:ss");
+
+        lore.add(sdf.format(new Date()).replace(" AM", "").replace(" PM", ""));
+
+        meta.setLore(lore);
+        meta.setDisplayName("§dKOTH Capture Sign");
+        kothsign.setItemMeta(meta);
+
+        return (kothsign);
     }
 
 	private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();

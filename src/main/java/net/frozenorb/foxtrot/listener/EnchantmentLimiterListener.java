@@ -191,9 +191,11 @@ public class EnchantmentLimiterListener implements Listener {
             List<String> lore = new ArrayList<String>();
             boolean hasForgedMeta = false;
 
-            for (String s : meta.getLore()) {
-                if (s.toLowerCase().contains("forged")) {
-                    hasForgedMeta = true;
+            if (meta.hasLore()) {
+                for (String s : meta.getLore()) {
+                    if (s.toLowerCase().contains("forged")) {
+                        hasForgedMeta = true;
+                    }
                 }
             }
 
@@ -208,6 +210,7 @@ public class EnchantmentLimiterListener implements Listener {
             meta.setLore(lore);
             item.setItemMeta(meta);
 
+            event.setCurrentItem(item);
             FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().add(displayName);
             FoxtrotPlugin.getInstance().getServerHandler().save();
         }

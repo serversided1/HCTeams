@@ -18,20 +18,15 @@ public class LandBoard {
 	}
 
 	private HashMap<Claim, Team> boardMap = new HashMap<Claim, Team>();
-	private Map<Claim, Team> backedSyncMap = Collections.synchronizedMap(boardMap);
 
 	public void loadFromTeams() {
 		for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
 			for (Claim cc : team.getClaims()) {
-				System.out.println(cc.getFriendlyName() + "");
-				System.out.println(team.getName());
 				boardMap.put(cc, team);
 			}
-
 		}
-		updateSync(null);
 
-		System.out.println("LandBoard has been successfully loaded!");
+		updateSync(null);
 	}
 
 	public Claim getClaimAt(Location loc) {
@@ -62,7 +57,6 @@ public class LandBoard {
 	}
 
 	public void updateSync(Claim modified) {
-
 		ArrayList<VisualClaim> vcs = new ArrayList<VisualClaim>();
 		vcs.addAll(VisualClaim.getCurrentMaps().values());
 
@@ -86,10 +80,7 @@ public class LandBoard {
 	}
 
 	public synchronized Set<Claim> getClaims() {
-		return backedSyncMap.keySet();
+		return boardMap.keySet();
 	}
 
-	public synchronized Map<Claim, Team> getBackedSyncMap() {
-		return backedSyncMap;
-	}
 }

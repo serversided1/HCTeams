@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by chasechocolate.
  */
-public class ForceDisband {
+public class ForceDisbandCommand {
 
     @Command(names={ "forcedisband" }, permissionNode="op")
     public static void forceDisband(Player sender, @Param(name="team") Team target) {

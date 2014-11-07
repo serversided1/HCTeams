@@ -26,6 +26,11 @@ public class DeathbanListener implements Listener {
             Long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getValue(event.getPlayer().getName());
             long left = unbannedOn - System.currentTimeMillis();
 
+            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                event.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are death-banned for the remainder of the map.");
+                return;
+            }
+
             event.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You are death-banned for another " + TimeUtils.getDurationBreakdown(left) + ".");
         }
     }
@@ -42,10 +47,14 @@ public class DeathbanListener implements Listener {
             @Override
             public void run() {
                 event.getEntity().teleport(event.getEntity().getLocation().add(0, 100, 0));
-                event.getEntity().kickPlayer("§c" + event.getDeathMessage() + "\n§cCome back in " + time + "!");
 
+                if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                    event.getEntity().kickPlayer("§c" + event.getDeathMessage() + "\n§cCome back tomorrow for SOTW!");
+                } else {
+                    event.getEntity().kickPlayer("§c" + event.getDeathMessage() + "\n§cCome back in " + time + "!");
+                }
             }
-        }, 2L);
+        }, 5L);
     }
 
 }

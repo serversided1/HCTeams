@@ -18,8 +18,10 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -44,9 +46,13 @@ public class PotionLimiterListener implements Listener {
         }
 
         if (event.getPotion().getShooter() instanceof Player) {
-            if (Arrays.asList(FoxListener.DEBUFFS).contains(event.getPotion().getEffects().iterator().next().getType())) {
-                if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
-                    SpawnTag.applyTag((Player) event.getPotion().getShooter());
+            Iterator<PotionEffect> iterator = event.getPotion().getEffects().iterator();
+
+            if (iterator.hasNext()) {
+                if (Arrays.asList(FoxListener.DEBUFFS).contains(iterator.next().getType())) {
+                    if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
+                        SpawnTag.applyTag((Player) event.getPotion().getShooter());
+                    }
                 }
             }
         }

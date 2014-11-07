@@ -2,11 +2,9 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,8 +12,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Arrays;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -32,7 +28,7 @@ public class CrowbarListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
 
             if (team != null && !team.isMember(event.getPlayer())) {
@@ -136,72 +132,6 @@ public class CrowbarListener implements Listener {
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Crowbars can only break end portals and mob spawners!");
             event.setCancelled(true);
-        }
-
-        if (event.getClickedBlock() != null) {
-            if (event.getClickedBlock().getType() == Material.ENCHANTMENT_TABLE && event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                if (event.getItem() != null) {
-                    if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                        event.getItem().setType(Material.BOOK);
-                        event.getPlayer().sendMessage(ChatColor.GREEN + "You reverted this book to its original form!");
-                        event.setCancelled(true);
-                    }
-                }
-
-                return;
-            }
-
-            if (FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
-                return;
-            }
-
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
-
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation())) {
-                if (Arrays.asList(FoxListener.NO_INTERACT_WITH_SPAWN).contains(event.getMaterial()) || Arrays.asList(FoxListener.NO_INTERACT_IN_SPAWN).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                    event.setCancelled(true);
-                    FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
-                }
-            }
-
-            if (team != null && !team.isMember(event.getPlayer())) {
-                if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                    event.setCancelled(true);
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory.");
-                    FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
-                    return;
-                }
-
-                if (event.getAction() == Action.PHYSICAL) {
-                    event.setCancelled(true);
-                }
-            } else if (event.getMaterial() == Material.LAVA_BUCKET) {
-                if (team == null || !team.isMember(event.getPlayer())) {
-                    event.setCancelled(true);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You can only do this in your own claims!");
-                    return;
-                }
-            } else {
-                if (team != null && !team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
-                    Subclaim subClaim = team.getSubclaim(event.getClickedBlock().getLocation());
-
-                    if (subClaim != null && !subClaim.isMember(event.getPlayer().getName())) {
-                        if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                            event.setCancelled(true);
-                            event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + subClaim.getFriendlyColoredName() + "§e!");
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == 333) {
-            Block target = event.getClickedBlock();
-            if (target.getTypeId() != 8 && target.getTypeId() != 9) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You can only place a boat on water!");
-                event.setCancelled(true);
-            }
         }
     }
 

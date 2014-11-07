@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
@@ -47,7 +48,7 @@ public class Team {
 	@Getter private Set<String> captains = new HashSet<String>();
 
 	@Getter @Setter private boolean changed = false;
-	private boolean loading = false;
+	@Getter private boolean loading = false;
 
 	@Getter private Set<String> invitations = new HashSet<String>();
 	@Getter private BukkitRunnable runnable;
@@ -68,6 +69,15 @@ public class Team {
 
 	public void setDtr(double newDTR) {
         if (dtr != newDTR) {
+            if (dtr <= 0 && newDTR > 0) {
+                FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
+            }
+
+            if (Math.abs(newDTR - dtr) > 0.4) {
+                //FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
+            }
+
+            //FactionActionTracker.logAction(this, "actions", "DTR Change: " + dtr + " -> " + newDTR);
             FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
             this.dtr = newDTR;
             setChanged(true);
@@ -82,15 +92,18 @@ public class Team {
 	public void addMember(String member) {
 		changed = true;
 		members.add(member);
+        FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
 	}
 
 	public void addCaptain(String captain) {
 		changed = true;
 		captains.add(captain);
+        FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
 	}
 
 	public void removeCaptain(String name) {
 		Iterator<String> iter = captains.iterator();
+        FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
 
 		while (iter.hasNext()) {
 			if (iter.next().equalsIgnoreCase(name)) {
@@ -101,6 +114,7 @@ public class Team {
 
 	public void setOwner(String owner) {
 		changed = true;
+        FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
 		this.owner = owner;
 
         if (owner != null) {
@@ -109,6 +123,9 @@ public class Team {
 	}
 
 	public void setHQ(Location hq) {
+        String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
+        String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
+        FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
 		changed = true;
 		this.hq = hq;
 	}
@@ -163,6 +180,7 @@ public class Team {
 
 	public boolean removeMember(String name) {
 		changed = true;
+        FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
 
 		for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
 			if (iterator.next().equalsIgnoreCase(name)) {
@@ -296,6 +314,7 @@ public class Team {
 
 	public void playerDeath(String p, double dtrLoss) {
         double newDTR = Math.max(dtr - dtrLoss, -.99);
+        FactionActionTracker.logAction(this, "actions", "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
 
         for (Player player : getOnlineMembers()) {
             player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
@@ -310,6 +329,7 @@ public class Team {
         setDtr(newDTR);
 
 		if (isRaidable()) {
+            FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
 			raidableCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
 		}
 
@@ -330,7 +350,6 @@ public class Team {
         return (dtrPerMinute);
 	}
 
-    // What the hell is this doing. Seriously. What the hell.
 	public double getMaxDTR() {
 		return (DTRHandler.getMaxDTR(getSize()));
 	}
@@ -626,7 +645,7 @@ public class Team {
 
             if (getOnlineMemberAmount() == 0) {
                 // No players online.
-                dtrMsg += ChatColor.GRAY + "■";
+                dtrMsg += ChatColor.GRAY + "◀";
             } else {
                 if (DTRHandler.isRegenerating(this)) {
                     // Regenerating
@@ -637,7 +656,7 @@ public class Team {
                         dtrMsg += ChatColor.RED + "■";
                         showTimeUntilRegen = true;
                     } else {
-                        dtrMsg += ChatColor.GREEN + "■";
+                        dtrMsg += ChatColor.GREEN + "◀";
                     }
                 }
             }

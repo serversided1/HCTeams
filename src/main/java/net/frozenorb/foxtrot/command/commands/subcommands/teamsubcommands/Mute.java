@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -24,14 +25,23 @@ public class Mute {
     public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason") String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
-        for (Player player : target.getOnlineMembers()) {
-            factionMutes.put(player.getName(), target.getFriendlyName());
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction has been muted for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + " for " + reason + ".");
+        for (String player : target.getMembers()) {
+            factionMutes.put(player, target.getFriendlyName());
+
+            Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(player);
+
+            if (bukkitPlayer != null) {
+                bukkitPlayer.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction has been muted for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + " for " + reason + ".");
+            }
         }
+
+        FactionActionTracker.logAction(target, "actions", "Mute: Faction mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
+                FactionActionTracker.logAction(target, "actions", "Mute: Faction mute expired.");
+
                 Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
@@ -56,6 +66,7 @@ public class Mute {
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnmuteFaction(Player sender, @Param(name="team") final Team target) {
+        FactionActionTracker.logAction(target, "actions", "Mute: Faction mute removed. [Unmuted by: " + sender.getName() + "]");
         Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
 
         while (mutesIterator.hasNext()) {

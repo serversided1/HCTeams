@@ -136,7 +136,7 @@ public class CombatLoggerListener implements Listener {
 
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
 
-            if (team != null && !team.isMember(player.getName())) {
+            if (team != null && team.isMember(player.getName())) {
                 event.setCancelled(true);
             }
         }
@@ -179,7 +179,7 @@ public class CombatLoggerListener implements Listener {
 
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
             if (enemyWithinRange && !event.getPlayer().isDead()) {
-                String playerName = ChatColor.GREEN.toString() + event.getPlayer().getName();
+                String playerName = ChatColor.RED.toString() + event.getPlayer().getName();
 
                 ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
                 ItemStack[] inv = event.getPlayer().getInventory().getContents();

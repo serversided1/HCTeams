@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -43,6 +44,7 @@ public class Create {
                 sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
                 sender.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
 
+                FactionActionTracker.logAction(team, "actions", "Faction created. [Created by: " + sender.getName() + "]");
                 FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {
                 sender.sendMessage(ChatColor.GRAY + "That team already exists!");

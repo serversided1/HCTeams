@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by macguy8 on 10/31/2014.
  */
-public class ForceLeave {
+public class ForceLeaveCommand {
 
     @Command(names={ "forceleave" }, permissionNode="op")
     public static void forceLeave(Player player) {

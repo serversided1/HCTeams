@@ -80,7 +80,7 @@ public class ArrowTracker implements Listener {
 
     }
 
-    public class ArrowDamageByPlayer extends PlayerDamage {
+    public static class ArrowDamageByPlayer extends PlayerDamage {
 
         //***************************//
 
@@ -100,7 +100,7 @@ public class ArrowTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + " from " + ChatColor.BLUE + distance + " blocks" + ChatColor.YELLOW + ".");
+            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was shot by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
         }
 
         public double getDistance() {

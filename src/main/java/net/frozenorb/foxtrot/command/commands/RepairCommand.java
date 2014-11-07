@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class RepairCommand {
 
     @Command(names={ "Repair" }, permissionNode="foxtrot.repair")
-    public static void regen(Player sender) {
+    public static void repair(Player sender) {
         ItemStack inHand = sender.getItemInHand();
 
         if (inHand == null || inHand.getType() == Material.AIR) {

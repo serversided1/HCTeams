@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -35,8 +36,10 @@ public class Invite {
                     return;
                 }
 
+                FactionActionTracker.logAction(team, "actions", "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
                 team.getInvitations().add(target.getName());
-                target.sendMessage(ChatColor.GRAY + "You have been invited to team '§e" + team.getFriendlyName() + "§7'. Type '§3/team join §e" + team.getFriendlyName() + "§7' to join.");
+                target.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.DARK_AQUA + "'.");
+                target.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/f join " + team.getFriendlyName() + ChatColor.DARK_AQUA + "' to join.");
                 sender.sendMessage("§e" + target.getName() + " has been invited to the team!");
             } else {
                 sender.sendMessage(ChatColor.DARK_AQUA + "Player is already on your team.");

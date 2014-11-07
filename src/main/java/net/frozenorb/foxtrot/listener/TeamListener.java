@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -32,6 +33,7 @@ public class TeamListener implements Listener {
                 online.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
             }
 
+            FactionActionTracker.logAction(team, "actions", "Member Online: " + event.getPlayer().getName());
             team.sendTeamInfo(event.getPlayer());
         } else {
             event.getPlayer().sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -46,6 +48,8 @@ public class TeamListener implements Listener {
             for (Player online : team.getOnlineMembers()) {
                 online.sendMessage(ChatColor.RED + "Member Offline: " + ChatColor.WHITE + event.getPlayer().getName());
             }
+
+            FactionActionTracker.logAction(team, "actions", "Member Offline: " + event.getPlayer().getName());
         }
     }
 

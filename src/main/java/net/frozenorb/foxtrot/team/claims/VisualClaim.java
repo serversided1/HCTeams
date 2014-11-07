@@ -7,6 +7,7 @@ import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.claims.Claim.SpecialTag;
@@ -395,8 +396,8 @@ public class VisualClaim implements Listener {
 			p.sendMessage(ChatColor.LIGHT_PURPLE + "You have claimed this land for your team!");
 			t.setBalance(t.getBalance() - price);
 			p.sendMessage(ChatColor.YELLOW + "Your team's new balance is §f" + t.getBalance() + " §d(Price: " + price + ")");
+            FactionActionTracker.logAction(t, "actions", "Land Claim: [" + cc.getMinimumPoint().getBlockX() + ", " + cc.getMinimumPoint().getBlockY() + ", " + cc.getMinimumPoint().getBlockZ() + "] -> [" + cc.getMaximumPoint().getBlockX() + ", " + cc.getMaximumPoint().getBlockY() + ", " + cc.getMaximumPoint().getBlockZ() + "] [Claimed by: " + p.getName() + ", Cost: " + price + "]");
 			cancel(true);
-
 		} else {
 			p.sendMessage(ChatColor.RED + "You have not selected both corners of your claim yet!");
 		}

@@ -48,8 +48,8 @@ public class Bard extends Kit implements Listener {
         BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
         BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
         BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*45, 0));
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*10, 0));
-        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*5, 3));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*7, 0));
+        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*10, 3));
         BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 45, 0));
         BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20 * 5, 1));
 
@@ -60,6 +60,8 @@ public class Bard extends Kit implements Listener {
         BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
         BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 6, 0));
         BARD_PASSIVE_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
+        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*6, 0));
+        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20*6, 1));
 
         //Custom code
         //Glistering Melon - Heals 6 Hearts Instantly
@@ -82,7 +84,7 @@ public class Bard extends Kit implements Listener {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 10L, 10L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
     }
 
     @Override
@@ -162,11 +164,14 @@ public class Bard extends Kit implements Listener {
         }
 
         giveBardEffect(event.getPlayer(), BARD_CLICK_EFFECTS.get(event.getItem().getType()), !negative);
-        event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
 
-        if (event.getPlayer().getItemInHand().getAmount() == 0) {
-            event.getPlayer().setItemInHand(null);
-            event.getPlayer().updateInventory();
+        if (event.getItem().getType() != Material.FEATHER) {
+            event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
+
+            if (event.getPlayer().getItemInHand().getAmount() == 0) {
+                event.getPlayer().setItemInHand(null);
+                event.getPlayer().updateInventory();
+            }
         }
     }
 

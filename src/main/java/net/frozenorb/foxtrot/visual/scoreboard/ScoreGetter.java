@@ -70,6 +70,10 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                return (NO_SCORE);
+            }
+
             if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
                 long diff = (FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) - System.currentTimeMillis());
 

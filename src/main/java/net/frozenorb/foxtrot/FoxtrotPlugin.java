@@ -198,6 +198,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		RedisSaveTask.getInstance().save();
 		MountainHandler.reset();
+        FoxtrotPlugin.getInstance().getServerHandler().save();
 	}
 
 	public <T> T runJedisCommand(JedisCommand<T> jedis){

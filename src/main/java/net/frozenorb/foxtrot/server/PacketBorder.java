@@ -36,7 +36,7 @@ public class PacketBorder {
             while (bordersIterator.hasNext()) {
                 Map.Entry<Location, Long> border = bordersIterator.next();
 
-                if (System.currentTimeMillis() >= border.getValue() + 200L) {
+                if (System.currentTimeMillis() >= border.getValue() + 3000L) {
                     player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
                     bordersIterator.remove();
                 }
@@ -68,66 +68,88 @@ public class PacketBorder {
         }
     }
 
-    public static void checkPlayer(Player player) {
-        PacketBorder border = new PacketBorder();
-        Set<CuboidRegion> regionManagerRegions = Collections.synchronizedSet((Set<CuboidRegion>) RegionManager.get().getRegions().clone());
-
-        int x = player.getLocation().getBlockX();
-        int z = player.getLocation().getBlockZ();
-
-        if (player.getWorld().getEnvironment() == World.Environment.THE_END) {
-            for (CuboidRegion cr : regionManagerRegions) {
-                if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
-                    if (cr.hasTag("endspawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !cr.contains(player.getLocation()) && player.getGameMode() != GameMode.CREATIVE) {
-                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-                        border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
-                    }
-
-                    if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
-                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-
-                        Location min = crAdd.getMinimumPoint();
-                        Location max = crAdd.getMaximumPoint();
-
-                        min.setY(0D);
-                        max.setY(256D);
-
-                        crAdd.setLocation(min, max);
-                        border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
-                    }
-                }
-            }
-        } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
-            for (Claim cBack : LandBoard.getInstance().getClaims()) {
-                Claim c = cBack.clone();
-
-                c.setY1(0);
-                c.setY2(256);
-
-                if (c.isWithin(x, z, 8)) {
-                    border.addRegion(c);
-                }
-            }
-        } else if (SpawnTag.isTagged(player)) {
-            for (CuboidRegion cr : regionManagerRegions) {
-                if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
-                    if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
-                        CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-
-                        Location min = crAdd.getMinimumPoint();
-                        Location max = crAdd.getMaximumPoint();
-
-                        min.setY(0D);
-                        max.setY(256D);
-
-                        crAdd.setLocation(min, max);
-                        border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
-                    }
-                }
-            }
+    public static void clearPlayer(Player player) {
+        if (!borderBlocksSent.containsKey(player.getName())) {
+            return;
         }
 
-        border.sendToPlayer(player);
+        Iterator<Map.Entry<Location, Long>> bordersIterator = borderBlocksSent.get(player.getName()).entrySet().iterator();
+
+        while (bordersIterator.hasNext()) {
+            Map.Entry<Location, Long> border = bordersIterator.next();
+
+            player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
+            bordersIterator.remove();
+        }
+    }
+
+    public static void checkPlayer(Player player) {
+        try {
+            PacketBorder border = new PacketBorder();
+            Set<CuboidRegion> regionManagerRegions = Collections.synchronizedSet((Set<CuboidRegion>) RegionManager.get().getRegions().clone());
+
+            int x = player.getLocation().getBlockX();
+            int z = player.getLocation().getBlockZ();
+
+            if (player.getWorld().getEnvironment() == World.Environment.THE_END) {
+                for (CuboidRegion cr : regionManagerRegions) {
+                    if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
+                        if (cr.hasTag("endspawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !cr.contains(player.getLocation()) && player.getGameMode() != GameMode.CREATIVE) {
+                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
+                        }
+
+                        if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+
+                            Location min = crAdd.getMinimumPoint();
+                            Location max = crAdd.getMaximumPoint();
+
+                            min.setY(0D);
+                            max.setY(256D);
+
+                            crAdd.setLocation(min, max);
+                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
+                        }
+                    }
+                }
+            } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+                for (Claim cBack : LandBoard.getInstance().getClaims()) {
+                    if (cBack.isWithin(x, z, 8)) {
+                        Claim c = cBack.clone();
+
+                        c.setY1(0);
+                        c.setY2(256);
+
+                        border.addRegion(c);
+                    }
+                }
+            } else if (SpawnTag.isTagged(player)) {
+                for (CuboidRegion cr : regionManagerRegions) {
+                    if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
+                        if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+
+                            Location min = crAdd.getMinimumPoint();
+                            Location max = crAdd.getMaximumPoint();
+
+                            min.setY(0D);
+                            max.setY(256D);
+
+                            crAdd.setLocation(min, max);
+                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
+                        }
+                    }
+                }
+            } else {
+                clearPlayer(player);
+                return;
+            }
+
+            border.sendToPlayer(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static class BorderThread extends Thread {

@@ -42,7 +42,7 @@ public class HQ {
             return;
         }
 
-		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team.getHq(), 75, TeamLocationType.HOME);
+		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75, TeamLocationType.HOME);
 	}
 
 }
