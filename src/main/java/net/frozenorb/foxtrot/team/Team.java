@@ -17,7 +17,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
@@ -51,7 +50,6 @@ public class Team {
 	@Getter private boolean loading = false;
 
 	@Getter private Set<String> invitations = new HashSet<String>();
-	@Getter private BukkitRunnable runnable;
 	@Getter private double dtr;
 
 	@Getter private List<Claim> claims = new ArrayList<Claim>();
@@ -147,14 +145,15 @@ public class Team {
 		return (null);
 	}
 
-	public boolean isMember(Player pl) {
-		return isMember(pl.getName());
+	public boolean isMember(Player player) {
+		return (isMember(player.getName()));
 	}
 
 	public boolean isMember(String name) {
 		for (String member : members) {
-			if (name.equalsIgnoreCase(member))
-				return (true);
+			if (name.equalsIgnoreCase(member)) {
+                return (true);
+            }
 		}
 
 		return (false);
@@ -162,12 +161,22 @@ public class Team {
 
 	public boolean isCaptain(String name) {
 		for (String member : captains) {
-			if (name.equalsIgnoreCase(member))
-				return (true);
+			if (name.equalsIgnoreCase(member)) {
+                return (true);
+            }
 		}
 
 		return (false);
 	}
+
+    public boolean isAlly(Player player) {
+        return (isAlly(player.getName()));
+    }
+
+    public boolean isAlly(String name) {
+        //TODO
+        return (false);
+    }
 
 	public boolean ownsLocation(Location loc) {
 		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
@@ -339,10 +348,7 @@ public class Team {
     // I'm not quite sure why we're using BigDecimals here.
 	public BigDecimal getDTRIncrement() {
 		BigDecimal dtrPerHour = new BigDecimal(DTRHandler.getBaseDTRIncrement(getSize())).multiply(new BigDecimal(getOnlineMemberAmount()));
-        // Change the DTR regen per hour to per minute.
-		BigDecimal dtrPerMinute = dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
-
-        return (dtrPerMinute);
+        return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
 	}
 
 	public double getMaxDTR() {
@@ -371,31 +377,43 @@ public class Team {
 						addCaptain(name.trim());
 					}
 				}
-			} else if (identifier.equalsIgnoreCase("HQ")) {
+			} else if (identifier.equalsIgnoreCase("Invited")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
+                        getInvitations().add(name);
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("HQ")) {
 				setHQ(parseLocation(lineParts));
 			} else if (identifier.equalsIgnoreCase("DTR")) {
-				setDtr(Double.parseDouble(lineParts[0]));
+				setDtr(Double.valueOf(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("Balance")) {
-				setBalance(Double.parseDouble(lineParts[0]));
-			} else if (identifier.equalsIgnoreCase("FriendlyName")) {
+				setBalance(Double.valueOf(lineParts[0]));
+			} else if (identifier.equalsIgnoreCase("DeathCooldown")) {
+                setDeathCooldown(Long.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("RaidableCooldown")) {
+                setRaidableCooldown(Long.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("FriendlyName")) {
 				setFriendlyName(lineParts[0]);
 			} else if (identifier.equalsIgnoreCase("Claims")) {
-				for (String prt : lineParts) {
-					prt = prt.replace("[", "").replace("]", "");
+				for (String claim : lineParts) {
+					claim = claim.replace("[", "").replace("]", "");
 
-					if (prt.contains(":")) {
-						int x1 = Integer.parseInt(prt.split(":")[0].trim());
-						int y1 = Integer.parseInt(prt.split(":")[1].trim());
-						int z1 = Integer.parseInt(prt.split(":")[2].trim());
-						int x2 = Integer.parseInt(prt.split(":")[3].trim());
-						int y2 = Integer.parseInt(prt.split(":")[4].trim());
-						int z2 = Integer.parseInt(prt.split(":")[5].trim());
+					if (claim.contains(":")) {
+                        String[] split = claim.split(":");
 
-						String name = (prt.split(":")[6].trim());
-						Claim c = new Claim(x1, y1, z1, x2, y2, z2);
-						c.setName(name);
+						int x1 = Integer.valueOf(split[0].trim());
+						int y1 = Integer.valueOf(split[1].trim());
+						int z1 = Integer.valueOf(split[2].trim());
+						int x2 = Integer.valueOf(split[3].trim());
+						int y2 = Integer.valueOf(split[4].trim());
+						int z2 = Integer.valueOf(split[5].trim());
+						String name = split[6].trim();
 
-						getClaims().add(c);
+						Claim claimObj = new Claim(x1, y1, z1, x2, y2, z2);
+						claimObj.setName(name);
+
+						getClaims().add(claimObj);
 					}
 				}
 			} else if (identifier.equalsIgnoreCase("Subclaims")) {
@@ -449,35 +467,41 @@ public class Team {
 		String owners = owner;
 		StringBuilder members = new StringBuilder();
 		StringBuilder captains = new StringBuilder();
+        StringBuilder invites = new StringBuilder();
 		Location homeLoc = getHq();
-		boolean mFirst = true;
-        boolean cFirst = true;
 
 		for (String member : getMembers()) {
-			if (!mFirst) {
-                members.append(",");
-            } else {
-                mFirst = false;
-            }
-
-			members.append(member);
+			members.append(member).append(", ");
 		}
+
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+        }
 
 		for (String captain : getCaptains()) {
-			if (!cFirst) {
-                captains.append(",");
-            } else {
-                cFirst = false;
-            }
+            captains.append(captain).append(", ");
+        }
 
-			captains.append(captain);
-		}
+        if (captains.length() > 2) {
+            captains.setLength(captains.length() - 2);
+        }
+
+        for (String invite : getInvitations()) {
+            invites.append(invite).append(", ");
+        }
+
+        if (invites.length() > 2) {
+            invites.setLength(invites.length() - 2);
+        }
 
 		teamString.append("Owner:").append(owners).append('\n');
+        teamString.append("Captains:").append(captains.toString()).append('\n');
 		teamString.append("Members:").append(members.toString()).append('\n');
-		teamString.append("Captains:").append(captains.toString()).append('\n');
+        teamString.append("Invited:").append(invites.toString()).append('\n');
 		teamString.append("DTR:").append(dtr).append('\n');
 		teamString.append("Balance:").append(balance).append('\n');
+        teamString.append("DeathCooldown:").append(deathCooldown).append('\n');
+        teamString.append("RaidableCooldown:").append(raidableCooldown).append('\n');
 
 		if (homeLoc != null) {
             teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
@@ -502,8 +526,6 @@ public class Team {
 		teamString.append("Claims:").append(claims.toString()).append('\n');
 
 		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
-        // What does this do?
-		//j.disconnect();
 	}
 
 	public int getMaxClaimAmount() {
@@ -515,7 +537,7 @@ public class Team {
             return null;
         }
 
-		World world = Bukkit.getWorld(args[0]);
+		World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
 		double x = Double.parseDouble(args[1]);
 		double y = Double.parseDouble(args[2]);
 		double z = Double.parseDouble(args[3]);

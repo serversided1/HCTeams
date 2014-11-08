@@ -1,49 +1,48 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import org.bukkit.entity.Player;
-
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class DeathbanMap extends RedisPersistMap<Long> {
 
 	public DeathbanMap() {
-		super("deathban");
+		super("Deathbans");
 	}
 
 	@Override
-	public String getRedisValue(Long t) {
-		return t + "";
+	public String getRedisValue(Long time) {
+		return (String.valueOf(time));
 	}
 
 	@Override
 	public Long getJavaObject(String str) {
-		return Long.parseLong(str);
+		return (Long.parseLong(str));
 	}
 
-	public boolean isDeathbanned(Player player) {
-		return (isDeathbanned(player.getName()));
-	}
-
-	public boolean isDeathbanned(String name) {
-        if (getValue(name) != null) {
+	public boolean isDeathbanned(String player) {
+        if (getValue(player) != null) {
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                 // Ignore deathbans less than 5 days (at EOTW we deathban for 10 days)
-                return ((getValue(name) - System.currentTimeMillis()) > 1000L * 60 * 60 * 24 * 5);
+                return ((getValue(player) - System.currentTimeMillis()) > (1000L * 60 * 60 * 24 * 5));
             } else {
-                return (getValue(name) > System.currentTimeMillis());
+                return (getValue(player) > System.currentTimeMillis());
             }
         }
 
         return (false);
 	}
 
-	public void deathban(Player player, long seconds) {
-		deathban(player.getName(), seconds);
+	public void deathban(String player, long seconds) {
+		updateValue(player, System.currentTimeMillis() + (seconds * 1000));
+        FoxtrotPlugin.getInstance().getLastDeathMap().addDeath(player);
 	}
 
-	public void deathban(String player, long seconds) {
-		updateValue(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
-	}
+    public void revive(String player) {
+        updateValue(player, 0L);
+    }
+
+    public long getDeathban(String player) {
+        return (contains(player) ? getValue(player) : 0L);
+    }
 
 }

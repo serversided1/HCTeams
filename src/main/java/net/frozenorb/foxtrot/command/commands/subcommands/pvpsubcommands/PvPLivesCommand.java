@@ -15,8 +15,8 @@ public class PvPLivesCommand {
     @Command(names={ "pvptimer lives", "timer lives", "pvp lives" }, permissionNode="")
     public static void pvpLives(Player sender, @Param(name="Player", defaultValue="self") OfflinePlayer target) {
         sender.sendMessage(ChatColor.GOLD + target.getName() + "'s Soulbound Lives: " + ChatColor.WHITE + FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(target.getName()));
-        sender.sendMessage(ChatColor.GOLD + target.getName() + "'s Friend Lives: " + ChatColor.WHITE +FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(target.getName()));
-        sender.sendMessage(ChatColor.GOLD + target.getName() + "'s Transferable Lives: " + ChatColor.WHITE +FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(target.getName()));
+        sender.sendMessage(ChatColor.GOLD + target.getName() + "'s Friend Lives: " + ChatColor.WHITE + FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(target.getName()));
+        sender.sendMessage(ChatColor.GOLD + target.getName() + "'s Transferable Lives: " + ChatColor.WHITE + FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(target.getName()));
     }
 
 }

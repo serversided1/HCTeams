@@ -25,8 +25,8 @@ public class PvPGiveLivesCommand {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getTransferableLivesMap().updateValue(sender.getName(), transferableLives - amount);
-        FoxtrotPlugin.getInstance().getTransferableLivesMap().updateValue(target.getName(), FoxtrotPlugin.getInstance().getTransferableLivesMap().getValue(target.getName()) + amount);
+        FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(sender.getName(), transferableLives - amount);
+        FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(target.getName(), FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(target.getName()) + amount);
 
         sender.sendMessage(ChatColor.YELLOW + "Gave " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " to " + ChatColor.BLUE + target.getName() + ChatColor.YELLOW + ".");
         target.sendMessage(ChatColor.YELLOW + "Received " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " from " + ChatColor.BLUE + sender.getName() + ChatColor.YELLOW + ".");

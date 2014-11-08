@@ -22,8 +22,8 @@ public class DeathbanListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer())) {
-            Long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getValue(event.getPlayer().getName());
+        if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
+            long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getName());
             long left = unbannedOn - System.currentTimeMillis();
 
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
@@ -38,7 +38,7 @@ public class DeathbanListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         int seconds = FoxtrotPlugin.getInstance().getServerHandler().getDeathBanAt(event.getEntity().getName(), event.getEntity().getLocation());
-        FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity(), seconds);
+        FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getName(), seconds);
 
         final String time = TimeUtils.getDurationBreakdown(seconds * 1000);
 

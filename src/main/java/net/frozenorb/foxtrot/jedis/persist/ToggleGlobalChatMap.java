@@ -2,10 +2,13 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
-public class ToggleLightningMap extends RedisPersistMap<Boolean> {
+/**
+ * Created by macguy8 on 11/8/2014.
+ */
+public class ToggleGlobalChatMap extends RedisPersistMap<Boolean> {
 
-    public ToggleLightningMap() {
-        super("LightningToggles");
+    public ToggleGlobalChatMap() {
+        super("GlobalChatToggles");
     }
 
     @Override
@@ -18,11 +21,11 @@ public class ToggleLightningMap extends RedisPersistMap<Boolean> {
         return (Boolean.valueOf(str));
     }
 
-    public void setLightningToggled(String player, boolean toggled) {
+    public void setGlobalChatToggled(String player, boolean toggled) {
         updateValueAsync(player, toggled);
     }
 
-    public boolean isLightningToggled(String player) {
+    public boolean isGlobalChatToggled(String player) {
         return (contains(player) ? getValue(player) : true);
     }
 

@@ -17,20 +17,14 @@ public class GoppleCommand {
             name = sender.getName();
         }
 
-        if (FoxtrotPlugin.getInstance().getOppleMap().contains(name)) {
-            Long i = FoxtrotPlugin.getInstance().getOppleMap().getValue(name);
+        if (FoxtrotPlugin.getInstance().getOppleMap().isOnCooldown(name)) {
+            long millisLeft = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(name) - System.currentTimeMillis();
+            String msg = TimeUtils.getDurationBreakdown(millisLeft);
 
-            if (i != null && i > System.currentTimeMillis()) {
-                long millisLeft = i - System.currentTimeMillis();
-                String msg = TimeUtils.getDurationBreakdown(millisLeft);
-
-                if (sender.getName().equals(name)) {
-                    sender.sendMessage(ChatColor.GOLD + "Gopple cooldown§f: " + msg);
-                } else {
-                    sender.sendMessage(ChatColor.GOLD + name + "'s gopple cooldown§f: " + msg);
-                }
+            if (sender.getName().equals(name)) {
+                sender.sendMessage(ChatColor.GOLD + "Gopple cooldown§f: " + msg);
             } else {
-                sender.sendMessage(ChatColor.RED + "No current gopple cooldown!");
+                sender.sendMessage(ChatColor.GOLD + name + "'s gopple cooldown§f: " + msg);
             }
         } else {
             sender.sendMessage(ChatColor.RED + "No current gopple cooldown!");

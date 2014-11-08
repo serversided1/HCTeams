@@ -2,11 +2,14 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
-public class KillsMap extends RedisPersistMap<Integer> {
+/**
+ * Created by macguy8 on 11/8/2014.
+ */
+public class GoldMinedMap extends RedisPersistMap<Integer> {
 
-	public KillsMap() {
-		super("Kills");
-	}
+    public GoldMinedMap() {
+        super("GoldMined");
+    }
 
     @Override
     public String getRedisValue(Integer kills) {
@@ -18,12 +21,12 @@ public class KillsMap extends RedisPersistMap<Integer> {
         return (Integer.parseInt(str));
     }
 
-    public int getKills(String player) {
+    public int getMined(String player) {
         return (contains(player) ? getValue(player) : 0);
     }
 
-    public void setKills(String player, int kills) {
-        updateValueAsync(player, kills);
+    public void setMined(String player, int mined) {
+        updateValueAsync(player, mined);
     }
 
 }

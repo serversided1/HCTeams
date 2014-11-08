@@ -23,7 +23,7 @@ public class PvPTimerListener implements Listener {
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(event.getPlayer())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
             if (droppedItems.contains(event.getItem().getEntityId())) {
                 event.setCancelled(true);
             }

@@ -14,7 +14,7 @@ public class GoppleResetCommand {
             target = sender.getName();
         }
 
-        FoxtrotPlugin.getInstance().getOppleMap().updateValue(target.toLowerCase(), 0L);
+        FoxtrotPlugin.getInstance().getOppleMap().resetCooldown(target.toLowerCase());
         sender.sendMessage(ChatColor.RED + "Cooldown reset!");
     }
 

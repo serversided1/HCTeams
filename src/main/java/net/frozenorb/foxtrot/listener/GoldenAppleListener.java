@@ -21,9 +21,9 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        Long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getValue(event.getPlayer().getName());
+        long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getName());
 
-        if (cooldownUntil != null && cooldownUntil > System.currentTimeMillis()) {
+        if (cooldownUntil > System.currentTimeMillis()) {
             long millisLeft = cooldownUntil - System.currentTimeMillis();
 
             String msg = TimeUtils.getDurationBreakdown(millisLeft);
@@ -33,7 +33,7 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getOppleMap().updateValue(event.getPlayer().getName(), System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8));
+        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getName(), TimeUnit.HOURS.toSeconds(8));
 
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "██" + ChatColor.DARK_GREEN + "███");
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "█" + ChatColor.DARK_GREEN + "████");

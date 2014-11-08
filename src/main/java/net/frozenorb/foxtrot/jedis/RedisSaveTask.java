@@ -22,31 +22,28 @@ public class RedisSaveTask extends BukkitRunnable {
 	}
 
 	public void save() {
-		System.out.println("Redis save initiated!");
-		JedisCommand<Object> jdc = new JedisCommand<Object>() {
+		System.out.println("Saving teams to Jedis...");
+
+		JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
 
 			@Override
-			public Object execute(Jedis jedis) {
+			public Integer execute(Jedis jedis) {
+                int changed = 0;
+
 				for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
 					if (team.isChanged()) {
+                        changed++;
 						team.save(jedis);
 					}
 				}
 
-				FoxtrotPlugin.getInstance().getDeathbanMap().executeSave(jedis);
-				FoxtrotPlugin.getInstance().getOppleMap().executeSave(jedis);
-				FoxtrotPlugin.getInstance().getPlaytimeMap().executeSave(jedis);
-				FoxtrotPlugin.getInstance().getJoinTimerMap().executeSave(jedis);
-
-                // I doubt this way of converting the time to a float works as it should...
-                jedis.set("last_updated", String.valueOf((float) (System.currentTimeMillis() / 1000L)));
-
-				return null;
+                jedis.set("TeamsLastUpdated", String.valueOf((float) (System.currentTimeMillis() / 1000L)));
+				return (changed);
 			}
 		};
 
-		FoxtrotPlugin.getInstance().runJedisCommand(jdc);
-        System.out.println("Redis save finished!");
+		int teamsSaved = FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+        System.out.println("Saved " + teamsSaved + " teams to Jedis.");
     }
 
 }

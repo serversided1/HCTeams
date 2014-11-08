@@ -40,7 +40,7 @@ public class KOTHRewardKeyListener implements Listener {
         }
 
         if (open < 5) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You must have at least 5 open slots to use a KOTH reward key!");
+            event.getPlayer().sendMessage(ChatColor.RED + "You must have at least 5 open inventory slots to use a KOTH reward key!");
             return;
         }
 

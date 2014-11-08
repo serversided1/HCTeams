@@ -9,7 +9,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.util.Vector;
 
 public class BorderListener implements Listener {
 
@@ -35,15 +34,15 @@ public class BorderListener implements Listener {
 		if (Math.abs(event.getTo().getBlockX()) > BORDER_SIZE || Math.abs(event.getTo().getBlockZ()) > BORDER_SIZE) {
             Location newLocation = event.getTo().clone();
 
-			if (event.getTo().getX() > BORDER_SIZE) {
-                newLocation.setX(BORDER_SIZE - 2);
+            while (Math.abs(newLocation.getX()) > BORDER_SIZE) {
+                newLocation.setX(newLocation.getX() - (newLocation.getX() > 0 ? 1 : -1));
             }
 
-			if (event.getTo().getZ() > BORDER_SIZE) {
-                newLocation.setZ(BORDER_SIZE - 2);
+            while (Math.abs(newLocation.getZ()) > BORDER_SIZE) {
+                newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
             }
 
-			event.setTo(newLocation);
+            event.setTo(newLocation);
             event.getPlayer().sendMessage(ChatColor.RED + "That portal's location is past the border. It has been moved inwards.");
 		}
 	}
@@ -54,23 +53,22 @@ public class BorderListener implements Listener {
             return;
 		}
 
-        if (event.getTo().distance(event.getFrom()) < 0) {
+        if (event.getTo().distance(event.getFrom()) < 0 || event.getCause() == PlayerTeleportEvent.TeleportCause.PLUGIN) {
             return;
         }
 
         if (Math.abs(event.getTo().getBlockX()) > BORDER_SIZE || Math.abs(event.getTo().getBlockZ()) > BORDER_SIZE) {
             Location newLocation = event.getTo().clone();
 
-            if (event.getTo().getX() > BORDER_SIZE) {
-                newLocation.setX(BORDER_SIZE - 2);
+            while (Math.abs(newLocation.getX()) > BORDER_SIZE) {
+                newLocation.setX(newLocation.getX() - (newLocation.getX() > 0 ? 1 : -1));
             }
 
-            if (event.getTo().getZ() > BORDER_SIZE) {
-                newLocation.setZ(BORDER_SIZE - 2);
+            while (Math.abs(newLocation.getZ()) > BORDER_SIZE) {
+                newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
             }
 
             event.setTo(newLocation);
-            event.getPlayer().setVelocity(new Vector(0, 0, 0));
             event.getPlayer().sendMessage(ChatColor.RED + "That location is past the border.");
         }
 	}
@@ -88,15 +86,15 @@ public class BorderListener implements Listener {
 
                 Location newLocation = event.getTo().clone();
 
-                if (event.getTo().getX() > BORDER_SIZE) {
-                    newLocation.setX(BORDER_SIZE - 2);
+                while (Math.abs(newLocation.getX()) > BORDER_SIZE) {
+                    newLocation.setX(newLocation.getX() - (newLocation.getX() > 0 ? 1 : -1));
                 }
 
-                if (event.getTo().getZ() > BORDER_SIZE) {
-                    newLocation.setZ(BORDER_SIZE - 2);
+                while (Math.abs(newLocation.getZ()) > BORDER_SIZE) {
+                    newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
                 }
 
-                event.getPlayer().teleport(newLocation);
+                event.setTo(newLocation);
                 event.getPlayer().sendMessage(ChatColor.RED + "You have hit the border!");
 			}
 		}

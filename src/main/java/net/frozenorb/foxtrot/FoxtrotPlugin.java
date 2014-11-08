@@ -4,6 +4,7 @@ import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.armor.ClassHandler;
@@ -31,7 +32,6 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.visual.BossBarHandler;
 import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardHandler;
 import net.frozenorb.mShared.Shared;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.bukkit.entity.Player;
@@ -51,14 +51,13 @@ import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
+
 	private static FoxtrotPlugin instance;
 
-	/*
-	 * ---- FIELDS ----
-	 */
     public static final Random RANDOM = new Random();
 
-	private JedisPool pool;
+	private JedisPool jedisPool;
+    @Getter private MongoClient mongoPool;
 
 	@Getter private TeamHandler teamHandler;
 	@Getter private ServerHandler serverHandler;
@@ -70,11 +69,21 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;
 	@Getter private DeathbanMap deathbanMap;
-	@Getter private JoinTimerMap joinTimerMap;
+	@Getter private PvPTimerMap PvPTimerMap;
 	@Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
     @Getter private ToggleLightningMap toggleLightningMap;
     @Getter private FishingKitMap fishingKitMap;
+    @Getter private ToggleGlobalChatMap toggleGlobalChatMap;
+    @Getter private LastDeathMap lastDeathMap;
+    @Getter private ChatSpyMap chatSpyMap;
+    @Getter private DiamondMinedMap diamondMinedMap;
+    @Getter private GoldMinedMap goldMinedMap;
+    @Getter private IronMinedMap ironMinedMap;
+    @Getter private CoalMinedMap coalMinedMap;
+    @Getter private RedstoneMinedMap redstoneMinedMap;
+    @Getter private LapisMinedMap lapisMinedMap;
+    @Getter private EmeraldMinedMap emeraldMinedMap;
 
     @Getter private SoulboundLivesMap soulboundLivesMap;
     @Getter private FriendLivesMap friendLivesMap;
@@ -91,7 +100,14 @@ public class FoxtrotPlugin extends JavaPlugin {
 		Shared.get().getProfileManager().setNametagsEnabled(false);
 
 		instance = this;
-		pool = new JedisPool(new JedisPoolConfig(), "localhost");
+		jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
+
+        try {
+            mongoPool = new MongoClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 		bossBarHandler = new BossBarHandler();
 
         KOTHHandler.init();
@@ -153,7 +169,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Claim(), this);
 
 		for (Player player : getServer().getOnlinePlayers()) {
-			playtimeMap.playerJoined(player);
+			playtimeMap.playerJoined(player.getName());
 			NametagManager.reloadPlayer(player);
 			player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
 		}
@@ -179,8 +195,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			playtimeMap.playerQuit(player);
+		for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+			playtimeMap.playerQuit(player.getName());
 			NametagManager.getTeamMap().remove(player.getName());
 			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
@@ -195,20 +211,20 @@ public class FoxtrotPlugin extends JavaPlugin {
         FoxtrotPlugin.getInstance().getServerHandler().save();
 	}
 
-	public <T> T runJedisCommand(JedisCommand<T> jedis){
-		Jedis j = pool.getResource();
+	public <T> T runJedisCommand(JedisCommand<T> jedis) {
+		Jedis j = jedisPool.getResource();
 		T obj = null;
 
-		try{
+		try {
 			obj = jedis.execute(j);
-			pool.returnResource(j);
+			jedisPool.returnResource(j);
 		} catch(JedisException e){
-			pool.returnBrokenResource(j);
+			jedisPool.returnBrokenResource(j);
 		} finally {
-			pool.returnResource(j);
+			jedisPool.returnResource(j);
 		}
 
-		return obj;
+		return (obj);
 	}
 
 	private void setupPersistence() {
@@ -221,8 +237,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 		deathbanMap = new DeathbanMap();
 		deathbanMap.loadFromRedis();
 
-		joinTimerMap = new JoinTimerMap();
-		joinTimerMap.loadFromRedis();
+		PvPTimerMap = new PvPTimerMap();
+        PvPTimerMap.loadFromRedis();
 
 		killsMap = new KillsMap();
 		killsMap.loadFromRedis();
@@ -232,6 +248,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         toggleLightningMap = new ToggleLightningMap();
         toggleLightningMap.loadFromRedis();
+
+        toggleGlobalChatMap = new ToggleGlobalChatMap();
+        toggleGlobalChatMap.loadFromRedis();
 
         fishingKitMap = new FishingKitMap();
         fishingKitMap.loadFromRedis();
@@ -244,6 +263,33 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         transferableLivesMap = new TransferableLivesMap();
         transferableLivesMap.loadFromRedis();
+
+        lastDeathMap = new LastDeathMap();
+        lastDeathMap.loadFromRedis();
+
+        chatSpyMap = new ChatSpyMap();
+        chatSpyMap.loadFromRedis();
+
+        diamondMinedMap = new DiamondMinedMap();
+        diamondMinedMap.loadFromRedis();
+
+        goldMinedMap = new GoldMinedMap();
+        goldMinedMap.loadFromRedis();
+
+        ironMinedMap = new IronMinedMap();
+        ironMinedMap.loadFromRedis();
+
+        coalMinedMap = new CoalMinedMap();
+        coalMinedMap.loadFromRedis();
+
+        redstoneMinedMap = new RedstoneMinedMap();
+        redstoneMinedMap.loadFromRedis();
+
+        lapisMinedMap = new LapisMinedMap();
+        lapisMinedMap.loadFromRedis();
+
+        emeraldMinedMap = new EmeraldMinedMap();
+        emeraldMinedMap.loadFromRedis();
 	}
 
     public List<String> getConsoleLog(){

@@ -34,7 +34,7 @@ public class DTRHandler extends BukkitRunnable {
 	}
 
     public static double getMaxDTR(int teamsize) {
-        return (MAX_DTR[teamsize - 1]);
+        return (teamsize == 0 ? 100D : MAX_DTR[teamsize - 1]);
     }
 
 	public static boolean isOnCD(Team team) {

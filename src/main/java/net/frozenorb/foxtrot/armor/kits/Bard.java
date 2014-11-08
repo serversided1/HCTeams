@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,24 +68,6 @@ public class Bard extends Kit implements Listener {
         //Wheat - Heals 6 hunger points
     }
 
-    public Bard() {
-        new BukkitRunnable() {
-
-            public void run() {
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (hasKitOn(player)) {
-                        apply(player);
-
-                        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
-                            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
-                        }
-                    }
-                }
-            }
-
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
-    }
-
     @Override
     public boolean qualifies(Armor armor) {
         return (armor.isFullSet(ArmorMaterial.GOLD));
@@ -99,18 +80,14 @@ public class Bard extends Kit implements Listener {
 
     @Override
     public void apply(Player player) {
-        player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
-        player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
-        player.addPotionEffect(PotionEffectType.REGENERATION.createEffect(Integer.MAX_VALUE, 1));
-        player.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(Integer.MAX_VALUE, 1));
-    }
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
+            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
+        }
 
-    @Override
-    public void remove(Player player) {
-        player.removePotionEffect(PotionEffectType.SPEED);
-        player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-        player.removePotionEffect(PotionEffectType.REGENERATION);
-        player.removePotionEffect(PotionEffectType.WEAKNESS);
+        smartAddPotion(player, PotionEffectType.SPEED.createEffect(200, 0));
+        smartAddPotion(player, PotionEffectType.DAMAGE_RESISTANCE.createEffect(200, 1));
+        smartAddPotion(player, PotionEffectType.REGENERATION.createEffect(200, 1));
+        smartAddPotion(player, PotionEffectType.WEAKNESS.createEffect(200, 1));
     }
 
     @Override
@@ -182,28 +159,7 @@ public class Bard extends Kit implements Listener {
             }
 
             if (potionEffect != null) {
-                boolean needEffect = true;
-
-                if (player.hasPotionEffect(potionEffect.getType())) {
-                    for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
-                        if (activePotionEffect.getType().equals(potionEffect.getType())) {
-                            if (potionEffect.getAmplifier() < activePotionEffect.getAmplifier()) {
-                                needEffect = false;
-                            }
-
-                            if (potionEffect.getAmplifier() == activePotionEffect.getAmplifier() && potionEffect.getDuration() > activePotionEffect.getDuration()) {
-                                needEffect = false;
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-                if (needEffect) {
-                    player.removePotionEffect(potionEffect.getType());
-                    player.addPotionEffect(potionEffect);
-                }
+                smartAddPotion(source, potionEffect);
             } else {
                 Material material = source.getItemInHand().getType();
 

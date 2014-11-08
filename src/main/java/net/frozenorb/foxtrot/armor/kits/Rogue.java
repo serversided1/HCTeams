@@ -39,17 +39,8 @@ public class Rogue extends Kit {
 
 	@Override
 	public void apply(Player p) {
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1), true);
-	}
-
-	@Override
-	public void remove(Player p) {
-		p.removePotionEffect(PotionEffectType.SPEED);
-		p.removePotionEffect(PotionEffectType.JUMP);
-
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2), true);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 0), true);
+		smartAddPotion(p, new PotionEffect(PotionEffectType.SPEED, 200, 2));
+        smartAddPotion(p, new PotionEffect(PotionEffectType.JUMP, 200, 1));
 	}
 
     @Override
@@ -144,14 +135,14 @@ public class Rogue extends Kit {
 					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
 					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
-                    if (victim.getHealth() - 7D <= 0) {
+                    if (victim.getHealth() - 6D <= 0) {
                         event.setCancelled(true);
                     } else {
                         event.setDamage(0D);
                     }
 
-                    DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
-					victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
+                    DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 6D, damager.getName()));
+					victim.setHealth(Math.max(0D, victim.getHealth() - 6D));
 					
 					addCooldown(damager, getCooldownSeconds());
 				} else {

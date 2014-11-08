@@ -136,18 +136,12 @@ public class Archer extends Kit {
 
     @Override
     public String getName() {
-        return "Archer";
+        return ("Archer");
     }
 
     @Override
     public void apply(Player p) {
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-    }
-
-    @Override
-    public void remove(Player p) {
-        p.removePotionEffect(PotionEffectType.SPEED);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2), true);
+        smartAddPotion(p, new PotionEffect(PotionEffectType.SPEED, 200, 2));
     }
 
     @Override

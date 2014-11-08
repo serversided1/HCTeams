@@ -8,20 +8,25 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class FriendLivesMap extends RedisPersistMap<Integer> {
 
     public FriendLivesMap() {
-        super("player_lives_friend");
+        super("FriendLives");
     }
 
     @Override
-    public String getRedisValue(Integer t) {
-        return t + "";
+    public String getRedisValue(Integer lives) {
+        return (String.valueOf(lives));
     }
 
     @Override
     public Integer getJavaObject(String str) {
-        return Integer.parseInt(str);
+        return (Integer.parseInt(str));
     }
 
-    public int getLives(String name) {
-        return getValue(name.toLowerCase()) != null ? getValue(name.toLowerCase()) : 0;
+    public int getLives(String player) {
+        return (contains(player) ? getValue(player) : 0);
     }
+
+    public void setLives(String player, int lives) {
+        updateValue(player, lives);
+    }
+
 }

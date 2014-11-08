@@ -11,9 +11,8 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
-import net.frozenorb.foxtrot.jedis.persist.FishingKitMap;
-import net.frozenorb.foxtrot.jedis.persist.JoinTimerMap;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
+import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -285,8 +284,8 @@ public class ServerHandler {
 
 	public void beginWarp(final Player player, final Team team, int price, TeamLocationType type) {
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && isGlobalSpawn(player.getLocation()))) {
-            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
-                FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
+                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
             }
 
             FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
@@ -329,7 +328,7 @@ public class ServerHandler {
 			if (e instanceof Player) {
 				Player other = (Player) e;
 
-				if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(other)) {
+				if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(other.getName())) {
 					continue;
 				}
 
@@ -356,8 +355,8 @@ public class ServerHandler {
 		}
 
         // Remove their PvP timer.
-        if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
-            FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
+            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
         }
 
 		if (type == TeamLocationType.HOME) {
@@ -373,7 +372,7 @@ public class ServerHandler {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return !FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc);
+		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc) && !getRoad(loc).equals(""));
 	}
 
 	public boolean isAdminOverride(Player p) {
@@ -440,8 +439,8 @@ public class ServerHandler {
         long max = TimeUnit.HOURS.toSeconds(24);
         long ban;
 
-        if (Bukkit.getPlayerExact(playerName) != null && playtime.contains(playerName)){
-            ban = playtime.getValue(playerName) + playtime.getCurrentSession(playerName) / 1000L;
+        if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
+            ban = playtime.getPlaytime(playerName) + (playtime.getCurrentSession(playerName) / 1000L);
         } else {
             ban = playtime.getCurrentSession(playerName) / 1000L;
         }
@@ -617,7 +616,7 @@ public class ServerHandler {
         String kit = ChatColor.stripColor(sign.getLine(1));
 
         if (kit.equalsIgnoreCase("Fishing")){
-            int uses = FoxtrotPlugin.getInstance().getFishingKitMap().uses(player);
+            int uses = FoxtrotPlugin.getInstance().getFishingKitMap().getUses(player.getName());
 
             if (uses == 3){
                 showSignPacket(player, sign, new String[]{ "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!"});
@@ -628,8 +627,7 @@ public class ServerHandler {
                 player.getInventory().addItem(rod);
                 player.updateInventory();
                 player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
-                uses += 1;
-                player.setMetadata(FishingKitMap.META, new FixedMetadataValue(FoxtrotPlugin.getInstance(), uses));
+                FoxtrotPlugin.getInstance().getFishingKitMap().setUses(player.getName(), uses + 1);
                 showSignPacket(player, sign, new String[]{"§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3"});
             }
         }

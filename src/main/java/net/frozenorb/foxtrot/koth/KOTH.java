@@ -184,13 +184,6 @@ public class KOTH {
             if (onCap.size() != 0) {
                 startCapping(onCap.get(0));
             }
-
-            for (Player player : onCap) {
-                if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
-                    FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
-                    player.sendMessage(ChatColor.YELLOW + "You have walked onto a KOTH cap zone and your pvp protection has been removed.");
-                }
-            }
         }
     }
 

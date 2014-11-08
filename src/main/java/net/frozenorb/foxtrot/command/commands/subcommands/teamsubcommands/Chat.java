@@ -3,9 +3,9 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.team.chat.ChatMode;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class Chat {
 
@@ -13,45 +13,51 @@ public class Chat {
     public static void teamChat(Player sender, @Param(name="chat mode", defaultValue="toggle") String params) {
 		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
+            return;
 		}
 
-        String chat = "";
+        ChatMode chatMode = null;
 
         if (params.equalsIgnoreCase("t") || params.equalsIgnoreCase("team") || params.equalsIgnoreCase("f") || params.equalsIgnoreCase("fac") || params.equalsIgnoreCase("faction")) {
-            chat = "team";
-        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public")){
-            chat = "public";
-        } else {
-            chat = null;
+            chatMode = ChatMode.TEAM;
+        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public")) {
+            chatMode = ChatMode.PUBLIC;
+        } else if (params.equalsIgnoreCase("a") || params.equalsIgnoreCase("allies") || params.equalsIgnoreCase("ally") || params.equalsIgnoreCase("aliance")) {
+            chatMode = ChatMode.ALLIANCE;
         }
 
-        setChat(sender, chat);
+        setChat(sender, chatMode);
 	}
 
-    private static void setChat(Player player, String type){
-        boolean curTeam = player.hasMetadata("teamChat");
-
-        if (type != null) {
-            if (type.equals("team")) {
-                if (!(player.hasMetadata("teamChat"))) {
-                    player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-                }
-
-                player.sendMessage(ChatColor.DARK_AQUA + "You are now in faction chat only mode.");
-            } else if(type.equals("public")) {
-                if (player.hasMetadata("teamChat")) {
-                    player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
-                }
-
-                player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
+    private static void setChat(Player player, ChatMode chatMode) {
+        if (chatMode != null) {
+            switch (chatMode) {
+                case PUBLIC:
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
+                    break;
+                case ALLIANCE:
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are now in alliance chat.");
+                    break;
+                case TEAM:
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are now in team chat.");
+                    break;
             }
+
+            FoxtrotPlugin.getInstance().getChatModeMap().setChatMode(player.getName(), chatMode);
         } else {
-            if (curTeam) {
-                player.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
-                player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
-            } else {
-                player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-                player.sendMessage(ChatColor.DARK_AQUA + "You are now in faction chat only mode.");
+            chatMode = FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(player.getName());
+
+            switch (chatMode) {
+                case PUBLIC:
+                    //setChat(player, ChatMode.ALLIANCE);
+                    setChat(player, ChatMode.TEAM);
+                    break;
+                case ALLIANCE:
+                    setChat(player, ChatMode.TEAM);
+                    break;
+                case TEAM:
+                    setChat(player, ChatMode.PUBLIC);
+                    break;
             }
         }
     }

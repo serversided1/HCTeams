@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -103,6 +104,31 @@ public abstract class Kit implements Listener {
 	public abstract String getName();
 
 	public abstract int getWarmup();
+
+    public static void smartAddPotion(Player player, PotionEffect potionEffect) {
+        boolean needEffect = true;
+
+        if (player.hasPotionEffect(potionEffect.getType())) {
+            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+                if (activePotionEffect.getType().equals(potionEffect.getType())) {
+                    //Bukkit.broadcastMessage(player.getName() + " -> " + potionEffect.getType().getName() + " -> " + potionEffect.getDuration() + "." + potionEffect.getAmplifier() + " & " + activePotionEffect.getDuration() + "." + activePotionEffect.getAmplifier());
+                    if (potionEffect.getAmplifier() > activePotionEffect.getAmplifier()) {
+                        needEffect = false;
+                    }
+
+                    if (potionEffect.getAmplifier() == activePotionEffect.getAmplifier() && potionEffect.getDuration() < activePotionEffect.getDuration()) {
+                        needEffect = false;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if (needEffect) {
+            player.addPotionEffect(potionEffect, true);
+        }
+    }
 
 	public abstract static class KitTask extends BukkitRunnable {
 		@Getter Kit kit;

@@ -74,8 +74,8 @@ public interface ScoreGetter {
                 return (NO_SCORE);
             }
 
-            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
-                long diff = (FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) - System.currentTimeMillis());
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                long diff = (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis());
 
                 if (diff >= 0) {
                     return (diff);

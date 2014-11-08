@@ -174,7 +174,7 @@ public class EndListener implements Listener {
             }
 
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
-            if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {

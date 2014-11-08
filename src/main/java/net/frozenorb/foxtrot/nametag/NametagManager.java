@@ -8,6 +8,7 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,8 +30,10 @@ public class NametagManager {
             public void run() {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (player.getGameMode() == GameMode.CREATIVE && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
-                        for (Player player2 : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                            NametagManager.reloadPlayer(player2, player);
+                        for (Entity entity : player.getNearbyEntities(20, 40, 20)) {
+                            if (entity instanceof Player) {
+                                NametagManager.reloadPlayer((Player) entity, player);
+                            }
                         }
                     }
                 }
@@ -47,10 +50,18 @@ public class NametagManager {
 
     public static void reloadPlayer(Player toRefresh, Player refreshFor) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
-        TeamInfo teamInfo = getOrCreate(ChatColor.RED.toString(), "");
+        TeamInfo teamInfo = getOrCreate(ChatColor.YELLOW.toString(), "");
 
-        if (team != null && team.isMember(refreshFor.getName()) || refreshFor == toRefresh) {
-            teamInfo = getOrCreate(ChatColor.GREEN.toString(), "");
+        if (team != null) {
+            if (team.isMember(refreshFor.getName())) {
+                teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
+            } else if (team.isAlly(refreshFor.getName())) {
+                teamInfo = getOrCreate(ChatColor.LIGHT_PURPLE.toString(), "");
+            }
+        }
+
+        if (refreshFor == toRefresh) {
+            teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
         }
 
         if (refreshFor.getGameMode() == GameMode.CREATIVE && refreshFor.getItemInHand() != null && refreshFor.getItemInHand().getType() == Material.REDSTONE_BLOCK) {

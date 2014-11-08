@@ -113,7 +113,7 @@ public class PacketBorder {
                         }
                     }
                 }
-            } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
+            } else if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                 for (Claim cBack : LandBoard.getInstance().getClaims()) {
                     if (cBack.isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                         Claim c = cBack.clone();

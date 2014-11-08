@@ -156,7 +156,13 @@ public class CombatLoggerListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(event.getPlayer())) {
+        // If they have a PvP timer.
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+            return;
+        }
+
+        // If they're dead.
+        if (event.getPlayer().isDead()) {
             return;
         }
 

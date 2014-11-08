@@ -78,7 +78,7 @@ public enum Region {
             return true;
         }
 
-		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
+		if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(e.getPlayer().getName())) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             e.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             e.setTo(e.getFrom());
@@ -111,7 +111,7 @@ public enum Region {
             return true;
         }
 
-		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
+		if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(e.getPlayer().getName())) {
 			e.setTo(e.getFrom());
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             e.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");

@@ -11,7 +11,7 @@ public class ReviveCommand {
     @Command(names={ "Revive" }, permissionNode="op")
     public static void playSound(Player sender, @Param(name="Target") String target) {
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(target)) {
-            FoxtrotPlugin.getInstance().getDeathbanMap().updateValue(target, 0L);
+            FoxtrotPlugin.getInstance().getDeathbanMap().revive(target);
             sender.sendMessage(ChatColor.GREEN + "Revived " + target + "!");
         } else {
             sender.sendMessage(ChatColor.RED + "That player is not deathbanned!");
