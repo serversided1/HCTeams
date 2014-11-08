@@ -4,81 +4,81 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
-import net.frozenorb.foxtrot.server.ServerManager;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Team {
+
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
 
+    // Configurable values //
+
 	public static final int MAX_TEAM_SIZE = 30;
+    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
+    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(120);
+    public static final int MAX_CLAIMS = 2;
 
-	private String name;
+    // End configurable values //
 
-	private String owner = null;
+	@Getter @Setter private String name;
+    @Getter private String friendlyName;
+    @Getter private Location hq;
+
+	@Getter private String owner = null;
 	@Getter private Set<String> members = new HashSet<String>();
 	@Getter private Set<String> captains = new HashSet<String>();
 
-	private Location hq;
+	@Getter @Setter private boolean changed = false;
+	@Getter private boolean loading = false;
 
-	private boolean friendlyFire = false;
-	private boolean changed = false;
-	private boolean loading = false;
-	private String friendlyName;
-
-	private String tag;
-
-	@Getter @Setter private List<String> invitations = new ArrayList<String>();
-
-	@Getter private Location rally;
-
-	@Getter @Setter private BukkitRunnable runnable;
-
+	@Getter private Set<String> invitations = new HashSet<String>();
 	@Getter private double dtr;
-	@Getter @Setter private long rallyExpires;
-	@Getter @Setter private long rallySetTime;
 
-	private ArrayList<Claim> claims = new ArrayList<Claim>();
+	@Getter private List<Claim> claims = new ArrayList<Claim>();
 
-	@Getter private long raidableCooldown;
-	@Getter private long deathCooldown;
+	@Getter @Setter private long raidableCooldown;
+	@Getter @Setter private long deathCooldown;
 
 	@Getter @Setter private double balance;
 
-	@Getter private ArrayList<Subclaim> subclaims = new ArrayList<Subclaim>();
+	@Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
 
 	public Team(String name) {
 		this.name = name;
 	}
 
 	public void setDtr(double newDTR) {
-        FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
-        this.dtr = newDTR;
-		setChanged(true);
-	}
+        if (dtr != newDTR) {
+            if (dtr <= 0 && newDTR > 0) {
+                FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
+            }
 
-	public void setChanged(boolean hasChanged) {
-		this.changed = hasChanged;
-	}
+            if (Math.abs(newDTR - dtr) > 0.4) {
+                FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
+            }
 
-	public String getFriendlyName() {
-		return friendlyName;
+            FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+            this.dtr = newDTR;
+            setChanged(true);
+        }
 	}
 
 	public void setFriendlyName(String friendlyName) {
@@ -86,46 +86,21 @@ public class Team {
 		this.friendlyName = friendlyName;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Location getHQ() {
-		return hq;
-	}
-
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setTag(String tag) {
-		changed = true;
-		this.tag = tag;
-	}
-
-	public String getTag() {
-		changed = true;
-		return tag;
-	}
-
 	public void addMember(String member) {
 		changed = true;
 		members.add(member);
-
+        FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
 	}
 
 	public void addCaptain(String captain) {
 		changed = true;
 		captains.add(captain);
-
+        FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
 	}
 
 	public void removeCaptain(String name) {
 		Iterator<String> iter = captains.iterator();
+        FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
 
 		while (iter.hasNext()) {
 			if (iter.next().equalsIgnoreCase(name)) {
@@ -136,6 +111,7 @@ public class Team {
 
 	public void setOwner(String owner) {
 		changed = true;
+        FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
 		this.owner = owner;
 
         if (owner != null) {
@@ -143,14 +119,12 @@ public class Team {
         }
 	}
 
-	public void setHQ(Location hq, boolean update) {
+	public void setHQ(Location hq) {
+        String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
+        String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
+        FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
 		changed = true;
 		this.hq = hq;
-	}
-
-	public void setRally(Location rally, boolean update) {
-		changed = true;
-		this.rally = rally;
 	}
 
 	public void flagForSave() {
@@ -158,59 +132,63 @@ public class Team {
 	}
 
 	public boolean isOwner(String name) {
-		return owner != null && owner.equalsIgnoreCase(name);
+		return (owner != null && owner.equalsIgnoreCase(name));
 	}
 
 	public String getActualPlayerName(String pName) {
 		for (String str : members) {
-			if (pName.equalsIgnoreCase(str))
-				return str;
+			if (pName.equalsIgnoreCase(str)) {
+                return (str);
+            }
 		}
-		return null;
+
+		return (null);
 	}
 
-	public boolean isFriendlyFire() {
-		return friendlyFire;
+	public boolean isMember(Player player) {
+		return (isMember(player.getName()));
 	}
 
-	public void setFriendlyFire(boolean friendlyFire) {
-		changed = true;
-		this.friendlyFire = friendlyFire;
-
-	}
-
-	public boolean isOnTeam(Player pl) {
-		return isOnTeam(pl.getName());
-	}
-
-	public boolean isOnTeam(String name) {
+	public boolean isMember(String name) {
 		for (String member : members) {
-			if (name.equalsIgnoreCase(member))
-				return true;
+			if (name.equalsIgnoreCase(member)) {
+                return (true);
+            }
 		}
 
-		return false;
+		return (false);
 	}
 
 	public boolean isCaptain(String name) {
 		for (String member : captains) {
-			if (name.equalsIgnoreCase(member))
-				return true;
+			if (name.equalsIgnoreCase(member)) {
+                return (true);
+            }
 		}
 
-		return false;
+		return (false);
 	}
 
+    public boolean isAlly(Player player) {
+        return (isAlly(player.getName()));
+    }
+
+    public boolean isAlly(String name) {
+        //TODO
+        return (false);
+    }
+
 	public boolean ownsLocation(Location loc) {
-		return FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this;
+		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
 	}
 
 	public boolean ownsClaim(Claim cc) {
-		return FoxtrotPlugin.getInstance().getTeamManager().getOwner(cc) == this;
+		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(cc) == this);
 	}
 
-	public boolean remove(String name) {
+	public boolean removeMember(String name) {
 		changed = true;
+        FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
 
 		for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
 			if (iterator.next().equalsIgnoreCase(name)) {
@@ -222,8 +200,8 @@ public class Team {
 		removeCaptain(name);
 
 		if (isOwner(name)) {
-
 			Iterator<String> iter = members.iterator();
+
 			if (iter.hasNext()) {
 				this.owner = members.iterator().next();
 			}
@@ -244,6 +222,7 @@ public class Team {
 			}
 		}
 
+        // Is this needed?
 		boolean emptyTeam = owner == null || members.size() == 0;
 
 		if (!emptyTeam) {
@@ -255,27 +234,25 @@ public class Team {
 			changed = true;
 		}
 
-		return emptyTeam;
-	}
-
-	public boolean hasChanged() {
-		return changed;
+		return (emptyTeam);
 	}
 
 	public int getOnlineMemberAmount() {
 		int amt = 0;
 
 		for (String m : getMembers()) {
-			if (Bukkit.getPlayerExact(m) != null && !Bukkit.getPlayerExact(m).hasMetadata("invisible")) {
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+
+			if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
 				amt++;
 			}
 		}
-		return amt;
 
+		return (amt);
 	}
 
-	public ArrayList<Player> getOnlineMembers() {
-		ArrayList<Player> pls = new ArrayList<Player>();
+	public List<Player> getOnlineMembers() {
+		List<Player> players = new ArrayList<Player>();
 
 		for (String m : getMembers()) {
             // This is here because having a team with 0 members breaks this.
@@ -284,16 +261,18 @@ public class Team {
                 continue;
             }
 
-			if (Bukkit.getPlayerExact(m) != null && !Bukkit.getPlayerExact(m).hasMetadata("invisible")) {
-				pls.add(Bukkit.getPlayerExact(m));
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+
+			if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
+				players.add(Bukkit.getPlayerExact(m));
 			}
 		}
-		return pls;
 
+		return (players);
 	}
 
-	public ArrayList<String> getOfflineMembers() {
-		ArrayList<String> pls = new ArrayList<String>();
+	public List<String> getOfflineMembers() {
+		List<String> players = new ArrayList<String>();
 
 		for (String m : getMembers()) {
             // This is here because having a team with 0 members breaks this.
@@ -302,112 +281,84 @@ public class Team {
                 continue;
             }
 
-            Player player = Bukkit.getPlayerExact(m);
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
 
-			if (player == null || player.hasMetadata("invisible")) {
-				pls.add(m);
+			if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
+				players.add(m);
 			}
 		}
-		return pls;
 
+		return (players);
 	}
 
 	public Subclaim getSubclaim(String name, boolean fullName) {
 		for (Subclaim sc : subclaims) {
 			if ((!fullName && sc.getName().equalsIgnoreCase(name)) || sc.getFriendlyName().equalsIgnoreCase(name)) {
-				return sc;
+				return (sc);
 			}
 		}
-		return null;
+
+		return (null);
 	}
 
 	public Subclaim getSubclaim(Location loc) {
 		for (Subclaim sc : subclaims) {
 			if (new CuboidRegion(sc.getName(), sc.getLoc1(), sc.getLoc2()).contains(loc)) {
-				return sc;
+				return (sc);
 			}
 		}
-		return null;
-	}
 
-	public int getMemberAmount() {
-		return getMembers().size();
+		return (null);
 	}
 
 	public int getSize() {
-		return getMembers().size();
+		return (getMembers().size());
 	}
 
-	public boolean isRaidaible() {
-		return dtr < 0;
+	public boolean isRaidable() {
+        // If their DTR is 0, they ARE raidable.
+		return (dtr <= 0);
 	}
 
-	public void playerDeath(Player p) {
-		playerDeath(p.getName());
-	}
+	public void playerDeath(String p, double dtrLoss) {
+        double newDTR = Math.max(dtr - dtrLoss, -.99);
+        FactionActionTracker.logAction(this, "actions", "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
 
-	public void playerDeath(String p) {
-        double newDTR = Math.max(dtr - 1.0D, -.99); //TODO - ALPHA EDIT - PREV FIRST VALUE: 1.0D
+        for (Player player : getOnlineMembers()) {
+            player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
+            player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+
+            if (newDTR < 0) {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.RED + "You are raidable NOW!");
+            }
+        }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
         setDtr(newDTR);
 
-		if (isRaidaible()) {
-			raidableCooldown = System.currentTimeMillis() + (7200 * 1000);
-
+		if (isRaidable()) {
+            FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
+			raidableCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
 		}
 
 		DTRHandler.setCooldown(this);
-		deathCooldown = System.currentTimeMillis() + (3600 * 1000);
-
+		deathCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
 	}
 
-	/**
-	 * Gets the DTR increase that the team undergoes every minute
-	 * 
-	 * @return dtr increase per minute
-	 */
+    // I'm not quite sure why we're using BigDecimals here.
 	public BigDecimal getDTRIncrement() {
-		double baseHour = DTRHandler.getBaseDTRIncrement(getSize());
-		BigDecimal curr = new BigDecimal(0);
-
-		ServerManager sm = FoxtrotPlugin.getInstance().getServerManager();
-
-		for (Player p : getOnlineMembers()) {
-			double mult = 0;
-
-			Location loc = p.getLocation();
-
-			if (sm.isWarzone(loc)) {
-				mult = 1.25;
-			}
-			if (sm.isUnclaimed(loc)) {
-				mult = 1.05;
-			}
-			if (FoxtrotPlugin.getInstance().getTeamManager().getOwner(loc) == this) {
-				mult = 1;
-			}
-
-			curr = curr.add(new BigDecimal(baseHour + "").multiply(new BigDecimal(mult + "")));
-
-		}
-
-		BigDecimal dtr = curr.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
-
-        //DTR regain multiplier
-        dtr = dtr.multiply(new BigDecimal(3));
-
-        return dtr;
+		BigDecimal dtrPerHour = new BigDecimal(DTRHandler.getBaseDTRIncrement(getSize())).multiply(new BigDecimal(getOnlineMemberAmount()));
+        return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
 	}
 
 	public double getMaxDTR() {
-		int size = getSize();
-		return Math.ceil((Math.log10(size / 5D) / Math.log10(2D)) + Math.round(size / 60D)) + 3;
+		return (DTRHandler.getMaxDTR(getSize()));
 	}
 
 	public void load(String str) {
 		loading = true;
 		String[] lines = str.split("\n");
+
 		for (String line : lines) {
 			String identifier = line.substring(0, line.indexOf(':'));
 			String[] lineParts = line.substring(line.indexOf(':') + 1).split(",");
@@ -416,47 +367,53 @@ public class Team {
 				setOwner(lineParts[0]);
 			} else if (identifier.equalsIgnoreCase("Members")) {
 				for (String name : lineParts) {
-					if (name.length() >= 2) {
+					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
 						addMember(name.trim());
 					}
 				}
 			} else if (identifier.equalsIgnoreCase("Captains")) {
-
 				for (String name : lineParts) {
-					if (name.length() >= 2) {
+					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
 						addCaptain(name.trim());
 					}
 				}
-
-			} else if (identifier.equalsIgnoreCase("HQ")) {
-				setHQ(parseLocation(lineParts), false);
+			} else if (identifier.equalsIgnoreCase("Invited")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
+                        getInvitations().add(name);
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("HQ")) {
+				setHQ(parseLocation(lineParts));
 			} else if (identifier.equalsIgnoreCase("DTR")) {
-				setDtr(Double.parseDouble(lineParts[0]));
+				setDtr(Double.valueOf(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("Balance")) {
-				setBalance(Double.parseDouble(lineParts[0]));
-			} else if (identifier.equalsIgnoreCase("Rally")) {
-				setRally(parseLocation(lineParts), false);
-			} else if (identifier.equalsIgnoreCase("FriendlyFire")) {
-				setFriendlyFire(Boolean.parseBoolean(lineParts[0]));
-			} else if (identifier.equalsIgnoreCase("FriendlyName")) {
+				setBalance(Double.valueOf(lineParts[0]));
+			} else if (identifier.equalsIgnoreCase("DeathCooldown")) {
+                setDeathCooldown(Long.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("RaidableCooldown")) {
+                setRaidableCooldown(Long.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("FriendlyName")) {
 				setFriendlyName(lineParts[0]);
 			} else if (identifier.equalsIgnoreCase("Claims")) {
-				for (String prt : lineParts) {
-					prt = prt.replace("[", "").replace("]", "");
-					if (prt.contains(":")) {
-						int x1 = Integer.parseInt(prt.split(":")[0].trim());
-						int y1 = Integer.parseInt(prt.split(":")[1].trim());
-						int z1 = Integer.parseInt(prt.split(":")[2].trim());
-						int x2 = Integer.parseInt(prt.split(":")[3].trim());
-						int y2 = Integer.parseInt(prt.split(":")[4].trim());
-						int z2 = Integer.parseInt(prt.split(":")[5].trim());
-						String name = (prt.split(":")[6].trim());
+				for (String claim : lineParts) {
+					claim = claim.replace("[", "").replace("]", "");
 
-						Claim c = new Claim(x1, y1, z1, x2, y2, z2);
-						c.setName(name);
+					if (claim.contains(":")) {
+                        String[] split = claim.split(":");
 
-						getClaims().add(c);
+						int x1 = Integer.valueOf(split[0].trim());
+						int y1 = Integer.valueOf(split[1].trim());
+						int z1 = Integer.valueOf(split[2].trim());
+						int x2 = Integer.valueOf(split[3].trim());
+						int y2 = Integer.valueOf(split[4].trim());
+						int z2 = Integer.valueOf(split[5].trim());
+						String name = split[6].trim();
 
+						Claim claimObj = new Claim(x1, y1, z1, x2, y2, z2);
+						claimObj.setName(name);
+
+						getClaims().add(claimObj);
 					}
 				}
 			} else if (identifier.equalsIgnoreCase("Subclaims")) {
@@ -464,30 +421,22 @@ public class Team {
 					if (!(sc.length() > 2)) {
 						continue;
 					}
+
 					String[] part = sc.split("\\|");
-
 					String loc1 = part[0];
-
 					String world = loc1.split(" ")[0];
 					double x = Double.parseDouble(loc1.split(" ")[1]);
 					double y = Double.parseDouble(loc1.split(" ")[2]);
 					double z = Double.parseDouble(loc1.split(" ")[3]);
-
 					Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-
 					String loc2str = part[1];
-
 					String world2 = loc2str.split(" ")[0];
 					double x2 = Double.parseDouble(loc2str.split(" ")[1]);
 					double y2 = Double.parseDouble(loc2str.split(" ")[2]);
 					double z2 = Double.parseDouble(loc2str.split(" ")[3]);
-
 					Location loc2 = new Location(Bukkit.getWorld(world2), x2, y2, z2);
-
 					String manager = part[2];
-
 					String name = part[3];
-
 					Subclaim sclaim = new Subclaim(loc, loc2, manager, name);
 
 					if (part.length > 4) {
@@ -499,123 +448,125 @@ public class Team {
 					}
 
 					subclaims.add(sclaim);
-
 				}
-			} else if (identifier.equalsIgnoreCase("Tag")) {
-				tag = lineParts[0];
 			}
 		}
+
 		loading = false;
 		changed = false;
 	}
 
 	public void save(Jedis j) {
-
 		changed = false;
-		if (loading)
-			return;
+
+		if (loading) {
+            return;
+        }
+
 		StringBuilder teamString = new StringBuilder();
 		String owners = owner;
-		String members = "";
-		String captains = "";
+		StringBuilder members = new StringBuilder();
+		StringBuilder captains = new StringBuilder();
+        StringBuilder invites = new StringBuilder();
+		Location homeLoc = getHq();
 
-		Location homeLoc = getHQ();
-		Location rally = getRally();
-
-		boolean mFirst = true;
 		for (String member : getMembers()) {
-			if (!mFirst)
-				members += ",";
-			members += member;
-			mFirst = false;
+			members.append(member).append(", ");
 		}
 
-		boolean cFirst = true;
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+        }
+
 		for (String captain : getCaptains()) {
-			if (!cFirst)
-				captains += ",";
-			captains += captain;
-			cFirst = false;
-		}
+            captains.append(captain).append(", ");
+        }
 
-		teamString.append("Owner:" + owners + '\n');
-		teamString.append("Members:" + members + '\n');
-		teamString.append("Captains:" + captains + '\n');
-		teamString.append("DTR:" + dtr + '\n');
-		teamString.append("Balance:" + balance + '\n');
+        if (captains.length() > 2) {
+            captains.setLength(captains.length() - 2);
+        }
 
-		if (homeLoc != null)
-			teamString.append("HQ:" + homeLoc.getWorld().getName() + "," + homeLoc.getX() + "," + homeLoc.getY() + "," + homeLoc.getZ() + "," + homeLoc.getYaw() + "," + homeLoc.getPitch() + '\n');
-		if (rally != null)
-			teamString.append("Rally:" + rally.getWorld().getName() + "," + rally.getX() + "," + rally.getY() + "," + rally.getZ() + "," + rally.getYaw() + "," + rally.getPitch() + '\n');
+        for (String invite : getInvitations()) {
+            invites.append(invite).append(", ");
+        }
 
-		teamString.append("FriendlyFire:" + friendlyFire + '\n');
-		teamString.append("FriendlyName:" + friendlyName + '\n');
-		if (tag != null) {
-			teamString.append("Tag:" + tag + '\n');
-		}
+        if (invites.length() > 2) {
+            invites.setLength(invites.length() - 2);
+        }
 
-		String scm = "";
+		teamString.append("Owner:").append(owners).append('\n');
+        teamString.append("Captains:").append(captains.toString()).append('\n');
+		teamString.append("Members:").append(members.toString()).append('\n');
+        teamString.append("Invited:").append(invites.toString()).append('\n');
+		teamString.append("DTR:").append(dtr).append('\n');
+		teamString.append("Balance:").append(balance).append('\n');
+        teamString.append("DeathCooldown:").append(deathCooldown).append('\n');
+        teamString.append("RaidableCooldown:").append(raidableCooldown).append('\n');
 
+		if (homeLoc != null) {
+            teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
+        }
+
+		teamString.append("FriendlyName:").append(friendlyName).append('\n');
+
+		StringBuilder scm = new StringBuilder();
 		boolean first = true;
+
 		for (Subclaim sc : subclaims) {
 			if (!first) {
-				scm += ",";
-			}
-			scm += sc.saveString();
+				scm.append(",");
+			} else {
+                first = false;
+            }
 
-			first = false;
-
+			scm.append(sc.saveString());
 		}
 
-		teamString.append("Subclaims:" + scm + '\n');
+		teamString.append("Subclaims:").append(scm.toString()).append('\n');
+		teamString.append("Claims:").append(claims.toString()).append('\n');
 
-		teamString.append("Claims:" + claims.toString() + '\n');
 		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
-		j.disconnect();
 	}
 
 	public int getMaxClaimAmount() {
-		return /* Math.min(12, getMemberAmount() * 2) */2;
-	}
-
-	public ArrayList<Claim> getClaims() {
-		return claims;
+		return (MAX_CLAIMS);
 	}
 
 	private Location parseLocation(String[] args) {
-		if (args.length != 6)
-			return null;
+		if (args.length != 6) {
+            return null;
+        }
 
-		World world = Bukkit.getWorld(args[0]);
+		World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
 		double x = Double.parseDouble(args[1]);
 		double y = Double.parseDouble(args[2]);
 		double z = Double.parseDouble(args[3]);
 		float yaw = Float.parseFloat(args[4]);
 		float pitch = Float.parseFloat(args[5]);
 
-		return new Location(world, x, y, z, yaw, pitch);
+		return (new Location(world, x, y, z, yaw, pitch));
 	}
 
-	public void sendTeamInfo(Player p) {
+	public void sendTeamInfo(Player player) {
         String gray = "§7§m" + StringUtils.repeat("-", 53);
 
-        p.sendMessage(gray);
+        player.sendMessage(gray);
 
         // A string comparison is needed here as saving and reload the data results in a string known as 'null', not a null value.
         if (owner != null && !owner.equalsIgnoreCase("null")) {
-            Location s = getHQ();
+            Location s = getHq();
 
             String msg = " §3-§e HQ: ";
             msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
 
-            p.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
+            player.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
             KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
+            Player owner = Bukkit.getPlayerExact(getOwner());
 
-            if (Bukkit.getPlayerExact(getOwner()) != null) {
-                p.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
+            if (owner != null && !owner.hasMetadata("invisible")) {
+                player.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
             } else {
-                p.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
+                player.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
             }
 
             boolean first = true;
@@ -628,13 +579,16 @@ public class Team {
             int memberAmount = 0;
 
             for (Player online : getOnlineMembers()) {
+                if (online.hasMetadata("invisible")) {
+                    continue;
+                }
+
                 StringBuilder toAdd = members;
                 if (isOwner(online.getName())) {
                     continue;
                 }
 
                 if (isCaptain(online.getName())) {
-
                     toAdd = captains;
                     if (!first2) {
                         toAdd.append("§7, ");
@@ -660,87 +614,110 @@ public class Team {
                     continue;
                 }
                 if (isCaptain(offline)) {
-
                     toAdd = captains;
                     if (!first2) {
                         toAdd.append("§7, ");
+                    } else {
+                        first2 = false;
                     }
 
                     captainAmount++;
-
                     toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-                    first2 = false;
-
                 } else {
                     if (!first) {
                         toAdd.append("§7, ");
+                    } else {
+                        first = false;
                     }
+
                     memberAmount++;
-
                     toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-                    first = false;
-
                 }
             }
 
             if (captainAmount > 0) {
-                p.sendMessage(captains.toString());
+                player.sendMessage(captains.toString());
             }
 
             if (memberAmount > 0) {
-                p.sendMessage(members.toString());
+                player.sendMessage(members.toString());
             }
 
-            String balStr = String.valueOf(balance);
+            // Round the Team's balance.
+            player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(balance));
 
-            //p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + (balStr.endsWith(".0") ? balStr.replaceAll(".0", "") : balStr)); //Remove trailing ".0"
-            p.sendMessage("§eBalance: " + ChatColor.BLUE + "$" + balance);
+            // Get a Team's DTR color.
+            ChatColor dtrColor = ChatColor.GREEN;
 
-            String dtrcolor = dtr / getMaxDTR() >= 0.25 ? "§a" : isRaidaible() ? "§4" : "§c";
-            String dtrMsg = "§eDeaths Until Raidable: " + dtrcolor + DTR_FORMAT.format(dtr);
+            if (dtr / getMaxDTR() <= 0.25) {
+                if (isRaidable()) {
+                    dtrColor = ChatColor.DARK_RED;
+                } else {
+                    dtrColor = ChatColor.YELLOW;
+                }
+            }
+
+            String dtrMsg = ChatColor.YELLOW + "Deaths Until Raidable: " + dtrColor + DTR_FORMAT.format(dtr);
+            boolean showTimeUntilRegen = false;
 
             if (getOnlineMemberAmount() == 0) {
-                dtrMsg += "§7■";
+                // No players online.
+                dtrMsg += ChatColor.GRAY + "◀";
             } else {
                 if (DTRHandler.isRegenerating(this)) {
-                    dtrMsg += "§a ▲";
-
+                    // Regenerating
+                    dtrMsg += ChatColor.GREEN + "▲";
                 } else {
                     if (DTRHandler.isOnCD(this)) {
-                        dtrMsg += "§c■";
+                        // On cooldown
+                        dtrMsg += ChatColor.RED + "■";
+                        showTimeUntilRegen = true;
                     } else {
-                        dtrMsg += "§a■";
-
+                        dtrMsg += ChatColor.GREEN + "◀";
                     }
                 }
             }
-            p.sendMessage(dtrMsg);
+
+            player.sendMessage(dtrMsg);
+
+            if (showTimeUntilRegen) {
+                long till = Math.max(getRaidableCooldown(), getDeathCooldown());
+                int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+                player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
+            }
+        } else if (getDtr() == 50D) {
+            player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " KOTH " + ChatColor.GRAY + "(5m Deathban)");
+            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
+        } else if (getDtr() == 100D) {
+            player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(15m Deathban, 0.5 DTR Loss, 60s Pearl Cooldown)");
+            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
         } else {
-            p.sendMessage(ChatColor.BLUE + getFriendlyName());
-            p.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHQ() == null ? "None" : getHQ().getBlockX() + ", " + getHQ().getBlockZ()));
+            player.sendMessage(ChatColor.BLUE + getFriendlyName());
+            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
         }
 
-		p.sendMessage(gray);
-
+		player.sendMessage(gray);
 	}
 
 	public void save() {
 		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
 			@Override
 			public Object execute(Jedis jedis) {
 				save(jedis);
-				return null;
+				return (null);
 			}
+
 		});
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-
 		if (obj instanceof Team) {
 			return ((Team) obj).getName().equals(getName());
 		}
-		return super.equals(obj);
+
+		return (super.equals(obj));
 	}
 
 }

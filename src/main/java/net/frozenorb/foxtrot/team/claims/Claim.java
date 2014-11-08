@@ -1,26 +1,22 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.HashSet;
-import java.util.Iterator;
-
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import java.util.HashSet;
+import java.util.Iterator;
 
 @Data
 @RequiredArgsConstructor
 public class Claim implements Iterable<Coordinate> {
 	int x1, y1, z1, x2, y2, z2;
-	SpecialTag tag;
-
+    SpecialTag tag;
 	String name;
 
 	public Claim(Location corner1, Location corner2) {
@@ -64,10 +60,6 @@ public class Claim implements Iterable<Coordinate> {
                 curPrice += (500 * team.getClaims().size());
             }
         }
-
-        //ALPHA ONLY - REMOVE THIS LINE
-        //HALF PRICE CLAIMS
-        curPrice /= 2.0D;
 
         return (int) curPrice;
     }
@@ -341,10 +333,9 @@ public class Claim implements Iterable<Coordinate> {
 
 	}
 
-	public static enum SpecialTag {
-		SPAWN,
-		KOTH
-
-	}
+    public static enum SpecialTag {
+        SPAWN,
+        KOTH
+    }
 
 }

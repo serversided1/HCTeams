@@ -1,19 +1,17 @@
 package net.frozenorb.foxtrot.armor;
 
-import java.util.HashMap;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.util.TimeUtils;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class Kit implements Listener {
 
@@ -59,7 +57,7 @@ public abstract class Kit implements Listener {
 		}
 	}
 
-	public Material getConsumable() {
+	public List<Material> getConsumables() {
 		return null;
 	}
 
@@ -69,7 +67,9 @@ public abstract class Kit implements Listener {
 
 	public void remove(Player p) {}
 
-	public void itemConsumed(Player p) {}
+	public boolean itemConsumed(Player p, Material type) {
+        return (true);
+    }
 
 	public double getCooldownSeconds() {
 		return 0;
@@ -104,6 +104,31 @@ public abstract class Kit implements Listener {
 	public abstract String getName();
 
 	public abstract int getWarmup();
+
+    public static void smartAddPotion(Player player, PotionEffect potionEffect) {
+        boolean needEffect = true;
+
+        if (player.hasPotionEffect(potionEffect.getType())) {
+            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+                if (activePotionEffect.getType().equals(potionEffect.getType())) {
+                    //Bukkit.broadcastMessage(player.getName() + " -> " + potionEffect.getType().getName() + " -> " + potionEffect.getDuration() + "." + potionEffect.getAmplifier() + " & " + activePotionEffect.getDuration() + "." + activePotionEffect.getAmplifier());
+                    if (potionEffect.getAmplifier() > activePotionEffect.getAmplifier()) {
+                        needEffect = false;
+                    }
+
+                    if (potionEffect.getAmplifier() == activePotionEffect.getAmplifier() && potionEffect.getDuration() < activePotionEffect.getDuration()) {
+                        needEffect = false;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if (needEffect) {
+            player.addPotionEffect(potionEffect, true);
+        }
+    }
 
 	public abstract static class KitTask extends BukkitRunnable {
 		@Getter Kit kit;

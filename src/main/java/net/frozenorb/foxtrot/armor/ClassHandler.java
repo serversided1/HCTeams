@@ -53,7 +53,7 @@ public class ClassHandler extends BukkitRunnable implements Listener {
 
 			}
 
-			for (Kit k : FoxtrotPlugin.getInstance().getKitManager().getKits()) {
+			for (Kit k : FoxtrotPlugin.getInstance().getKitHandler().getKits()) {
 				if (k.qualifies(a)) {
 					if (Kit.getWarmupTasks().containsKey(p.getName()) && Kit.getWarmupTasks().get(p.getName()).getKit() == k) {
 						continue;
@@ -74,22 +74,19 @@ public class ClassHandler extends BukkitRunnable implements Listener {
 		Player p = e.getPlayer();
 
 		if (e.getPlayer().getItemInHand() != null) {
-			for (Kit k : FoxtrotPlugin.getInstance().getKitManager().getKits()) {
-
-				if (k.hasKitOn(p) && k.getConsumable() == e.getPlayer().getItemInHand().getType()) {
-
+			for (Kit k : FoxtrotPlugin.getInstance().getKitHandler().getKits()) {
+				if (k.hasKitOn(p) && k.getConsumables() != null && k.getConsumables().contains(e.getPlayer().getItemInHand().getType())) {
 					if (!k.hasCooldown(p, true)) {
+                        if (k.itemConsumed(p, e.getItem().getType())) {
+                            if (p.getItemInHand().getAmount() > 1) {
+                                p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
+                            } else {
+                                p.setItemInHand(new ItemStack(Material.AIR));
+                            }
 
-						if (p.getItemInHand().getAmount() > 1) {
-							p.getItemInHand().setAmount(p.getItemInHand().getAmount() - 1);
-						} else {
-							p.setItemInHand(new ItemStack(Material.AIR));
-						}
-
-						k.itemConsumed(p);
-						k.addCooldown(p, k.getCooldownSeconds());
+                            k.addCooldown(p, k.getCooldownSeconds());
+                        }
 					}
-
 				}
 			}
 		}

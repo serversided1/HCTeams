@@ -1,42 +1,30 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
+import net.frozenorb.foxtrot.team.chat.ChatMode;
 
-/**
- * @author Connor Hollasch
- * @since 10/9/14
- */
-public class ChatModeMap extends RedisPersistMap<Boolean> {
+public class ChatModeMap extends RedisPersistMap<ChatMode> {
 
     public ChatModeMap() {
-        super("player_chat_mode");
+        super("ChatModes");
     }
 
     @Override
-    public String getRedisValue(Boolean aBoolean) {
-        return aBoolean + "";
+    public String getRedisValue(ChatMode chatMode) {
+        return (chatMode.name());
     }
 
     @Override
-    public Boolean getJavaObject(String str) {
-        return Boolean.valueOf(str);
+    public ChatMode getJavaObject(String str) {
+        return (ChatMode.valueOf(str));
     }
 
-    public void playerJoined(Player player) {
-        if (!(contains(player.getName())))
-            return;
-
-        boolean isTeamChat = getValue(player.getName());
-        if (isTeamChat)
-            player.setMetadata("teamChat", new FixedMetadataValue(FoxtrotPlugin.getInstance(), isTeamChat));
+    public ChatMode getChatMode(String player) {
+        return (contains(player) ? getValue(player) : ChatMode.PUBLIC);
     }
 
-    public void playerQuit(Player player) {
-        boolean teamChat = player.hasMetadata("teamChat");
-
-        updateValue(player.getName(), teamChat);
+    public void setChatMode(String player, ChatMode chatMode) {
+        updateValueAsync(player, chatMode);
     }
+
 }

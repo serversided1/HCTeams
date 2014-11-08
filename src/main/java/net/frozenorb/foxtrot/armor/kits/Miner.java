@@ -31,7 +31,7 @@ public class Miner extends Kit implements Listener {
                     int left = noDamage.remove(key);
 
                     if (left == 0) {
-                        if(key.getLocation().getY() <= Y_HEIGHT){
+                        if(key.getLocation().getY() <= Y_HEIGHT) {
                             invis.put(key, 10);
                             key.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
                         }
@@ -59,27 +59,6 @@ public class Miner extends Kit implements Listener {
                         }
                     }
                 }
-
-                /*
-                for (String player : Kit.getEquippedKits().keySet()) {
-                    Kit on = Kit.getEquippedKits().get(player);
-
-                    if (!(on instanceof Miner))
-                        continue;
-
-                    Player p = Bukkit.getPlayerExact(player);
-
-                    if(p != null){
-                        if (p.getLocation().getY() <= 20 && !noDamage.containsKey(p) && !p.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-                            p.addPotionEffect(PotionEffectType.INVISIBILITY.createEffect(Integer.MAX_VALUE, 0));
-                        }
-
-                        if (p.hasPotionEffect(PotionEffectType.INVISIBILITY) && (noDamage.containsKey(p) || p.getLocation().getY() > 20)) {
-                            p.removePotionEffect(PotionEffectType.INVISIBILITY);
-                        }
-                    }
-                }
-                */
             }
         };
 
@@ -94,19 +73,17 @@ public class Miner extends Kit implements Listener {
 
 	@Override
 	public String getName() {
-		return "Miner";
+		return ("Miner");
 	}
 
 	@Override
 	public void apply(Player p) {
-		p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
-		p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 1));
+        smartAddPotion(p, new PotionEffect(PotionEffectType.NIGHT_VISION, 200 * 3, 0));
+        smartAddPotion(p, new PotionEffect(PotionEffectType.FAST_DIGGING, 200, 1));
 	}
 
 	@Override
 	public void remove(Player p) {
-		p.removePotionEffect(PotionEffectType.NIGHT_VISION);
-		p.removePotionEffect(PotionEffectType.FAST_DIGGING);
         p.removePotionEffect(PotionEffectType.INVISIBILITY);
         noDamage.remove(p);
         invis.remove(p);
@@ -114,7 +91,7 @@ public class Miner extends Kit implements Listener {
 
 	@Override
 	public int getWarmup() {
-		return 10;
+		return (10);
 	}
 
     @EventHandler

@@ -1,20 +1,16 @@
 package net.frozenorb.foxtrot.nametag;
 
+import net.frozenorb.foxtrot.util.ReflectionUtils;
+import org.bukkit.entity.Player;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.frozenorb.foxtrot.util.ReflectionUtils;
-
-import org.bukkit.entity.Player;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-
-/**
- * A small wrapper for the PacketPlayOutScoreboardTeam packet.
- */
 public class ScoreboardTeamPacketMod {
+
 	private static Method getHandle;
 	private static Method sendPacket;
 	private static Field playerConnection;
@@ -25,7 +21,6 @@ public class ScoreboardTeamPacketMod {
 
 	static {
 		try {
-
 			packetType = Class.forName(ReflectionUtils.getPacketTeamClasspath());
 
 			Class<?> typeCraftPlayer = Class.forName(ReflectionUtils.getCraftPlayerClasspath());
@@ -35,8 +30,7 @@ public class ScoreboardTeamPacketMod {
 			getHandle = typeCraftPlayer.getMethod("getHandle");
 			playerConnection = typeNMSPlayer.getField("playerConnection");
 			sendPacket = typePlayerConnection.getMethod("sendPacket", Class.forName(ReflectionUtils.getPacketClasspath()));
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Failed to setup reflection for Packet209Mod!");
 			e.printStackTrace();
 		}
@@ -82,49 +76,30 @@ public class ScoreboardTeamPacketMod {
 		addAll(players);
 	}
 
-	/**
-	 * Sends the packet to a player.
-	 * 
-	 * @param bukkitPlayer
-	 *            the player to send the packet to
-	 */
 	public void sendToPlayer(Player bukkitPlayer) {
 		try {
 			Object player = getHandle.invoke(bukkitPlayer);
-
 			Object connection = playerConnection.get(player);
 
 			sendPacket.invoke(connection, packet);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	/**
-	 * Sets a field in the packet.
-	 * 
-	 * @param field
-	 *            the name of the field to set
-	 * @param value
-	 *            the object to set the field to
-	 */
 	public void setField(String field, Object value) {
-
 		try {
 			Field f = packet.getClass().getDeclaredField(field);
 			f.setAccessible(true);
 			f.set(packet, value);
 			f.setAccessible(false);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void addAll(Collection<?> col) throws NoSuchFieldException,
-			IllegalAccessException {
+	private void addAll(Collection<?> col) throws NoSuchFieldException, IllegalAccessException {
 		Field f = packet.getClass().getDeclaredField("e");
 		f.setAccessible(true);
 		((Collection) f.get(packet)).addAll(col);

@@ -5,20 +5,25 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class KillsMap extends RedisPersistMap<Integer> {
 
 	public KillsMap() {
-		super("player_kills");
+		super("Kills");
 	}
 
-	@Override
-	public String getRedisValue(Integer t) {
-		return t + "";
-	}
+    @Override
+    public String getRedisValue(Integer kills) {
+        return (String.valueOf(kills));
+    }
 
-	@Override
-	public Integer getJavaObject(String str) {
-		return Integer.parseInt(str);
-	}
+    @Override
+    public Integer getJavaObject(String str) {
+        return (Integer.parseInt(str));
+    }
 
-	public int getKills(String name) {
-		return getValue(name.toLowerCase()) != null ? getValue(name.toLowerCase()) : 0;
-	}
+    public int getKills(String player) {
+        return (contains(player) ? getValue(player) : 0);
+    }
+
+    public void setKills(String player, int kills) {
+        updateValueAsync(player, kills);
+    }
+
 }

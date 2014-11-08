@@ -1,398 +1,217 @@
 package net.frozenorb.foxtrot.armor.kits;
 
-import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.armor.Armor;
 import net.frozenorb.foxtrot.armor.ArmorMaterial;
 import net.frozenorb.foxtrot.armor.Kit;
+import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.ParticleEffects;
-import org.bukkit.Bukkit;
+import net.minecraft.util.com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Connor Hollasch
  * @since 10/10/14
  */
-public class Bard extends Kit {
+public class Bard extends Kit implements Listener {
 
-    public Bard() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), new BardTask(), 20, 20);
+    public static final HashMap<Material, PotionEffect> BARD_CLICK_EFFECTS = new HashMap<Material, PotionEffect>();
+    public static final HashMap<Material, PotionEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, PotionEffect>();
 
-        Runnable applyNearby = () -> {
-            for (String pName : Kit.getEquippedKits().keySet()) {
-                Player player = Bukkit.getPlayer(pName);
-                if (player == null)
-                    continue;
+    @Getter private static Map<String, Long> positiveEffectCooldown = new HashMap<>();
+    @Getter private static Map<String, Long> negativeEffectCooldown = new HashMap<>();
 
-                if (Kit.getEquippedKits().get(pName) instanceof Bard) {
-                    if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation()))
-                        continue;
-
-                    for (Player p : getNearby(player, true, 15)) {
-                        if (Kit.getEquippedKits().get(p.getName()) instanceof Bard)
-                            continue;
-
-                        apply(p);
-                    }
-                }
-            }
-        };
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), applyNearby, 20, 20);
-
-        Runnable replenishStatics = () -> {
-            for (String pName : Kit.getEquippedKits().keySet()) {
-                Player player = Bukkit.getPlayer(pName);
-                if (player == null)
-                    continue;
-
-                if (Kit.getEquippedKits().get(pName) instanceof Bard) {
-                    if (!(player.hasPotionEffect(PotionEffectType.SPEED)))
-                        player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
-                    if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)))
-                        player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 0));
-                    if (!(player.hasPotionEffect(PotionEffectType.WEAKNESS)))
-                        player.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(Integer.MAX_VALUE, 1));
-                }
-            }
-        };
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), replenishStatics, 1, 1);
-    }
-
-    private static final HashMap<Material, PotionEffect> INSTANT_EFFECTS = new HashMap<>();
-    private static final HashMap<Material, PotionEffect> TIMED_EFFECTS = new HashMap<>();
-
-    private static final List<PotionEffectType> NEGATIVE_EFFECTS = Lists.newArrayList();
+    public static final int BARD_RANGE = 20;
 
     static {
-        NEGATIVE_EFFECTS.add(PotionEffectType.POISON);
-        NEGATIVE_EFFECTS.add(PotionEffectType.WEAKNESS);
-        NEGATIVE_EFFECTS.add(PotionEffectType.SLOW);
-        NEGATIVE_EFFECTS.add(PotionEffectType.WITHER);
+        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*5, 7));
+        BARD_CLICK_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(3*20, 0));
+        BARD_CLICK_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(10*20, 5));
+        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20*2, 0));
+        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
+        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
+        BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*45, 0));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*7, 0));
+        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*10, 3));
+        BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 45, 0));
+        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20 * 5, 1));
 
-        INSTANT_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*5, 7));
-        INSTANT_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(3*20, 0));
-        INSTANT_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(5*10, 5));
-        INSTANT_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20*2, 0));
-        INSTANT_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
-        INSTANT_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
-        INSTANT_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*10, 5));
-        INSTANT_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*50, 0));
-        INSTANT_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*5, 3));
-        INSTANT_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 5, 1));
-        INSTANT_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*5, 1));
+        BARD_CLICK_EFFECTS.put(Material.SPECKLED_MELON, null);
+        //BARD_CLICK_EFFECTS.put(Material.EYE_OF_ENDER, null);
+        BARD_CLICK_EFFECTS.put(Material.WHEAT, null);
 
-        INSTANT_EFFECTS.put(Material.SPECKLED_MELON, null);
-        INSTANT_EFFECTS.put(Material.EYE_OF_ENDER, null);
-        INSTANT_EFFECTS.put(Material.WHEAT, null);
-
-        TIMED_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
-        TIMED_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20*6, 0));
-        TIMED_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
+        BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
+        BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 6, 0));
+        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
+        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*6, 0));
+        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20*6, 1));
 
         //Custom code
         //Glistering Melon - Heals 6 Hearts Instantly
         //Eye Of Ender - Reveals Invisible Rouge Players within 80 blocks. (Forces a 30 second cool-down on the Rouge Player before they can go Invisible again)
         //Wheat - Heals 6 hunger points
-
-        //Enemy is anyone not in your faction 15 block radius
-    }
-
-    HashMap<String, Long> msgCooldown = new HashMap<>();
-
-    @Override
-    public void startWarmup(final Player p){
-        if(!(msgCooldown.containsKey(p.getName())) || msgCooldown.get(p.getName()) < System.currentTimeMillis()){
-            p.sendMessage(ChatColor.RED + "The " + ChatColor.BOLD + "Bard" + ChatColor.RED + " class has been temporarily disabled.");
-            msgCooldown.put(p.getName(), System.currentTimeMillis() + 30000L);
-        }
     }
 
     @Override
     public boolean qualifies(Armor armor) {
-        return armor.isFullSet(ArmorMaterial.GOLD);
+        return (armor.isFullSet(ArmorMaterial.GOLD));
     }
 
     @Override
     public String getName() {
-        return "Bard";
+        return ("Bard");
     }
 
     @Override
-    public void apply(Player p) {
-        remove(p);
+    public void apply(Player player) {
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
+            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
+        }
 
-        p.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
-        p.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
-        p.addPotionEffect(PotionEffectType.REGENERATION.createEffect(Integer.MAX_VALUE, 1));
-        p.addPotionEffect(PotionEffectType.WEAKNESS.createEffect(Integer.MAX_VALUE, 1));
-    }
-
-    @Override
-    public void remove(Player p) {
-        p.removePotionEffect(PotionEffectType.SPEED);
-        p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-        p.removePotionEffect(PotionEffectType.REGENERATION);
-        p.removePotionEffect(PotionEffectType.WEAKNESS);
+        smartAddPotion(player, PotionEffectType.SPEED.createEffect(200, 0));
+        smartAddPotion(player, PotionEffectType.DAMAGE_RESISTANCE.createEffect(200, 1));
+        smartAddPotion(player, PotionEffectType.REGENERATION.createEffect(200, 1));
+        smartAddPotion(player, PotionEffectType.WEAKNESS.createEffect(200, 1));
     }
 
     @Override
     public int getWarmup() {
-        return 5;
-    }
-
-    @Override
-    public double getCooldownSeconds() {
-        return 5;
+        return (10);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction().equals(Action.PHYSICAL))
+        if (!event.getAction().name().contains("RIGHT_") || !event.hasItem() || !BARD_CLICK_EFFECTS.containsKey(event.getItem().getType()) || !hasKitOn(event.getPlayer())) {
             return;
-
-        Player player = event.getPlayer();
-
-        if (Kit.getEquippedKits().get(player.getName()) == null || !(getEquippedKits().get(player.getName()) instanceof Bard))
-            return;
-
-        boolean canUse = true;
-        long duration = 0;
-
-        if (player.hasMetadata("bardCooldown")) {
-            canUse = false;
-            duration = (Long)player.getMetadata("bardCooldown").get(0).value();
-
-            if (duration < System.currentTimeMillis()) {
-                player.removeMetadata("bardCooldown", FoxtrotPlugin.getInstance());
-                canUse = true;
-            }
         }
 
-        ItemStack holding = player.getItemInHand();
-        if (holding == null)
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Bard effects cannot be used while in spawn.");
             return;
+        }
 
-        if (INSTANT_EFFECTS.containsKey(holding.getType())) {
-            if (FoxtrotPlugin.getInstance().getServerManager().isGlobalSpawn(player.getLocation())) {
-                player.sendMessage(ChatColor.RED+"You cannot use abilities in spawn!");
+        boolean negative = BARD_CLICK_EFFECTS.get(event.getItem().getType()) != null && Arrays.asList(FoxListener.DEBUFFS).contains(BARD_CLICK_EFFECTS.get(event.getItem().getType()).getType());
+
+        if (negative) {
+            if (negativeEffectCooldown.containsKey(event.getPlayer().getName()) && negativeEffectCooldown.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = negativeEffectCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
+
+                double value = (millisLeft / 1000D);
+                double sec = Math.round(10.0 * value) / 10.0;
+
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
                 return;
             }
 
-            //Is instant effect
-            if (!canUse) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eActivated abilities are on cooldown! &c" + ((duration - System.currentTimeMillis())/1000)+1 + " &9seconds remaining."));
+            negativeEffectCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
+        } else {
+            if (positiveEffectCooldown.containsKey(event.getPlayer().getName()) && positiveEffectCooldown.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = positiveEffectCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
+
+                double value = (millisLeft / 1000D);
+                double sec = Math.round(10.0 * value) / 10.0;
+
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
                 return;
             }
 
-            PotionEffect effect = INSTANT_EFFECTS.get(holding.getType());
-            if (effect == null) {
-                //Custom
-                if (holding.getType().equals(Material.SPECKLED_MELON)) {
+            positiveEffectCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
+        }
+
+        if (negative) {
+            ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
+        } else {
+            ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
+        }
+
+        giveBardEffect(event.getPlayer(), BARD_CLICK_EFFECTS.get(event.getItem().getType()), !negative);
+
+        if (event.getItem().getType() != Material.FEATHER) {
+            event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
+
+            if (event.getPlayer().getItemInHand().getAmount() == 0) {
+                event.getPlayer().setItemInHand(null);
+                event.getPlayer().updateInventory();
+            }
+        }
+    }
+
+    public static void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
+        for (Player player : getNearbyPlayers(source, friendly)) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
+                continue;
+            }
+
+            if (potionEffect != null) {
+                smartAddPotion(source, potionEffect);
+            } else {
+                Material material = source.getItemInHand().getType();
+
+                if (material == Material.SPECKLED_MELON) {
                     double add = 6.0;
-                    if (player.getHealth() + add > player.getMaxHealth()) {
+
+                    if ((player.getHealth() + add) > player.getMaxHealth()) {
                         player.setHealth(player.getMaxHealth());
                     } else {
-                        player.setHealth(player.getHealth()+add);
+                        player.setHealth(player.getHealth() + add);
                     }
-                }
-
-                if (holding.getType().equals(Material.WHEAT)) {
+                } else if (material == Material.WHEAT) {
                     int add = 6;
-                    if (player.getFoodLevel() + add > 20)
+
+                    if ((player.getFoodLevel() + add) > 20) {
                         player.setFoodLevel(20);
-                    else
-                        player.setFoodLevel(player.getFoodLevel()+add);
+                    } else {
+                        player.setFoodLevel(player.getFoodLevel() + add);
+                    }
                 }
             }
-            if (NEGATIVE_EFFECTS.contains(effect.getType())) {
-                //Is negative effect
-                List<Player> applyTo = getNearby(player, false, 12);
-                applyTo.add(player);
-
-                for (Player p : applyTo) {
-                    p.removePotionEffect(effect.getType());
-                    p.addPotionEffect(effect);
-
-                    playEffect(p, false);
-                }
-            } else {
-                List<Player> applyTo = getNearby(player, true, 12);
-                applyTo.add(player);
-
-                for (Player p : applyTo) {
-                    p.removePotionEffect(effect.getType());
-                    p.addPotionEffect(effect);
-
-                    playEffect(p, true);
-                }
-            }
-
-            if (effect.getType().equals(PotionEffectType.DAMAGE_RESISTANCE)) {
-                Runnable reset = () -> {
-                    player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 0));
-                };
-                Bukkit.getScheduler().scheduleSyncDelayedTask(FoxtrotPlugin.getInstance(), reset, effect.getDuration());
-            }
-
-            //Remove the item the player is holding
-            if (player.getInventory().getItemInHand().getAmount() > 1) {
-                ItemStack set = player.getInventory().getItemInHand();
-                set.setAmount(set.getAmount()-1);
-
-                player.getInventory().setItem(player.getInventory().getHeldItemSlot(), set);
-            } else
-                player.getInventory().setItem(player.getInventory().getHeldItemSlot(), new ItemStack(Material.AIR));
-
-            player.updateInventory();
-
-            //Add cooldown as meta
-            player.setMetadata("bardCooldown", new FixedMetadataValue(FoxtrotPlugin.getInstance(), System.currentTimeMillis() + (1000 * (long)getCooldownSeconds())));
-
-            player.playSound(player.getLocation(), Sound.BURP, 1, 1);
-            event.setCancelled(true);
         }
     }
 
-    private static void playEffect(Player player, boolean good) {
-        if (good)
-            ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, player.getLocation().add(0.5, 0.5, 0.5), 1, 1, 1, 1, 50);
-        if (!good)
-            ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, player.getLocation().add(0.5, 0.5, 0.5), 1, 1, 1, 1, 50);
-    }
+    public static List<Player> getNearbyPlayers(Player player, boolean friendly) {
+        List<Player> valid = Lists.newArrayList();
+        Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-    private static boolean hasCooldown(Player player) {
-        boolean canUse = true;
+        for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE, BARD_RANGE)) {
+            if (entity instanceof Player) {
+                Player nearbyPlayer = (Player) entity;
 
-        if (player == null)
-            return false;
+                if (sourceTeam == null) {
+                    if (!friendly) {
+                        valid.add(nearbyPlayer);
+                    }
 
-        if (player.hasMetadata("bardCooldown")) {
-            canUse = false;
-            long duration = (Long)player.getMetadata("bardCooldown").get(0).value();
-
-            if (duration < System.currentTimeMillis()) {
-                player.removeMetadata("bardCooldown", FoxtrotPlugin.getInstance());
-                canUse = true;
-            }
-        }
-
-        return !canUse;
-    }
-
-    private static List<Player> getNearby(Player player, boolean friendly, int radius) {
-        List<Player> nearby = Lists.newArrayList();
-        List<Player> official = Lists.newArrayList();
-
-        for (Entity ent : player.getNearbyEntities(radius, radius, radius)) {
-            if (!(ent instanceof Player))
-                continue;
-
-            nearby.add((Player)ent);
-        }
-
-        boolean hasTeam = FoxtrotPlugin.getInstance().getTeamManager().isOnTeam(player.getName());
-
-        for (Player p : nearby) {
-            if (!hasTeam && !friendly) {
-                official.add(p);
-                continue;
-            }
-
-            boolean isTeammate = false;
-
-            if (FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()) == null ||
-                    FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers() == null)
-                isTeammate = false;
-            else
-                isTeammate = FoxtrotPlugin.getInstance().getTeamManager().getPlayerTeam(player.getName()).getMembers().contains(p.getName());
-
-            if (friendly && isTeammate)
-                official.add(p);
-
-            if (!friendly && !isTeammate)
-                official.add(p);
-        }
-
-        official.remove(player);
-        return official;
-    }
-
-    private class BardTask implements Runnable {
-
-        private int tick = 0;
-
-        public void run() {
-            tick++;
-
-            for (String pName : Kit.getEquippedKits().keySet()) {
-                Player player = Bukkit.getPlayer(pName);
-                if (player == null)
                     continue;
+                }
 
-                if (Kit.getEquippedKits().get(pName) instanceof Bard) {
-                    if (hasCooldown(player))
-                        continue;
+                boolean isTeammate = sourceTeam.isMember(nearbyPlayer.getName());
 
-                    if (TIMED_EFFECTS.containsKey(player.getItemInHand().getType())) {
-                        PotionEffect effect = TIMED_EFFECTS.get(player.getItemInHand().getType());
-
-                        if (hasSpeedOne(player)) {
-                            Runnable setup = () -> {
-                                player.removePotionEffect(effect.getType());
-                                player.addPotionEffect(effect);
-                            };
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(FoxtrotPlugin.getInstance(), setup, 20);
-                            continue;
-                        }
-
-                        if (tick % 5 != 0)
-                            continue;
-
-                        player.removePotionEffect(effect.getType());
-                        player.addPotionEffect(effect);
-                    }
-
-                    if (!(player.hasPotionEffect(PotionEffectType.SPEED))) {
-                        player.addPotionEffect(PotionEffectType.SPEED.createEffect(Integer.MAX_VALUE, 0));
-                    }
-
-                    if (!(player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE))) {
-                        player.addPotionEffect(PotionEffectType.DAMAGE_RESISTANCE.createEffect(Integer.MAX_VALUE, 1));
-                    }
-
-                    if (player.getItemInHand().getType().equals(Material.FEATHER)) {
-                        List<Player> team = getNearby(player, true, 12);
-                        team.remove(player);
-
-                        for (Player t : team) {
-                            t.removePotionEffect(PotionEffectType.JUMP);
-                            t.addPotionEffect(PotionEffectType.JUMP.createEffect(20*3, 1));
-                        }
-                    }
+                if (friendly && isTeammate) {
+                    valid.add(nearbyPlayer);
+                } else if (!friendly && !isTeammate) {
+                    valid.add(nearbyPlayer);
                 }
             }
         }
 
-        private boolean hasSpeedOne(Player p) {
-            for (PotionEffect e : p.getActivePotionEffects()) {
-                if (e.getAmplifier() == 0 && e.getType().equals(PotionEffectType.SPEED))
-                    return true;
-            }
-            return false;
-        }
+        valid.add(player);
+        return (valid);
     }
+
 }
