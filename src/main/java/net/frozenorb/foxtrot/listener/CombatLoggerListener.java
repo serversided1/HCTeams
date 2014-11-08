@@ -129,7 +129,7 @@ public class CombatLoggerListener implements Listener {
             Villager villager = (Villager) event.getEntity();
             String playerName = villager.getCustomName().substring(2);
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(villager.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(villager.getLocation()))) {
                 event.setCancelled(true);
                 return;
             }
@@ -152,7 +152,11 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If the player is in spawn
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+            return;
+        }
+
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(event.getPlayer())) {
             return;
         }
 

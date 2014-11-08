@@ -43,6 +43,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,8 +285,25 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent e) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation()) && e.getFoodLevel() < ((Player) e.getEntity()).getFoodLevel()) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation()) && e.getFoodLevel() < ((Player) e.getEntity()).getFoodLevel()) {
             e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        ItemStack oldSlot = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
+
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE && oldSlot != null && oldSlot.getType() == Material.REDSTONE_BLOCK) {
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                new BukkitRunnable() {
+
+                    public void run() {
+                        NametagManager.reloadPlayer(player, event.getPlayer());
+                    }
+
+                }.runTaskLater(FoxtrotPlugin.getInstance(), 2L);
+            }
         }
     }
 
@@ -294,7 +312,7 @@ public class FoxListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName();
 
-        NametagManager.sendPacketsInitialize(event.getPlayer());
+        NametagManager.initPlayer(event.getPlayer());
         NametagManager.sendTeamsToPlayer(event.getPlayer());
         NametagManager.reloadPlayer(event.getPlayer());
 
@@ -372,12 +390,12 @@ public class FoxListener implements Listener {
         if (e.getEntity() instanceof Player && killer != null) {
             Player vic = (Player) e.getEntity();
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(vic.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(vic.getLocation())) {
                 e.setCancelled(true);
                 return;
             }
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(killer.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(killer.getLocation())) {
                 e.setCancelled(true);
                 return;
             }
@@ -393,11 +411,11 @@ public class FoxListener implements Listener {
                 ServerHandler.getTasks().remove(p.getName());
                 p.sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
             }
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(p.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(p.getLocation())) {
                 e.setCancelled(true);
             }
         } else if (e.getEntity() instanceof Horse) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(e.getEntity().getLocation())) {
                 e.setCancelled(true);
             }
         }
@@ -408,13 +426,13 @@ public class FoxListener implements Listener {
 
                 if (e.getEntity() instanceof Player) {
                     Player rec = (Player) e.getEntity();
-                    if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
                         p.sendMessage(ChatColor.RED + "You cannot attack others while you have your PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
                         e.setCancelled(true);
                         return;
                     }
 
-                    if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(rec)) {
+                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(rec)) {
                         p.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
                         e.setCancelled(true);
                         return;
@@ -438,7 +456,6 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent e) {
-
         if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(e.getPlayer())) {
             return;
         }
@@ -446,18 +463,15 @@ public class FoxListener implements Listener {
         Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(e.getBlockClicked().getRelative(e.getBlockFace()).getLocation());
 
         if (owner != null && !owner.isMember(e.getPlayer())) {
-
             e.setCancelled(true);
             e.getBlockClicked().getRelative(e.getBlockFace()).setType(Material.AIR);
-
             e.setItemStack(new ItemStack(e.getBucket()));
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(e.getBlockClicked().getLocation())) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(e.getBlockClicked().getLocation())) {
             e.setCancelled(true);
             e.getBlockClicked().getRelative(e.getBlockFace()).setType(Material.AIR);
-
             e.setItemStack(new ItemStack(e.getBucket()));
         }
     }
@@ -503,9 +517,9 @@ public class FoxListener implements Listener {
         if (e.getEntity() instanceof Player) {
             Player p = (Player) e.getEntity();
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
                 p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-                p.sendMessage(ChatColor.RED + "Type '§e/pvp enable§c' to remove your timer.");
+                p.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                 e.setCancelled(true);
             }
         }
@@ -531,14 +545,14 @@ public class FoxListener implements Listener {
                 Potion pot = Potion.fromItemStack(i);
 
                 if (pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
-                    if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
+                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(p)) {
                         p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                         p.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                         event.setCancelled(true);
                         return;
                     }
 
-                    if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(p.getLocation())) {
+                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(p.getLocation())) {
                         event.setCancelled(true);
                         event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
                         event.getPlayer().updateInventory();
@@ -616,7 +630,7 @@ public class FoxListener implements Listener {
 
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getBlock().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -754,7 +768,7 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (lastDamageLocation != null && event.getItem() != null && event.getItem().getType() == Material.EMERALD && event.getPlayer().getGameMode() == GameMode.CREATIVE && !event.isCancelled()) {
+        if (lastDamageLocation != null && event.getItem() != null && event.getItem().getType() == Material.EMERALD && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
             event.getPlayer().teleport(lastDamageLocation);
         }
     }

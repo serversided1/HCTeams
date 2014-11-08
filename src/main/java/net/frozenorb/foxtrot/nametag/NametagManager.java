@@ -2,258 +2,155 @@ package net.frozenorb.foxtrot.nametag;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.server.SpawnTag;
 import net.frozenorb.foxtrot.team.Team;
-
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * This class dynamically creates teams with numerical names and certain
- * prefixes/suffixes (it ignores teams with other characters) to assign unique
- * prefixes and suffixes to specific players in the game. This class makes edits
- * to the <b>scoreboard.dat</b> file, adding and removing teams on the fly.
- * 
- * @author Kerem Celik
- * 
- */
 @SuppressWarnings("deprecation")
 public class NametagManager {
-	private static final String TEAM_NAME_PREFIX = "K_MONEY_";
 
-	private static List<String> list = new ArrayList<String>();
+	private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
 
 	@Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
-	private static final TeamInfo FRIENDLY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "FRIENDLY", "§a", "");
-	private static final TeamInfo ENEMY_TEAM = new TeamInfo(TEAM_NAME_PREFIX + "ENEMY", "§c", "");
+    static {
+        new BukkitRunnable() {
 
-	/**
-	 * This is player team packet -> p
-	 * 
-	 */
-	public static void reloadPlayer(Player player) {
+            public void run() {
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (player.getGameMode() == GameMode.CREATIVE && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
+                        for (Player player2 : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                            NametagManager.reloadPlayer(player2, player);
+                        }
+                    }
+                }
+            }
 
-		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 2L, 2L);
+    }
 
-        Bukkit.getOnlinePlayers();
-
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			TeamInfo teamInfo = ENEMY_TEAM;
-
-			if (t != null && t == FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName())) {
-				teamInfo = FRIENDLY_TEAM;
-			}
-
-			if (p == player) {
-				teamInfo = FRIENDLY_TEAM;
-			}
-
-			HashMap<String, TeamInfo> ti = new HashMap<String, TeamInfo>();
-
-			if (teamMap.containsKey(p.getName())) {
-				ti = teamMap.get(p.getName());
-
-				if (ti.containsKey(player.getName())) {
-					TeamInfo tem = ti.get(player.getName());
-
-					if (tem == teamInfo) {
-						continue;
-					}
-
-					sendPacketsRemoveFromTeam(tem, player.getName(), p);
-					ti.remove(player.getName());
-					list.remove(tem.getName());
-
-				}
-			}
-
-			sendPacketsAddToTeam(teamInfo, new String[] { player.getName() }, p);
-
-			ti.put(player.getName(), teamInfo);
-			teamMap.put(p.getName(), ti);
-
-		}
+	public static void reloadPlayer(Player toRefresh) {
+        for (Player refreshFor : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            reloadPlayer(toRefresh, refreshFor);
+        }
 	}
 
-	public static void sendPacketsInitialize(Player p) {
-		sendPacketsAddTeam(FRIENDLY_TEAM, p);
-		sendPacketsAddTeam(ENEMY_TEAM, p);
-	}
+    public static void reloadPlayer(Player toRefresh, Player refreshFor) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
+        TeamInfo teamInfo = getOrCreate(ChatColor.RED.toString(), "");
 
-	public static void cleanupTeams(Player p) {
-		sendPacketsRemoveTeam(FRIENDLY_TEAM, p);
-		sendPacketsRemoveTeam(ENEMY_TEAM, p);
+        if (team != null && team.isMember(refreshFor.getName()) || refreshFor == toRefresh) {
+            teamInfo = getOrCreate(ChatColor.GREEN.toString(), "");
+        }
 
-	}
+        if (refreshFor.getGameMode() == GameMode.CREATIVE && refreshFor.getItemInHand() != null && refreshFor.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
+            String enderpearlString = "";
+            String combatTagString = "";
 
-	public static void clear(Player player) {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			if (teamMap.containsKey(p.getName())) {
-				HashMap<String, TeamInfo> ti = teamMap.get(p.getName());
+            if (EnderpearlListener.getEnderpearlCooldown().containsKey(toRefresh.getName()) && EnderpearlListener.getEnderpearlCooldown().get(toRefresh.getName()) > System.currentTimeMillis()) {
+                long millisLeft = EnderpearlListener.getEnderpearlCooldown().get(toRefresh.getName()) - System.currentTimeMillis();
+                double value = (millisLeft / 1000D);
+                double sec = Math.round(10.0 * value) / 10.0;
 
-				if (ti.containsKey(player.getName())) {
-					TeamInfo tem = ti.get(player.getName());
+                enderpearlString = sec + " ";
+            }
 
-					sendPacketsRemoveFromTeam(tem, player.getName(), p);
-					ti.remove(player.getName());
-					list.remove(tem.getName());
+            if (SpawnTag.isTagged(toRefresh)) {
+                SpawnTag spawnTag = SpawnTag.getSpawnTags().get(toRefresh.getName());
 
-					teamMap.put(p.getName(), ti);
+                if (spawnTag.getExpires() > System.currentTimeMillis()) {
+                    long millisLeft = spawnTag.getExpires() - System.currentTimeMillis();
+                    double value = (millisLeft / 1000D);
+                    double sec = Math.round(10.0 * value) / 10.0;
 
-				}
-			}
-		}
-	}
+                    combatTagString = " " + sec;
+                }
+            }
 
-	/**
-	 * This is p team packet -> player
-	 * 
-	 */
+            teamInfo = getOrCreate(ChatColor.YELLOW.toString() + enderpearlString + teamInfo.getPrefix(), ChatColor.DARK_RED + combatTagString);
+        }
+
+        HashMap<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();
+
+        if (teamMap.containsKey(refreshFor.getName())) {
+            teamInfoMap = teamMap.get(refreshFor.getName());
+
+            if (teamInfoMap.containsKey(toRefresh.getName())) {
+                TeamInfo tem = teamInfoMap.get(toRefresh.getName());
+
+                if (tem != teamInfo) {
+                    sendPacketsRemoveFromTeam(tem, toRefresh.getName(), refreshFor);
+                    teamInfoMap.remove(toRefresh.getName());
+                }
+            }
+        }
+
+        sendPacketsAddToTeam(teamInfo, new String[] { toRefresh.getName() }, refreshFor);
+        teamInfoMap.put(toRefresh.getName(), teamInfo);
+        teamMap.put(refreshFor.getName(), teamInfoMap);
+    }
+
+    public static void initPlayer(Player player) {
+        for (TeamInfo teamInfo : registeredTeams) {
+            sendPacketsAddTeam(teamInfo, player);
+        }
+    }
+
+    public static TeamInfo getOrCreate(String prefix, String suffix) {
+        for (TeamInfo teamInfo : registeredTeams) {
+            if (teamInfo.getPrefix().equals(prefix) && teamInfo.getSuffix().equals(suffix)) {
+                return (teamInfo);
+            }
+        }
+
+        TeamInfo newTeam = new TeamInfo(prefix + "." + suffix, prefix, suffix);
+        registeredTeams.add(newTeam);
+
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            sendPacketsAddTeam(newTeam, player);
+        }
+
+        return (newTeam);
+    }
+
 	public static void sendTeamsToPlayer(Player player) {
-		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			TeamInfo teamInfo = ENEMY_TEAM;
-
-			if (t != null && t == FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(p.getName())) {
-				teamInfo = FRIENDLY_TEAM;
-			}
-
-			if (p == player) {
-				teamInfo = FRIENDLY_TEAM;
-			}
-
-			HashMap<String, TeamInfo> ti = new HashMap<String, TeamInfo>();
-
-			if (teamMap.containsKey(player.getName())) {
-				ti = teamMap.get(player.getName());
-
-				if (ti.containsKey(p.getName())) {
-					TeamInfo tem = ti.get(p.getName());
-
-					if (tem == teamInfo) {
-						continue;
-					}
-
-					sendPacketsRemoveFromTeam(tem, p.getName(), player);
-					ti.remove(p.getName());
-
-					list.remove(tem.getName());
-				}
-			}
-
-			sendPacketsAddToTeam(teamInfo, new String[] { p.getName() }, player);
-
-			ti.put(p.getName(), teamInfo);
-			teamMap.put(player.getName(), ti);
-
-		}
+        for (Player toRefresh : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            reloadPlayer(toRefresh, player);
+        }
 	}
 
-	/**
-	 * Returns the next available team name that is not taken.
-	 * 
-	 * @return an integer that for a team name that is not taken.
-	 */
-	public static int nextName() {
-		int at = 0;
-		boolean cont = true;
-		while (cont) {
-			cont = false;
-			for (String t : list.toArray(new String[list.size()])) {
-				if (t.equals(at + "")) {
-					at++;
-					cont = true;
-				}
-
-			}
-		}
-		list.add(at + "");
-		return at;
-	}
-
-	/**
-	 * Sends packets out to players to add the given team
-	 * 
-	 * @param team
-	 *            the team to add
-	 */
 	public static void sendPacketsAddTeam(TeamInfo team, Player p) {
-
 		try {
-
-			ScoreboardTeamPacketMod mod = new ScoreboardTeamPacketMod(team.getName(), team.getPrefix(), team.getSuffix(), new ArrayList<String>(), 0);
-			mod.sendToPlayer(p);
-		}
-		catch (Exception e) {
-			System.out.println("Failed to send packet for player : ");
+            (new ScoreboardTeamPacketMod(team.getName(), team.getPrefix(), team.getSuffix(), new ArrayList<String>(), 0)).sendToPlayer(p);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Sends packets out to players to remove the given team
-	 * 
-	 * @param team
-	 *            the team to remove
-	 */
-	public static void sendPacketsRemoveTeam(TeamInfo team, Player p) {
-
-		try {
-			ScoreboardTeamPacketMod mod = new ScoreboardTeamPacketMod(team.getName(), team.getPrefix(), team.getSuffix(), new ArrayList<String>(), 1);
-			mod.sendToPlayer(p);
-		}
-		catch (Exception e) {
-			System.out.println("Failed to send packet for player : ");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Sends out packets to players to add the given player to the given team
-	 * 
-	 * @param team
-	 *            the team to use
-	 * @param player
-	 *            the player to add
-	 */
 	public static void sendPacketsAddToTeam(TeamInfo team, String[] player, Player p) {
-
 		try {
-
-			ScoreboardTeamPacketMod mod = new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 3);
-			mod.sendToPlayer(p);
-		}
-		catch (Exception e) {
-			System.out.println("Failed to send packet for player : ");
+            (new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 3)).sendToPlayer(p);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Sends out packets to players to remove the given player from the given
-	 * team.
-	 * 
-	 * @param team
-	 *            the team to remove from
-	 * @param player
-	 *            the player to remove
-	 */
 	public static void sendPacketsRemoveFromTeam(TeamInfo team, String player, Player tp) {
-
 		try {
-
-			ScoreboardTeamPacketMod mod = new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 4);
-			mod.sendToPlayer(tp);
-		}
-		catch (Exception e) {
-			System.out.println("Failed to send packet for player : ");
+            (new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 4)).sendToPlayer(tp);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 }

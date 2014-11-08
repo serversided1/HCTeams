@@ -77,7 +77,7 @@ public class Bard extends Kit implements Listener {
                     if (hasKitOn(player)) {
                         apply(player);
 
-                        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
+                        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
                             giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
                         }
                     }
@@ -124,7 +124,7 @@ public class Bard extends Kit implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + "Bard effects cannot be used while in spawn.");
             return;
         }
@@ -177,7 +177,7 @@ public class Bard extends Kit implements Listener {
 
     public static void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
         for (Player player : getNearbyPlayers(source, friendly)) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
                 continue;
             }
 

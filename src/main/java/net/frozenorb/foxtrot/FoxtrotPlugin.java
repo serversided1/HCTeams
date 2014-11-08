@@ -154,10 +154,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		for (Player player : getServer().getOnlinePlayers()) {
 			playtimeMap.playerJoined(player);
-
-			NametagManager.sendPacketsInitialize(player);
 			NametagManager.reloadPlayer(player);
-
 			player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
 		}
 
@@ -184,10 +181,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	public void onDisable() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			playtimeMap.playerQuit(player);
-
 			NametagManager.getTeamMap().remove(player.getName());
-			NametagManager.cleanupTeams(player);
-
 			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
 

@@ -213,6 +213,7 @@ public class EnchantmentLimiterListener implements Listener {
             event.setCurrentItem(item);
             FoxtrotPlugin.getInstance().getServerHandler().getUsedNames().add(displayName);
             FoxtrotPlugin.getInstance().getServerHandler().save();
+            player.sendMessage(ChatColor.GREEN + "Claimed the name '" + displayName + "'.");
         }
     }
 

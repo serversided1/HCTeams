@@ -1,39 +1,44 @@
 package net.frozenorb.foxtrot.server;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.Team;
-
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Damageable;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 
 @AllArgsConstructor
 public enum Region {
 
     SPAWN(true, "§aSpawn", (e) -> {
-        if (SpawnTag.isTagged(e.getPlayer())) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return true;
+        }
+
+        if (SpawnTag.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
         }
 
-        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
+        e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
         e.getPlayer().setFoodLevel(20);
 
         return true;
     }),
 
     SPAWN_NETHER(true, "§aNether Spawn", (e) -> {
-        if (SpawnTag.isTagged(e.getPlayer())) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return true;
+        }
+
+        if (SpawnTag.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
         }
 
-        e.getPlayer().setHealth(((Damageable) e.getPlayer()).getMaxHealth());
+        e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
         e.getPlayer().setFoodLevel(20);
         return true;
     }),
@@ -49,6 +54,10 @@ public enum Region {
     }),
 
     EXIT_END(true, "§aEnd Exit", (e) -> {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return true;
+        }
+
         if (SpawnTag.isTagged(e.getPlayer())) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end exit while spawn-tagged.");
             e.setTo(e.getFrom());
@@ -65,8 +74,13 @@ public enum Region {
 	WILDNERNESS(false, "§7The Wilderness", (e) -> true),
 
 	KOTH_ARENA(true, "", (e) -> {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return true;
+        }
+
 		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
-			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a KOTH arena with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
+            e.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             e.setTo(e.getFrom());
 			return false;
 		}
@@ -93,16 +107,26 @@ public enum Region {
 			}
 		}
 
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return true;
+        }
+
 		if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(e.getPlayer())) {
 			e.setTo(e.getFrom());
-			e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter claims with a PVP Timer. Type '§e/pvptimer remove§c' to remove your timer.");
+            e.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
+            e.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
 			return false;
 		}
 
 		return true;
 	});
 
-	@Getter private boolean reducedDeathban;
+	private boolean reducedDeathban;
+
+    public boolean isReducedDeathban() {
+        return (reducedDeathban && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW());
+    }
+
 	@Getter private String displayName;
 	@Getter private RegionMoveHandler moveHandler;
 

@@ -15,16 +15,14 @@ public class HighrollerListCommand {
         StringBuilder highRollers = new StringBuilder();
 
         for (String highRoller : FoxtrotPlugin.getInstance().getServerHandler().getHighRollers()) {
-            highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.YELLOW).append(", ");
+            highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
         }
 
         if (highRollers.length() > 2) {
             highRollers.setLength(highRollers.length() - 2);
-        } else {
-            highRollers.append(ChatColor.GRAY).append("No results.");
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "HighRollers: " + highRollers.toString());
+        sender.sendMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
     }
 
 }

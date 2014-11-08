@@ -33,7 +33,7 @@ public class PotionLimiterListener implements Listener {
         ItemStack potion = event.getPotion().getItem();
 
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(livingEntity.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(livingEntity.getLocation())) {
                 event.setIntensity(livingEntity, 0D);
             }
         }

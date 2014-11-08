@@ -74,10 +74,9 @@ public class Team {
             }
 
             if (Math.abs(newDTR - dtr) > 0.4) {
-                //FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
+                FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
             }
 
-            //FactionActionTracker.logAction(this, "actions", "DTR Change: " + dtr + " -> " + newDTR);
             FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
             this.dtr = newDTR;
             setChanged(true);

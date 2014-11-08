@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -26,7 +25,6 @@ public class FreezeCommand {
 
     public static final String FROZEN_MESSAGE = ChatColor.RED + "You may not do this while frozen!";
     private static Set<String> frozen = new HashSet<String>();
-    private static boolean listener = false;
 
     static {
         Bukkit.getPluginManager().registerEvents(new Listener() {
@@ -75,10 +73,7 @@ public class FreezeCommand {
             @EventHandler
             public void onPlayerInteract(PlayerInteractEvent event) {
                 if (isFrozen(event.getPlayer())) {
-                    event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're frozen!");
                     event.setCancelled(true);
-                    event.setUseItemInHand(Event.Result.DENY);
-                    event.setUseInteractedBlock(Event.Result.DENY);
                 }
             }
 
@@ -202,4 +197,5 @@ public class FreezeCommand {
     public static boolean isFrozen(Player player) {
         return frozen.contains(player.getName());
     }
+
 }

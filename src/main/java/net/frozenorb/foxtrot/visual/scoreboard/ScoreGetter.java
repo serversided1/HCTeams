@@ -70,7 +70,7 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                 return (NO_SCORE);
             }
 

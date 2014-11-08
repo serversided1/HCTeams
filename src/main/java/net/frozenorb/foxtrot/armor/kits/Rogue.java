@@ -116,14 +116,18 @@ public class Rogue extends Kit {
 
 	@Override
 	public double getCooldownSeconds() {
-		return 0.5;
+		return 0.6;
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onEntityArrowHit(EntityDamageByEntityEvent e) {
-		if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-			Player damager = (Player) e.getDamager();
-			Player victim = (Player) e.getEntity();
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onEntityArrowHit(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+			Player damager = (Player) event.getDamager();
+			Player victim = (Player) event.getEntity();
 
 			if (damager.getItemInHand() != null && damager.getItemInHand().getType() == Material.GOLD_SWORD && hasKitOn(damager) && !hasCooldown(damager, true)) {
                 Vector playerVector = damager.getLocation().getDirection();
@@ -140,7 +144,12 @@ public class Rogue extends Kit {
 					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
 					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
-					e.setDamage(0D);
+                    if (victim.getHealth() - 7D <= 0) {
+                        event.setCancelled(true);
+                    } else {
+                        event.setDamage(0D);
+                    }
+
                     DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
 					victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
 					

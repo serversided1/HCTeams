@@ -96,10 +96,7 @@ public class BorderListener implements Listener {
                     newLocation.setZ(BORDER_SIZE - 2);
                 }
 
-				Vector vec = event.getFrom().toVector().subtract(event.getTo().toVector()).normalize();
-
-				event.getPlayer().setVelocity(vec.multiply(0.8));
-                event.setTo(newLocation);
+                event.getPlayer().teleport(newLocation);
                 event.getPlayer().sendMessage(ChatColor.RED + "You have hit the border!");
 			}
 		}

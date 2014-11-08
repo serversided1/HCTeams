@@ -99,7 +99,7 @@ public class PacketBorder {
                             border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
                         }
 
-                        if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                        if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
                             CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
                             Location min = crAdd.getMinimumPoint();
@@ -115,7 +115,7 @@ public class PacketBorder {
                 }
             } else if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player)) {
                 for (Claim cBack : LandBoard.getInstance().getClaims()) {
-                    if (cBack.isWithin(x, z, 8)) {
+                    if (cBack.isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                         Claim c = cBack.clone();
 
                         c.setY1(0);
@@ -127,7 +127,7 @@ public class PacketBorder {
             } else if (SpawnTag.isTagged(player)) {
                 for (CuboidRegion cr : regionManagerRegions) {
                     if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
-                        if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8)) {
+                        if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
                             CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
                             Location min = crAdd.getMinimumPoint();

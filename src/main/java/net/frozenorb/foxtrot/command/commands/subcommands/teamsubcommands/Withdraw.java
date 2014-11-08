@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class Withdraw {
 
     @Command(names={ "team withdraw", "t withdraw", "f withdraw", "faction withdraw", "fac withdraw", "team w", "t w", "f w", "faction w", "fac w" }, permissionNode="")
-    public static void teamInvite(Player sender, @Param(name="amount") int amount) {
+    public static void teamInvite(Player sender, @Param(name="amount") float amount) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

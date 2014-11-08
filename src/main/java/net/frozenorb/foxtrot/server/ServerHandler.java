@@ -73,6 +73,7 @@ public class ServerHandler {
     @Getter private HashSet<String> highRollers = new HashSet<String>();
 
     @Getter @Setter private boolean EOTW = false;
+    @Getter @Setter private boolean PreEOTW = false;
 
 	public ServerHandler() {
 		try {
@@ -195,21 +196,6 @@ public class ServerHandler {
 		return ((x < WARZONE_RADIUS && x > -WARZONE_RADIUS) && (z < WARZONE_RADIUS && z > -WARZONE_RADIUS));
 	}
 
-	public boolean areOnSameTeam(String s1, String s2) {
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(s1);
-		Team warpeeTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(s2);
-
-		if (team == null || warpeeTeam == null) {
-			return (false);
-		}
-
-		if (team == warpeeTeam) {
-            return (true);
-        }
-
-		return (false);
-	}
-
 	public void startLogoutSequence(final Player player) {
 		player.sendMessage(ChatColor.YELLOW + "§lLogging out... §ePlease wait§c 30§e seconds.");
 		final AtomicInteger seconds = new AtomicInteger(30);
@@ -298,11 +284,12 @@ public class ServerHandler {
 	}
 
 	public void beginWarp(final Player player, final Team team, int price, TeamLocationType type) {
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || isGlobalSpawn(player.getLocation())) {
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && isGlobalSpawn(player.getLocation()))) {
             if (FoxtrotPlugin.getInstance().getJoinTimerMap().hasTimer(player) || FoxtrotPlugin.getInstance().getJoinTimerMap().getValue(player.getName()) == JoinTimerMap.PENDING_USE) {
                 FoxtrotPlugin.getInstance().getJoinTimerMap().updateValue(player.getName(), -1L);
             }
 
+            FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
 			player.teleport(team.getHq());
 			return;
 		}
@@ -435,8 +422,8 @@ public class ServerHandler {
     }
 
     public int getDeathBanAt(String playerName, Location loc) {
-        if (isEOTW()) {
-            return ((int) TimeUnit.DAYS.toSeconds(10));
+        if (isPreEOTW()) {
+            return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
         Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
@@ -450,6 +437,7 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
+        // ALPHA
         long max = TimeUnit.HOURS.toSeconds(2);
         long ban;
 

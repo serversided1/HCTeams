@@ -75,7 +75,7 @@ public class EnderpearlListener implements Listener {
         Location target = event.getTo();
         Location from = event.getFrom();
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target)) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target)) {
             if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");

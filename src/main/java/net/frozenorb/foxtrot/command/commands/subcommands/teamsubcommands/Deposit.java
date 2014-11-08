@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class Deposit {
 
     @Command(names={ "team deposit", "t deposit", "f deposit", "faction deposit", "fac deposit", "team d", "t d", "f d", "faction d", "fac d" }, permissionNode="")
-    public static void teamDeposit(Player sender, @Param(name="amount") int amount) {
+    public static void teamDeposit(Player sender, @Param(name="amount") float amount) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

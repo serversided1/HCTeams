@@ -21,10 +21,6 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? ChatColor.DARK_PURPLE + "[HighRoller]" : "";
 
@@ -49,8 +45,6 @@ public class ChatListener implements Listener {
             event.setMessage(event.getMessage().substring(1));
         }
 
-        event.setCancelled(true);
-
         if (!doGlobalChat && (event.getPlayer().hasMetadata("teamChat") || doTeamChat)) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (members.contains(player.getName())) {
@@ -60,6 +54,7 @@ public class ChatListener implements Listener {
 
             FactionActionTracker.logAction(team, "chat", event.getPlayer().getName() + ": " + event.getMessage());
             FoxtrotPlugin.getInstance().getServer().getLogger().info("[TeamChat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+            event.setCancelled(true);
             return;
         }
 
@@ -67,6 +62,12 @@ public class ChatListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
             return;
         }
+
+        if (event.isCancelled()) {
+            return;
+        }
+
+        event.setCancelled(true);
 
         String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 
