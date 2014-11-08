@@ -1,9 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,11 +26,7 @@ public class PortalTrapListener implements Listener {
             if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getFrom())){
                 event.setCancelled(true);
 
-                // NEXT MAP
-                // Why are we hardcoding the location...
-                Location loc = new Location(Bukkit.getWorld("world"), -53.5, 66.0, -29.5);
-
-                player.teleport(loc);
+                player.teleport(FoxtrotPlugin.getInstance().getServer().getWorld("world").getSpawnLocation());
                 player.sendMessage(ChatColor.GREEN + "Teleported to overworld spawn!");
                 return;
             }

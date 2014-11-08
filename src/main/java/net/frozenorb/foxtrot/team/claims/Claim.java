@@ -61,9 +61,6 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
-        // ALPHA
-        curPrice /= 2.0D;
-
         return (int) curPrice;
     }
 

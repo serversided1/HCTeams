@@ -342,10 +342,6 @@ public class Team {
         // Change the DTR regen per hour to per minute.
 		BigDecimal dtrPerMinute = dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN);
 
-        //DTR regain multiplier
-        // ALPHA
-        dtrPerMinute = dtrPerMinute.multiply(new BigDecimal(3));
-
         return (dtrPerMinute);
 	}
 

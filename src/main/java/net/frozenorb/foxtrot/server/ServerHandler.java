@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ServerHandler {
 
     // NEXT MAP //
-	public static final int WARZONE_RADIUS = 750;
+	public static final int WARZONE_RADIUS = 1000;
 
     // NEXT MAP //
 	public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(8225, 16417, 16449, 16386,
@@ -437,8 +437,7 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        // ALPHA
-        long max = TimeUnit.HOURS.toSeconds(2);
+        long max = TimeUnit.HOURS.toSeconds(24);
         long ban;
 
         if (Bukkit.getPlayerExact(playerName) != null && playtime.contains(playerName)){
@@ -601,11 +600,6 @@ public class ServerHandler {
 				removeItem(p, it, amountInInventory);
 				p.updateInventory();
 
-                // ALPHA
-                totalPrice *= 4;
-                p.sendMessage(ChatColor.GOLD + "Sold for 4x as much (Alpha stage).");
-                // ALPHA
-
 				Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
 
 				String[] msgs = {
@@ -745,7 +739,7 @@ public class ServerHandler {
 	}
 
     // NEXT MAP //
-	public void loadEnchantments(){
+	public void loadEnchantments() {
         //Max armor enchants
         maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
 

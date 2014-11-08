@@ -13,9 +13,7 @@ import org.bukkit.scoreboard.*;
 public class FoxtrotBoard {
 
     // NEXT MAP
-    //public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Map #]";
-    // ALPHA
-    public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Alpha]";
+    public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Map 1]";
 
     @Getter
     private Player player;

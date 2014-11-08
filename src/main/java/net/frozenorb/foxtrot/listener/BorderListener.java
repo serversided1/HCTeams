@@ -14,7 +14,7 @@ import org.bukkit.util.Vector;
 public class BorderListener implements Listener {
 
     // NEXT MAP
-	public static int BORDER_SIZE = 2500;
+	public static int BORDER_SIZE = 3000;
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
