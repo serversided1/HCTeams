@@ -5,6 +5,7 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
@@ -38,6 +39,7 @@ public class MapHandler {
                 dbo.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
                 dbo.put("warzone", 1000);
                 dbo.put("border", 3000);
+                dbo.put("scoreboardTimersEnabled", true);
 
                 enchants.put("PROTECTION_FALL", 4);
                 enchants.put("ARROW_DAMAGE", 2);
@@ -61,6 +63,7 @@ public class MapHandler {
                 this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbo.getString("scoreboardTitle"));
                 ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone");
                 BorderListener.BORDER_SIZE = dbo.getInt("border");
+                ScoreboardHandler.scoreboardTimerEnabled = dbo.getBoolean("scoreboardTimersEnabled", true);
 
                 for (Map.Entry<String, Object> enchant : ((BasicDBObject) dbo.get("enchants")).entrySet()) {
                     maxEnchantments.put(Enchantment.getByName(enchant.getKey()), (Integer) enchant.getValue());

@@ -409,7 +409,7 @@ public class ServerHandler {
 
     public float getDTRLossAt(Location loc) {
         // MAP 0.9
-        return (0F);
+        return (0.1F);
 
         /*Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 

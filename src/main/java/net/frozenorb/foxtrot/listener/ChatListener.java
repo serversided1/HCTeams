@@ -42,6 +42,10 @@ public class ChatListener implements Listener {
 
         switch (chatMode) {
             case PUBLIC:
+                if (event.isCancelled()) {
+                    return;
+                }
+
                 if (Mute.factionMutes.containsKey(event.getPlayer().getName())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
                     event.setCancelled(true);
