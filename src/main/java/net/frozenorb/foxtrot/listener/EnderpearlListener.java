@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -85,7 +85,7 @@ public class EnderpearlListener implements Listener {
 
         if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target) || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
             if (event.getPlayer().getWorld().getEnvironment() != World.Environment.THE_END) {
-                SpawnTag.addSeconds(event.getPlayer(), 8);
+                SpawnTagHandler.addSeconds(event.getPlayer(), 8);
             }
         }
 

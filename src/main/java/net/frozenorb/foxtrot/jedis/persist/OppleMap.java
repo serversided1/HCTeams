@@ -27,7 +27,7 @@ public class OppleMap extends RedisPersistMap<Long> {
     }
 
     public void useGoldenApple(String player, long seconds) {
-        updateValue(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
+        updateValueAsync(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
     }
 
     public void resetCooldown(String player) {

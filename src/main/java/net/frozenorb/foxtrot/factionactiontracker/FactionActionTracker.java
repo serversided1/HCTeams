@@ -18,7 +18,7 @@ public class FactionActionTracker {
             return;
         }
 
-        File logToFolder = new File("factionactiontracker" + File.separator + team.getName());
+        File logToFolder = new File("factionactiontracker" + File.separator + team.getFriendlyName());
         File logTo = new File(logToFolder, category + ".log");
 
         try {

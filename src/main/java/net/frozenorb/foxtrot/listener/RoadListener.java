@@ -48,6 +48,7 @@ public class RoadListener implements Listener {
         }
 
         if (isRoad(event.getBlock().getLocation())) {
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build on the road!");
             event.setCancelled(true);
         }
     }
@@ -59,6 +60,7 @@ public class RoadListener implements Listener {
         }
 
         if (isRoad(event.getBlock().getLocation())) {
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build on the road!");
             event.setCancelled(true);
         }
     }
@@ -78,7 +80,7 @@ public class RoadListener implements Listener {
 
         if (event.getClickedBlock() != null && isRoad(event.getClickedBlock().getRelative(event.getBlockFace()).getLocation())) {
             if (event.getPlayer().getItemInHand().getType() == Material.FLINT_AND_STEEL || event.getPlayer().getItemInHand().getType() == Material.LAVA_BUCKET || (event.getPlayer().getItemInHand().getType() == Material.INK_SACK && event.getPlayer().getItemInHand().getData().getData() == (byte) 15)) {
-                event.getPlayer().sendMessage(ChatColor.DARK_AQUA + "Cancelling that interact event as you're on the road!");
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build on the road!");
                 event.setCancelled(true);
             }
         }

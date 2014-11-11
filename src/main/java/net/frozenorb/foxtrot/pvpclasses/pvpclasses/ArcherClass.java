@@ -1,12 +1,11 @@
-package net.frozenorb.foxtrot.armor.kits;
+package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.armor.Armor;
-import net.frozenorb.foxtrot.armor.ArmorMaterial;
-import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
-import org.bukkit.Bukkit;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,12 +21,12 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-public class Archer extends Kit {
+public class ArcherClass extends PvPClass {
 
+    private static Map<String, Long> lastSpeedUsage = new HashMap<String, Long>();
     public static final Map<Integer, Float> TRUE_DAMAGE_VALUES = new HashMap<Integer, Float>();
 
     static {
@@ -129,33 +128,29 @@ public class Archer extends Kit {
         TRUE_DAMAGE_VALUES.put(105, 8F);
     }
 
-    @Override
-    public boolean qualifies(Armor armor) {
-        return armor.isFullSet(ArmorMaterial.LEATHER);
-    }
-
-    @Override
-    public String getName() {
-        return ("Archer");
-    }
-
-    @Override
-    public void apply(Player p) {
-        smartAddPotion(p, new PotionEffect(PotionEffectType.SPEED, 200, 2));
-    }
-
-    @Override
-    public double getCooldownSeconds() {
-        return 600;
-    }
-
-    @Override
-    public List<Material> getConsumables() {
-        return (Arrays.asList(Material.SUGAR));
-    }
-
     private float getDamage(int range) {
         return (TRUE_DAMAGE_VALUES.containsKey(range) ? TRUE_DAMAGE_VALUES.get(range) : -1F);
+    }
+
+    public ArcherClass() {
+        super("Archer", 5, "LEATHER_", Arrays.asList(Material.SUGAR));
+    }
+
+    @Override
+    public void apply(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+    }
+
+    @Override
+    public void tick(Player player) {
+        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+        }
+    }
+
+    @Override
+    public void remove(Player player) {
+        removeInfiniteEffects(player);
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
@@ -164,7 +159,7 @@ public class Archer extends Kit {
             Player player = (Player) event.getEntity().getShooter();
             Arrow arrow = (Arrow) event.getEntity();
 
-            if (hasKitOn(player)) {
+            if (PvPClassHandler.hasKitOn(player, this)) {
                 arrow.setMetadata("firedLoc", new FixedMetadataValue(FoxtrotPlugin.getInstance(), player.getLocation()));
             }
         }
@@ -196,7 +191,7 @@ public class Archer extends Kit {
                     return;
                 }
 
-                if (hasKitOn(player)) {
+                if (PvPClassHandler.hasKitOn(player, this)) {
                     if (rawDamage > 3.5F) {
                         rawDamage = 3.5F;
                     }
@@ -225,28 +220,18 @@ public class Archer extends Kit {
     }
 
     @Override
-    public boolean itemConsumed(Player p, Material m) {
-        p.setMetadata("speedBoost", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+    public boolean itemConsumed(Player player, Material material) {
+        if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
+            Long millisLeft = ((lastSpeedUsage.get(player.getName()) - System.currentTimeMillis()) / 1000L) * 1000L;
+            String msg = TimeUtils.getDurationBreakdown(millisLeft);
 
-        p.removePotionEffect(PotionEffectType.SPEED);
-        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3));
+            player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+            return (false);
+        }
 
-        Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-            public void run() {
-                if (hasKitOn(p)) {
-                    apply(p);
-                }
-
-                p.removeMetadata("speedBoost", FoxtrotPlugin.getInstance());
-            }
-        }, 200);
-
+        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
         return (true);
-    }
-
-    @Override
-    public int getWarmup() {
-        return 5;
     }
 
 }

@@ -25,7 +25,7 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
     }
 
 	public void createTimer(String player, int seconds) {
-		updateValue(player, System.currentTimeMillis() + (seconds * 1000));
+		updateValueAsync(player, System.currentTimeMillis() + (seconds * 1000));
 	}
 
 	public boolean hasTimer(String player) {
@@ -50,6 +50,12 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public boolean contains(String player) {
         return (super.contains(player));
+    }
+
+    // MAP 0.9
+    @Override
+    public Long getValue(String player) {
+        return ((long) -1);
     }
 
 }

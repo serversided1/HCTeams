@@ -27,12 +27,12 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 		joinDate.put(player, System.currentTimeMillis());
 
         if (!contains(player)) {
-            updateValue(player, 0L);
+            updateValueAsync(player, 0L);
         }
 	}
 
 	public void playerQuit(String player) {
-		updateValue(player, getPlaytime(player) + (System.currentTimeMillis() - joinDate.get(player)) / 1000);
+		updateValueAsync(player, getPlaytime(player) + (System.currentTimeMillis() - joinDate.get(player)) / 1000);
 	}
 
     public long getCurrentSession(String player) {

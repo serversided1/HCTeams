@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.nametag;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -21,6 +21,7 @@ import java.util.List;
 public class NametagManager {
 
 	private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
+    private static int teamCreateIndex = 1;
 
 	@Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
@@ -39,7 +40,7 @@ public class NametagManager {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 2L, 2L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 4L, 4L);
     }
 
 	public static void reloadPlayer(Player toRefresh) {
@@ -76,16 +77,12 @@ public class NametagManager {
                 enderpearlString = sec + " ";
             }
 
-            if (SpawnTag.isTagged(toRefresh)) {
-                SpawnTag spawnTag = SpawnTag.getSpawnTags().get(toRefresh.getName());
+            if (SpawnTagHandler.isTagged(toRefresh)) {
+                long millisLeft = SpawnTagHandler.getTag(toRefresh);
+                double value = (millisLeft / 1000D);
+                double sec = Math.round(10.0 * value) / 10.0;
 
-                if (spawnTag.getExpires() > System.currentTimeMillis()) {
-                    long millisLeft = spawnTag.getExpires() - System.currentTimeMillis();
-                    double value = (millisLeft / 1000D);
-                    double sec = Math.round(10.0 * value) / 10.0;
-
-                    combatTagString = " " + sec;
-                }
+                combatTagString = " " + sec;
             }
 
             teamInfo = getOrCreate(ChatColor.YELLOW.toString() + enderpearlString + teamInfo.getPrefix(), ChatColor.DARK_RED + combatTagString);
@@ -124,7 +121,8 @@ public class NametagManager {
             }
         }
 
-        TeamInfo newTeam = new TeamInfo(prefix + "." + suffix, prefix, suffix);
+        TeamInfo newTeam = new TeamInfo(String.valueOf(teamCreateIndex), prefix, suffix);
+        teamCreateIndex++;
         registeredTeams.add(newTeam);
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {

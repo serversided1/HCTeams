@@ -2,15 +2,13 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by macguy8 on 11/8/2014.
  */
-public class LastDeathMap extends RedisPersistMap<Long> {
+public class LastJoinMap extends RedisPersistMap<Long> {
 
-    public LastDeathMap() {
-        super("LastDeaths");
+    public LastJoinMap() {
+        super("LastJoin");
     }
 
     @Override
@@ -23,19 +21,11 @@ public class LastDeathMap extends RedisPersistMap<Long> {
         return (Long.parseLong(str));
     }
 
-    public boolean recentlyDied(String player) {
-        if (getValue(player) != null) {
-            return ((getValue(player) - System.currentTimeMillis()) > TimeUnit.MINUTES.toMillis(15));
-        }
-
-        return (false);
-    }
-
-    public void addDeath(String player) {
+    public void setLastJoin(String player) {
         updateValueAsync(player, System.currentTimeMillis());
     }
 
-    public long getLastDeath(String player) {
+    public long getLastJoin(String player) {
         return (contains(player) ? getValue(player) : 0L);
     }
 

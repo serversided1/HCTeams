@@ -1,6 +1,7 @@
-package net.frozenorb.foxtrot.visual.scoreboard;
+package net.frozenorb.foxtrot.scoreboard;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,38 +13,28 @@ import org.bukkit.scoreboard.*;
  */
 public class FoxtrotBoard {
 
-    // NEXT MAP
-    public static final String SCOREBOARD_TITLE = ChatColor.GOLD + "" + ChatColor.BOLD + "HCTeams" + ChatColor.RED + " [Map 1]";
+    @Getter private Player player;
+    @Getter private Objective obj;
 
-    @Getter
-    private Player player;
-    @Getter
-    private Objective obj;
-
-    public FoxtrotBoard(Player player){
+    public FoxtrotBoard(Player player) {
         this.player = player;
 
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 
         obj = board.registerNewObjective("HCTeams", "dummy");
-        obj.setDisplayName(SCOREBOARD_TITLE);
+        obj.setDisplayName(FoxtrotPlugin.getInstance().getMapHandler().getScoreboardTitle());
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         update();
         player.setScoreboard(board);
     }
 
-    public void update(){
-        if (!(player.isOnline())) {
-            return;
-        }
-
-        int scores = 0;
+    public void update() {
         int nextVal = 14;
 
         for (ScoreGetter getter : ScoreGetter.SCORES) {
-            String title = getter.getTitle(player);
             long millis = getter.getMillis(player);
+            String title = getter.getTitle(player);
 
             if (millis == ScoreGetter.NO_SCORE) {
                 removeTeam(title);
@@ -53,19 +44,18 @@ public class FoxtrotBoard {
 
                 score.setScore(nextVal);
                 getTeam(title, millis).addEntry(title);
-                scores += 1;
                 nextVal -= 1;
             }
         }
 
-        if (scores > 0) {
+        if (nextVal < 14) {
             obj.getScore(ChatColor.RESET + " ").setScore(15);
         } else {
             obj.getScoreboard().resetScores(ChatColor.RESET + " ");
         }
     }
 
-    private Team getTeam(String title, long millis){
+    private Team getTeam(String title, long millis) {
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
@@ -89,8 +79,7 @@ public class FoxtrotBoard {
     }
 
     private void removeTeam(String title) {
-        String name = ChatColor.stripColor(title);
-        Team team = obj.getScoreboard().getTeam(name);
+        Team team = obj.getScoreboard().getTeam(ChatColor.stripColor(title));
 
         if (team != null) {
             team.unregister();

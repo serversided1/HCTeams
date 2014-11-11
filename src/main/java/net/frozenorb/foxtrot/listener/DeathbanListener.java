@@ -4,8 +4,10 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 /**
@@ -14,11 +16,17 @@ import org.bukkit.event.player.PlayerLoginEvent;
 public class DeathbanListener implements Listener {
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        String hostName = event.getHostname();
+    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            return;
+        }
 
-        // Do we need the hostname bypass?
-        if (hostName.startsWith("bypass1324132") || event.getPlayer().isOp()) {
+        FoxtrotPlugin.getInstance().getDeathbanMap().reloadValue(event.getName());
+    }
+
+    @EventHandler(priority= EventPriority.MONITOR)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        if (event.getPlayer().isOp() || event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
         }
 
@@ -27,11 +35,11 @@ public class DeathbanListener implements Listener {
             long left = unbannedOn - System.currentTimeMillis();
 
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                event.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are death-banned for the remainder of the map.");
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are death-banned for the remainder of the map.");
                 return;
             }
 
-            event.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You are death-banned for another " + TimeUtils.getDurationBreakdown(left) + ".");
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You are death-banned for another " + TimeUtils.getDurationBreakdown(left) + ".");
         }
     }
 

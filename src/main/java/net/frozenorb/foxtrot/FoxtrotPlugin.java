@@ -7,9 +7,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
-import net.frozenorb.foxtrot.armor.ClassHandler;
-import net.frozenorb.foxtrot.armor.Kit;
-import net.frozenorb.foxtrot.armor.KitHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
@@ -21,22 +18,24 @@ import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
+import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.raid.DTRHandler;
+import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.LocationTickStore;
-import net.frozenorb.foxtrot.server.PacketBorder.BorderThread;
+import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.visual.BossBarHandler;
-import net.frozenorb.foxtrot.visual.scoreboard.ScoreboardHandler;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -61,9 +60,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Getter private TeamHandler teamHandler;
 	@Getter private ServerHandler serverHandler;
-	@Getter private KitHandler kitHandler;
-
-	@Getter private BossBarHandler bossBarHandler;
+	@Getter private MapHandler mapHandler;
 	@Getter private ScoreboardHandler scoreboardHandler;
 
 	@Getter private PlaytimeMap playtimeMap;
@@ -84,7 +81,8 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private RedstoneMinedMap redstoneMinedMap;
     @Getter private LapisMinedMap lapisMinedMap;
     @Getter private EmeraldMinedMap emeraldMinedMap;
-
+    @Getter private FirstJoinMap firstJoinMap;
+    @Getter private LastJoinMap lastJoinMap;
     @Getter private SoulboundLivesMap soulboundLivesMap;
     @Getter private FriendLivesMap friendLivesMap;
     @Getter private TransferableLivesMap transferableLivesMap;
@@ -100,15 +98,14 @@ public class FoxtrotPlugin extends JavaPlugin {
 		Shared.get().getProfileManager().setNametagsEnabled(false);
 
 		instance = this;
-		jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
 
+        // Database init
         try {
+            jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-		bossBarHandler = new BossBarHandler();
 
         KOTHHandler.init();
         CommandHandler.init();
@@ -119,31 +116,35 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		LocationTickStore.getInstance().runTaskTimer(this, 1L, 1L);
 
+        // DTR regeneration
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
-		new RedisSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L);
 
-		ClassHandler chandler = new ClassHandler();
+        // Redis save
+        new BukkitRunnable() {
 
-		chandler.runTaskTimer(this, 2L, 2L);
-		getServer().getPluginManager().registerEvents(chandler, this);
+            public void run() {
+                RedisSaveTask.save();
+            }
 
-		getServer().getScheduler().runTaskTimer(this, bossBarHandler, 20L, 20L);
+        }.runTaskTimerAsynchronously(this, 6000L, 6000L);
+
+		PvPClassHandler pvpClassHandler = new PvPClassHandler();
+
+        pvpClassHandler.runTaskTimer(this, 2L, 2L);
+		getServer().getPluginManager().registerEvents(pvpClassHandler, this);
 
 		new CommandRegistrar().register();
 
 		teamHandler = new TeamHandler();
-		LandBoard.getInstance().loadFromTeams();
-
 		serverHandler = new ServerHandler();
 		scoreboardHandler = new ScoreboardHandler();
+        mapHandler = new MapHandler();
 
-		setupPersistence();
+        setupPersistence();
+        LandBoard.getInstance().loadFromTeams();
+        new PacketBorder.BorderThread().start();
 
-		new BorderThread().start();
-
-		kitHandler = new KitHandler();
-		kitHandler.loadKits();
-
+        // All the listeners...
         getServer().getPluginManager().registerEvents(new AlphaMapListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
@@ -201,12 +202,12 @@ public class FoxtrotPlugin extends JavaPlugin {
 			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
 
-		for (String str : Kit.getEquippedKits().keySet()) {
+		for (String str : PvPClassHandler.getEquippedKits().keySet()) {
 			Player player = getServer().getPlayerExact(str);
-			Kit.getEquippedKits().get(str).remove(player);
+			PvPClassHandler.getEquippedKits().get(str).remove(player);
 		}
 
-		RedisSaveTask.getInstance().save();
+		RedisSaveTask.save();
 		MountainHandler.reset();
         FoxtrotPlugin.getInstance().getServerHandler().save();
 	}
@@ -290,6 +291,12 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         emeraldMinedMap = new EmeraldMinedMap();
         emeraldMinedMap.loadFromRedis();
+
+        firstJoinMap = new FirstJoinMap();
+        firstJoinMap.loadFromRedis();
+
+        lastJoinMap = new LastJoinMap();
+        lastJoinMap.loadFromRedis();
 	}
 
     public List<String> getConsoleLog(){

@@ -9,7 +9,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
-import net.frozenorb.foxtrot.team.claims.Claim.SpecialTag;
 import net.frozenorb.mBasic.Utilities.ItemDb;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -52,6 +51,7 @@ public class VisualClaim implements Listener {
 	private Location corner2;
 
 	public void draw(boolean silent) {
+        // If they already have a
 		if (currentMaps.containsKey(player.getName()) && type == VisualType.MAP) {
 			currentMaps.get(player.getName()).cancel(true);
 
@@ -85,9 +85,8 @@ public class VisualClaim implements Listener {
 
 			for (Claim c : LandBoard.getInstance().getClaims()) {
 				if (c.isWithin(x, z, MAP_RADIUS)) {
-
 					Team owner = LandBoard.getInstance().getTeamAt(c);
-					Material mat = getMaterial(c, iter);
+					Material mat = getMaterial(iter);
 
 					if (storageReference.containsKey(owner)) {
 						mat = storageReference.get(owner);
@@ -102,10 +101,10 @@ public class VisualClaim implements Listener {
 			}
 
 			Claim spawn = new Claim(RegionManager.get().getByName("spawn").getMinimumPoint(), RegionManager.get().getByName("spawn").getMaximumPoint());
-			spawn.setTag(SpecialTag.SPAWN);
+			spawn.setName("Spawn");
 
 			if (spawn.isWithin(x, z, MAP_RADIUS)) {
-				Material mat = getMaterial(spawn, -1);
+				Material mat = getMaterial(-1);
 
 				drawPillars(spawn, mat);
 				sendMaps.put(spawn, mat);
@@ -118,14 +117,13 @@ public class VisualClaim implements Listener {
 
 			if (!silent) {
 				sendMaps.forEach((c, m) -> {
-					if (c.getTag() == SpecialTag.SPAWN) {
+					if (c.getName() != null && c.getName().equals("Spawn")) {
 						player.sendMessage("§eLand §9Spawn§a(§b" + ItemDb.getFriendlyName(new ItemStack(m)) + "§a) §eis claimed by §9Spawn");
 					} else {
 						player.sendMessage("§eLand §9" + c.getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(m)) + "§a) §eis claimed by §9" + LandBoard.getInstance().getTeamAt(c).getFriendlyName());
 					}
 				});
 			}
-
 		}
 	}
 
@@ -282,9 +280,7 @@ public class VisualClaim implements Listener {
 	}
 
 	public void cancel(boolean complete) {
-
 		if (complete && type != VisualType.MAP) {
-
 			clearPillarAt(corner1);
 			clearPillarAt(corner2);
 		}
@@ -358,12 +354,12 @@ public class VisualClaim implements Listener {
 			touching.forEach(tee -> cloneCheck.add(tee.clone()));
 
 			boolean contains = cloneCheck.removeIf(c -> t.ownsClaim(c));
-			if (t.getClaims().size() > 0 && !contains) {
+			if (!bypass && t.getClaims().size() > 0 && !contains) {
 				player.sendMessage(ChatColor.RED + "All of your claims must be touching each other!");
 				return;
 			}
 
-			if (touching.size() > 1 || (touching.size() == 1 && !contains)) {
+			if (!bypass && (touching.size() > 1 || (touching.size() == 1 && !contains))) {
 				player.sendMessage(ChatColor.RED + "Your claim must be at least 1 block away from enemy claims!");
 				return;
 			}
@@ -371,12 +367,12 @@ public class VisualClaim implements Listener {
 			int x = Math.abs(cc.x1 - cc.x2);
 			int z = Math.abs(cc.z1 - cc.z2);
 
-			if (x < 5 || z < 5) {
+			if (!bypass && x < 5 || z < 5) {
 				player.sendMessage(ChatColor.RED + "Your claim is too small! The claim has to be at least (§f5 x 5§c)!");
 				return;
 			}
 
-			if (x >= 3 * z || z >= 3 * x) {
+			if (!bypass && x >= 3 * z || z >= 3 * x) {
 				player.sendMessage(ChatColor.RED + "One side of your claim cannot be more than 3 times larger than the other!");
 				return;
 			}
@@ -508,10 +504,10 @@ public class VisualClaim implements Listener {
 		}
 	}
 
-	public Material getMaterial(Claim claim, int iteration) {
-		if (claim.getTag() == SpecialTag.SPAWN) {
-			return Material.IRON_BLOCK;
-		}
+	public Material getMaterial(int iteration) {
+        if (iteration == -1) {
+            return (Material.IRON_BLOCK);
+        }
 
 		while (iteration >= MAP_MATERIALS.length) {
 			iteration = iteration - MAP_MATERIALS.length;

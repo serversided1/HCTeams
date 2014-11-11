@@ -45,6 +45,13 @@ public class ChatListener implements Listener {
                 if (Mute.factionMutes.containsKey(event.getPlayer().getName())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
                     event.setCancelled(true);
+
+                    for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
+                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "M: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                        }
+                    }
+
                     return;
                 }
 
@@ -75,6 +82,10 @@ public class ChatListener implements Listener {
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE));
                         } else {
                             if (ShadowMute.factionShadowMutes.containsKey(event.getPlayer().getName())) {
+                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
+                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "SM: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                                }
+
                                 continue;
                             }
 

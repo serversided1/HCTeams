@@ -5,7 +5,6 @@ import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
-import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.team.claims.Claim;
@@ -17,7 +16,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -75,7 +73,10 @@ public class Team {
                 FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
             }
 
-            FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+            if (!isLoading()) {
+                FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+            }
+
             this.dtr = newDTR;
             setChanged(true);
         }
@@ -225,10 +226,6 @@ public class Team {
         // Is this needed?
 		boolean emptyTeam = owner == null || members.size() == 0;
 
-		if (!emptyTeam) {
-			save();
-		}
-
 		if (dtr > getMaxDTR()) {
 			dtr = getMaxDTR();
 			changed = true;
@@ -255,8 +252,6 @@ public class Team {
 		List<Player> players = new ArrayList<Player>();
 
 		for (String m : getMembers()) {
-            // This is here because having a team with 0 members breaks this.
-            // Not quite sure why as I haven't looked too much into Team.java.
             if (m == null) {
                 continue;
             }
@@ -264,7 +259,7 @@ public class Team {
             Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
 
 			if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
-				players.add(Bukkit.getPlayerExact(m));
+				players.add(exactPlayer);
 			}
 		}
 
@@ -275,8 +270,6 @@ public class Team {
 		List<String> players = new ArrayList<String>();
 
 		for (String m : getMembers()) {
-            // This is here because having a team with 0 members breaks this.
-            // Not quite sure why as I haven't looked too much into Team.java.
             if (m == null) {
                 continue;
             }
@@ -327,10 +320,6 @@ public class Team {
         for (Player player : getOnlineMembers()) {
             player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
             player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
-
-            if (newDTR < 0) {
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.RED + "You are raidable NOW!");
-            }
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
@@ -345,11 +334,15 @@ public class Team {
 		deathCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
 	}
 
-    // I'm not quite sure why we're using BigDecimals here.
 	public BigDecimal getDTRIncrement() {
-		BigDecimal dtrPerHour = new BigDecimal(DTRHandler.getBaseDTRIncrement(getSize())).multiply(new BigDecimal(getOnlineMemberAmount()));
-        return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
+		return (getDTRIncrement(getOnlineMemberAmount()));
 	}
+
+    // I'm not quite sure why we're using BigDecimals here.
+    public BigDecimal getDTRIncrement(int playersOnline) {
+        BigDecimal dtrPerHour = new BigDecimal(DTRHandler.getBaseDTRIncrement(getSize())).multiply(new BigDecimal(playersOnline));
+        return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
+    }
 
 	public double getMaxDTR() {
 		return (DTRHandler.getMaxDTR(getSize()));
@@ -456,18 +449,19 @@ public class Team {
 		changed = false;
 	}
 
-	public void save(Jedis j) {
+	public String saveString() {
 		changed = false;
 
 		if (loading) {
-            return;
+            return (null);
         }
 
 		StringBuilder teamString = new StringBuilder();
-		String owners = owner;
+
 		StringBuilder members = new StringBuilder();
 		StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
+        StringBuilder subclaims = new StringBuilder();
 		Location homeLoc = getHq();
 
 		for (String member : getMembers()) {
@@ -494,38 +488,31 @@ public class Team {
             invites.setLength(invites.length() - 2);
         }
 
-		teamString.append("Owner:").append(owners).append('\n');
+        for (Subclaim subclaim : getSubclaims()) {
+            subclaims.append(subclaim.saveString()).append(", ");
+        }
+
+        if (subclaims.length() > 2) {
+            subclaims.setLength(subclaims.length() - 2);
+        }
+
+		teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
 		teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
-		teamString.append("DTR:").append(dtr).append('\n');
-		teamString.append("Balance:").append(balance).append('\n');
-        teamString.append("DeathCooldown:").append(deathCooldown).append('\n');
-        teamString.append("RaidableCooldown:").append(raidableCooldown).append('\n');
+        teamString.append("Subclaims:").append(subclaims.toString()).append('\n');
+        teamString.append("Claims:").append(getClaims().toString()).append('\n');
+		teamString.append("DTR:").append(getDtr()).append('\n');
+		teamString.append("Balance:").append(getBalance()).append('\n');
+        teamString.append("DeathCooldown:").append(getDeathCooldown()).append('\n');
+        teamString.append("RaidableCooldown:").append(getRaidableCooldown()).append('\n');
+        teamString.append("FriendlyName:").append(getFriendlyName()).append('\n');
 
 		if (homeLoc != null) {
             teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
         }
 
-		teamString.append("FriendlyName:").append(friendlyName).append('\n');
-
-		StringBuilder scm = new StringBuilder();
-		boolean first = true;
-
-		for (Subclaim sc : subclaims) {
-			if (!first) {
-				scm.append(",");
-			} else {
-                first = false;
-            }
-
-			scm.append(sc.saveString());
-		}
-
-		teamString.append("Subclaims:").append(scm.toString()).append('\n');
-		teamString.append("Claims:").append(claims.toString()).append('\n');
-
-		j.set("fox_teams." + getName().toLowerCase(), teamString.toString());
+        return (teamString.toString());
 	}
 
 	public int getMaxClaimAmount() {
@@ -534,7 +521,7 @@ public class Team {
 
 	private Location parseLocation(String[] args) {
 		if (args.length != 6) {
-            return null;
+            return (null);
         }
 
 		World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
@@ -548,7 +535,7 @@ public class Team {
 	}
 
 	public void sendTeamInfo(Player player) {
-        String gray = "§7§m" + StringUtils.repeat("-", 53);
+        String gray = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
         player.sendMessage(gray);
 
@@ -686,10 +673,10 @@ public class Team {
                 player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
             }
         } else if (getDtr() == 50D) {
-            player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " KOTH " + ChatColor.GRAY + "(5m Deathban)");
+            player.sendMessage(ChatColor.AQUA + getFriendlyName() + ChatColor.GOLD + " KOTH " + ChatColor.GRAY + "(5m Deathban)");
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
         } else if (getDtr() == 100D) {
-            player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(15m Deathban, 0.5 DTR Loss, 60s Pearl Cooldown)");
+            player.sendMessage(ChatColor.DARK_PURPLE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(15m Deathban, 0.5 DTR Loss, 60s Pearl Cooldown)");
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
         } else {
             player.sendMessage(ChatColor.BLUE + getFriendlyName());
@@ -697,18 +684,6 @@ public class Team {
         }
 
 		player.sendMessage(gray);
-	}
-
-	public void save() {
-		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-			@Override
-			public Object execute(Jedis jedis) {
-				save(jedis);
-				return (null);
-			}
-
-		});
 	}
 
 	@Override

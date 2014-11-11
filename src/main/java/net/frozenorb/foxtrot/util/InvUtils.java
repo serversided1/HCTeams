@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.util;
 
-import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -35,7 +35,7 @@ public class InvUtils {
     }
 
 	public static void fixItem(ItemStack item) {
-		for (Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
+		for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().entrySet()) {
 
 			if (item != null && item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
                 item.addEnchantment(entry.getKey(), entry.getValue());

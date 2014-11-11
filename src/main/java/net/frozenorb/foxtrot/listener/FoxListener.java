@@ -1,10 +1,13 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.server.*;
@@ -43,9 +46,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +81,7 @@ public class FoxListener implements Listener {
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH, Material.BED_BLOCK, Material.ANVIL };
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL };
 
     public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
@@ -168,10 +171,11 @@ public class FoxListener implements Listener {
         BasicDBObject playerDeath = new BasicDBObject();
 
         if (event.getEntity().getKiller() != null) {
-            int soups = -1;
-
-            playerDeath.append("soups", soups).append("healthLeft", (int) event.getEntity().getKiller().getHealth());
+            playerDeath.append("soups", -1);
+            playerDeath.append("healthLeft", (int) event.getEntity().getKiller().getHealth());
             playerDeath.append("killer", event.getEntity().getKiller().getName());
+            playerDeath.append("killerUUID", event.getEntity().getKiller().getUniqueId().toString().replace("-", ""));
+            playerDeath.append("killerHunger", event.getEntity().getKiller().getFoodLevel());
 
             if (event.getEntity().getKiller().getItemInHand() != null) {
                 playerDeath.append("item", Shared.get().getUtilities().getDatabaseRepresentation(event.getEntity().getKiller().getItemInHand()));
@@ -179,15 +183,64 @@ public class FoxListener implements Listener {
                 playerDeath.append("item", "NONE");
             }
         } else {
-            try {
+            try{
                 playerDeath.append("reason", event.getEntity().getLastDamageCause().getCause().toString());
-            } catch (NullPointerException npe) {
+            } catch (NullPointerException localNullPointerException) {
 
             }
         }
 
+        playerDeath.append("playerHunger", event.getEntity().getFoodLevel());
+
+        BasicDBObject playerInv = new BasicDBObject();
+        BasicDBObject armor = new BasicDBObject();
+
+        armor.put("helmet", new ItemStackSerializer().serialize(event.getEntity().getInventory().getHelmet()));
+        armor.put("chestplate", new ItemStackSerializer().serialize(event.getEntity().getInventory().getChestplate()));
+        armor.put("leggings", new ItemStackSerializer().serialize(event.getEntity().getInventory().getLeggings()));
+        armor.put("boots", new ItemStackSerializer().serialize(event.getEntity().getInventory().getBoots()));
+
+        BasicDBList contents = new BasicDBList();
+
+        for (int i = 0; i < 9; i++) {
+            if (event.getEntity().getInventory().getItem(i) != null) {
+                contents.add(new ItemStackSerializer().serialize(event.getEntity().getInventory().getItem(i)));
+            } else {
+                contents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+            }
+        }
+
+        playerInv.append("armor", armor);
+        playerInv.append("items", contents);
+
+        playerDeath.append("playerInventory", playerInv);
+
+        if (event.getEntity().getKiller() != null) {
+            BasicDBObject killerInventory = new BasicDBObject();
+            BasicDBObject killerArmor = new BasicDBObject();
+
+            armor.put("helmet", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getHelmet()));
+            armor.put("chestplate", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getChestplate()));
+            armor.put("leggings", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getLeggings()));
+            armor.put("boots", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getBoots()));
+
+            BasicDBList killerContents = new BasicDBList();
+
+            for (int i = 0; i < 9; i++) {
+                if (event.getEntity().getKiller().getInventory().getItem(i) != null) {
+                    killerContents.add(new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getItem(i)));
+                } else {
+                    killerContents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                }
+            }
+
+            killerInventory.append("armor", killerArmor);
+            killerInventory.append("items", killerContents);
+            playerDeath.append("killerInventory", killerInventory);
+        }
+
         playerDeath.append("ip", event.getEntity().getAddress().toString().split(":")[0].replace("/", ""));
-        playerDeath.append("uuid", event.getEntity().toString().replace("-", ""));
+        playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", event.getEntity().getName());
         playerDeath.append("type", "death");
         playerDeath.append("when", Utilities.getInstance().getTime(System.currentTimeMillis()));
@@ -195,7 +248,7 @@ public class FoxListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().getMongoPool().getDB("hcteams").getCollection("Deaths").insert(playerDeath);
+                FoxtrotPlugin.getInstance().getMongoPool().getDB("hcteams").getCollection("deaths").insert(playerDeath);
             }
 
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
@@ -354,11 +407,28 @@ public class FoxListener implements Listener {
         NametagManager.reloadPlayer(event.getPlayer());
 
         event.setJoinMessage(null);
-        event.getPlayer().setMetadata("freshJoin", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+
+        new BukkitRunnable() {
+
+            public void run() {
+                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+                    @Override
+                    public Object execute(Jedis jedis) {
+                        jedis.hset("ProperPlayerNames", event.getPlayer().getName().toLowerCase(), event.getPlayer().getName());
+                        return (null);
+                    }
+
+                });
+            }
+
+        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
 
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
+        FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
 
         if (!event.getPlayer().hasPlayedBefore()) {
+            FoxtrotPlugin.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getName());
             Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
             event.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerHandler().getSpawnLocation());
         }
@@ -370,12 +440,6 @@ public class FoxListener implements Listener {
 
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(name) == PvPTimerMap.PENDING_USE) {
             player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
-        }
-
-        for (PotionEffect pe : event.getPlayer().getActivePotionEffects()) {
-            if (pe.getDuration() > 1_000_000) {
-                event.getPlayer().removePotionEffect(pe.getType());
-            }
         }
 
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
@@ -404,7 +468,7 @@ public class FoxListener implements Listener {
             }
 
             if (killer != null && killer != e.getEntity()) {
-                SpawnTag.applyTag(killer);
+                SpawnTagHandler.applyTag(killer);
             }
         }
     }
@@ -511,20 +575,17 @@ public class FoxListener implements Listener {
     }
 
     @EventHandler
-    public void onEntityDeath(EntityDeathEvent e) {
-
+    public void onEntityDeath(EntityDeathEvent event) {
         double mult = 1;
 
-        if (e.getEntity().getKiller() != null) {
-            Player p = (Player) e.getEntity().getKiller();
+        if (event.getEntity().getKiller() != null) {
+            Player player = event.getEntity().getKiller();
 
-            if (p.getItemInHand() != null) {
-                ItemStack it = p.getItemInHand();
+            if (player.getItemInHand() != null) {
+                ItemStack itemStack = player.getItemInHand();
 
-                if (it.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
-                    int lvl = it.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS);
-
-                    switch (lvl) {
+                if (itemStack.containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+                    switch (itemStack.getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
                         case 1:
                             mult = 1.2D;
                             break;
@@ -534,16 +595,12 @@ public class FoxListener implements Listener {
                         case 3:
                             mult = 2D;
                             break;
-                        default:
-                            mult = 2.5D;
-                            break;
-
                     }
                 }
             }
         }
 
-        e.setDroppedExp((int) Math.ceil(e.getDroppedExp() * mult));
+        event.setDroppedExp((int) Math.ceil(event.getDroppedExp() * mult));
     }
 
     @EventHandler
@@ -812,7 +869,7 @@ public class FoxListener implements Listener {
         Player player = e.getEntity();
         Date now = new Date();
 
-        SpawnTag.removeTag(e.getEntity());
+        SpawnTagHandler.removeTag(e.getEntity());
 
         Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(e.getEntity().getName());
 

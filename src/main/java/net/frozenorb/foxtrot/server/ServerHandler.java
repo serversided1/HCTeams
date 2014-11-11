@@ -11,7 +11,6 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
-import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
@@ -54,19 +53,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("deprecation")
 public class ServerHandler {
 
-    // NEXT MAP //
-	public static final int WARZONE_RADIUS = 1000;
+	public static int WARZONE_RADIUS = 1000;
 
     // NEXT MAP //
-	public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(8225, 16417, 16449, 16386,
-			16418, 16450, 16387, 8228, 8260, 16420, 16452, 8200, 8264, 16392,
-			16456, 8201, 8233, 8265, 16393, 16425, 16457, 8234, 16458, 8204,
-			8236, 8268, 16396, 16428, 16460, 16398, 16462, 8257, 8193, 16385,
-			16424, 8270);
+    // http://minecraft.gamepedia.com/Potion#Data_value_table
+    public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(
+        8193, 8225, 8257, 16385, 16417, 16449, // Regeneration Potions
+        8200, 8232, 8264, 16392, 16424, 16456, // Weakness Potions
+        8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
+        8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
+        8238, 8270, 16430, 16462, 16398, // Invisibility Potions
+        8228, 8260, 16420, 16452, // Poison Potions
+        8234, 8266, 16426, 16458 // Slowness Potions
+    );
 
 	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
-	@Getter private static HashMap<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
-	@Getter private HashMap<String, Long> fHomeCooldown = new HashMap<String, Long>();
 
 	@Getter private HashSet<String> usedNames = new HashSet<String>();
     @Getter private HashSet<String> highRollers = new HashSet<String>();
@@ -128,8 +129,6 @@ public class ServerHandler {
             }
 
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
-
-		loadEnchantments();
 	}
 
 	public void save() {
@@ -372,7 +371,7 @@ public class ServerHandler {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc) && !getRoad(loc).equals(""));
+		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc) && getRoad(loc).equals(""));
 	}
 
 	public boolean isAdminOverride(Player p) {
@@ -409,7 +408,10 @@ public class ServerHandler {
 	}
 
     public float getDTRLossAt(Location loc) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        // MAP 0.9
+        return (0F);
+
+        /*Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
             if (ownerTo.getDtr() == 100D) {
@@ -417,11 +419,14 @@ public class ServerHandler {
             }
         }
 
-        return (1F);
+        return (1F);*/
     }
 
     public int getDeathBanAt(String playerName, Location loc) {
-        if (isPreEOTW()) {
+        // MAP 0.9
+        return ((int) TimeUnit.MINUTES.toSeconds(5));
+
+        /*if (isPreEOTW()) {
             return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
@@ -436,7 +441,8 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        long max = TimeUnit.HOURS.toSeconds(24);
+        // MAP 0.9
+        long max = TimeUnit.MINUTES.toSeconds(60);
         long ban;
 
         if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
@@ -445,7 +451,7 @@ public class ServerHandler {
             ban = playtime.getCurrentSession(playerName) / 1000L;
         }
 
-        return (int) Math.min(max, ban);
+        return ((int) Math.min(max, ban));*/
     }
 
 	public void disablePlayerAttacking(final Player p, int seconds) {
@@ -494,7 +500,7 @@ public class ServerHandler {
 		return (false);
 	}
 
-    public boolean isSpawnBufferZone(Location loc){
+    public boolean isSpawnBufferZone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NORMAL){
             return (false);
         }
@@ -506,7 +512,7 @@ public class ServerHandler {
         return ((x < radius && x > -radius) && (z < radius && z > -radius));
     }
 
-    public boolean isNetherBufferZone(Location loc){
+    public boolean isNetherBufferZone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NETHER){
             return (false);
         }
@@ -736,25 +742,4 @@ public class ServerHandler {
 		return (amount);
 	}
 
-    // NEXT MAP //
-	public void loadEnchantments() {
-        //Max armor enchants
-        maxEnchantments.put(Enchantment.PROTECTION_FALL, 4);
-
-        //Max sword enchants
-        //maxEnchantments.put(Enchantment.DAMAGE_ALL, 1);
-
-        //Max bow enchants
-        maxEnchantments.put(Enchantment.ARROW_DAMAGE, 2);
-        maxEnchantments.put(Enchantment.ARROW_INFINITE, 1);
-
-        //Max tool enchants
-        maxEnchantments.put(Enchantment.DIG_SPEED, 5);
-        maxEnchantments.put(Enchantment.DURABILITY, 3);
-        maxEnchantments.put(Enchantment.LOOT_BONUS_BLOCKS, 3);
-        maxEnchantments.put(Enchantment.LOOT_BONUS_MOBS, 3);
-        maxEnchantments.put(Enchantment.SILK_TOUCH, 1);
-        maxEnchantments.put(Enchantment.LUCK, 3);
-        maxEnchantments.put(Enchantment.LURE, 3);
-	}
 }

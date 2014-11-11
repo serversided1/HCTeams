@@ -15,7 +15,7 @@ public enum Region {
             return true;
         }
 
-        if (SpawnTag.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+        if (SpawnTagHandler.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
@@ -32,7 +32,7 @@ public enum Region {
             return true;
         }
 
-        if (SpawnTag.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
+        if (SpawnTagHandler.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;
@@ -58,7 +58,7 @@ public enum Region {
             return true;
         }
 
-        if (SpawnTag.isTagged(e.getPlayer())) {
+        if (SpawnTagHandler.isTagged(e.getPlayer())) {
             e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end exit while spawn-tagged.");
             e.setTo(e.getFrom());
             return false;

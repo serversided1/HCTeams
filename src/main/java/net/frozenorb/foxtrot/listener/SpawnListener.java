@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -18,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 /**
  * Created by macguy8 on 11/5/2014.
  */
-public class SpawnListener implements Listener {
+public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockIgnite(BlockIgniteEvent event) {
@@ -60,7 +61,7 @@ public class SpawnListener implements Listener {
         } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
             event.setCancelled(true);
 
-            if (!(event.getBlock().getType() == Material.LONG_GRASS || event.getBlock().getType() == Material.GRASS)) {
+            if (event.getBlock().getType() != Material.LONG_GRASS && event.getBlock().getType() == Material.GRASS) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build this close to spawn!");
             }
         }
@@ -95,6 +96,17 @@ public class SpawnListener implements Listener {
         }
 
         if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getRightClicked().getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onEntityDamagBeEntity(EntityDamageByEntityEvent event) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }

@@ -99,7 +99,7 @@ public class PacketBorder {
                             border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
                         }
 
-                        if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                        if (SpawnTagHandler.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
                             CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
 
                             Location min = crAdd.getMinimumPoint();
@@ -124,7 +124,7 @@ public class PacketBorder {
                         border.addRegion(c);
                     }
                 }
-            } else if (SpawnTag.isTagged(player)) {
+            } else if (SpawnTagHandler.isTagged(player)) {
                 for (CuboidRegion cr : regionManagerRegions) {
                     if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
                         if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {

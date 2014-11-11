@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -68,7 +69,7 @@ public class TeamListener implements Listener {
         if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(event.getBlock().getLocation())) {
             Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
 
-            if (event.getCause() == BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL && !owner.isMember(event.getPlayer())) {
+            if (event.getCause() == BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL && owner.isMember(event.getPlayer())) {
                 return;
             }
 
@@ -204,6 +205,23 @@ public class TeamListener implements Listener {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getRightClicked().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getEntity().getLocation())) {
+            return;
+        }
+
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
+
+        if (team != null && !team.isMember((Player) event.getDamager())) {
             event.setCancelled(true);
         }
     }

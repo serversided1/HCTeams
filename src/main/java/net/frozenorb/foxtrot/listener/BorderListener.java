@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class BorderListener implements Listener {
 
-    // NEXT MAP
 	public static int BORDER_SIZE = 3000;
 
 	@EventHandler

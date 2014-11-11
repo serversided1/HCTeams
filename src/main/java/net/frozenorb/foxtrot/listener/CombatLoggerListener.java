@@ -8,6 +8,7 @@ import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftHumanEntity;
@@ -27,7 +28,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -134,6 +134,11 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                event.setCancelled(true);
+                return;
+            }
+
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
 
             if (team != null && team.isMember(player.getName())) {
@@ -214,7 +219,7 @@ public class CombatLoggerListener implements Listener {
                     m.setAccessible(true);
 
                     m.invoke(world, fixedVillager);
-                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                } catch (Exception e) {
 
                 }
 
@@ -225,7 +230,18 @@ public class CombatLoggerListener implements Listener {
 
                 villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(FoxtrotPlugin.getInstance(), drops));
                 villager.setAgeLock(true);
-                villager.setHealth(event.getPlayer().getHealth());
+
+                int potions = 0;
+
+                for (ItemStack itemStack : event.getPlayer().getInventory().getContents()) {
+                    if (itemStack != null && itemStack.getType() == Material.POTION && itemStack.getDurability() == (short) 16421) {
+                        potions++;
+                    }
+                }
+
+                villager.setMaxHealth((potions * 3.5D) + event.getPlayer().getHealth());
+                villager.setHealth(villager.getMaxHealth());
+
                 villager.setCustomName(playerName);
                 villager.setCustomNameVisible(true);
 

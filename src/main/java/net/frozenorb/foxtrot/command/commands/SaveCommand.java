@@ -8,7 +8,7 @@ public class SaveCommand {
 
     @Command(names={ "Save", "SaveMyShit", "SaveRedis" }, permissionNode="op")
     public static void playSound(Player sender) {
-        RedisSaveTask.getInstance().save();
+        RedisSaveTask.save();
         sender.sendMessage("§cSaved!");
     }
 

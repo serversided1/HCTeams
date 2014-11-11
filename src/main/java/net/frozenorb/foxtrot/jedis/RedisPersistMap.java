@@ -23,7 +23,11 @@ public abstract class RedisPersistMap<T> {
                 Map<String, String> results = jedis.hgetAll(keyPrefix);
 
                 for (Map.Entry<String, String> resultEntry : results.entrySet()) {
-                    wrappedMap.put(resultEntry.getKey(), getJavaObject(resultEntry.getValue()));
+                    T object = getJavaObjectSafe(resultEntry.getValue());
+
+                    if (object != null) {
+                        wrappedMap.put(resultEntry.getKey(), object);
+                    }
                 }
 
 				return (null);
@@ -33,6 +37,28 @@ public abstract class RedisPersistMap<T> {
 
 		FoxtrotPlugin.getInstance().runJedisCommand(jdc);
 	}
+
+    public void reloadValue(String key) {
+        JedisCommand<Object> jdc = new JedisCommand<Object>() {
+
+            public Object execute(Jedis jedis) {
+                String result = jedis.hget(keyPrefix, key);
+
+                if (result != null) {
+                    T object = getJavaObjectSafe(result);
+
+                    if (object != null) {
+                        wrappedMap.put(key, object);
+                    }
+                }
+
+                return (null);
+            }
+
+        };
+
+        FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+    }
 
 	protected void updateValue(final String key, T value) {
 		wrappedMap.put(key.toLowerCase(), value);
@@ -79,6 +105,14 @@ public abstract class RedisPersistMap<T> {
 	}
 
 	public abstract String getRedisValue(T t);
+
+    public T getJavaObjectSafe(String str) {
+        try {
+            return (getJavaObject(str));
+        } catch (Exception e) {
+            return (null);
+        }
+    }
 
 	public abstract T getJavaObject(String str);
 

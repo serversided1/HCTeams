@@ -1,12 +1,12 @@
-package net.frozenorb.foxtrot.visual.scoreboard;
+package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.armor.Kit;
-import net.frozenorb.foxtrot.armor.kits.Bard;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -26,8 +26,8 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
-            if (SpawnTag.isTagged(player)) {
-                long diff = SpawnTag.getSpawnTags().get(player.getName()).getExpires() - System.currentTimeMillis();
+            if (SpawnTagHandler.isTagged(player)) {
+                long diff = SpawnTagHandler.getTag(player);
 
                 if (diff >= 0) {
                     return (diff);
@@ -49,11 +49,7 @@ public interface ScoreGetter {
         @Override
         public long getMillis(Player player) {
             if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
-
-                if (diff >= 0) {
-                    return (diff);
-                }
+                return (EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis());
             }
 
             return (NO_SCORE);
@@ -70,16 +66,8 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                return (NO_SCORE);
-            }
-
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                long diff = (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis());
-
-                if (diff >= 0) {
-                    return (diff);
-                }
+                return (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis());
             }
 
             return (NO_SCORE);
@@ -96,12 +84,8 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player){
-            if (Kit.getWarmupTasks().containsKey(player.getName())) {
-                long diff = Kit.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis();
-
-                if (diff >= 0) {
-                    return (diff);
-                }
+            if (PvPClassHandler.getWarmupTasks().containsKey(player.getName())) {
+                return (PvPClassHandler.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis());
             }
 
             return (NO_SCORE);
@@ -113,6 +97,11 @@ public interface ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
+            return (KOTH.LAST_ACTIVE_KOTH);
+        }
+
+        @Override
+        public long getMillis(Player player) {
             for (KOTH koth : KOTHHandler.getKOTHs()) {
                 if (koth.isActive()) {
                     if (koth.getName().equals("Citadel")) {
@@ -123,17 +112,6 @@ public interface ScoreGetter {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
                     }
 
-                    break;
-                }
-            }
-
-            return (KOTH.LAST_ACTIVE_KOTH);
-        }
-
-        @Override
-        public long getMillis(Player player){
-            for (KOTH koth : KOTHHandler.getKOTHs()) {
-                if (koth.isActive()) {
                     return ((long) (koth.getRemainingCapTime() * 1000L));
                 }
             }
@@ -152,12 +130,8 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
-            if (Bard.getPositiveEffectCooldown().containsKey(player.getName()) && Bard.getPositiveEffectCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = Bard.getPositiveEffectCooldown().get(player.getName()) - System.currentTimeMillis();
-
-                if (diff >= 0) {
-                    return (diff);
-                }
+            if (BardClass.getLastPositiveEffectUsage().containsKey(player.getName()) && BardClass.getLastPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                return (BardClass.getLastPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis());
             }
 
             return (NO_SCORE);
@@ -174,12 +148,8 @@ public interface ScoreGetter {
 
         @Override
         public long getMillis(Player player) {
-            if (Bard.getNegativeEffectCooldown().containsKey(player.getName()) && Bard.getNegativeEffectCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = Bard.getNegativeEffectCooldown().get(player.getName()) - System.currentTimeMillis();
-
-                if (diff >= 0) {
-                    return (diff);
-                }
+            if (BardClass.getLastNegativeEffectUsage().containsKey(player.getName()) && BardClass.getLastNegativeEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                return (BardClass.getLastNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis());
             }
 
             return (NO_SCORE);

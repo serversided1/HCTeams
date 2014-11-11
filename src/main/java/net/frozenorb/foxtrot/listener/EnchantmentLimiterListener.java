@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,7 +33,8 @@ import java.util.*;
 public class EnchantmentLimiterListener implements Listener {
 
     public EnchantmentLimiterListener() {
-        new BukkitRunnable(){
+        new BukkitRunnable() {
+
             @Override
             public void run() {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -78,8 +78,8 @@ public class EnchantmentLimiterListener implements Listener {
                 for (Enchantment enchantment : enchants.keySet()) {
                     int level = enchants.get(enchantment);
 
-                    if (ServerHandler.getMaxEnchantments().containsKey(enchantment)) {
-                        int max = ServerHandler.getMaxEnchantments().get(enchantment);
+                    if (FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().containsKey(enchantment)) {
+                        int max = FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().get(enchantment);
 
                         if (level > max) {
                             item.addUnsafeEnchantment(enchantment, max);
@@ -93,6 +93,7 @@ public class EnchantmentLimiterListener implements Listener {
 
                 return (fixed);
             }
+
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 200L, 200L); //10 seconds
     }
 
@@ -103,9 +104,9 @@ public class EnchantmentLimiterListener implements Listener {
         for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
             int level = event.getEnchantsToAdd().get(enchantment);
 
-            if (ServerHandler.getMaxEnchantments().containsKey(enchantment)) {
-                if (level > ServerHandler.getMaxEnchantments().get(enchantment)) {
-                    enchants.put(enchantment, ServerHandler.getMaxEnchantments().get(enchantment));
+            if (FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().containsKey(enchantment)) {
+                if (level > FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().get(enchantment)) {
+                    enchants.put(enchantment, FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().get(enchantment));
                 } else {
                     enchants.put(enchantment, level);
                 }
@@ -154,7 +155,7 @@ public class EnchantmentLimiterListener implements Listener {
 
         boolean book = item.getType() == Material.ENCHANTED_BOOK;
 
-        for (Map.Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
+        for (Map.Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().entrySet()) {
             if (book) {
                 EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
 

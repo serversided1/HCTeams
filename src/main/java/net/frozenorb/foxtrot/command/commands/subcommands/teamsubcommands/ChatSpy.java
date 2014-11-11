@@ -41,7 +41,7 @@ public class ChatSpy {
         teams.add(target.getFriendlyName().toLowerCase());
 
         FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), teams);
-        sender.sendMessage(ChatColor.GOLD + "You are now spying on the chat of " + target.getFriendlyName() + ".");
+        sender.sendMessage(ChatColor.GREEN + "You are now spying on the chat of " + ChatColor.YELLOW + target.getFriendlyName() + ChatColor.GREEN + ".");
     }
 
     @Command(names={ "team chatspy del", "t chatspy del", "f chatspy del", "faction chatspy del", "fac chatspy del" }, permissionNode="foxtrot.chatspy")
@@ -56,13 +56,13 @@ public class ChatSpy {
         teams.remove(target.getFriendlyName().toLowerCase());
 
         FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), teams);
-        sender.sendMessage(ChatColor.GOLD + "You are no longer spying on the chat of " + target.getFriendlyName() + ".");
+        sender.sendMessage(ChatColor.GREEN + "You are no longer spying on the chat of " + ChatColor.YELLOW + target.getFriendlyName() + ChatColor.GREEN + ".");
     }
 
     @Command(names={ "team chatspy clear", "t chatspy clear", "f chatspy clear", "faction chatspy clear", "fac chatspy clear" }, permissionNode="foxtrot.chatspy")
     public static void teamChatSpyClear(Player sender) {
         FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), new ArrayList<String>());
-        sender.sendMessage(ChatColor.GOLD + "You are no longer spying on any factions.");
+        sender.sendMessage(ChatColor.GREEN + "You are no longer spying on any factions.");
     }
 
 }

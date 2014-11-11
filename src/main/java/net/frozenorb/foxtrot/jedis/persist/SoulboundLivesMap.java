@@ -29,4 +29,10 @@ public class SoulboundLivesMap extends RedisPersistMap<Integer> {
         updateValue(player, lives);
     }
 
+    @Override
+    public Integer getValue(String key) {
+        reloadValue(key);
+        return (super.getValue(key));
+    }
+
 }

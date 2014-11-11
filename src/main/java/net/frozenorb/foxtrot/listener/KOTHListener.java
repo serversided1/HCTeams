@@ -57,7 +57,6 @@ public class KOTHListener implements Listener {
             Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
             Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
         }
-
     }
 
     @EventHandler

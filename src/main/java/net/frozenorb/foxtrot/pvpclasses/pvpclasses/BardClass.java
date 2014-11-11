@@ -1,11 +1,10 @@
-package net.frozenorb.foxtrot.armor.kits;
+package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.armor.Armor;
-import net.frozenorb.foxtrot.armor.ArmorMaterial;
-import net.frozenorb.foxtrot.armor.Kit;
 import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.ParticleEffects;
 import net.minecraft.util.com.google.common.collect.Lists;
@@ -29,13 +28,13 @@ import java.util.Map;
  * @author Connor Hollasch
  * @since 10/10/14
  */
-public class Bard extends Kit implements Listener {
+public class BardClass extends PvPClass implements Listener {
 
     public static final HashMap<Material, PotionEffect> BARD_CLICK_EFFECTS = new HashMap<Material, PotionEffect>();
     public static final HashMap<Material, PotionEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, PotionEffect>();
 
-    @Getter private static Map<String, Long> positiveEffectCooldown = new HashMap<>();
-    @Getter private static Map<String, Long> negativeEffectCooldown = new HashMap<>();
+    @Getter private static Map<String, Long> lastPositiveEffectUsage = new HashMap<>();
+    @Getter private static Map<String, Long> lastNegativeEffectUsage = new HashMap<>();
 
     public static final int BARD_RANGE = 20;
 
@@ -68,36 +67,49 @@ public class Bard extends Kit implements Listener {
         //Wheat - Heals 6 hunger points
     }
 
-    @Override
-    public boolean qualifies(Armor armor) {
-        return (armor.isFullSet(ArmorMaterial.GOLD));
-    }
-
-    @Override
-    public String getName() {
-        return ("Bard");
+    public BardClass() {
+        super("Bard", 5, "GOLD_", null);
     }
 
     @Override
     public void apply(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, 1));
+    }
+
+    @Override
+    public void tick(Player player) {
         if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
             giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
         }
 
-        smartAddPotion(player, PotionEffectType.SPEED.createEffect(200, 0));
-        smartAddPotion(player, PotionEffectType.DAMAGE_RESISTANCE.createEffect(200, 1));
-        smartAddPotion(player, PotionEffectType.REGENERATION.createEffect(200, 1));
-        smartAddPotion(player, PotionEffectType.WEAKNESS.createEffect(200, 1));
+        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 1));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, 1));
+        }
     }
 
     @Override
-    public int getWarmup() {
-        return (10);
+    public void remove(Player player) {
+        removeInfiniteEffects(player);
     }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().name().contains("RIGHT_") || !event.hasItem() || !BARD_CLICK_EFFECTS.containsKey(event.getItem().getType()) || !hasKitOn(event.getPlayer())) {
+        if (!event.getAction().name().contains("RIGHT_") || !event.hasItem() || !BARD_CLICK_EFFECTS.containsKey(event.getItem().getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
             return;
         }
 
@@ -109,8 +121,8 @@ public class Bard extends Kit implements Listener {
         boolean negative = BARD_CLICK_EFFECTS.get(event.getItem().getType()) != null && Arrays.asList(FoxListener.DEBUFFS).contains(BARD_CLICK_EFFECTS.get(event.getItem().getType()).getType());
 
         if (negative) {
-            if (negativeEffectCooldown.containsKey(event.getPlayer().getName()) && negativeEffectCooldown.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = negativeEffectCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
+            if (lastNegativeEffectUsage.containsKey(event.getPlayer().getName()) && lastNegativeEffectUsage.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = lastNegativeEffectUsage.get(event.getPlayer().getName()) - System.currentTimeMillis();
 
                 double value = (millisLeft / 1000D);
                 double sec = Math.round(10.0 * value) / 10.0;
@@ -119,24 +131,20 @@ public class Bard extends Kit implements Listener {
                 return;
             }
 
-            negativeEffectCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
-        } else {
-            if (positiveEffectCooldown.containsKey(event.getPlayer().getName()) && positiveEffectCooldown.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = positiveEffectCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
-
-                double value = (millisLeft / 1000D);
-                double sec = Math.round(10.0 * value) / 10.0;
-
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
-                return;
-            }
-
-            positiveEffectCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
-        }
-
-        if (negative) {
+            lastNegativeEffectUsage.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         } else {
+            if (lastPositiveEffectUsage.containsKey(event.getPlayer().getName()) && lastPositiveEffectUsage.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = lastPositiveEffectUsage.get(event.getPlayer().getName()) - System.currentTimeMillis();
+
+                double value = (millisLeft / 1000D);
+                double sec = Math.round(10.0 * value) / 10.0;
+
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
+                return;
+            }
+
+            lastPositiveEffectUsage.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         }
 

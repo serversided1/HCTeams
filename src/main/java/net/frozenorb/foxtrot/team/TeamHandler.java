@@ -86,8 +86,8 @@ public class TeamHandler {
 		loadTeams();
 	}
 
-	public ArrayList<Team> getTeams() {
-		return new ArrayList<>(teamNameMap.values());
+	public List<Team> getTeams() {
+		return (new ArrayList<Team>(teamNameMap.values()));
 	}
 
 	public void setTeam(String playerName, Team team) {
@@ -95,7 +95,7 @@ public class TeamHandler {
 	}
 
 	public Team getTeam(String teamName) {
-		return teamNameMap.get(teamName.toLowerCase());
+		return (teamNameMap.get(teamName.toLowerCase()));
 	}
 
 	private void loadTeams() {
@@ -107,38 +107,36 @@ public class TeamHandler {
 					Team team = new Team(key.split("\\.")[1]);
 					team.load(str);
 					teamNameMap.put(team.getName().toLowerCase(), team);
+
 					for (String member : team.getMembers()) {
 						playerTeamMap.put(member.toLowerCase(), team);
 					}
 				}
 
-				return null;
+				return (null);
 			}
 		});
 
 	}
 
-	public boolean isTaken(Claim cc) {
-		return getOwner(cc) != null;
-	}
-
 	public boolean isTaken(Location loc) {
-		return getOwner(loc) != null;
+		return (getOwner(loc) != null);
 	}
 
 	public Team getOwner(Claim cc) {
-		return LandBoard.getInstance().getTeamAt(cc);
+		return (LandBoard.getInstance().getTeamAt(cc));
 	}
 
 	public Team getOwner(Location loc) {
-		return LandBoard.getInstance().getTeamAt(loc);
+		return (LandBoard.getInstance().getTeamAt(loc));
 	}
 
 	public Team getPlayerTeam(String name) {
-		if (!playerTeamMap.containsKey(name.toLowerCase()))
-			return null;
+		if (!playerTeamMap.containsKey(name.toLowerCase())) {
+            return (null);
+        }
 
-		return playerTeamMap.get(name.toLowerCase());
+		return (playerTeamMap.get(name.toLowerCase()));
 	}
 
 	public boolean teamExists(String teamName) {
@@ -166,6 +164,7 @@ public class TeamHandler {
 		if (teamExists(name)) {
 			return;
 		}
+
 		final String oldName = team.getName();
 
 		team.setName(name.toLowerCase());
@@ -200,6 +199,7 @@ public class TeamHandler {
 
 			LandBoard.getInstance().clear(t);
 		}
+
 		teamNameMap.remove(name.toLowerCase());
 
 		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {

@@ -13,10 +13,7 @@ import java.util.jar.JarFile;
 public class CommandRegistrar {
 
 	public void loadCommandsFromPackage(String packageName) {
-		System.out.println("Loading commands from package: " + packageName);
-
 		for (Class<?> clazz : getClassesInPackage(packageName)) {
-			System.out.println(clazz.getName() + "\n\n");
             CommandHandler.registerClass(clazz);
 		}
 	}

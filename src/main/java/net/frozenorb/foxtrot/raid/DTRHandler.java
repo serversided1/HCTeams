@@ -7,7 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class DTRHandler extends BukkitRunnable {
@@ -51,30 +53,36 @@ public class DTRHandler extends BukkitRunnable {
 
 	@Override
 	public void run() {
-        Set<Team> recentlyTicked = new HashSet<Team>();
+        Map<Team, Integer> playerOnlineMap = new HashMap<Team, Integer>();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-            if (playerTeam != null && !recentlyTicked.contains(playerTeam)) {
-                recentlyTicked.add(playerTeam);
-
-                if (playerTeam.getSize() != 0) {
-                    if (playerTeam.getDeathCooldown() > System.currentTimeMillis() || playerTeam.getRaidableCooldown() > System.currentTimeMillis()) {
-                        wasOnCooldown.add(playerTeam.getFriendlyName().toLowerCase());
-                        continue;
-                    }
-
-                    if (wasOnCooldown.contains(playerTeam.getFriendlyName().toLowerCase())) {
-                        wasOnCooldown.remove(playerTeam.getFriendlyName().toLowerCase());
-
-                        for (Player pl : playerTeam.getOnlineMembers()) {
-                            pl.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
-                        }
-                    }
-
-                    playerTeam.setDtr(Math.min(playerTeam.getDtr() + playerTeam.getDTRIncrement().doubleValue(), playerTeam.getMaxDTR()));
+            if (playerTeam != null) {
+                if (playerOnlineMap.containsKey(playerTeam)) {
+                    playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
+                } else {
+                    playerOnlineMap.put(playerTeam, 1);
                 }
+            }
+        }
+
+        for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
+            if (teamEntry.getKey().getSize() != 0) {
+                if (teamEntry.getKey().getDeathCooldown() > System.currentTimeMillis() || teamEntry.getKey().getRaidableCooldown() > System.currentTimeMillis()) {
+                    wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
+                    continue;
+                }
+
+                if (wasOnCooldown.contains(teamEntry.getKey().getFriendlyName().toLowerCase())) {
+                    wasOnCooldown.remove(teamEntry.getKey().getFriendlyName().toLowerCase());
+
+                    for (Player player : teamEntry.getKey().getOnlineMembers()) {
+                        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                    }
+                }
+
+                teamEntry.getKey().setDtr(Math.min(teamEntry.getKey().getDtr() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()).doubleValue(), teamEntry.getKey().getMaxDTR()));
             }
         }
 	}
