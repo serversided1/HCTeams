@@ -13,12 +13,17 @@ import java.util.Map;
 public class ScoreboardHandler {
 
     private Map<String, FoxtrotBoard> boards = new HashMap<>();
+    public static boolean scoreboardTimerEnabled = true;
 
     public ScoreboardHandler() {
         new BukkitRunnable() {
 
             @Override
             public void run() {
+                if (!scoreboardTimerEnabled) {
+                    return;
+                }
+
                 for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     update(online);
                 }
