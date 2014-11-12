@@ -30,9 +30,9 @@ public class Team {
     // Configurable values //
 
 	public static final int MAX_TEAM_SIZE = 30;
+    public static final int MAX_CLAIMS = 2;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(120);
-    public static final int MAX_CLAIMS = 2;
 
     // End configurable values //
 
@@ -115,7 +115,7 @@ public class Team {
         FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
 		this.owner = owner;
 
-        if (owner != null) {
+        if (owner != null && !owner.equals("null")) {
             members.add(owner);
         }
 	}
@@ -672,16 +672,7 @@ public class Team {
                 int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
                 player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
             }
-        } else if (getDtr() == 50D) {
-            player.sendMessage(ChatColor.AQUA + getFriendlyName() + ChatColor.GOLD + " KOTH " + ChatColor.GRAY + "(5m Deathban)");
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
-        } else if (getDtr() == 100D) {
-            player.sendMessage(ChatColor.DARK_PURPLE + getFriendlyName() + ChatColor.WHITE + " " + ChatColor.GRAY + "(15m Deathban, 0.5 DTR Loss, 60s Pearl Cooldown)");
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
-        } else {
-            player.sendMessage(ChatColor.BLUE + getFriendlyName());
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (getHq() == null ? "None" : getHq().getBlockX() + ", " + getHq().getBlockZ()));
-        }
+        } else
 
 		player.sendMessage(gray);
 	}

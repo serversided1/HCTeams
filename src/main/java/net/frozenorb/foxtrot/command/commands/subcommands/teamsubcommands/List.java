@@ -8,8 +8,8 @@ import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
+import java.util.Map;
 
 /**
  * Created by macguy8 on 11/2/2014.
@@ -23,18 +23,21 @@ public class List {
             return;
         }
 
-        int factionsWithMembersOnline = 0;
-        ArrayList<Team> sortedByOnline = new ArrayList<Team>();
+        HashMap<Team, Integer> teamPlayerCount = new HashMap<Team, Integer>();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            if (team.getOnlineMemberAmount() != 0) {
-                factionsWithMembersOnline++;
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+
+            if (playerTeam != null) {
+                if (teamPlayerCount.containsKey(playerTeam)) {
+                    teamPlayerCount.put(playerTeam, teamPlayerCount.get(playerTeam) + 1);
+                } else {
+                    teamPlayerCount.put(playerTeam, 1);
+                }
             }
-
-            sortedByOnline.add(team);
         }
 
-        int maxPages = factionsWithMembersOnline / 10;
+        int maxPages = teamPlayerCount.size() / 10;
 
         maxPages++;
 
@@ -42,14 +45,7 @@ public class List {
             page = maxPages;
         }
 
-        sortedByOnline.sort(new Comparator<Team>() {
-
-            @Override
-            public int compare(Team o1, Team o2) {
-                return (Integer.valueOf(o2.getOnlineMemberAmount()).compareTo(o1.getOnlineMemberAmount()));
-            }
-
-        });
+        LinkedHashMap<Team, Integer> sortedTeamPlayerCount = sortByValues(teamPlayerCount);
 
         String gray = "§7§m" + StringUtils.repeat("-", 53);
         int start = (page - 1) * 10;
@@ -57,22 +53,46 @@ public class List {
         sender.sendMessage(gray);
         sender.sendMessage(ChatColor.BLUE + "Faction List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
 
-        for (int i = start; i < start + 10; i++) {
-            try {
-                Team team = sortedByOnline.get(i);
-                int online = team.getOnlineMemberAmount();
+        int index = 0;
 
-                if (online != 0) {
-                    sender.sendMessage(ChatColor.GRAY.toString() + (i + 1) + ". " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GREEN + " (" + online + "/" + team.getSize() + ")");
-                }
-            } catch (Exception e) {
-
+        for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
+            if (index < start) {
+                continue;
             }
+
+            if (index > start + 10) {
+                break;
+            }
+
+            index++;
+            sender.sendMessage(ChatColor.GRAY.toString() + (index) + ". " + ChatColor.YELLOW + teamEntry.getKey().getFriendlyName() + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getSize() + ")");
         }
 
         sender.sendMessage(ChatColor.GRAY + "You are currently on " + ChatColor.WHITE + "Page " + page + "/" + maxPages + ChatColor.GRAY + ".");
         sender.sendMessage(ChatColor.GRAY + "To view other pages, use " + ChatColor.YELLOW + "/f list <page#>" + ChatColor.GRAY + ".");
         sender.sendMessage(gray);
+    }
+
+    private static LinkedHashMap<Team, Integer> sortByValues(HashMap<Team, Integer> map) {
+        LinkedList<java.util.Map.Entry<Team, Integer>> list = new LinkedList<>(map.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<Team, Integer>>() {
+
+            public int compare(java.util.Map.Entry<Team, Integer> o1, java.util.Map.Entry<Team, Integer> o2) {
+                return (o2.getValue().compareTo(o1.getValue()));
+            }
+
+        });
+
+        LinkedHashMap<Team, Integer> sortedHashMap = new LinkedHashMap<Team, Integer>();
+        Iterator<Map.Entry<Team, Integer>> iterator = list.iterator();
+
+        while (iterator.hasNext()) {
+            java.util.Map.Entry<Team, Integer> entry = iterator.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return (sortedHashMap);
     }
 
 }

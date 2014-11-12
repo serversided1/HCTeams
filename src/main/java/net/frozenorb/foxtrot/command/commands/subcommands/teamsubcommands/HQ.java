@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
@@ -42,7 +41,7 @@ public class HQ {
             return;
         }
 
-		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75, TeamLocationType.HOME);
+		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75);
 	}
 
 }

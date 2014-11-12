@@ -864,7 +864,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent e) {
         Player player = e.getEntity();
         Date now = new Date();

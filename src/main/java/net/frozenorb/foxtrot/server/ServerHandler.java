@@ -15,7 +15,6 @@ import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
-import net.frozenorb.foxtrot.team.TeamLocationType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
@@ -281,7 +280,7 @@ public class ServerHandler {
         return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
 	}
 
-	public void beginWarp(final Player player, final Team team, int price, TeamLocationType type) {
+	public void beginWarp(final Player player, final Team team, int price) {
 		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && isGlobalSpawn(player.getLocation()))) {
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
                 FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
@@ -298,22 +297,12 @@ public class ServerHandler {
         }
 
 		TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
+        double bal = tm.getPlayerTeam(player.getName()).getBalance();
 
-		if (type == TeamLocationType.HOME) {
-			double bal = tm.getPlayerTeam(player.getName()).getBalance();
-
-			if (bal < price) {
-				player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
-				return;
-			}
-		} else {
-			double bal = Basic.get().getEconomyManager().getBalance(player.getName());
-
-			if (bal < price) {
-				player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while you have §e$" + bal + "§c!");
-				return;
-			}
-		}
+        if (bal < price) {
+            player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
+            return;
+        }
 
         // Disallow warping while on enderpearl cooldown.
 		if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
@@ -358,13 +347,8 @@ public class ServerHandler {
             FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
         }
 
-		if (type == TeamLocationType.HOME) {
-			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");
-			tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
-		} else {
-			Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
-			player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your balance.");
-		}
+        player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");
+        tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
 
         FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
 		player.teleport(team.getHq());
@@ -424,7 +408,7 @@ public class ServerHandler {
 
     public int getDeathBanAt(String playerName, Location loc) {
         // MAP 0.9
-        return ((int) TimeUnit.MINUTES.toSeconds(5));
+        return ((int) TimeUnit.SECONDS.toSeconds(5));
 
         /*if (isPreEOTW()) {
             return ((int) TimeUnit.DAYS.toSeconds(1000));

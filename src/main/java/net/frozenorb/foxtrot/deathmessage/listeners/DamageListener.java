@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -39,7 +40,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority= EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getDeathMessage() == null || event.getDeathMessage().isEmpty()) {
             return;
