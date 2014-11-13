@@ -229,7 +229,7 @@ public class ArcherClass extends PvPClass {
             return (false);
         }
 
-        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
         return (true);
     }

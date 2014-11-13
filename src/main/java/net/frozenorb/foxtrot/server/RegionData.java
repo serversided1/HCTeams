@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 @AllArgsConstructor
 @Data
 public class RegionData<T> {
+
 	private Location location;
 	private Region region;
 	private T data;

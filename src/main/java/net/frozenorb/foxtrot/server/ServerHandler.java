@@ -66,10 +66,10 @@ public class ServerHandler {
         8234, 8266, 16426, 16458 // Slowness Potions
     );
 
-	@Getter private static HashMap<String, Integer> tasks = new HashMap<String, Integer>();
+	@Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
 
-	@Getter private HashSet<String> usedNames = new HashSet<String>();
-    @Getter private HashSet<String> highRollers = new HashSet<String>();
+	@Getter private Set<String> usedNames = new HashSet<String>();
+    @Getter private Set<String> highRollers = new HashSet<String>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
@@ -122,9 +122,8 @@ public class ServerHandler {
 
                 if (highRollers.length() > 2) {
                     highRollers.setLength(highRollers.length() - 2);
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
                 }
-
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
             }
 
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
@@ -187,10 +186,7 @@ public class ServerHandler {
 			return (false);
 		}
 
-		int x = loc.getBlockX();
-		int z = loc.getBlockZ();
-
-		return ((x < WARZONE_RADIUS && x > -WARZONE_RADIUS) && (z < WARZONE_RADIUS && z > -WARZONE_RADIUS));
+		return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS);
 	}
 
 	public void startLogoutSequence(final Player player) {
@@ -287,7 +283,7 @@ public class ServerHandler {
 			return;
 		}
 
-        if(FreezeCommand.isFrozen(player)){
+        if (FreezeCommand.isFrozen(player)) {
             player.sendMessage(ChatColor.RED + "You cannot teleport while frozen!");
             return;
         }

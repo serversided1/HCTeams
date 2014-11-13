@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.TimeUtils;
@@ -233,6 +234,16 @@ public class Team {
 
 		return (emptyTeam);
 	}
+
+    public boolean hasDTRBitmask(DTRBitmaskType bitmaskType) {
+        int dtrInt = (int) dtr;
+        return (((dtrInt & bitmaskType.getBitmask()) == bitmaskType.getBitmask()));
+    }
+
+    public void toggleDTRBitmask(DTRBitmaskType bitmaskType) {
+        int dtrInt = (int) dtr;
+        setDtr(dtrInt & ~bitmaskType.getBitmask());
+    }
 
 	public int getOnlineMemberAmount() {
 		int amt = 0;

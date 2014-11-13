@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -10,37 +11,28 @@ import org.bukkit.GameMode;
 @AllArgsConstructor
 public enum Region {
 
-    SPAWN(true, "§aSpawn", (e) -> {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-            return true;
+    SPAWN(true, "§aSpawn", (event) -> {
+        if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            event.setTo(event.getFrom());
+            return (false);
         }
 
-        if (SpawnTagHandler.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
-            e.setTo(e.getFrom());
-            return false;
-        }
-
-        e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
-        e.getPlayer().setFoodLevel(20);
-
-        return true;
+        event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
+        event.getPlayer().setFoodLevel(20);
+        return (true);
     }),
 
-    SPAWN_NETHER(true, "§aNether Spawn", (e) -> {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-            return true;
+    SPAWN_NETHER(true, "§aNether Spawn", (event) -> {
+        if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+            event.setTo(event.getFrom());
+            return (false);
         }
 
-        if (SpawnTagHandler.isTagged(e.getPlayer()) && e.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            e.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
-            e.setTo(e.getFrom());
-            return false;
-        }
-
-        e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
-        e.getPlayer().setFoodLevel(20);
-        return true;
+        event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
+        event.getPlayer().setFoodLevel(20);
+        return (true);
     }),
 
     SPAWN_END(true, "§aEnd Spawn", (e) -> {
@@ -99,9 +91,9 @@ public enum Region {
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(e.getTo());
 
 		if (ownerTo == null || !ownerTo.isMember(e.getPlayer())) {
-			if (e.getPlayer().getInventory().contains(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND)) {
+			if (e.getPlayer().getInventory().contains(Subclaim.SELECTION_WAND)) {
 				e.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-				e.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND);
+				e.getPlayer().getInventory().remove(Subclaim.SELECTION_WAND);
 			}
 		}
 

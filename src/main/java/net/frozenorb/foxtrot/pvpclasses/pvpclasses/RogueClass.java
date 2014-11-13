@@ -66,7 +66,7 @@ public class RogueClass extends PvPClass {
                 return (false);
             }
 
-            lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+            lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 2));
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 4), true);
         } else {
             if (lastJumpUsage.containsKey(player.getName()) && lastJumpUsage.get(player.getName()) > System.currentTimeMillis()) {
@@ -77,7 +77,7 @@ public class RogueClass extends PvPClass {
                 return (false);
             }
 
-            lastJumpUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 5));
+            lastJumpUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 2));
             player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 200, 6), true);
         }
 
