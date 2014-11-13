@@ -65,7 +65,7 @@ public class LandBoard {
 		vcs.addAll(VisualClaim.getCurrentMaps().values());
 
 		for (VisualClaim vc : vcs) {
-			if (modified.isWithin(vc.getPlayer().getLocation().getBlockX(), vc.getPlayer().getLocation().getBlockZ(), VisualClaim.MAP_RADIUS)) {
+			if (modified.isWithin(vc.getPlayer().getLocation().getBlockX(), vc.getPlayer().getLocation().getBlockZ(), VisualClaim.MAP_RADIUS, modified.getWorld())) {
 				vc.draw(true);
 				vc.draw(true);
 			}

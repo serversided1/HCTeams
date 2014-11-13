@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.mBasic.Basic;
@@ -57,6 +58,37 @@ public class TeamHandler {
                 }
 
                 return (team);
+            }
+
+        });
+
+        CommandHandler.registerTransformer(DTRBitmaskType.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                try {
+                    return (DTRBitmaskType.valueOf(source.toUpperCase()));
+                } catch (Exception e) {
+                    sender.sendMessage(ChatColor.RED + "No bitmask type with the name " + source + " found.");
+                    return (null);
+                }
+            }
+
+        });
+
+        CommandHandler.registerTabCompleter(DTRBitmaskType.class, new ParamTabCompleter() {
+
+            @Override
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
+                    if (StringUtils.startsWithIgnoreCase(bitmaskType.getName(), source)) {
+                        completions.add(bitmaskType.getName());
+                    }
+                }
+
+                return (completions);
             }
 
         });

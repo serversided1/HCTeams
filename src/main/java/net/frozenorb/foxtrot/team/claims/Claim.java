@@ -1,11 +1,13 @@
 package net.frozenorb.foxtrot.team.claims;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -17,19 +19,21 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class Claim implements Iterable<Coordinate> {
 
-	public int x1;
-    public int y1;
-    public int z1;
-    public int x2;
-    public int y2;
-    public int z2;
-	String name;
+    @Getter private String world;
+    @Getter private int x1;
+    @Getter private int y1;
+    @Getter private int z1;
+    @Getter private int x2;
+    @Getter private int y2;
+    @Getter private int z2;
+    @Getter private String name;
 
 	public Claim(Location corner1, Location corner2) {
-		this(corner1.getBlockX(), corner1.getBlockY(), corner1.getBlockZ(), corner2.getBlockX(), corner2.getBlockY(), corner2.getBlockZ());
+		this(corner1.getWorld().getName(), corner1.getBlockX(), corner1.getBlockY(), corner1.getBlockZ(), corner2.getBlockX(), corner2.getBlockY(), corner2.getBlockZ());
 	}
 
-	public Claim(int x1, int y1, int z1, int x2, int y2, int z2) {
+	public Claim(String world, int x1, int y1, int z1, int x2, int y2, int z2) {
+        this.world = world;
 		this.x1 = Math.min(x1, x2);
 		this.x2 = Math.max(x1, x2);
 		this.y1 = Math.min(y1, y2);
@@ -38,7 +42,7 @@ public class Claim implements Iterable<Coordinate> {
 		this.z2 = Math.max(z1, z2);
 	}
 
-    public static int getPrice(Claim claim, Team team, boolean buying){
+    public static int getPrice(Claim claim, Team team, boolean buying) {
         int x = Math.abs(claim.x1 - claim.x2);
         int z = Math.abs(claim.z1 - claim.z2);
         int blocks = x * z;
@@ -66,28 +70,37 @@ public class Claim implements Iterable<Coordinate> {
     }
 
     @Override
-	public boolean equals(Object o) {
-        return (o instanceof Claim && ((Claim) o).getMaximumPoint().equals(getMaximumPoint()) && ((Claim) o).getMinimumPoint().equals(getMinimumPoint()));
+	public boolean equals(Object object) {
+        if (!(object instanceof Claim)) {
+            return (false);
+        }
+
+        Claim claim = (Claim) object;
+        return (claim.getMaximumPoint().equals(getMaximumPoint()) && claim.getMinimumPoint().equals(getMinimumPoint()));
     }
 
 	public Location getMinimumPoint() {
-		return (new Location(Bukkit.getWorld("world"), Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)));
+		return (new Location(FoxtrotPlugin.getInstance().getServer().getWorld(world), Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)));
 	}
 
 	public Location getMaximumPoint() {
-		return (new Location(Bukkit.getWorld("world"), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)));
+		return (new Location(FoxtrotPlugin.getInstance().getServer().getWorld(world), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)));
 	}
 
-	public boolean contains(int x, int y, int z) {
-		return (y >= y1 && y <= y2 && contains(x, z));
+	public boolean contains(int x, int y, int z, String world) {
+		return (y >= y1 && y <= y2 && contains(x, z, world));
 	}
 
-	public boolean contains(int x, int z) {
+	public boolean contains(int x, int z, String world) {
+        if (world != null && !world.equalsIgnoreCase(this.world)) {
+            return (false);
+        }
+
 		return (x >= x1 && x <= x2 && z >= z1 && z <= z2);
 	}
 
 	public boolean contains(Location location) {
-        return ("world".equals(location.getWorld().getName()) && contains(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+        return (contains(location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName()));
     }
 
 	public boolean contains(Block block) {
@@ -120,27 +133,27 @@ public class Claim implements Iterable<Coordinate> {
 		Location corner1 = getMinimumPoint();
 		Location corner2 = getMaximumPoint();
 
-		return (corner1.getBlockX() + ":" + corner1.getBlockY() + ":" + corner1.getBlockZ() + ":" + corner2.getBlockX() + ":" + corner2.getBlockY() + ":" + corner2.getBlockZ() + ":" + name);
+		return (corner1.getBlockX() + ":" + corner1.getBlockY() + ":" + corner1.getBlockZ() + ":" + corner2.getBlockX() + ":" + corner2.getBlockY() + ":" + corner2.getBlockZ() + ":" + name + ":" + world);
 	}
 
 	public String getFriendlyName() {
-		return ("(" + x1 + ", " + y1 + ", " + z1 + ") - (" + x2 + ", " + y2 + ", " + z2 + ")");
+		return ("(" + world + ", " + x1 + ", " + y1 + ", " + z1 + ") - (" + world + ", " + x2 + ", " + y2 + ", " + z2 + ")");
 	}
 
 	public Claim expand(CuboidDirection dir, int amount) {
 		switch (dir) {
 		case North:
-			return (new Claim(this.x1 - amount, this.y1, this.z1, this.x2, this.y2, this.z2));
+			return (new Claim(world, this.x1 - amount, this.y1, this.z1, this.x2, this.y2, this.z2));
 		case South:
-			return (new Claim(this.x1, this.y1, this.z1, this.x2 + amount, this.y2, this.z2));
+			return (new Claim(world, this.x1, this.y1, this.z1, this.x2 + amount, this.y2, this.z2));
 		case East:
-			return (new Claim(this.x1, this.y1, this.z1 - amount, this.x2, this.y2, this.z2));
+			return (new Claim(world, this.x1, this.y1, this.z1 - amount, this.x2, this.y2, this.z2));
 		case West:
-			return (new Claim(this.x1, this.y1, this.z1, this.x2, this.y2, this.z2 + amount));
+			return (new Claim(world, this.x1, this.y1, this.z1, this.x2, this.y2, this.z2 + amount));
 		case Down:
-			return (new Claim(this.x1, this.y1 - amount, this.z1, this.x2, this.y2, this.z2));
+			return (new Claim(world, this.x1, this.y1 - amount, this.z1, this.x2, this.y2, this.z2));
 		case Up:
-			return (new Claim(this.x1, this.y1, this.z1, this.x2, this.y2 + amount, this.z2));
+			return (new Claim(world, this.x1, this.y1, this.z1, this.x2, this.y2 + amount, this.z2));
 		default:
 			throw (new IllegalArgumentException("Invalid direction " + dir));
 		}
@@ -166,26 +179,28 @@ public class Claim implements Iterable<Coordinate> {
 		return (claim);
 	}
 
-	public boolean isWithin(int x, int z, int radius) {
-		return (outset(CuboidDirection.Both, radius).contains(x, z));
+	public boolean isWithin(int x, int z, int radius, String world) {
+		return (outset(CuboidDirection.Both, radius).contains(x, z, world));
 	}
 
 	public Location[] getCornerLocations() {
+        World world = FoxtrotPlugin.getInstance().getServer().getWorld(this.world);
+
 		return new Location[] {
-				new Location(Bukkit.getWorld("world"), x1, y1, z1),
-				new Location(Bukkit.getWorld("world"), x2, y1, z2),
-				new Location(Bukkit.getWorld("world"), x1, y1, z2),
-				new Location(Bukkit.getWorld("world"), x2, y1, z1) };
+				new Location(world, x1, y1, z1),
+				new Location(world, x2, y1, z2),
+				new Location(world, x1, y1, z2),
+				new Location(world, x2, y1, z1) };
 	}
 
 	@Override
 	public Claim clone() {
-		return new Claim(x1, y1, z1, x2, y2, z2);
+		return new Claim(world, x1, y1, z1, x2, y2, z2);
 	}
 
 	@Override
 	public Iterator<Coordinate> iterator() {
-		return new BorderIterator("world", x1, y1, z1, x2, y2, z2);
+		return new BorderIterator(x1, z1, x2, z2);
 	}
 
 	public static enum BorderDirection {
@@ -206,11 +221,9 @@ public class Claim implements Iterable<Coordinate> {
 		int minX = getMinimumPoint().getBlockX(),
 				minZ = getMinimumPoint().getBlockZ();
 
-		public BorderIterator(String world, int x1, int y1, int z1, int x2, int y2, int z2) {
-
+		public BorderIterator(int x1, int z1, int x2, int z2) {
 			x = Math.min(x1, x2);
 			z = Math.min(z1, z2);
-
 		}
 
 		@Override
@@ -220,7 +233,6 @@ public class Claim implements Iterable<Coordinate> {
 
 		@Override
 		public Coordinate next() {
-			
 			if (dir == BorderDirection.POS_Z) {
 				if (++z == maxZ) {
 					dir = BorderDirection.POS_X;
@@ -259,36 +271,6 @@ public class Claim implements Iterable<Coordinate> {
 		Both,
 		Unknown;
 
-		public CuboidDirection opposite() {
-			switch (this) {
-			case North:
-				return South;
-			case East:
-				return West;
-			case South:
-				return North;
-			case West:
-				return East;
-			case Horizontal:
-				return Vertical;
-			case Vertical:
-				return Horizontal;
-			case Up:
-				return Down;
-			case Down:
-				return Up;
-			case Both:
-				return Both;
-			default:
-				return Unknown;
-			}
-		}
-
 	}
-
-    public static enum SpecialTag {
-        SPAWN,
-        KOTH
-    }
 
 }

@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -51,7 +52,7 @@ public class VisualClaim implements Listener {
 	private Location corner2;
 
 	public void draw(boolean silent) {
-        // If they already have a
+        // If they already have a map open, close it
 		if (currentMaps.containsKey(player.getName()) && type == VisualType.MAP) {
 			currentMaps.get(player.getName()).cancel(true);
 
@@ -62,30 +63,31 @@ public class VisualClaim implements Listener {
 			return;
 		}
 
+        // If they have another claim open, close it
 		if (visualClaims.containsKey(player.getName()) && type != VisualType.MAP) {
 			visualClaims.get(player.getName()).cancel(true);
 		}
 
+        // Put this claim into the cache
 		if (type == VisualType.CREATE || type == VisualType.RESIZE) {
 			visualClaims.put(player.getName(), this);
 		} else {
 			currentMaps.put(player.getName(), this);
 		}
 
-		Bukkit.getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
+		FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
 
 		int x = player.getLocation().getBlockX();
         int z = player.getLocation().getBlockZ();
 
 		if (type == VisualType.MAP) {
 			int iter = 0;
+            Map<Team, Material> storageReference = new HashMap<Team, Material>();
+			Map<Claim, Material> sendMaps = new HashMap<Claim, Material>();
 
-			HashMap<Team, Material> storageReference = new HashMap<Team, Material>();
-			HashMap<Claim, Material> sendMaps = new HashMap<Claim, Material>();
-
-			for (Claim c : LandBoard.getInstance().getClaims()) {
-				if (c.isWithin(x, z, MAP_RADIUS)) {
-					Team owner = LandBoard.getInstance().getTeamAt(c);
+			for (Claim claim : LandBoard.getInstance().getClaims()) {
+				if (claim.isWithin(x, z, MAP_RADIUS, player.getLocation().getWorld().getName())) {
+					Team owner = LandBoard.getInstance().getTeamAt(claim);
 					Material mat = getMaterial(iter);
 
 					if (storageReference.containsKey(owner)) {
@@ -94,20 +96,10 @@ public class VisualClaim implements Listener {
 						iter++;
 					}
 
-					drawPillars(c, mat);
-					sendMaps.put(c, mat);
+					drawPillars(claim, mat);
+					sendMaps.put(claim, mat);
 					storageReference.put(owner, mat);
 				}
-			}
-
-			Claim spawn = new Claim(RegionManager.get().getByName("spawn").getMinimumPoint(), RegionManager.get().getByName("spawn").getMaximumPoint());
-			spawn.setName("Spawn");
-
-			if (spawn.isWithin(x, z, MAP_RADIUS)) {
-				Material mat = getMaterial(-1);
-
-				drawPillars(spawn, mat);
-				sendMaps.put(spawn, mat);
 			}
 
 			if (sendMaps.isEmpty()) {
@@ -116,31 +108,26 @@ public class VisualClaim implements Listener {
 			}
 
 			if (!silent) {
-				sendMaps.forEach((c, m) -> {
-					if (c.getName() != null && c.getName().equals("Spawn")) {
-						player.sendMessage("§eLand §9Spawn§a(§b" + ItemDb.getFriendlyName(new ItemStack(m)) + "§a) §eis claimed by §9Spawn");
-					} else {
-						player.sendMessage("§eLand §9" + c.getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(m)) + "§a) §eis claimed by §9" + LandBoard.getInstance().getTeamAt(c).getFriendlyName());
-					}
-				});
+                for (Map.Entry<Claim, Material> claim : sendMaps.entrySet()) {
+                    player.sendMessage("§eLand §9" + claim.getKey().getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + "§a) §eis claimed by §9" + LandBoard.getInstance().getTeamAt(claim.getKey()).getFriendlyName());
+                }
 			}
 		}
 	}
 
-	public boolean containsOtherClaim(Claim c) {
-		CuboidRegion cr = new CuboidRegion("", c.getMinimumPoint(), c.getMaximumPoint());
+	public boolean containsOtherClaim(Claim claim) {
 		boolean claimed = false;
 
-		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(cr.getMaximumPoint())) {
+		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(claim.getMaximumPoint())) {
 			claimed = true;
 		}
 
-		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(cr.getMinimumPoint())) {
+		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(claim.getMinimumPoint())) {
 			claimed = true;
 		}
 
-		for (Location l : cr) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(l)) {
+		for (Coordinate location : claim) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), location.getX(), 80, location.getZ()))) {
                 claimed = true;
             }
         }
@@ -148,34 +135,31 @@ public class VisualClaim implements Listener {
 		return (claimed);
 	}
 
-	public HashSet<Claim> touchesOtherClaim(Claim c) {
-		HashSet<Claim> touchingClaims = new HashSet<Claim>();
+	public Set<Claim> touchesOtherClaim(Claim claim) {
+		Set<Claim> touchingClaims = new HashSet<Claim>();
 
-		c.outset(CuboidDirection.Horizontal, 1).forEach(cr -> {
-			Location loc = new Location(Bukkit.getWorld("world"), cr.getX(), 80, cr.getZ());
+        for (Coordinate coordinate : claim.outset(CuboidDirection.Horizontal, 1)) {
+            Location loc = new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), coordinate.getX(), 80, coordinate.getZ());
+            Claim cc = LandBoard.getInstance().getClaimAt(loc);
 
-			Claim cc = LandBoard.getInstance().getClaimAt(loc);
+            if (cc != null) {
+                touchingClaims.add(cc);
+            }
+        }
 
-			if (cc != null) {
-				touchingClaims.add(cc);
-			}
-		});
-
-		return touchingClaims;
+		return (touchingClaims);
 	}
 
 	public void setLoc(int loc, Location to) {
-
 		if (!FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(player.getName())) {
 			player.sendMessage(ChatColor.RED + "You have to be on a team to claim land!");
 			cancel(true);
 			return;
 		}
 
-		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
 		if (loc == 1) {
-
 			if (corner2 != null) {
 				Claim check = new Claim(to, corner2);
 
@@ -184,12 +168,14 @@ public class VisualClaim implements Listener {
 					return;
 				}
 
-				HashSet<Claim> touching = touchesOtherClaim(check);
-				HashSet<Claim> cloneCheck = new HashSet<Claim>();
+				Set<Claim> touching = touchesOtherClaim(check);
+				Set<Claim> cloneCheck = new HashSet<Claim>();
+
 				touching.forEach(tee -> cloneCheck.add(tee.clone()));
 
-				boolean contains = cloneCheck.removeIf(c -> t.ownsClaim(c));
-				if (t.getClaims().size() > 0 && !contains) {
+				boolean contains = cloneCheck.removeIf(c -> team.ownsClaim(c));
+
+				if (!bypass && team.getClaims().size() > 0 && !contains) {
 					player.sendMessage(ChatColor.RED + "All of your claims must be touching each other!");
 					return;
 				}
@@ -199,83 +185,76 @@ public class VisualClaim implements Listener {
 					return;
 				}
 
-				int x = Math.abs(check.x1 - check.x2);
-				int z = Math.abs(check.z1 - check.z2);
+				int x = Math.abs(check.getX1() - check.getX2());
+				int z = Math.abs(check.getZ1() - check.getZ2());
 
-				if (x < 4 || z < 4) {
+				if (!bypass && (x < 4 || z < 4)) {
 					player.sendMessage(ChatColor.RED + "Your claim is too small! The claim has to be at least (§f5 x 5§c)!");
 					return;
 				}
 
-				if (x >= 3 * z || z >= 3 * x) {
+				if (!bypass && (x >= 3 * z || z >= 3 * x)) {
 					player.sendMessage(ChatColor.RED + "One side of your claim cannot be more than 3 times larger than the other!");
 					return;
 				}
-
 			}
 
 			clearPillarAt(corner1);
 			this.corner1 = to;
-
 		} else if (loc == 2) {
-
 			if (corner1 != null) {
 				Claim check = new Claim(corner1, to);
+                if (!bypass && containsOtherClaim(check)) {
+                    player.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
+                    return;
+                }
 
-				if (!bypass && containsOtherClaim(check)) {
-					player.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
-					return;
-				}
+                Set<Claim> touching = touchesOtherClaim(check);
+                Set<Claim> cloneCheck = new HashSet<Claim>();
 
-				HashSet<Claim> touching = touchesOtherClaim(check);
+                touching.forEach(tee -> cloneCheck.add(tee.clone()));
 
-				HashSet<Claim> cloneCheck = new HashSet<Claim>();
-				touching.forEach(tee -> cloneCheck.add(tee.clone()));
+                boolean contains = cloneCheck.removeIf(c -> team.ownsClaim(c));
 
-				boolean contains = cloneCheck.removeIf(c -> t.ownsClaim(c));
-				if (t.getClaims().size() > 0 && !contains) {
-					player.sendMessage(ChatColor.RED + "All of your claims must be touching each other!");
-					return;
-				}
+                if (!bypass && team.getClaims().size() > 0 && !contains) {
+                    player.sendMessage(ChatColor.RED + "All of your claims must be touching each other!");
+                    return;
+                }
 
-				if (touching.size() > 1 || (touching.size() == 1 && !contains)) {
-					player.sendMessage(ChatColor.RED + "Your claim must be at least 1 block away from enemy claims!");
-					return;
-				}
+                if (touching.size() > 1 || (touching.size() == 1 && !contains)) {
+                    player.sendMessage(ChatColor.RED + "Your claim must be at least 1 block away from enemy claims!");
+                    return;
+                }
 
-				int x = Math.abs(check.x1 - check.x2);
-				int z = Math.abs(check.z1 - check.z2);
+                int x = Math.abs(check.getX1() - check.getX2());
+                int z = Math.abs(check.getZ1() - check.getZ2());
 
-				if (x < 5 || z < 5) {
-					player.sendMessage(ChatColor.RED + "Your claim is too small! The claim has to be at least (§f5 x 5§c)!");
-					return;
-				}
+                if (!bypass && (x < 4 || z < 4)) {
+                    player.sendMessage(ChatColor.RED + "Your claim is too small! The claim has to be at least (§f5 x 5§c)!");
+                    return;
+                }
 
-				if (x >= 3 * z || z >= 3 * x) {
-					player.sendMessage(ChatColor.RED + "One side of your claim cannot be more than 3 times larger than the other!");
-					return;
-				}
-
+                if (!bypass && (x >= 3 * z || z >= 3 * x)) {
+                    player.sendMessage(ChatColor.RED + "One side of your claim cannot be more than 3 times larger than the other!");
+                    return;
+                }
 			}
 
 			clearPillarAt(corner2);
 			this.corner2 = to;
-
 		}
 
-		player.sendMessage(ChatColor.YELLOW + "Set claim's location §d" + loc + "§e to §b(§f" + to.getBlockX() + ", " + to.getBlockY() + ", " + to.getBlockZ() + "§b)§e.");
-
-		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> erectPillar(to, Material.EMERALD_BLOCK), 1L);
+		player.sendMessage(ChatColor.YELLOW + "Set claim's location " +ChatColor.LIGHT_PURPLE + loc + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + to.getBlockX() + ", " + to.getBlockY() + ", " + to.getBlockZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
+		FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> erectPillar(to, Material.EMERALD_BLOCK), 1L);
 
 		int price = getPrice();
 
 		if (price != -1) {
 			Claim cc = new Claim(corner1, corner2);
+			int x = Math.abs(cc.getX1() - cc.getX2());
+			int z = Math.abs(cc.getZ1() - cc.getZ2());
 
-			int x = Math.abs(cc.x1 - cc.x2);
-			int z = Math.abs(cc.z1 - cc.z2);
-
-			player.sendMessage("§eClaim cost: §f" + price + "§e; Current size: (§f" + x + "§e, §f" + z + "§e); §f" + (x * z) + "§e blocks");
+			player.sendMessage(ChatColor.YELLOW + "Claim cost: " + ChatColor.WHITE + price + ChatColor.YELLOW + ", Current size: (" + ChatColor.WHITE + x + ", " + z + ChatColor.YELLOW + "), " + ChatColor.WHITE + (x * z) + ChatColor.YELLOW + " blocks");
 		}
 	}
 
@@ -290,14 +269,15 @@ public class VisualClaim implements Listener {
 		}
 
 		HandlerList.unregisterAll(this);
+
 		if (type == VisualType.MAP) {
 			currentMaps.remove(player.getName());
 
 			if (mapBlocksSent.containsKey(player.getName())) {
 				mapBlocksSent.get(player.getName()).forEach(l -> player.sendBlockChange(l, l.getBlock().getType(), l.getBlock().getData()));
 			}
-			mapBlocksSent.remove(player.getName());
 
+			mapBlocksSent.remove(player.getName());
 		} else {
 			visualClaims.remove(player.getName());
 		}
@@ -305,8 +285,8 @@ public class VisualClaim implements Listener {
 		if (packetBlocksSent.containsKey(player.getName())) {
 			packetBlocksSent.get(player.getName()).forEach(l -> player.sendBlockChange(l, l.getBlock().getType(), l.getBlock().getData()));
 		}
-		packetBlocksSent.remove(player.getName());
 
+		packetBlocksSent.remove(player.getName());
 	}
 
 	public void purchaseClaim() {
@@ -314,29 +294,28 @@ public class VisualClaim implements Listener {
 			player.sendMessage(ChatColor.RED + "You have to be on a team to claim land!");
 			cancel(true);
 			return;
-
 		}
+
 		if (corner1 != null && corner2 != null) {
 			int price = getPrice();
+			Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-			Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-
-			if (!bypass && t.getClaims().size() >= t.getMaxClaimAmount()) {
-				player.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + t.getMaxClaimAmount());
+			if (!bypass && team.getClaims().size() >= team.getMaxClaimAmount()) {
+				player.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + team.getMaxClaimAmount() + ".");
 				return;
 			}
 
-			if (!bypass && !t.isCaptain(player.getName()) && !t.isOwner(player.getName())) {
+			if (!bypass && !team.isCaptain(player.getName()) && !team.isOwner(player.getName())) {
 				player.sendMessage(ChatColor.RED + "Only team captains can claim land.");
 				return;
 			}
 
-			if (!bypass && t.getBalance() < price) {
+			if (!bypass && team.getBalance() < price) {
 				player.sendMessage(ChatColor.RED + "Your team does not have enough money to do this!");
 				return;
 			}
 
-            if (!bypass && t.isRaidable()) {
+            if (!bypass && team.isRaidable()) {
                 player.sendMessage(ChatColor.RED + "You cannot claim land while raidable.");
                 return;
             }
@@ -348,13 +327,13 @@ public class VisualClaim implements Listener {
 				return;
 			}
 
-			HashSet<Claim> touching = touchesOtherClaim(cc);
+			Set<Claim> touching = touchesOtherClaim(cc);
+			Set<Claim> cloneCheck = new HashSet<Claim>();
 
-			HashSet<Claim> cloneCheck = new HashSet<Claim>();
 			touching.forEach(tee -> cloneCheck.add(tee.clone()));
 
-			boolean contains = cloneCheck.removeIf(c -> t.ownsClaim(c));
-			if (!bypass && t.getClaims().size() > 0 && !contains) {
+			boolean contains = cloneCheck.removeIf(c -> team.ownsClaim(c));
+			if (!bypass && team.getClaims().size() > 0 && !contains) {
 				player.sendMessage(ChatColor.RED + "All of your claims must be touching each other!");
 				return;
 			}
@@ -364,30 +343,34 @@ public class VisualClaim implements Listener {
 				return;
 			}
 
-			int x = Math.abs(cc.x1 - cc.x2);
-			int z = Math.abs(cc.z1 - cc.z2);
+			int x = Math.abs(cc.getX1() - cc.getX2());
+			int z = Math.abs(cc.getZ1() - cc.getZ2());
 
-			if (!bypass && x < 5 || z < 5) {
+			if (!bypass && (x < 5 || z < 5)) {
 				player.sendMessage(ChatColor.RED + "Your claim is too small! The claim has to be at least (§f5 x 5§c)!");
 				return;
 			}
 
-			if (!bypass && x >= 3 * z || z >= 3 * x) {
+			if (!bypass && (x >= 3 * z || z >= 3 * x)) {
 				player.sendMessage(ChatColor.RED + "One side of your claim cannot be more than 3 times larger than the other!");
 				return;
 			}
 
-			cc.setName(t.getName() + "_" + (100 + new Random().nextInt(800)));
+			cc.setName(team.getFriendlyName() + "_" + (100 + new Random().nextInt(800)));
 			cc.setY1(0);
 			cc.setY2(256);
 
-			LandBoard.getInstance().setTeamAt(cc, t);
-			t.getClaims().add(cc);
+			LandBoard.getInstance().setTeamAt(cc, team);
+			team.getClaims().add(cc);
 
 			player.sendMessage(ChatColor.LIGHT_PURPLE + "You have claimed this land for your team!");
-			t.setBalance(t.getBalance() - price);
-			player.sendMessage(ChatColor.YELLOW + "Your team's new balance is §f" + t.getBalance() + " §d(Price: " + price + ")");
-            FactionActionTracker.logAction(t, "actions", "Land Claim: [" + cc.getMinimumPoint().getBlockX() + ", " + cc.getMinimumPoint().getBlockY() + ", " + cc.getMinimumPoint().getBlockZ() + "] -> [" + cc.getMaximumPoint().getBlockX() + ", " + cc.getMaximumPoint().getBlockY() + ", " + cc.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
+
+            if (!bypass) {
+                team.setBalance(team.getBalance() - price);
+                player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + team.getBalance() + ChatColor.DARK_PURPLE + " (Price: " + price + ")");
+            }
+
+            FactionActionTracker.logAction(team, "actions", "Land Claim: [" + cc.getMinimumPoint().getBlockX() + ", " + cc.getMinimumPoint().getBlockY() + ", " + cc.getMinimumPoint().getBlockZ() + "] -> [" + cc.getMaximumPoint().getBlockX() + ", " + cc.getMaximumPoint().getBlockY() + ", " + cc.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
 			cancel(true);
 		} else {
 			player.sendMessage(ChatColor.RED + "You have not selected both corners of your claim yet!");
@@ -397,16 +380,13 @@ public class VisualClaim implements Listener {
 	public int getPrice() {
 		if (corner1 != null && corner2 != null) {
 			Claim cc = new Claim(corner1, corner2);
-
-            return Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()), true);
+            return (Claim.getPrice(cc, FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()), true));
 		}
 
-		return -1;
-
+		return (-1);
 	}
 
 	private void drawPillars(Claim c, Material mat) {
-
 		for (Location loc : c.getCornerLocations()) {
 			erectPillar(loc, mat);
 		}
@@ -452,9 +432,10 @@ public class VisualClaim implements Listener {
 			packetBlocksSent.get(player.getName()).removeIf(l -> {
 				if (l.getBlockX() == loc.getBlockX() && l.getBlockZ() == loc.getBlockZ()) {
 					player.sendBlockChange(l, l.getBlock().getType(), l.getBlock().getData());
-					return true;
+					return (true);
 				}
-				return false;
+
+				return (false);
 			});
 		}
 	}
@@ -467,7 +448,6 @@ public class VisualClaim implements Listener {
 				e.setUseInteractedBlock(Result.DENY);
 
 				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-
 					if (!bypass && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						player.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
@@ -475,7 +455,6 @@ public class VisualClaim implements Listener {
 
 					setLoc(2, e.getClickedBlock().getLocation());
 				} else if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-
 					if (!bypass && !FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(e.getClickedBlock().getLocation())) {
 						player.sendMessage(ChatColor.RED + "You can only claim land in the Wilderness!");
 						return;
@@ -486,7 +465,6 @@ public class VisualClaim implements Listener {
 					} else {
 						setLoc(1, e.getClickedBlock().getLocation());
 					}
-
 				} else if (e.getAction() == Action.LEFT_CLICK_AIR && player.isSneaking()) {
 					purchaseClaim();
 				} else if (e.getAction() == Action.RIGHT_CLICK_AIR) {

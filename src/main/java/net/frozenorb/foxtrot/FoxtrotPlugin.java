@@ -220,7 +220,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		try {
 			obj = jedis.execute(j);
 			jedisPool.returnResource(j);
-		} catch(JedisException e){
+		} catch(Exception e) {
 			jedisPool.returnBrokenResource(j);
 		} finally {
 			jedisPool.returnResource(j);

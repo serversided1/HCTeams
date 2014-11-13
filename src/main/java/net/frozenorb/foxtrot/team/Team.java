@@ -240,9 +240,11 @@ public class Team {
         return (((dtrInt & bitmaskType.getBitmask()) == bitmaskType.getBitmask()));
     }
 
-    public void toggleDTRBitmask(DTRBitmaskType bitmaskType) {
-        int dtrInt = (int) dtr;
-        setDtr(dtrInt & ~bitmaskType.getBitmask());
+    public void setDTRBitmask(DTRBitmaskType bitmaskType, boolean set) {
+        if (set != hasDTRBitmask(bitmaskType)) {
+            int dtrInt = (int) dtr;
+            setDtr(dtrInt & ~bitmaskType.getBitmask());
+        }
     }
 
 	public int getOnlineMemberAmount() {
@@ -368,7 +370,9 @@ public class Team {
 			String[] lineParts = line.substring(line.indexOf(':') + 1).split(",");
 
 			if (identifier.equalsIgnoreCase("Owner")) {
-				setOwner(lineParts[0]);
+                if (!lineParts[0].equals("null")) {
+                    setOwner(lineParts[0]);
+                }
 			} else if (identifier.equalsIgnoreCase("Members")) {
 				for (String name : lineParts) {
 					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
