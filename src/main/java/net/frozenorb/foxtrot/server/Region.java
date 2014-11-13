@@ -69,8 +69,6 @@ public enum Region {
 
 	WARZONE(false, "§cWarzone", (e) -> true),
 
-	DIAMOND_MOUNTAIN(true, "§bDiamond Mountain", (e) -> true),
-
 	WILDNERNESS(false, "§7The Wilderness", (e) -> true),
 
 	KOTH_ARENA(true, "", (e) -> {

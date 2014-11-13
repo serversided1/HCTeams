@@ -85,7 +85,7 @@ public class NametagManager {
                 combatTagString = " " + sec;
             }
 
-            teamInfo = getOrCreate(ChatColor.YELLOW.toString() + enderpearlString + teamInfo.getPrefix(), ChatColor.DARK_RED + combatTagString);
+            teamInfo = getOrCreate(ChatColor.GREEN.toString() + enderpearlString + teamInfo.getPrefix(), ChatColor.DARK_RED + combatTagString);
         }
 
         HashMap<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();

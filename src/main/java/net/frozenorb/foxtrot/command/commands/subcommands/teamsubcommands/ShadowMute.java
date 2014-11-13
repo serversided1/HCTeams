@@ -20,7 +20,7 @@ public class ShadowMute {
     public static HashMap<String, String> factionShadowMutes = new HashMap<String, String>();
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason") String reason) {
+    public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {
@@ -47,7 +47,7 @@ public class ShadowMute {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.GRAY + "Shadow muted the faction " + target.getFriendlyName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + " for " + reason + ".");
+        sender.sendMessage(ChatColor.GRAY + "Shadow muted the faction " + target.getFriendlyName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
     }
 
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")

@@ -201,7 +201,6 @@ public class ServerHandler {
 
 			@Override
 			public void run() {
-
 				seconds.set(seconds.get() - 1);
 				player.sendMessage(ChatColor.RED + "" + seconds.get() + "§e seconds...");
 
@@ -211,7 +210,6 @@ public class ServerHandler {
 						player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 						player.kickPlayer("§cYou have been safely logged out of the server!");
 						cancel();
-
 					}
 				}
 
@@ -228,15 +226,13 @@ public class ServerHandler {
 	public RegionData<?> getRegion(Location loc, Player p) {
 		if (isOverworldSpawn(loc)) {
 			return new RegionData<Object>(loc, Region.SPAWN, null);
-		} else if (isNetherSpawn(loc)){
+		} else if (isNetherSpawn(loc)) {
             return new RegionData<Object>(loc, Region.SPAWN_NETHER, null);
-        } else if (isEndSpawn(loc)){
+        } else if (isEndSpawn(loc)) {
             return new RegionData<Object>(loc, Region.SPAWN_END, null);
-        } else if (isEndExit(loc)){
+        } else if (isEndExit(loc)) {
             return new RegionData<Object>(loc, Region.EXIT_END, null);
-        } else if (isDiamondMountain(loc)) {
-			return new RegionData<Object>(loc, Region.DIAMOND_MOUNTAIN, null);
-		}
+        }
 
         //Road
         String road = getRoad(loc);
@@ -474,16 +470,6 @@ public class ServerHandler {
         return (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D);
 	}
 
-	public boolean isDiamondMountain(Location loc) {
-		for (CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)) {
-			if (cr.getName().toLowerCase().startsWith("diamond")) {
-				return (true);
-			}
-		}
-
-		return (false);
-	}
-
     public boolean isSpawnBufferZone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NORMAL){
             return (false);
@@ -671,7 +657,7 @@ public class ServerHandler {
 
         ArrayList<String> lore = new ArrayList<String>();
 
-        lore.add("§4" + koth);
+        lore.add("§9" + koth);
         lore.add("§eCaptured By:");
         lore.add("§a" + capper);
 

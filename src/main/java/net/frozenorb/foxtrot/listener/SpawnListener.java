@@ -4,7 +4,9 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,9 +14,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -100,14 +105,66 @@ public class  SpawnListener implements Listener {
         }
     }
 
+    // Used for item frames
     @EventHandler(priority=EventPriority.HIGH)
-    public void onEntityDamagBeEntity(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
             return;
         }
 
         if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlockClicked().getLocation())) {
+            event.setCancelled(true);
+            event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
+            event.setItemStack(new ItemStack(event.getBucket()));
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return;
+        }
+
+        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onEntityDamageByEntity2(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+            return;
+        }
+
+        Player damager = null;
+
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+
+            if (projectile.getShooter() instanceof Player) {
+                damager = (Player) projectile.getShooter();
+            }
+        }
+
+        if (damager != null) {
+            Player victim = (Player) event.getEntity();
+
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(victim.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(damager.getLocation()))) {
+                event.setCancelled(true);
+            }
         }
     }
 

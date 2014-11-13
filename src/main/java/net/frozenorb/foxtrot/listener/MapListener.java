@@ -2,8 +2,11 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.block.Furnace;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -28,12 +31,34 @@ public class MapListener implements Listener {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
     }
 
-    // ALPHA
     @EventHandler
     public void onFurnaceBurn(FurnaceBurnEvent event){
-        Furnace tile = (Furnace) event.getBlock().getState();
-        // Averages to 1.5
-        startUpdate(tile, FoxtrotPlugin.RANDOM.nextBoolean() ? 1 : 2);
+        startUpdate((Furnace) event.getBlock().getState(), FoxtrotPlugin.RANDOM.nextBoolean() ? 1 : 2); // Averages to 1.5
+    }
+
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        double multiplier = FoxtrotPlugin.getInstance().getMapHandler().getBaseLootingMultiplier();
+
+        if (event.getEntity().getKiller() != null) {
+            Player player = event.getEntity().getKiller();
+
+            if (player.getItemInHand() != null && player.getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
+                switch (player.getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
+                    case 1:
+                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel1LootingMultiplier();
+                        break;
+                    case 2:
+                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel2LootingMultiplier();
+                        break;
+                    case 3:
+                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel3LootingMultiplier();
+                        break;
+                }
+            }
+        }
+
+        event.setDroppedExp((int) Math.ceil(event.getDroppedExp() * multiplier));
     }
 
     /*@EventHandler(priority= EventPriority.MONITOR)

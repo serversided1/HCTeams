@@ -115,14 +115,14 @@ public class RogueClass extends PvPClass {
 					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
 					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
-                    if (victim.getHealth() - 6D <= 0) {
+                    if (victim.getHealth() - 7D <= 0) {
                         event.setCancelled(true);
                     } else {
                         event.setDamage(0D);
                     }
 
-                    DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 6D, damager.getName()));
-					victim.setHealth(Math.max(0D, victim.getHealth() - 6D));
+                    DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
+					victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
 				} else {
 					damager.sendMessage(ChatColor.RED + "Backstab failed!");
 				}

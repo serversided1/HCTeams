@@ -6,7 +6,13 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by chasechocolate.
@@ -15,6 +21,7 @@ public class FoxtrotBoard {
 
     @Getter private Player player;
     @Getter private Objective obj;
+    @Getter private Set<String> displayedScores = new HashSet<String>();
 
     public FoxtrotBoard(Player player) {
         this.player = player;
@@ -37,13 +44,14 @@ public class FoxtrotBoard {
             String title = getter.getTitle(player);
 
             if (millis == ScoreGetter.NO_SCORE) {
-                removeTeam(title);
-                obj.getScoreboard().resetScores(title);
+                if (displayedScores.contains(title)) {
+                    obj.getScoreboard().resetScores(title);
+                    displayedScores.remove(title);
+                }
             } else {
-                Score score = obj.getScore(title);
-
-                score.setScore(nextVal);
+                obj.getScore(title).setScore(nextVal);
                 getTeam(title, millis).addEntry(title);
+                displayedScores.add(title);
                 nextVal -= 1;
             }
         }
@@ -72,18 +80,11 @@ public class FoxtrotBoard {
             time = Math.round(10.0D * secs) / 10.0D + "s";
         }
 
-        //team.setPrefix("» "); //Do we want this?
-        team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
+        if (!team.getSuffix().endsWith(time)) {
+            team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
+        }
 
         return (team);
-    }
-
-    private void removeTeam(String title) {
-        Team team = obj.getScoreboard().getTeam(ChatColor.stripColor(title));
-
-        if (team != null) {
-            team.unregister();
-        }
     }
 
 }

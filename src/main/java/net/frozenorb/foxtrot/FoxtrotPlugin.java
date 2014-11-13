@@ -12,7 +12,6 @@ import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.diamond.MountainHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
@@ -145,7 +144,9 @@ public class FoxtrotPlugin extends JavaPlugin {
         new PacketBorder.BorderThread().start();
 
         // All the listeners...
-        getServer().getPluginManager().registerEvents(new AlphaMapListener(), this);
+        getServer().getPluginManager().registerEvents(new MapListener(), this);
+        getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
+        getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
         getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
@@ -164,7 +165,10 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new RoadListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnTagListener(), this);
+        getServer().getPluginManager().registerEvents(new StaffUtilsListener(), this);
         getServer().getPluginManager().registerEvents(new TeamListener(), this);
+        getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
 
         getServer().getPluginManager().registerEvents(new Subclaim(), this);
         getServer().getPluginManager().registerEvents(new Claim(), this);
@@ -190,8 +194,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 			}
 
 		});
-
-		MountainHandler.load();
 	}
 
 	@Override
@@ -208,7 +210,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 		}
 
 		RedisSaveTask.save();
-		MountainHandler.reset();
         FoxtrotPlugin.getInstance().getServerHandler().save();
 	}
 

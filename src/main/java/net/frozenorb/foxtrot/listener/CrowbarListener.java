@@ -9,6 +9,7 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -131,6 +132,14 @@ public class CrowbarListener implements Listener {
             event.getPlayer().setItemInHand(event.getItem());
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Crowbars can only break end portals and mob spawners!");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getBlock().getType() == Material.MOB_SPAWNER && event.getBlock().getWorld().getEnvironment() == World.Environment.NETHER) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot break mob spawners in the nether!");
             event.setCancelled(true);
         }
     }

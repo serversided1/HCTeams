@@ -167,7 +167,7 @@ public class BardClass extends PvPClass implements Listener {
             }
 
             if (potionEffect != null) {
-                smartAddPotion(source, potionEffect);
+                smartAddPotion(player, potionEffect);
             } else {
                 Material material = source.getItemInHand().getType();
 

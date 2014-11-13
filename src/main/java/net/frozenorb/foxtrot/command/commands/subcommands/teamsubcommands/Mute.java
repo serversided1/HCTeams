@@ -22,7 +22,7 @@ public class Mute {
     public static HashMap<String, String> factionMutes = new HashMap<String, String>();
 
     @Command(names={ "team mute", "t mute", "f mute", "faction mute", "fac mute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason") String reason) {
+    public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason", wildcard=true) String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {

@@ -4,9 +4,11 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,9 +16,11 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
@@ -209,6 +213,7 @@ public class TeamListener implements Listener {
         }
     }
 
+    // Used for item frames
     @EventHandler(priority=EventPriority.HIGH)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
@@ -223,6 +228,51 @@ public class TeamListener implements Listener {
 
         if (team != null && !team.isMember((Player) event.getDamager())) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onEntityDamageByEntity2(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+            return;
+        }
+
+        Player damager = null;
+
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+
+            if (projectile.getShooter() instanceof Player) {
+                damager = (Player) projectile.getShooter();
+            }
+        }
+
+        if (damager != null) {
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(damager.getName());
+            Player victim = (Player) event.getEntity();
+
+            if (team != null && team.isMember(victim.getName())) {
+                damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.GREEN + victim.getName() + ChatColor.YELLOW + ".");
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            return;
+        }
+
+        Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlockClicked().getRelative(event.getBlockFace()).getLocation());
+
+        if (owner != null && !owner.isMember(event.getPlayer())) {
+            event.setCancelled(true);
+            event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
+            event.setItemStack(new ItemStack(event.getBucket()));
+            return;
         }
     }
 

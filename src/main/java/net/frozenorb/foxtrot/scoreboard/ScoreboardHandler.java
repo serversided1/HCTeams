@@ -20,16 +20,14 @@ public class ScoreboardHandler {
 
             @Override
             public void run() {
-                if (!scoreboardTimerEnabled) {
-                    return;
-                }
-
-                for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    update(online);
+                if (scoreboardTimerEnabled) {
+                    for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                        update(online);
+                    }
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 4L, 4L); // Possible lag cause?
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 2L, 2L); // Possible lag cause?
     }
 
     public void update(Player player) {

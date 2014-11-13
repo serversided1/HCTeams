@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
  */
 public class DeathbanListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
@@ -24,7 +24,7 @@ public class DeathbanListener implements Listener {
         FoxtrotPlugin.getInstance().getDeathbanMap().reloadValue(event.getName());
     }
 
-    @EventHandler(priority= EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (event.getPlayer().isOp() || event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;

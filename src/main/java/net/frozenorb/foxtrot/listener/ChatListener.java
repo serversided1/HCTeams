@@ -52,7 +52,7 @@ public class ChatListener implements Listener {
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                         if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
-                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "M: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "FM: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                         }
                     }
 

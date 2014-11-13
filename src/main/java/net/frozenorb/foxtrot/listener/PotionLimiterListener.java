@@ -51,7 +51,7 @@ public class PotionLimiterListener implements Listener {
             if (iterator.hasNext()) {
                 if (Arrays.asList(FoxListener.DEBUFFS).contains(iterator.next().getType())) {
                     if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
-                        SpawnTagHandler.applyTag((Player) event.getPotion().getShooter());
+                        SpawnTagHandler.addSeconds((Player) event.getPotion().getShooter(), SpawnTagHandler.MAX_SPAWN_TAG);
                     }
                 }
             }
