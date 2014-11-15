@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -255,7 +256,7 @@ public class TeamListener implements Listener {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(damager.getName());
             Player victim = (Player) event.getEntity();
 
-            if (team != null && team.isMember(victim.getName())) {
+            if (team != null && team.isMember(victim.getName()) && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
                 damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.GREEN + victim.getName() + ChatColor.YELLOW + ".");
                 event.setCancelled(true);
             }
