@@ -6,12 +6,14 @@ import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by macguy8 on 11/15/2014.
  */
-public class CitadelListener {
+public class CitadelListener implements Listener {
 
     @EventHandler
     public void onKOTHActivate(KOTHActivatedEvent event) {
@@ -41,7 +43,14 @@ public class CitadelListener {
         String citadelCappers = FoxtrotPlugin.getInstance().getCitadelHandler().getCapper();
 
         if (playerTeam != null && citadelCappers != null && citadelCappers.equalsIgnoreCase(playerTeam.getName())) {
-            event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Your faction currently controls Citadel.");
+            // Send the message on a delay so other login info (IE the /f who every player runs) doesn't block it out.
+            new BukkitRunnable() {
+
+                public void run() {
+                    event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Your faction currently controls Citadel.");
+                }
+
+            }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
         }
     }
 

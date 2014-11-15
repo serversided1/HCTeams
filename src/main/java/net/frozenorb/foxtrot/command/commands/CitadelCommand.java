@@ -34,7 +34,7 @@ public class CitadelCommand {
     @Command(names={ "Citadel SetCapper" }, permissionNode="op")
     public static void citadelSetCapper(Player sender, @Param(name="target") Team target) {
         FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(target.getName());
-        sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getFriendlyName() + " (" + target.getName() + ") " + ChatColor.YELLOW + " as the Citadel capper.");
+        sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getFriendlyName() + " (" + target.getName() + ")" + ChatColor.YELLOW + " as the Citadel capper.");
     }
 
 }

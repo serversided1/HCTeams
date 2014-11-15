@@ -49,6 +49,7 @@ public class KOTH {
     private transient double remainingCapTime;
     @Getter @Setter
     private transient int tier;
+    private transient long lastMessage;
 
     //***************************//
 
@@ -158,13 +159,18 @@ public class KOTH {
             if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL) {
                 resetCapTime();
             } else {
-                if (remainingCapTime % 10D == 0D && remainingCapTime > 1D) {
-                    capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
+                int remainingCapTimeInt = (int) remainingCapTime;
+
+                if (remainingCapTimeInt % 10 == 0 && remainingCapTimeInt > 1D && System.currentTimeMillis() - lastMessage > 1000L) {
+                    lastMessage = System.currentTimeMillis();
+                    boolean citadel = name.equalsIgnoreCase("Citadel");
+                    capper.sendMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
                 }
 
-                if (remainingCapTime <= 0) {
+                if (remainingCapTimeInt <= 0) {
                     finishCapping();
-                } else if (remainingCapTime % 180D == 0D) {
+                } else if (remainingCapTimeInt % 180 == 0 && System.currentTimeMillis() - lastMessage > 1000L) {
+                    lastMessage = System.currentTimeMillis();
                     FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 

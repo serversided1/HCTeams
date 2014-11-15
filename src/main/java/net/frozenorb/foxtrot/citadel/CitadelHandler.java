@@ -24,7 +24,7 @@ public class CitadelHandler {
                 citadelInfo.createNewFile();
                 BasicDBObject dbo = new BasicDBObject();
 
-                dbo.put("capper", "none");
+                dbo.put("capper", null);
 
                 FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
             }
@@ -33,10 +33,6 @@ public class CitadelHandler {
 
             if (dbo != null) {
                 this.capper = dbo.getString("capper");
-
-                if (this.capper.equalsIgnoreCase("none")) {
-                    this.capper = null;
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -44,7 +40,7 @@ public class CitadelHandler {
     }
 
     public void setCapper(String capper) {
-        if (capper.equalsIgnoreCase("none")) {
+        if (capper != null && capper.equalsIgnoreCase("none")) {
             capper = null;
         }
 
