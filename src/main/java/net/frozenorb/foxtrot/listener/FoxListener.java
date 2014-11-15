@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -195,7 +196,11 @@ public class FoxListener implements Listener {
         }
 
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(name) == PvPTimerMap.PENDING_USE) {
-            player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
+            if (DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
+                player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
+            } else {
+                FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(name, (int) TimeUnit.MINUTES.toSeconds(30));
+            }
         }
 
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());

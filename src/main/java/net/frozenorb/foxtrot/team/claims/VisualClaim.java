@@ -113,23 +113,30 @@ public class VisualClaim implements Listener {
 	}
 
 	public boolean containsOtherClaim(Claim claim) {
-		boolean claimed = false;
-
 		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(claim.getMaximumPoint())) {
-			claimed = true;
+			return (true);
 		}
 
 		if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(claim.getMinimumPoint())) {
-			claimed = true;
+			return (true);
 		}
+
+        System.out.println("Claim X: " + Math.abs(claim.getX1() - claim.getX2()));
+        System.out.println("Claim Z: " + Math.abs(claim.getZ1() - claim.getZ2()));
+        System.out.println("Claim's world: " + claim.getWorld());
+
+        if (Math.abs(claim.getX1() - claim.getX2()) == 0 || Math.abs(claim.getZ1() - claim.getZ2()) == 0) {
+            System.out.println("Returning to avoid possible crash");
+            return (false);
+        }
 
 		for (Coordinate location : claim) {
             if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimed(new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), location.getX(), 80, location.getZ()))) {
-                claimed = true;
+                return (true);
             }
         }
 
-		return (claimed);
+		return (false);
 	}
 
 	public Set<Claim> touchesOtherClaim(Claim claim) {
