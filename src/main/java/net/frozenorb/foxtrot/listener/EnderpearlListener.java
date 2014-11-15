@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -39,12 +38,10 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
-            Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
-
-            if (ownerTo == null || ownerTo.getDtr() != 100D) {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
-            } else {
+            if (DTRBitmaskType.SIXTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 60000L);
+            } else {
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
             }
         }
     }
