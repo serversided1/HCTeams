@@ -9,50 +9,62 @@ import org.bukkit.entity.Player;
 
 @AllArgsConstructor
 @Data
-public class RegionData<T> {
+public class RegionData {
 
 	private Location location;
-	private Region region;
-	private T data;
+	private RegionType regionType;
+	private Team data;
 
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof RegionData<?>)) {
-			return false;
+		if (obj == null || !(obj instanceof RegionData)) {
+			return (false);
 		}
 
-		RegionData<?> other = (RegionData<?>) obj;
+		RegionData other = (RegionData) obj;
 
-		return other.region == region && ((data == null) || other.data.equals(data));
+		return (other.regionType == regionType && (data == null || other.data.equals(data)));
 	}
 
 	public int hashCode() {
-		return super.hashCode();
+		return (super.hashCode());
 	}
 
-	public String getName(Player p) {
-		if (region.getDisplayName().isEmpty()) {
-			if (data instanceof Team) {
-				Team ownerTo = (Team) data;
-
-				if (ownerTo.isMember(p)) {
-					return "§a" + ownerTo.getFriendlyName();
-
-				} else {
-
-					return "§c" + ownerTo.getFriendlyName();
-				}
-			}
-
-			if (region == Region.KOTH_ARENA) {
-                if (((String) data).equalsIgnoreCase("Citadel")) {
-                    return (ChatColor.DARK_PURPLE + "Citadel");
-                } else {
-                    return (ChatColor.AQUA + (String) data + ChatColor.GOLD + " KOTH");
+	public String getName(Player player) {
+        switch (regionType) {
+            case SPAWN:
+                switch (player.getWorld().getEnvironment()) {
+                    case NETHER:
+                        return (ChatColor.GREEN + "Nether Spawn");
+                    case THE_END:
+                        return (ChatColor.GREEN + "The End Spawn");
                 }
-			}
-		}
 
-		return (region.getDisplayName());
+                return (ChatColor.GREEN + "Spawn");
+            case WARZONE:
+                return (ChatColor.RED + "Warzone");
+            case WILDNERNESS:
+                return (ChatColor.GRAY + "The Wilderness");
+            case KOTH:
+                return (ChatColor.AQUA + data.getFriendlyName() + ChatColor.GOLD + " KOTH");
+            case ROAD:
+                return (ChatColor.RED + "Road");
+            case CLAIMED_LAND:
+                if (data.isMember(player.getName())) {
+                    return (ChatColor.GREEN + data.getFriendlyName());
+                } else if (data.isAlly(player.getName())) {
+                    return (ChatColor.LIGHT_PURPLE + data.getFriendlyName());
+                } else {
+                    return (ChatColor.RED + data.getFriendlyName());
+                }
+            case CITADEL_COURTYARD:
+                return (ChatColor.DARK_PURPLE + "Citadel Courtyard");
+            case CITADEL_KEEP:
+                return (ChatColor.DARK_PURPLE + "Citadel Keep");
+            case CITADEL_TOWN:
+                return (ChatColor.DARK_PURPLE + "Citadel Town");
+            default:
+                return (ChatColor.DARK_RED + "N/A");
+        }
 	}
 
 }

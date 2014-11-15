@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class PvPTimerMap extends RedisPersistMap<Long> {
@@ -52,16 +53,13 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
         return (super.contains(player));
     }
 
-    // MAP 0.9
     @Override
     public Long getValue(String player) {
-        return ((long) -1);
-
-        /*if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
             return (-1L);
         }
 
-        return (super.getValue(player));*/
+        return (super.getValue(player));
     }
 
 }

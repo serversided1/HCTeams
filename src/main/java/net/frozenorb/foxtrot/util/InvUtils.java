@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 public class InvUtils {
     public static final SimpleDateFormat DEATH_TIME_FORMAT = new SimpleDateFormat("MM.dd.yy HH:mm");
@@ -34,14 +34,32 @@ public class InvUtils {
         CROWBAR.setItemMeta(meta);
     }
 
-	public static void fixItem(ItemStack item) {
-		for (Entry<Enchantment, Integer> entry : FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().entrySet()) {
+    public static boolean conformEnchants(ItemStack item, boolean removeUndefined) {
+        if (item == null) {
+            return (false);
+        }
 
-			if (item != null && item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
-                item.addEnchantment(entry.getKey(), entry.getValue());
-			}
-		}
-	}
+        boolean fixed = false;
+        Map<Enchantment, Integer> enchants = item.getEnchantments();
+
+        for (Enchantment enchantment : enchants.keySet()) {
+            int level = enchants.get(enchantment);
+
+            if (FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().containsKey(enchantment)) {
+                int max = FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().get(enchantment);
+
+                if (level > max) {
+                    item.addUnsafeEnchantment(enchantment, max);
+                    fixed = true;
+                }
+            } else if (removeUndefined) {
+                item.removeEnchantment(enchantment);
+                fixed = true;
+            }
+        }
+
+        return (fixed);
+    }
 
     public static ItemStack addToPart(ItemStack item, String title, String key, int max){
         ItemMeta meta = item.getItemMeta();

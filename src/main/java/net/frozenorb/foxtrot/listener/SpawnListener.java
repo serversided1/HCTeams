@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -34,7 +35,7 @@ public class  SpawnListener implements Listener {
             }
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getBlock().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -45,7 +46,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getBlock().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
         } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
@@ -60,7 +61,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getBlock().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
         } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
@@ -78,7 +79,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -89,7 +90,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -100,7 +101,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getRightClicked().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getRightClicked().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -112,7 +113,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -136,7 +137,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getEntity().getLocation())) {
+        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -162,7 +163,7 @@ public class  SpawnListener implements Listener {
         if (damager != null) {
             Player victim = (Player) event.getEntity();
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(victim.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(damager.getLocation()))) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmaskType.SAFE_ZONE.appliesAt(victim.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(damager.getLocation()))) {
                 event.setCancelled(true);
             }
         }

@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.command.commands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,7 +31,7 @@ public class CannonCommand {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(sender.getLocation()) || sender.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.BEACON) {
+        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(sender.getLocation()) || sender.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.BEACON) {
             sender.sendMessage(ChatColor.RED + "You must be standing on the spawn cannon.");
             return;
         }
@@ -56,7 +57,7 @@ public class CannonCommand {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(sender.getLocation()) || sender.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.BEACON) {
+        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(sender.getLocation()) || sender.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() != Material.BEACON) {
             sender.sendMessage(ChatColor.RED + "You must be standing on the spawn cannon.");
             return;
         }

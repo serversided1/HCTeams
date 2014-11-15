@@ -20,7 +20,13 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 
     @Override
     public Long getJavaObject(String str) {
-        return (Long.parseLong(str));
+        try {
+            return (Long.parseLong(str));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Key: " + str);
+            return (0L);
+        }
     }
 
 	public void playerJoined(String player) {

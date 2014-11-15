@@ -1,15 +1,17 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.server.Region;
+import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.InvUtils;
@@ -34,10 +36,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -84,10 +83,14 @@ public class FoxListener implements Listener {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
             Material.FENCE_GATE };
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent e) {
-        Location fromLoc = e.getFrom();
-        Location toLoc = e.getTo();
+    @EventHandler(priority=EventPriority.HIGH)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
+        Location fromLoc = event.getFrom();
+        Location toLoc = event.getTo();
         double toX = toLoc.getX();
         double toZ = toLoc.getZ();
         double toY = toLoc.getY();
@@ -95,48 +98,42 @@ public class FoxListener implements Listener {
         double fromZ = fromLoc.getZ();
         double fromY = fromLoc.getY();
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(e.getPlayer().getName()) && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()) != null && LandBoard.getInstance().getTeamAt(e.getPlayer().getLocation()).isMember(e.getPlayer().getName())) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(e.getPlayer().getName());
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && LandBoard.getInstance().getTeamAt(event.getPlayer().getLocation()) != null && LandBoard.getInstance().getTeamAt(event.getPlayer().getLocation()).isMember(event.getPlayer().getName())) {
+            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
         }
 
         if (fromX != toX || fromZ != toZ || fromY != toY) {
-
-            if (ServerHandler.getTasks().containsKey(e.getPlayer().getName())) {
+            if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
                 if (fromLoc.distance(toLoc) > 0.1 && (fromX != toX || fromZ != toZ || fromY != toY)) {
-                    Bukkit.getScheduler().cancelTask(ServerHandler.getTasks().get(e.getPlayer().getName()));
-                    ServerHandler.getTasks().remove(e.getPlayer().getName());
-                    e.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
+                    Bukkit.getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
+                    ServerHandler.getTasks().remove(event.getPlayer().getName());
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
                 }
             }
 
             ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
-
-            RegionData<?> from = sm.getRegion(fromLoc, e.getPlayer());
-            RegionData<?> to = sm.getRegion(toLoc, e.getPlayer());
+            RegionData from = sm.getRegion(fromLoc);
+            RegionData to = sm.getRegion(toLoc);
 
             if (!from.equals(to)) {
-                boolean cont = to.getRegion().getMoveHandler().handleMove(e);
-
-                if (!cont) {
+                if (!to.getRegionType().getMoveHandler().handleMove(event)) {
                     return;
                 }
 
-                if (e.getPlayer().getGameMode() != GameMode.CREATIVE && FoxtrotPlugin.getInstance().getServerHandler().isEndSpawn(toLoc)) {
-                    // Using e.setTo(e.getFrom()) allows them to glitch through.
-                    e.setCancelled(true);
-                }
-
                 // PVP Timer
-                if (from.getRegion() == Region.SPAWN) {
-                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(e.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
-                        FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(e.getPlayer().getName(), 30 * 60);
+                if (from.getRegionType() == RegionType.SPAWN) {
+                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
+                        FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getName(), 30 * 60);
                     }
                 }
 
-                String fromStr = "§eNow leaving: " + from.getName(e.getPlayer()) + (from.getRegion().isReducedDeathban() ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
-                String toStr = "§eNow entering: " + to.getName(e.getPlayer()) + (to.getRegion().isReducedDeathban() ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
+                boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
+                boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
 
-                e.getPlayer().sendMessage(new String[] { fromStr, toStr });
+                String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
+                String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
+
+                event.getPlayer().sendMessage(new String[] { fromStr, toStr });
             }
         }
     }
@@ -221,6 +218,20 @@ public class FoxListener implements Listener {
         }
     }
 
+    @EventHandler(priority=EventPriority.NORMAL)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        if (ToggleDonorOnlyCommand.donorOnly && !event.getPlayer().hasPermission("foxtrot.donator")) {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "The server is full.");
+        }
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onPlayerLogin2(PlayerLoginEvent event) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && event.getPlayer().hasPermission("foxtrot.joinfull")) {
+            event.setResult(PlayerLoginEvent.Result.ALLOWED);
+        }
+    }
+
     @EventHandler(priority=EventPriority.HIGH)
     public void onProjetileInteract(PlayerInteractEvent event) {
         if (event.isCancelled()) {
@@ -248,7 +259,7 @@ public class FoxListener implements Listener {
                         return;
                     }
 
-                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(p.getLocation())) {
+                    if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(p.getLocation())) {
                         event.setCancelled(true);
                         event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
                         event.getPlayer().updateInventory();
@@ -270,13 +281,13 @@ public class FoxListener implements Listener {
                 return;
             }
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
                 return;
             }
 
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
 
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation())) {
+            if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
                 if (Arrays.asList(FoxListener.NO_INTERACT_WITH_SPAWN).contains(event.getMaterial()) || Arrays.asList(FoxListener.NO_INTERACT_IN_SPAWN).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
                     event.setCancelled(true);
                     FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
@@ -338,7 +349,7 @@ public class FoxListener implements Listener {
             if (event.getClickedBlock().getState() instanceof Sign) {
                 Sign s = (Sign) event.getClickedBlock().getState();
 
-                if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation())) {
+                if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
                     if (s.getLine(0).contains("Kit")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleKitSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")) {

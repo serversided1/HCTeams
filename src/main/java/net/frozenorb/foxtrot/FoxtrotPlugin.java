@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
 import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
@@ -38,7 +39,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.exceptions.JedisException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +61,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Getter private ServerHandler serverHandler;
 	@Getter private MapHandler mapHandler;
 	@Getter private ScoreboardHandler scoreboardHandler;
+    @Getter private CitadelHandler citadelHandler;
 
 	@Getter private PlaytimeMap playtimeMap;
 	@Getter private OppleMap oppleMap;

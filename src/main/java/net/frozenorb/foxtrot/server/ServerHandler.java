@@ -6,15 +6,15 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
-import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
@@ -219,61 +219,36 @@ public class ServerHandler {
 		tasks.put(player.getName(), taskid.getTaskId());
 	}
 
-	public RegionData<?> getRegion(Location loc, Player p) {
-		if (isOverworldSpawn(loc)) {
-			return new RegionData<Object>(loc, Region.SPAWN, null);
-		} else if (isNetherSpawn(loc)) {
-            return new RegionData<Object>(loc, Region.SPAWN_NETHER, null);
-        } else if (isEndSpawn(loc)) {
-            return new RegionData<Object>(loc, Region.SPAWN_END, null);
-        } else if (isEndExit(loc)) {
-            return new RegionData<Object>(loc, Region.EXIT_END, null);
-        }
+	public RegionData getRegion(Location location) {
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location);
 
-        //Road
-        String road = getRoad(loc);
-
-        if (!(road.equals(""))) {
-            Region reg = null;
-
-            if(road.contains("north")){
-                reg = Region.ROAD_NORTH;
-            } else if(road.contains("east")){
-                reg = Region.ROAD_EAST;
-            } else if(road.contains("south")){
-                reg = Region.ROAD_SOUTH;
-            } else if(road.contains("west")){
-                reg = Region.ROAD_WEST;
-            }
-
-            if (reg != null){
-                return (new RegionData<Object>(loc, reg, null));
+        if (ownerTo != null && ownerTo.getOwner() == null) {
+            if (ownerTo.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
+                return (new RegionData(location, RegionType.SPAWN, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.ROAD)) {
+                return (new RegionData(location, RegionType.ROAD, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.KOTH)) {
+                return (new RegionData(location, RegionType.KOTH, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
+                return (new RegionData(location, RegionType.CITADEL_COURTYARD, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
+                return (new RegionData(location, RegionType.CITADEL_TOWN, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
+                return (new RegionData(location, RegionType.CITADEL_KEEP, ownerTo));
             }
         }
-
-		if (isUnclaimed(loc)) {
-			return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
-		}
-
-		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
-            // If we're a 50DTR faction... (KOTH)
-            if (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D) {
-                return (new RegionData<String>(loc, Region.KOTH_ARENA, ownerTo.getFriendlyName()));
-            }
-
-            return (new RegionData<Team>(loc, Region.CLAIMED_LAND, ownerTo));
-        } else if (isWarzone(loc)) {
-            return (new RegionData<Object>(loc, Region.WARZONE, null));
+            return (new RegionData(location, RegionType.CLAIMED_LAND, ownerTo));
+        } else if (isWarzone(location)) {
+            return (new RegionData(location, RegionType.WARZONE, null));
         }
 
-        // This will never happen.
-        return (new RegionData<Object>(loc, Region.WILDNERNESS, null));
+        return (new RegionData(location, RegionType.WILDNERNESS, null));
 	}
 
 	public void beginWarp(final Player player, final Team team, int price) {
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && isGlobalSpawn(player.getLocation()))) {
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()))) {
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
                 FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
             }
@@ -347,47 +322,24 @@ public class ServerHandler {
 	}
 
 	public boolean isUnclaimed(Location loc) {
-		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc) && getRoad(loc).equals(""));
+		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc));
 	}
 
-	public boolean isAdminOverride(Player p) {
-		return p.getGameMode() == GameMode.CREATIVE;
+	public boolean isAdminOverride(Player player) {
+		return (player.getGameMode() == GameMode.CREATIVE);
 	}
 
 	public Location getSpawnLocation() {
 		return (Bukkit.getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
 	}
 
-    public boolean isGlobalSpawn(Location loc) {
-        return (isOverworldSpawn(loc) || isNetherSpawn(loc) || isEndSpawn(loc) || isEndExit(loc));
-    }
-
-    public boolean isOverworldSpawn(Location loc) {
-        return (RegionManager.get().hasTag(loc, "overworldspawn"));
-    }
-
-    public boolean isNetherSpawn(Location loc) {
-        return (RegionManager.get().hasTag(loc, "netherspawn"));
-    }
-
-    public boolean isEndSpawn(Location loc) {
-        return (RegionManager.get().hasTag(loc, "endspawn"));
-    }
-
-    public boolean isEndExit(Location loc) {
-        return (RegionManager.get().hasTag(loc, "endexit"));
-    }
-
-	public boolean isClaimedAndRaidable(Location loc) {
+	public boolean isUnclaimedOrRaidable(Location loc) {
 		Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
-		return owner != null && owner.isRaidable();
+		return (owner == null || owner.isRaidable());
 	}
 
     public float getDTRLossAt(Location loc) {
-        // MAP 0.9
-        return (0.1F);
-
-        /*Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
             if (ownerTo.getDtr() == 100D) {
@@ -395,30 +347,26 @@ public class ServerHandler {
             }
         }
 
-        return (1F);*/
+        return (1F);
     }
 
     public int getDeathBanAt(String playerName, Location loc) {
-        // MAP 0.9
-        return ((int) TimeUnit.SECONDS.toSeconds(5));
-
-        /*if (isPreEOTW()) {
+        if (isPreEOTW()) {
             return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
         Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
-        if (ownerTo != null) {
-            if (ownerTo.getDtr() == 50D) {
+        if (ownerTo != null && ownerTo.getOwner() == null) {
+            if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {
                 return ((int) TimeUnit.MINUTES.toSeconds(5));
-            } else if (ownerTo.getDtr() == 100D) {
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN)) {
                 return ((int) TimeUnit.MINUTES.toSeconds(15));
             }
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        // MAP 0.9
-        long max = TimeUnit.MINUTES.toSeconds(60);
+        long max = TimeUnit.HOURS.toSeconds(24);
         long ban;
 
         if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
@@ -427,7 +375,7 @@ public class ServerHandler {
             ban = playtime.getCurrentSession(playerName) / 1000L;
         }
 
-        return ((int) Math.min(max, ban));*/
+        return ((int) Math.min(max, ban));
     }
 
 	public void disablePlayerAttacking(final Player p, int seconds) {
@@ -455,17 +403,6 @@ public class ServerHandler {
 		}, seconds * 20);
 	}
 
-	public boolean isKOTHArena(Location loc) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
-
-        if (ownerTo == null) {
-            return (false);
-        }
-
-        // If we're a 50DTR or 100DTR faction.
-        return (ownerTo.getDtr() == 50D || ownerTo.getDtr() == 100D);
-	}
-
     public boolean isSpawnBufferZone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NORMAL){
             return (false);
@@ -490,16 +427,6 @@ public class ServerHandler {
         return ((x < radius && x > -radius) && (z < radius && z > -radius));
     }
 
-    public String getRoad(Location loc){
-        for(CuboidRegion cr : RegionManager.get().getApplicableRegions(loc)){
-            if(cr.getName().toLowerCase().startsWith("road_")){
-                return cr.getName();
-            }
-        }
-
-        return "";
-    }
-
 	public void handleShopSign(Sign sign, Player p) {
 		ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
@@ -515,11 +442,7 @@ public class ServerHandler {
 			try {
 				price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
 				amount = Integer.parseInt(sign.getLine(1));
-
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-				System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
+			} catch (NumberFormatException e) {
 				return;
 			}
 

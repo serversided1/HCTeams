@@ -68,7 +68,7 @@ public class DTRHandler extends BukkitRunnable {
         }
 
         for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
-            if (teamEntry.getKey().getSize() != 0) {
+            if (teamEntry.getKey().getOwner() != null) {
                 if (teamEntry.getKey().getDeathCooldown() > System.currentTimeMillis() || teamEntry.getKey().getRaidableCooldown() > System.currentTimeMillis()) {
                     wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
                     continue;

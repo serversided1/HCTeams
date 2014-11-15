@@ -13,7 +13,6 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,7 +86,7 @@ public class MapHandler {
                 this.level2LootingMultiplier = looting.getDouble("level2");
                 this.level3LootingMultiplier = looting.getDouble("level3");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

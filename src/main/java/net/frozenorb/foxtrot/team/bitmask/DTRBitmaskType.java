@@ -1,6 +1,9 @@
 package net.frozenorb.foxtrot.team.bitmask;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
+import org.bukkit.Location;
 
 /**
  * Created by Colin on 11/12/2014.
@@ -35,7 +38,12 @@ public enum DTRBitmaskType {
     CITADEL_COURTYARD(256, "Citadel-Courtyard", "Determines if a region is part of Citadel Courtyard"),
 
     // Used in Citadel
-    CITADEL_KEEP(512, "Citadel-Keep", "Determines if a region is part of Citadel Keep");
+    CITADEL_KEEP(512, "Citadel-Keep", "Determines if a region is part of Citadel Keep"),
+
+    // Used in KOTHs
+    KOTH(1024, "KOTH", "Determines if a region is a KOTH"),
+
+    HALF_DTR_LOSS(2048, "Half-DTR-Loss", "Determines if a region only takes away 0.5 DTR upon death");
 
     @Getter private int bitmask;
     @Getter private String name;
@@ -45,6 +53,11 @@ public enum DTRBitmaskType {
         this.bitmask = bitmask;
         this.name = name;
         this.description = description;
+    }
+
+    public boolean appliesAt(Location location) {
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location);
+        return (ownerTo != null && ownerTo.getOwner() == null && ownerTo.hasDTRBitmask(this));
     }
 
 }

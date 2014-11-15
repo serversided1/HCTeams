@@ -15,7 +15,7 @@ public class BitmaskCommand {
     @Command(names={ "bitmask list", "bitmasks list" }, permissionNode="op")
     public static void bitmaskList(Player sender) {
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
-            sender.sendMessage(ChatColor.GOLD + bitmaskType.getName() + "(" + bitmaskType.getBitmask() + "): " + ChatColor.YELLOW + bitmaskType.getDescription());
+            sender.sendMessage(ChatColor.GOLD + bitmaskType.getName() + " (" + bitmaskType.getBitmask() + "): " + ChatColor.YELLOW + bitmaskType.getDescription());
         }
     }
 
@@ -26,15 +26,17 @@ public class BitmaskCommand {
             return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Bitmask Flags of " + ChatColor.GOLD + target.getFriendlyName() + ChatColor.YELLOW + ":");
+        sender.sendMessage(ChatColor.YELLOW + "Bitmask flags of " + ChatColor.GOLD + target.getFriendlyName() + ChatColor.YELLOW + ":");
 
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
             if (!target.hasDTRBitmask(bitmaskType)) {
                 continue;
             }
 
-            sender.sendMessage(ChatColor.GOLD + bitmaskType.getName() + "(" + bitmaskType.getBitmask() + "): " + ChatColor.YELLOW + bitmaskType.getDescription());
+            sender.sendMessage(ChatColor.GOLD + bitmaskType.getName() + " (" + bitmaskType.getBitmask() + "): " + ChatColor.YELLOW + bitmaskType.getDescription());
         }
+
+        sender.sendMessage(ChatColor.GOLD + "Raw DTR: " + ChatColor.YELLOW + target.getDtr());
     }
 
     @Command(names={ "bitmask add", "bitmasks add" }, permissionNode="op")
@@ -44,7 +46,11 @@ public class BitmaskCommand {
             return;
         }
 
-        target.setDTRBitmask(bitmaskType, true);
+        int dtrInt = (int) target.getDtr();
+
+        dtrInt |= bitmaskType.getBitmask();
+
+        target.setDtr(dtrInt);
         bitmaskInfo(sender, target);
     }
 
@@ -55,7 +61,11 @@ public class BitmaskCommand {
             return;
         }
 
-        target.setDTRBitmask(bitmaskType, false);
+        int dtrInt = (int) target.getDtr();
+
+        dtrInt &= ~bitmaskType.getBitmask();
+
+        target.setDtr(dtrInt);
         bitmaskInfo(sender, target);
     }
 

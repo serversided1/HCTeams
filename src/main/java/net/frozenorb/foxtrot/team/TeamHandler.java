@@ -66,12 +66,14 @@ public class TeamHandler {
 
             @Override
             public Object transform(Player sender, String source) {
-                try {
-                    return (DTRBitmaskType.valueOf(source.toUpperCase()));
-                } catch (Exception e) {
-                    sender.sendMessage(ChatColor.RED + "No bitmask type with the name " + source + " found.");
-                    return (null);
+                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
+                    if (bitmaskType.getName().equalsIgnoreCase(bitmaskType.getName())) {
+                        return (bitmaskType);
+                    }
                 }
+
+                sender.sendMessage(ChatColor.RED + "No bitmask type with the name " + source + " found.");
+                return (null);
             }
 
         });

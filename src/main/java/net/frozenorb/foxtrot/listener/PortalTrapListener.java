@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class PortalTrapListener implements Listener {
         }
 
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getFrom())){
+            if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getFrom())){
                 event.setCancelled(true);
 
                 player.teleport(FoxtrotPlugin.getInstance().getServer().getWorld("world").getSpawnLocation());

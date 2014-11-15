@@ -169,20 +169,21 @@ public class Stuck implements Listener {
 
     private static Location nearestSafeLocation(Location origin) {
         TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
-        if (!tm.isTaken(origin))
-            return origin.getWorld().getHighestBlockAt(origin).getLocation();
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(origin))
+        if (!tm.isTaken(origin)) {
             return origin.getWorld().getHighestBlockAt(origin).getLocation();
+        }
 
         for (int xPos = 0, xNeg = 0; xPos < 500; xPos++, xNeg--) {
             for (int zPos = 0, zNeg = 0; zPos < 500; zPos++, zNeg--) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
-                if (!(tm.isTaken(atPos)) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(atPos))
+
+                if (!tm.isTaken(atPos)) {
                     return atPos.getWorld().getHighestBlockAt(atPos).getLocation();
-                if (!(tm.isTaken(atNeg)) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(atNeg))
+                } else if (!tm.isTaken(atNeg)) {
                     return atNeg.getWorld().getHighestBlockAt(atNeg).getLocation();
+                }
             }
         }
 

@@ -49,9 +49,9 @@ public class FoxtrotBoard {
                     displayedScores.remove(title);
                 }
             } else {
+                displayedScores.add(title);
                 obj.getScore(title).setScore(nextVal);
                 getTeam(title, millis).addEntry(title);
-                displayedScores.add(title);
                 nextVal -= 1;
             }
         }
@@ -80,9 +80,7 @@ public class FoxtrotBoard {
             time = Math.round(10.0D * secs) / 10.0D + "s";
         }
 
-        if (!team.getSuffix().endsWith(time)) {
-            team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
-        }
+        team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
 
         return (team);
     }

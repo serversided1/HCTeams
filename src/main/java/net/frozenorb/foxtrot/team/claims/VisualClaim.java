@@ -3,18 +3,14 @@ package net.frozenorb.foxtrot.team.claims;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.mBasic.Utilities.ItemDb;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -180,7 +176,7 @@ public class VisualClaim implements Listener {
 					return;
 				}
 
-				if (touching.size() > 1 || (touching.size() == 1 && !contains)) {
+				if (!bypass && (touching.size() > 1 || (touching.size() == 1 && !contains))) {
 					player.sendMessage(ChatColor.RED + "Your claim must be at least 1 block away from enemy claims!");
 					return;
 				}
@@ -221,7 +217,7 @@ public class VisualClaim implements Listener {
                     return;
                 }
 
-                if (touching.size() > 1 || (touching.size() == 1 && !contains)) {
+                if (!bypass && (touching.size() > 1 || (touching.size() == 1 && !contains))) {
                     player.sendMessage(ChatColor.RED + "Your claim must be at least 1 block away from enemy claims!");
                     return;
                 }
@@ -363,7 +359,7 @@ public class VisualClaim implements Listener {
 			LandBoard.getInstance().setTeamAt(cc, team);
 			team.getClaims().add(cc);
 
-			player.sendMessage(ChatColor.LIGHT_PURPLE + "You have claimed this land for your team!");
+			player.sendMessage(ChatColor.YELLOW + "You have claimed this land for your team!");
 
             if (!bypass) {
                 team.setBalance(team.getBalance() - price);

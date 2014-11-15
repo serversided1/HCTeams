@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -177,7 +178,7 @@ public class ArcherClass extends PvPClass {
 
             if (arrow.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) arrow.getMetadata("firedLoc").get(0).value();
-                boolean intoEvent = FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(player.getLocation()) != FoxtrotPlugin.getInstance().getServerHandler().isKOTHArena(firedFrom);
+                boolean intoEvent = DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(player.getLocation()) != DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(firedFrom);
 
                 if (intoEvent) {
                     firedFrom.setY(player.getLocation().getY());

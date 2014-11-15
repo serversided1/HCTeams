@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,15 +76,15 @@ public class EnderpearlListener implements Listener {
         Location target = event.getTo();
         Location from = event.getFrom();
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(target)) {
+            if (!DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");
                 return;
             }
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target) || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
+        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(target) || !DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
             if (event.getPlayer().getWorld().getEnvironment() != World.Environment.THE_END) {
                 SpawnTagHandler.addSeconds(event.getPlayer(), 8);
             }

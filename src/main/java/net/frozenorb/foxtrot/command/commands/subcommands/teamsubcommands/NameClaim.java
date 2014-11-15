@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 
 public class NameClaim {
 
-    @Command(names={ "team nameclaim", "t nameclaim", "f nameclaim", "faction nameclaim", "fac nameclaim" }, permissionNode="")
-    public static void teamNameClaim(Player sender, @Param(name="name") String name) {
+    @Command(names={ "team nameclaim", "t nameclaim", "f nameclaim", "faction nameclaim", "fac nameclaim", "team renameclaim", "t renameclaim", "f renameclaim", "faction renameclaim", "fac renameclaim" }, permissionNode="")
+    public static void teamNameClaim(Player sender, @Param(name="name", wildcard=true) String name) {
 		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
 		if (team == null) {
@@ -19,7 +19,11 @@ public class NameClaim {
 			return;
 		}
 
-		if (team.isOwner(sender.getName())) {
+        if (!sender.isOp()) {
+            name = name.split(" ")[0];
+        }
+
+		if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
             if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(sender.getLocation()) && team.ownsLocation(sender.getLocation())) {
                 net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(sender.getLocation());
 
@@ -28,9 +32,9 @@ public class NameClaim {
                 return;
             }
 
-            sender.sendMessage(ChatColor.RED + "You do not own this claims. To unclaim all claims, type '§e/t unclaim all§c'.");
+            sender.sendMessage(ChatColor.RED + "You do not own this land.");
 		} else {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only the team captains can do this.");
         }
 	}
 

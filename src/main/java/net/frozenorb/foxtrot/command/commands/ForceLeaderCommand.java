@@ -14,26 +14,31 @@ public class ForceLeaderCommand {
     public static void forceLeader(Player sender, @Param(name="Team") Team team,  @Param(name="Target", defaultValue="self") String target) {
         if (target.equals("self")) {
             target = sender.getName();
+        } else if (target.equals("null")) {
+            target = null;
         }
 
-        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target)) {
+        if (target != null && !FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target)) {
             sender.sendMessage(ChatColor.RED + "That player has never played here before!");
         } else {
-            if (FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(target) && FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(target).isOwner(target)) {
-                sender.sendMessage(ChatColor.RED + "That player is the owner of their current team!");
-                return;
+            if (target != null) {
+                if (FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(target) && FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(target).isOwner(target)) {
+                    sender.sendMessage(ChatColor.RED + "That player is the owner of their current team!");
+                    return;
+                }
+
+                FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(target);
+                FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, team);
             }
 
-            FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(target);
-            FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, team);
-
-            team.addMember(target);
             team.setOwner(target);
 
-            Player player = Bukkit.getPlayerExact(target);
+            if (target != null) {
+                Player player = Bukkit.getPlayerExact(target);
 
-            if (player != null) {
-                player.sendMessage(ChatColor.YELLOW + "You are now the owner of §b" + team.getFriendlyName());
+                if (player != null) {
+                    player.sendMessage(ChatColor.YELLOW + "You are now the owner of §b" + team.getFriendlyName());
+                }
             }
 
             sender.sendMessage(ChatColor.YELLOW + target + " is now the owner of §b" + team.getFriendlyName());

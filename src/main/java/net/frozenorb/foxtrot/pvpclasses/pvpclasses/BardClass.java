@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.ParticleEffects;
 import net.minecraft.util.com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
@@ -81,7 +82,7 @@ public class BardClass extends PvPClass implements Listener {
 
     @Override
     public void tick(Player player) {
-        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()))) {
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()))) {
             giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
         }
 
@@ -113,7 +114,7 @@ public class BardClass extends PvPClass implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + "Bard effects cannot be used while in spawn.");
             return;
         }
@@ -162,7 +163,7 @@ public class BardClass extends PvPClass implements Listener {
 
     public static void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
         for (Player player : getNearbyPlayers(source, friendly)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
             }
 

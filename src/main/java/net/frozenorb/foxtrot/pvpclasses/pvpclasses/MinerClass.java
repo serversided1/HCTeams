@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +29,8 @@ public class MinerClass extends PvPClass implements Listener {
     public MinerClass() {
         super("Miner", 10, "IRON_", null);
 
-        Runnable run = new Runnable() {
+        new BukkitRunnable() {
+
             public void run() {
                 for (String key : noDamage.keySet()) {
                     int left = noDamage.remove(key);
@@ -44,8 +45,6 @@ public class MinerClass extends PvPClass implements Listener {
                             invis.put(player.getName(), 10);
                             player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
                         }
-
-                        continue;
                     } else {
                         noDamage.put(player.getName(), left - 1);
                     }
@@ -71,9 +70,8 @@ public class MinerClass extends PvPClass implements Listener {
                     }
                 }
             }
-        };
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(FoxtrotPlugin.getInstance(), run, 20, 20);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
 	@Override

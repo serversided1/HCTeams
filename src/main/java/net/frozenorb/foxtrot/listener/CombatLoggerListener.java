@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.nms.FixedVillager;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.minecraft.server.v1_7_R3.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;
@@ -129,7 +130,7 @@ public class CombatLoggerListener implements Listener {
             Villager villager = (Villager) event.getEntity();
             String playerName = villager.getCustomName().substring(2);
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(villager.getLocation()))) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(villager.getLocation()))) {
                 event.setCancelled(true);
                 return;
             }
@@ -157,7 +158,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If the player is in spawn
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getPlayer().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             return;
         }
 

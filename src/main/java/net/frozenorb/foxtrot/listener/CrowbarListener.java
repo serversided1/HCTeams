@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -29,7 +30,7 @@ public class CrowbarListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
 
             if (team != null && !team.isMember(event.getPlayer())) {
@@ -38,7 +39,7 @@ public class CrowbarListener implements Listener {
             }
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar spawn!");
             return;
         }

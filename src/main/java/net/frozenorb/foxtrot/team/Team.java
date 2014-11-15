@@ -12,10 +12,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
@@ -89,9 +86,11 @@ public class Team {
 	}
 
 	public void addMember(String member) {
-		changed = true;
-		members.add(member);
-        FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
+        if (!member.equalsIgnoreCase("null")) {
+            changed = true;
+            members.add(member);
+            FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
+        }
 	}
 
 	public void addCaptain(String captain) {
@@ -236,15 +235,12 @@ public class Team {
 	}
 
     public boolean hasDTRBitmask(DTRBitmaskType bitmaskType) {
+        if (getOwner() != null) {
+            return (false);
+        }
+
         int dtrInt = (int) dtr;
         return (((dtrInt & bitmaskType.getBitmask()) == bitmaskType.getBitmask()));
-    }
-
-    public void setDTRBitmask(DTRBitmaskType bitmaskType, boolean set) {
-        if (set != hasDTRBitmask(bitmaskType)) {
-            int dtrInt = (int) dtr;
-            setDtr(dtrInt & ~bitmaskType.getBitmask());
-        }
     }
 
 	public int getOnlineMemberAmount() {
@@ -417,8 +413,9 @@ public class Team {
 						int y2 = Integer.valueOf(split[4].trim());
 						int z2 = Integer.valueOf(split[5].trim());
 						String name = split[6].trim();
+                        String world = split[7].trim();
 
-						Claim claimObj = new Claim(x1, y1, z1, x2, y2, z2);
+						Claim claimObj = new Claim(world, x1, y1, z1, x2, y2, z2);
 						claimObj.setName(name);
 
 						getClaims().add(claimObj);
@@ -556,12 +553,10 @@ public class Team {
 
         // A string comparison is needed here as saving and reload the data results in a string known as 'null', not a null value.
         if (owner != null && !owner.equalsIgnoreCase("null")) {
-            Location s = getHq();
+            Location hq = getHq();
+            String hqString = hq != null ? "§f" + hq.getBlockX() + ", " + hq.getBlockZ() + "" : "§fNone";
 
-            String msg = " §3-§e HQ: ";
-            msg += s != null ? "§f" + s.getBlockX() + ", " + s.getBlockZ() + "" : "§fNone";
-
-            player.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]" + msg);
+            player.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]  §3-§e HQ: " + hqString);
             KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
             Player owner = Bukkit.getPlayerExact(getOwner());
 
@@ -687,7 +682,27 @@ public class Team {
                 int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
                 player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
             }
-        } else
+        } else {
+            String hqString = hq != null ? "§f" + hq.getBlockX() + ", " + hq.getBlockZ() + "" : "§fNone";
+
+            if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
+                player.sendMessage(ChatColor.AQUA + getFriendlyName() + ChatColor.GOLD + " KOTH");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
+                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Town");
+            }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
+                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Courtyard");
+            }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
+                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Keep");
+            } else {
+                player.sendMessage(ChatColor.BLUE + getFriendlyName());
+            }
+
+            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
+
+            if (player.isOp() && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
+                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Info: " + getDtr() + " DTR Bitmask");
+            }
+        }
 
 		player.sendMessage(gray);
 	}
