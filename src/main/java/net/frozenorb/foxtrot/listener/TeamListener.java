@@ -35,7 +35,9 @@ public class TeamListener implements Listener {
 
         if (team != null) {
             for (Player online : team.getOnlineMembers()) {
-                online.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
+                if (online != event.getPlayer()) {
+                    online.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
+                }
             }
 
             FactionActionTracker.logAction(team, "actions", "Member Online: " + event.getPlayer().getName());
