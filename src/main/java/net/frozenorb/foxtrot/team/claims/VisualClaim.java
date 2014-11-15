@@ -11,6 +11,7 @@ import net.frozenorb.mBasic.Utilities.ItemDb;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -164,6 +165,11 @@ public class VisualClaim implements Listener {
 					return;
 				}
 
+                if (!bypass && player.getWorld().getEnvironment() != World.Environment.NORMAL) {
+                    player.sendMessage(ChatColor.RED + "Land can only be claimed in the overworld.");
+                    return;
+                }
+
 				Set<Claim> touching = touchesOtherClaim(check);
 				Set<Claim> cloneCheck = new HashSet<Claim>();
 
@@ -202,6 +208,11 @@ public class VisualClaim implements Listener {
 				Claim check = new Claim(corner1, to);
                 if (!bypass && containsOtherClaim(check)) {
                     player.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");
+                    return;
+                }
+
+                if (!bypass && player.getWorld().getEnvironment() != World.Environment.NORMAL) {
+                    player.sendMessage(ChatColor.RED + "Land can only be claimed in the overworld.");
                     return;
                 }
 
