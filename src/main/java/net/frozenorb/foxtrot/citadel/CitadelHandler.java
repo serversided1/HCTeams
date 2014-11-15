@@ -44,13 +44,17 @@ public class CitadelHandler {
     }
 
     public void setCapper(String capper) {
+        if (capper.equalsIgnoreCase("none")) {
+            capper = null;
+        }
+
         this.capper = capper;
 
         try {
             File citadelInfo = new File("citadelInfo.json");
             BasicDBObject dbo = new BasicDBObject();
 
-            dbo.put("capper", "none");
+            dbo.put("capper", capper);
 
             citadelInfo.delete();
             FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));

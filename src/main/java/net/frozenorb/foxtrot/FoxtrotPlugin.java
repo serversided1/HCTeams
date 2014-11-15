@@ -139,6 +139,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 		serverHandler = new ServerHandler();
 		scoreboardHandler = new ScoreboardHandler();
         mapHandler = new MapHandler();
+        citadelHandler = new CitadelHandler();
 
         setupPersistence();
         LandBoard.getInstance().loadFromTeams();
