@@ -48,6 +48,7 @@ public class Subclaim implements Listener {
 			sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
 			return;
 		}
+
 		Player p = (Player) sender;
 
 		if (args.length > 1) {

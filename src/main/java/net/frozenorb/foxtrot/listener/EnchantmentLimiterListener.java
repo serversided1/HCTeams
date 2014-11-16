@@ -25,19 +25,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by macguy8 on 11/5/2014.
  */
 public class EnchantmentLimiterListener implements Listener {
 
+    private Map<String, Long> lastArmorCheck = new HashMap<String, Long>();
+    private Map<String, Long> lastSwordCheck = new HashMap<String, Long>();
+
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && !event.isCancelled() && FoxtrotPlugin.RANDOM.nextInt(10) == 4) {
+        if (event.getEntity() instanceof Player && !event.isCancelled() && checkArmor((Player) event.getEntity())) {
             ItemStack[] armor = ((Player) event.getEntity()).getInventory().getArmorContents();
             boolean fixed = false;
 
@@ -55,9 +55,8 @@ public class EnchantmentLimiterListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!event.isCancelled() && event.getDamager() instanceof Player && FoxtrotPlugin.RANDOM.nextInt(10) == 4) {
+        if (!event.isCancelled() && event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
             Player player = (Player) event.getDamager();
-
             ItemStack hand = player.getItemInHand();
 
             if (InvUtils.conformEnchants(hand, true)) {
@@ -194,6 +193,26 @@ public class EnchantmentLimiterListener implements Listener {
         if (event.getCaught() instanceof Item) {
             InvUtils.conformEnchants(((Item) event.getCaught()).getItemStack(), true);
         }
+    }
+
+    public boolean checkArmor(Player player) {
+        boolean check = !lastArmorCheck.containsKey(player.getName()) || (System.currentTimeMillis() - lastArmorCheck.get(player.getName())) > 5000L;
+
+        if (check) {
+            lastArmorCheck.put(player.getName(), System.currentTimeMillis());
+        }
+
+        return (check);
+    }
+
+    public boolean checkSword(Player player) {
+        boolean check = !lastSwordCheck.containsKey(player.getName()) || (System.currentTimeMillis() - lastSwordCheck.get(player.getName())) > 5000L;
+
+        if (check) {
+            lastSwordCheck.put(player.getName(), System.currentTimeMillis());
+        }
+
+        return (check);
     }
 
 }

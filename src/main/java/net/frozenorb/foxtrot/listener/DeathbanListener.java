@@ -78,6 +78,8 @@ public class DeathbanListener implements Listener {
                             FoxtrotPlugin.getInstance().getSoulboundLivesMap().setLives(event.getPlayer().getName(), soulboundLives - 1);
                         }
 
+                        totalLives--;
+
                         event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
                                 ChatColor.RED + "You now have " + ChatColor.GOLD + totalLives + " total lives" + ChatColor.RED + "." + ChatColor.RESET + "\n" +
                                         ChatColor.RED + "To use a life, reconnect within 20 seconds."

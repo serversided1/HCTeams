@@ -2,7 +2,9 @@ package net.frozenorb.foxtrot.team.claims;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import lombok.Data;
@@ -15,27 +17,27 @@ import net.frozenorb.foxtrot.serialization.SerializableClass;
 @SerializableClass
 @Data
 public class Subclaim extends ReflectionSerializer {
+
 	@NonNull private Location loc1, loc2;
 	@NonNull private String manager;
 	@NonNull private String name;
-	private ArrayList<String> members = new ArrayList<String>();
+	private List<String> members = new ArrayList<String>();
 
 	public void addMember(String name) {
 		members.add(name);
 	}
 
 	public boolean isMember(String name) {
-
 		for (String str : members) {
 			if (str.equalsIgnoreCase(name)) {
-				return true;
+				return (true);
 			}
 		}
-		return name.equalsIgnoreCase(manager);
+
+		return (name.equalsIgnoreCase(manager));
 	}
 
 	public void removeMember(String name) {
-
 		Iterator<String> miter = members.iterator();
 
 		while (miter.hasNext()) {
@@ -43,16 +45,15 @@ public class Subclaim extends ReflectionSerializer {
 				miter.remove();
 			}
 		}
-
 	}
+
 
 	@Override
 	public String toString() {
-		return getFriendlyColoredName();
+		return (getFriendlyColoredName());
 	}
 
 	public String saveString() {
-
 		String msg = "";
 		msg += "world " + loc1.getBlockX() + " " + loc1.getBlockY() + " " + loc1.getBlockZ() + "|";
 		msg += "world " + loc2.getBlockX() + " " + loc2.getBlockY() + " " + loc2.getBlockZ() + "|";
@@ -71,15 +72,15 @@ public class Subclaim extends ReflectionSerializer {
 			first = false;
 		}
 
-		return msg;
-
+		return (msg);
 	}
 
 	public String getFriendlyColoredName() {
-		return "§f" + manager + "§7/" + name;
+		return (ChatColor.WHITE + manager + ChatColor.GRAY + "/" + name);
 	}
 
 	public String getFriendlyName() {
-		return manager + "/" + name;
+		return (manager + "/" + name);
 	}
+
 }
