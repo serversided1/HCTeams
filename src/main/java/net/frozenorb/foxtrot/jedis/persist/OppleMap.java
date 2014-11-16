@@ -35,7 +35,7 @@ public class OppleMap extends RedisPersistMap<Long> {
     }
 
     public long getCooldown(String player) {
-        return (getValue(player));
+        return (contains(player) ? getValue(player) : -1L);
     }
 
 }
