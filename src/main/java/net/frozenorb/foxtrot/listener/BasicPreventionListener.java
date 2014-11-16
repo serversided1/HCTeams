@@ -60,9 +60,14 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onVehicleEnter(VehicleEnterEvent event) {
-        if (event.getVehicle() instanceof Horse && event.getEntered() instanceof Player && !((Player)  event.getEntered()).getName().equals(((Horse) event.getVehicle()).getOwner().getName())) {
-            event.setCancelled(true);
-            ((Player) event.getEntered()).sendMessage(ChatColor.RED + "This is not your horse!");
+        if (event.getVehicle() instanceof Horse && event.getEntered() instanceof Player) {
+            Horse horse = (Horse) event.getVehicle();
+            Player player = (Player) event.getEntered();
+
+            if (horse.getOwner() != null && !horse.getOwner().getName().equals(player.getName())) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "This is not your horse!");
+            }
         }
     }
 
