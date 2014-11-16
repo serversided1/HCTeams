@@ -49,13 +49,14 @@ public class List {
 
         String gray = "§7§m" + StringUtils.repeat("-", 53);
         int start = (page - 1) * 10;
+        int index = 0;
 
         sender.sendMessage(gray);
         sender.sendMessage(ChatColor.BLUE + "Faction List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
 
-        int index = 0;
-
         for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
+            index++;
+
             if (index < start) {
                 continue;
             }
@@ -64,7 +65,6 @@ public class List {
                 break;
             }
 
-            index++;
             sender.sendMessage(ChatColor.GRAY.toString() + (index) + ". " + ChatColor.YELLOW + teamEntry.getKey().getFriendlyName() + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getSize() + ")");
         }
 
