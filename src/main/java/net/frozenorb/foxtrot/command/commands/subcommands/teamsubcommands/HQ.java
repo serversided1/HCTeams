@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
@@ -31,13 +30,6 @@ public class HQ {
 
         if (sender.getWorld().getEnvironment() == Environment.NETHER) {
             sender.sendMessage(ChatColor.RED + "You may not go to faction headquarters from the Nether!");
-            return;
-        }
-
-        Team inClaim = LandBoard.getInstance().getTeamAt(sender.getLocation());
-
-        if (inClaim != null && inClaim.getDtr() == 100D) {
-            sender.sendMessage(ChatColor.RED + "You may not go to the faction headquarters from inside Citadel!");
             return;
         }
 
