@@ -13,7 +13,7 @@ public class Create {
     public static void teamCreate(Player sender, @Param(name="team") String name) {
         if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
             if (!name.matches("^[a-zA-Z0-9]*$")) {
-                sender.sendMessage(ChatColor.GRAY + "Team names can only be alphabetical.");
+                sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
                 return;
             }
 
