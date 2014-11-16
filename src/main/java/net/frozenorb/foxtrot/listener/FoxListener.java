@@ -6,8 +6,8 @@ import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.RegionData;
+import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
@@ -50,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -196,11 +195,7 @@ public class FoxListener implements Listener {
         }
 
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(name) == PvPTimerMap.PENDING_USE) {
-            if (DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
-                player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
-            } else {
-                FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(name, (int) TimeUnit.MINUTES.toSeconds(30));
-            }
+            player.sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
 
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
@@ -340,7 +335,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.LOWEST)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onSignInteract(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.SKULL) {
             Skull sk = (Skull) event.getClickedBlock().getState();
@@ -367,7 +362,6 @@ public class FoxListener implements Listener {
         }
 
         if (event.getItem() != null && event.getMaterial() == Material.SIGN) {
-
             if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getLore() != null) {
                 ArrayList<String> lore = (ArrayList<String>) event.getItem().getItemMeta().getLore();
 
@@ -431,7 +425,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onSignBreak(BlockBreakEvent e) {
         if (e.getBlock().getType() == Material.WALL_SIGN || e.getBlock().getType() == Material.SIGN_POST) {
             if (e.getBlock().getState().hasMetadata("deathSign") || ((e.getBlock().getState() instanceof Sign && ((Sign) e.getBlock().getState()).getLine(1).contains("§e")))) {
