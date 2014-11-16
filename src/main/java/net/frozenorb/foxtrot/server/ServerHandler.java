@@ -15,6 +15,7 @@ import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
@@ -299,6 +300,13 @@ public class ServerHandler {
 
             if (player.getFoodLevel() != 20) {
                 player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
+                return;
+            }
+
+            Team inClaim = LandBoard.getInstance().getTeamAt(player.getLocation());
+
+            if (inClaim != null && !inClaim.isMember(player.getName())) {
+                player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from an enemy's claim!");
                 return;
             }
         }
