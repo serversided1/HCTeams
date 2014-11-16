@@ -125,7 +125,7 @@ public class PacketBorder {
             if (border.getRegions().size() == 0) {
                 clearPlayer(player);
             } else {
-                //border.sendToPlayer(player);
+                border.sendToPlayer(player);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,7 +138,7 @@ public class PacketBorder {
         public void run() {
             while (true) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    checkPlayer(player);
+                    //checkPlayer(player);
                 }
 
                 try {
