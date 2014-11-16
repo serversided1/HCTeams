@@ -32,7 +32,7 @@ public class MinerClass extends PvPClass implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                for (String key : noDamage.keySet()) {
+                for (String key : new HashMap<String, Integer>(noDamage).keySet()) {
                     int left = noDamage.remove(key);
                     Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(key);
 
