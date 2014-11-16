@@ -31,8 +31,11 @@ public class DTRHandler extends BukkitRunnable {
 		instance = this;
 	}
 
+    // * 3 is to 'speed up' DTR regen while keeping the ratios the same.
+    // We're using this instead of changing the array incase we need to change this value
+    // In the future.
 	public static double getBaseDTRIncrement(int teamsize) {
-		return (BASE_DTR_INCREMENT[teamsize - 1]);
+		return (BASE_DTR_INCREMENT[teamsize - 1] * 3F);
 	}
 
     public static double getMaxDTR(int teamsize) {
