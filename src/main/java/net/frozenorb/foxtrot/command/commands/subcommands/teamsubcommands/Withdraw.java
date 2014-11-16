@@ -22,7 +22,12 @@ public class Withdraw {
 
         if (team.isCaptain(sender.getName()) || team.isOwner(sender.getName())) {
             if (team.getBalance() < amount) {
-                sender.sendMessage("§cThe team doesn't have enough money to do this!");
+                sender.sendMessage(ChatColor.RED + "The team doesn't have enough money to do this!");
+                return;
+            }
+
+            if (amount <= 0) {
+                sender.sendMessage(ChatColor.RED + "You can't withdraw $0.0 (or less)!");
                 return;
             }
 
