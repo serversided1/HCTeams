@@ -248,15 +248,7 @@ public class ServerHandler {
 	}
 
 	public void beginWarp(final Player player, final Team team, int price) {
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()))) {
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
-                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
-            }
-
-            FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
-			player.teleport(team.getHq());
-			return;
-		}
+        boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
 
         if (FreezeCommand.isFrozen(player)) {
             player.sendMessage(ChatColor.RED + "You cannot teleport while frozen!");
@@ -271,43 +263,45 @@ public class ServerHandler {
             return;
         }
 
-        // Disallow warping while on enderpearl cooldown.
-		if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
-			player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
-			return;
-		}
+        if (!enemyCheckBypass) {
+            // Disallow warping while on enderpearl cooldown.
+            if (!enemyCheckBypass && EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
+                player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
+                return;
+            }
 
-		boolean enemyWithinRange = false;
+            boolean enemyWithinRange = false;
 
-		for (Entity e : player.getNearbyEntities(30, 256, 30)) {
-			if (e instanceof Player) {
-				Player other = (Player) e;
+            for (Entity e : player.getNearbyEntities(30, 256, 30)) {
+                if (e instanceof Player) {
+                    Player other = (Player) e;
 
-				if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(other.getName())) {
-					continue;
-				}
+                    if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(other.getName())) {
+                        continue;
+                    }
 
-				if (tm.getPlayerTeam(other.getName()) != tm.getPlayerTeam(player.getName())) {
-					enemyWithinRange = true;
-                    break;
-				}
-			}
-		}
+                    if (tm.getPlayerTeam(other.getName()) != tm.getPlayerTeam(player.getName())) {
+                        enemyWithinRange = true;
+                        break;
+                    }
+                }
+            }
 
-		if (enemyWithinRange) {
-			player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
-			return;
-		}
+            if (enemyWithinRange) {
+                player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
+                return;
+            }
 
-		if (player.getHealth() <= player.getMaxHealth() - 1D) {
-			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
-			return;
-		}
+            if (player.getHealth() <= player.getMaxHealth() - 1D) {
+                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
+                return;
+            }
 
-		if (player.getFoodLevel() != 20) {
-			player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
-			return;
-		}
+            if (player.getFoodLevel() != 20) {
+                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
+                return;
+            }
+        }
 
         // Remove their PvP timer.
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
