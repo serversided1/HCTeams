@@ -100,15 +100,6 @@
 
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>qUtils</artifactId>
-			<version>LATEST</version>
-
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/qUtils.jar</systemPath>
-		</dependency>
-
-		<dependency>
-			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
 
