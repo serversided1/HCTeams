@@ -29,8 +29,8 @@ public class Team {
 
 	public static final int MAX_TEAM_SIZE = 30;
     public static final int MAX_CLAIMS = 2;
-    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
-    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(120);
+    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
+    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
 
     // End configurable values //
 
@@ -50,10 +50,10 @@ public class Team {
 
 	@Getter private List<Claim> claims = new ArrayList<Claim>();
 
-	@Getter @Setter private long raidableCooldown;
-	@Getter @Setter private long deathCooldown;
+	@Getter private long raidableCooldown;
+	@Getter private long deathCooldown;
 
-	@Getter @Setter private double balance;
+	@Getter private double balance;
 
 	@Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
 
@@ -98,6 +98,21 @@ public class Team {
 		captains.add(captain);
         FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
 	}
+
+    public void setBalance(double balance) {
+        changed = true;
+        this.balance = balance;
+    }
+
+    public void setRaidableCooldown(long raidableCooldown) {
+        changed = true;
+        this.raidableCooldown = raidableCooldown;
+    }
+
+    public void setDeathCooldown(long deathCooldown) {
+        changed = true;
+        this.deathCooldown = deathCooldown;
+    }
 
 	public void removeCaptain(String name) {
 		Iterator<String> iter = captains.iterator();

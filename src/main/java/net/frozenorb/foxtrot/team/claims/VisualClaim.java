@@ -261,6 +261,8 @@ public class VisualClaim implements Listener {
 		player.sendMessage(ChatColor.YELLOW + "Set claim's location " +ChatColor.LIGHT_PURPLE + loc + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + to.getBlockX() + ", " + to.getBlockY() + ", " + to.getBlockZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
 		FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> erectPillar(to, Material.EMERALD_BLOCK), 1L);
 
+        team.flagForSave();
+
 		int price = getPrice();
 
 		if (price != -1) {

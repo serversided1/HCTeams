@@ -38,6 +38,7 @@ public class Unclaim {
                 team.setBalance(team.getBalance() + refund);
                 team.getClaims().clear();
                 team.setHQ(null);
+                team.flagForSave();
                 LandBoard.getInstance().clear(team);
                 sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims (" + claims + " total)! Your team was refunded $" + refund + ".");
                 return;
