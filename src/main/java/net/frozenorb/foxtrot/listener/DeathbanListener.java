@@ -45,7 +45,11 @@ public class DeathbanListener implements Listener {
                 return;
             }
 
-            if (event.getHostname().toLowerCase().startsWith("revive")) {
+            if (event.getPlayer().isOp()) {
+                System.out.println(event.getPlayer().getName() + "'s hostname: " + event.getHostname());
+            }
+
+            if (event.getHostname().toLowerCase().contains("revive")) {
                 if (!FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
                     event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You are not deathbanned.");
                     return;
