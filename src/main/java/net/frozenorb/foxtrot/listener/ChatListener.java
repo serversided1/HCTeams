@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamMuteCommand;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamShadowMuteCommand;
+import net.frozenorb.foxtrot.command.commands.team.TeamMuteCommand;
+import net.frozenorb.foxtrot.command.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.chat.ChatMode;

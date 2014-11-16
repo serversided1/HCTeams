@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

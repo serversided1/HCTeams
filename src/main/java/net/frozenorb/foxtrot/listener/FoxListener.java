@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamClaimCommand;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.command.commands.team.TeamClaimCommand;
+import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
