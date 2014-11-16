@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Mute;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.ShadowMute;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamMuteCommand;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.chat.ChatMode;
@@ -46,7 +46,7 @@ public class ChatListener implements Listener {
                     return;
                 }
 
-                if (Mute.factionMutes.containsKey(event.getPlayer().getName())) {
+                if (TeamMuteCommand.factionMutes.containsKey(event.getPlayer().getName())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your faction is muted!");
                     event.setCancelled(true);
 
@@ -64,7 +64,7 @@ public class ChatListener implements Listener {
                     String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                        if (ShadowMute.factionShadowMutes.containsKey(event.getPlayer().getName())) {
+                        if (TeamShadowMuteCommand.factionShadowMutes.containsKey(event.getPlayer().getName())) {
                             continue;
                         }
 
@@ -85,7 +85,7 @@ public class ChatListener implements Listener {
                         } else if (team.isAlly(player)) {
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE));
                         } else {
-                            if (ShadowMute.factionShadowMutes.containsKey(event.getPlayer().getName())) {
+                            if (TeamShadowMuteCommand.factionShadowMutes.containsKey(event.getPlayer().getName())) {
                                 if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
                                     player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "SM: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                                 }

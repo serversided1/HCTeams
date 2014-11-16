@@ -14,9 +14,9 @@ public class KOTHCommand {
         sender.sendMessage(ChatColor.GRAY + "/koth list - Lists KOTHs");
         sender.sendMessage(ChatColor.GRAY + "/koth activate <name> - Activates a KOTH");
         sender.sendMessage(ChatColor.GRAY + "/koth deactivate <name> - Deactivates a KOTH");
-        sender.sendMessage(ChatColor.GRAY + "/koth setcaplocation <name> - Set a KOTH's cap location");
-        sender.sendMessage(ChatColor.GRAY + "/koth setcaptime <name> <time> - Sets a KOTH's cap time");
-        sender.sendMessage(ChatColor.GRAY + "/koth setcapdistance <name> <distance> - Sets a KOTH's cap distance");
+        sender.sendMessage(ChatColor.GRAY + "/koth loc <name> - Set a KOTH's cap location");
+        sender.sendMessage(ChatColor.GRAY + "/koth time <name> <time> - Sets a KOTH's cap time");
+        sender.sendMessage(ChatColor.GRAY + "/koth dist <name> <distance> - Sets a KOTH's cap distance");
         sender.sendMessage(ChatColor.GRAY + "/koth create <name> - Creates a KOTH");
         sender.sendMessage(ChatColor.GRAY + "/koth delete <name> - Deletes a KOTH");
     }

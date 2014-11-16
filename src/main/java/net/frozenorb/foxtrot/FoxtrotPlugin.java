@@ -10,8 +10,8 @@ import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.CommandRegistrar;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamClaimCommand;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -173,8 +173,8 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamListener(), this);
         getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
 
-        getServer().getPluginManager().registerEvents(new Subclaim(), this);
-        getServer().getPluginManager().registerEvents(new Claim(), this);
+        getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
+        getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
 
 		for (Player player : getServer().getOnlinePlayers()) {
 			playtimeMap.playerJoined(player.getName());

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamClaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
@@ -281,7 +282,7 @@ public class VisualClaim implements Listener {
 		}
 
 		if (type != VisualType.MAP) {
-			player.getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim.SELECTION_WAND);
+			player.getInventory().remove(TeamClaimCommand.SELECTION_WAND);
 		}
 
 		HandlerList.unregisterAll(this);
@@ -383,7 +384,7 @@ public class VisualClaim implements Listener {
 
             if (!bypass) {
                 team.setBalance(team.getBalance() - price);
-                player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + team.getBalance() + ChatColor.DARK_PURPLE + " (Price: " + price + ")");
+                player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + team.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: " + price + ")");
             }
 
             FactionActionTracker.logAction(team, "actions", "Land Claim: [" + cc.getMinimumPoint().getBlockX() + ", " + cc.getMinimumPoint().getBlockY() + ", " + cc.getMinimumPoint().getBlockZ() + "] -> [" + cc.getMaximumPoint().getBlockX() + ", " + cc.getMaximumPoint().getBlockY() + ", " + cc.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");

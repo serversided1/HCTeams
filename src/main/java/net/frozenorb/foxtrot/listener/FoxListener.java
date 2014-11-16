@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamClaimCommand;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
@@ -141,8 +143,8 @@ public class FoxListener implements Listener {
     @SuppressWarnings("unchecked")
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        event.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim.SELECTION_WAND);
-        event.getPlayer().getInventory().remove(net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Claim.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
 
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName());
@@ -290,7 +292,6 @@ public class FoxListener implements Listener {
             if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
                 if (Arrays.asList(FoxListener.NO_INTERACT_WITH_SPAWN).contains(event.getMaterial()) || Arrays.asList(FoxListener.NO_INTERACT_IN_SPAWN).contains(event.getClickedBlock().getType())) {
                     event.setCancelled(true);
-                    FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
                 }
             }
 
@@ -298,7 +299,6 @@ public class FoxListener implements Listener {
                 if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory.");
-                    FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
                     return;
                 }
 

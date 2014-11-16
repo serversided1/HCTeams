@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.Subclaim;
+import net.frozenorb.foxtrot.command.commands.subcommands.teamsubcommands.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -77,9 +77,9 @@ public enum RegionType {
 		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
 
 		if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
-			if (event.getPlayer().getInventory().contains(Subclaim.SELECTION_WAND)) {
+			if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {
 				event.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-				event.getPlayer().getInventory().remove(Subclaim.SELECTION_WAND);
+				event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
 			}
 		}
 
