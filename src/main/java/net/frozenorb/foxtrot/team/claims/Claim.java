@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -61,6 +60,9 @@ public class Claim implements Iterable<Coordinate> {
                 mod += 0.4D;
             }
         }
+
+        // Cut buying price in half
+        curPrice /= 2;
 
         if (buying && team != null) {
             curPrice += 500 * team.getClaims().size();
