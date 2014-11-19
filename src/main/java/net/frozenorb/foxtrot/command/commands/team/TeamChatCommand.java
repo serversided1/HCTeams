@@ -18,11 +18,11 @@ public class TeamChatCommand {
 
         ChatMode chatMode = null;
 
-        if (params.equalsIgnoreCase("t") || params.equalsIgnoreCase("team") || params.equalsIgnoreCase("f") || params.equalsIgnoreCase("fac") || params.equalsIgnoreCase("faction")) {
+        if (params.equalsIgnoreCase("t") || params.equalsIgnoreCase("team") || params.equalsIgnoreCase("f") || params.equalsIgnoreCase("fac") || params.equalsIgnoreCase("faction") || params.equalsIgnoreCase("fc")) {
             chatMode = ChatMode.TEAM;
-        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public")) {
+        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public") || params.equalsIgnoreCase("gc")) {
             chatMode = ChatMode.PUBLIC;
-        } else if (params.equalsIgnoreCase("a") || params.equalsIgnoreCase("allies") || params.equalsIgnoreCase("ally") || params.equalsIgnoreCase("aliance")) {
+        } else if (params.equalsIgnoreCase("a") || params.equalsIgnoreCase("allies") || params.equalsIgnoreCase("ally") || params.equalsIgnoreCase("alliance") || params.equalsIgnoreCase("ac")) {
             chatMode = ChatMode.ALLIANCE;
         }
 
