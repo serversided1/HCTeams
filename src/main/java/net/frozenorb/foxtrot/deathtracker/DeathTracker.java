@@ -208,6 +208,7 @@ public class DeathTracker {
             recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
             recordDBObject.put("Damage", record.getDamage());
             recordDBObject.put("Description", record.getDescription());
+            recordDBObject.put("Health", record.getHealthAfter());
 
             if (record instanceof PlayerDamage) {
                 recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());

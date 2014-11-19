@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
@@ -39,7 +40,8 @@ public class DamageListener implements Listener {
         if (event2.isCancelled()) {
             event.setCancelled(true);
         } else {
-            net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
+            event2.getTrackerDamage().setHealthAfter(((Player) event.getEntity()).getHealthScale());
+            DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
         }
     }
 

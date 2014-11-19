@@ -7,6 +7,7 @@ public abstract class Damage {
     private String damaged;
     private double damage;
     private long time;
+    private double healthAfter;
 
     //***************************//
 
@@ -14,6 +15,7 @@ public abstract class Damage {
         this.damaged = damaged;
         this.damage = damage;
         this.time = System.currentTimeMillis();
+        this.healthAfter = -1D;
     }
 
     //***************************//
@@ -31,6 +33,14 @@ public abstract class Damage {
 
     public long getTime() {
         return (time);
+    }
+
+    public double getHealthAfter() {
+        return (healthAfter);
+    }
+
+    public void setHealthAfter(double healthAfter) {
+        this.healthAfter = healthAfter;
     }
 
     //***************************//
