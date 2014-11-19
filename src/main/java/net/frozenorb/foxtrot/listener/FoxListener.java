@@ -411,8 +411,12 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onSignBreak(BlockBreakEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+
         if (e.getBlock().getType() == Material.WALL_SIGN || e.getBlock().getType() == Material.SIGN_POST) {
             if (e.getBlock().getState().hasMetadata("deathSign") || ((e.getBlock().getState() instanceof Sign && ((Sign) e.getBlock().getState()).getLine(1).contains("§e")))) {
                 e.setCancelled(true);
@@ -444,7 +448,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerDeath(final PlayerDeathEvent e) {
         Player player = e.getEntity();
         Date now = new Date();

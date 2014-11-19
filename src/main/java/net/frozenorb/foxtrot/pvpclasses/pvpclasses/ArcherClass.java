@@ -212,7 +212,7 @@ public class ArcherClass extends PvPClass {
                     event.setDamage(0D);
                 }
 
-                DeathMessageHandler.addDamage(player, new ArrowTracker.ArrowDamageByPlayer(player.getName(), damage, ((Player) arrow.getShooter()).getName(), range));
+                DeathMessageHandler.addDamage(player, new ArrowTracker.ArrowDamageByPlayer(player.getName(), damage, ((Player) arrow.getShooter()).getName(), firedFrom, range));
                 player.setHealth(Math.max(0D, player.getHealth() - damage));
 
                 ((Player) arrow.getShooter()).sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + range + ChatColor.YELLOW + ")] Damage Output => " + ChatColor.BLUE.toString() + ChatColor.BOLD + rawDamage + " Hearts");

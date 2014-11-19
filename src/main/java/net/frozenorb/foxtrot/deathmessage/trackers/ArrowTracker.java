@@ -43,8 +43,9 @@ public class ArrowTracker implements Listener {
                     Player shooter = (Player) a.getShooter();
 
                     for (MetadataValue value : a.getMetadata("ShotFrom")) {
-                        double distance = ((Location) value.value()).distance(event.getPlayer().getLocation());
-                        event.setTrackerDamage(new ArrowDamageByPlayer(event.getPlayer().getName(), event.getDamage(), shooter.getName(), distance));
+                        Location shotFrom = (Location) value.value();
+                        double distance = shotFrom.distance(event.getPlayer().getLocation());
+                        event.setTrackerDamage(new ArrowDamageByPlayer(event.getPlayer().getName(), event.getDamage(), shooter.getName(), shotFrom, distance));
                     }
                 } else if (a.getShooter() instanceof Entity) {
                     Entity shooter = (Entity) a.getShooter();
@@ -84,12 +85,14 @@ public class ArrowTracker implements Listener {
 
         //***************************//
 
+        private Location shotFrom;
         double distance;
 
         //***************************//
 
-        public ArrowDamageByPlayer(String damaged, double damage, String damager, double distance) {
+        public ArrowDamageByPlayer(String damaged, double damage, String damager, Location shotFrom, double distance) {
             super(damaged, damage, damager);
+            this.shotFrom = shotFrom;
             this.distance = distance;
         }
 
@@ -105,6 +108,10 @@ public class ArrowTracker implements Listener {
 
         public double getDistance() {
             return (distance);
+        }
+
+        public Location getShotFrom() {
+            return (shotFrom);
         }
 
         //***************************//
