@@ -36,7 +36,7 @@ public class TeamDisbandCommand {
         }
 
         FactionActionTracker.logAction(team, "actions", "Faction disbanded. [Disbanded by: " + player.getName() + "]");
-        FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());
+        team.disband();
     }
 
 }

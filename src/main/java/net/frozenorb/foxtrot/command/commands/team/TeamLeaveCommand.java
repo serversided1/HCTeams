@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,7 +20,7 @@ public class TeamLeaveCommand {
             return;
 		}
 
-        if (team.isOwner(sender.getName()) && team.getSize() >= 1) {
+        if (team.isOwner(sender.getName()) && team.getSize() > 1) {
             sender.sendMessage(ChatColor.RED + "Please choose a new leader before leaving your team!");
             return;
         }
@@ -31,18 +30,13 @@ public class TeamLeaveCommand {
             return;
         }
 
-        sender.removeMetadata("teamChat", FoxtrotPlugin.getInstance());
-
         if (team.removeMember(sender.getName())) {
-            FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(sender.getName());
-            FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());
-            LandBoard.getInstance().clear(team);
-
+            team.disband();
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
         } else {
-            FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(sender.getName());
+            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName());
 
-            team.setChanged(true);
+            team.flagForSave();
 
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (team.isMember(player)) {

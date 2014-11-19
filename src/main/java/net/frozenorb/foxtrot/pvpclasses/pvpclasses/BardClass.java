@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -40,15 +41,15 @@ public class BardClass extends PvPClass implements Listener {
     public static final int BARD_RANGE = 20;
 
     static {
-        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*5, 7));
-        BARD_CLICK_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(3*20, 0));
-        BARD_CLICK_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(10*20, 5));
-        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20*2, 0));
-        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20*10, 0));
-        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20*10, 0));
-        BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20*45, 0));
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(20*7, 0));
-        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*10, 3));
+        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20 * 5, 7));
+        BARD_CLICK_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(20 * 3, 0));
+        BARD_CLICK_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20 * 10, 5));
+        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20 * 2, 0));
+        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20 * 10, 0));
+        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20 * 10, 0));
+        BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20 * 45, 0));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(140, 0));
+        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20 * 10, 3));
         BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 45, 0));
         BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20 * 5, 1));
 
@@ -62,14 +63,14 @@ public class BardClass extends PvPClass implements Listener {
         BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*6, 0));
         BARD_PASSIVE_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20*6, 1));
 
-        //Custom code
-        //Glistering Melon - Heals 6 Hearts Instantly
-        //Eye Of Ender - Reveals Invisible Rouge Players within 80 blocks. (Forces a 30 second cool-down on the Rouge Player before they can go Invisible again)
-        //Wheat - Heals 6 hunger points
+        // Custom code
+        // Glistering Melon - Heals 6 Hearts Instantly
+        // Eye Of Ender - Reveals Invisible Rouge Players within 80 blocks. (Forces a 30 second cool-down on the Rouge Player before they can go Invisible again)
+        // Wheat - Heals 6 hunger points
     }
 
     public BardClass() {
-        super("Bard", 5, "GOLD_", null);
+        super("Bard", 15, "GOLD_", null);
     }
 
     @Override
@@ -152,11 +153,11 @@ public class BardClass extends PvPClass implements Listener {
         giveBardEffect(event.getPlayer(), BARD_CLICK_EFFECTS.get(event.getItem().getType()), !negative);
 
         if (event.getItem().getType() != Material.FEATHER) {
-            event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
-
-            if (event.getPlayer().getItemInHand().getAmount() == 0) {
-                event.getPlayer().setItemInHand(null);
+            if (event.getPlayer().getItemInHand().getAmount() == 1) {
+                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
                 event.getPlayer().updateInventory();
+            } else {
+                event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
             }
         }
     }
@@ -181,13 +182,8 @@ public class BardClass extends PvPClass implements Listener {
                         player.setHealth(player.getHealth() + add);
                     }
                 } else if (material == Material.WHEAT) {
-                    int add = 6;
-
-                    if ((player.getFoodLevel() + add) > 20) {
-                        player.setFoodLevel(20);
-                    } else {
-                        player.setFoodLevel(player.getFoodLevel() + add);
-                    }
+                    player.setFoodLevel(20);
+                    player.setSaturation(player.getSaturation() + 14.4F);
                 }
             }
         }

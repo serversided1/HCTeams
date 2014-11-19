@@ -50,10 +50,12 @@ public class TeamKickCommand {
                 FactionActionTracker.logAction(team, "actions", "Member Kicked: " + target + " [Kicked by: " + sender.getName() + "]");
 
                 if (team.removeMember(target)) {
-                    FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());
+                    team.disband();
+                } else {
+                    team.flagForSave();
                 }
 
-                FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(target);
+                FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(target);
 
                 if (bukkitPlayer != null) {
                     NametagManager.reloadPlayer(bukkitPlayer);

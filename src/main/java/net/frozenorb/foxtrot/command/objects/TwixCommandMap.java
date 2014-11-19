@@ -7,10 +7,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by macguy8 on 11/2/2014.
@@ -58,8 +55,10 @@ public class TwixCommandMap extends SimpleCommandMap {
 
                         if (StringUtil.startsWithIgnoreCase(split.trim(), cmdLine.trim()) || StringUtil.startsWithIgnoreCase(cmdLine.trim(), split.trim())) {
                             if (spaceIndex == -1 && cmdLine.length() < alias.length()) {
+                                // Complete the command
                                 completions.add("/" + split.toLowerCase());
                             } else if (cmdLine.toLowerCase().startsWith(alias.toLowerCase() + " ") && command.getParameters().size() > 0) {
+                                // Complete the params
                                 int paramIndex = (cmdLine.split(" ").length - alias.split(" ").length);
 
                                 // If they didn't hit space, complete the param before it.
@@ -80,7 +79,9 @@ public class TwixCommandMap extends SimpleCommandMap {
 
                                 break CmdLoop;
                             } else {
-                                completions.add(split.toLowerCase().replaceFirst(alias.split(" ")[0].toLowerCase(), "").trim());
+                                String halfSplitString = split.toLowerCase().replaceFirst(alias.split(" ")[0].toLowerCase(), "").trim();
+                                String[] splitString = halfSplitString.split(" ");
+                                completions.add(splitString[splitString.length - 1].trim());
                             }
                         }
                     }
@@ -98,7 +99,14 @@ public class TwixCommandMap extends SimpleCommandMap {
                 completionList.add(vanillaCompletion);
             }
 
-            completionList.remove("w");
+            completionList.sort(new Comparator<String>() {
+
+                @Override
+                public int compare(String o1, String o2) {
+                    return (o2.length() - o1.length());
+                }
+
+            });
 
             return (completionList);
         } catch (Exception e) {

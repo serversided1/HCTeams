@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,9 +34,9 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (name.matches("^[a-zA-Z0-9]*$")) {
+        if (StringUtils.isAlphanumeric(name)) {
             if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
-                FoxtrotPlugin.getInstance().getTeamHandler().renameTeam(team, name);
+                team.rename(name);
                 sender.sendMessage(ChatColor.GREEN + "Team renamed to " + name);
             } else {
                 sender.sendMessage(ChatColor.RED + "A team with that name already exists!");

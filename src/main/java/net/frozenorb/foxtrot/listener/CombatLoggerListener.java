@@ -44,6 +44,8 @@ public class CombatLoggerListener implements Listener {
         if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
             String playerName = event.getEntity().getCustomName().substring(2);
 
+            FoxtrotPlugin.getInstance().getLogger().info(playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
+
             // Deathban the player
             FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDeathBanAt(playerName, event.getEntity().getLocation()));
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
@@ -135,7 +137,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+            if (!FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                 event.setCancelled(true);
                 return;
             }
@@ -196,6 +198,7 @@ public class CombatLoggerListener implements Listener {
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
             if (enemyWithinRange && !event.getPlayer().isDead()) {
                 String playerName = ChatColor.RED.toString() + event.getPlayer().getName();
+                FoxtrotPlugin.getInstance().getLogger().info(playerName + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ").");
 
                 ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
                 ItemStack[] inv = event.getPlayer().getInventory().getContents();
@@ -226,6 +229,7 @@ public class CombatLoggerListener implements Listener {
 
                 final Villager villager = (Villager) fixedVillager.getBukkitEntity();
 
+
                 villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
                 villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
@@ -233,10 +237,20 @@ public class CombatLoggerListener implements Listener {
                 villager.setAgeLock(true);
 
                 int potions = 0;
+                boolean gapple = false;
 
                 for (ItemStack itemStack : event.getPlayer().getInventory().getContents()) {
-                    if (itemStack != null && itemStack.getType() == Material.POTION && itemStack.getDurability() == (short) 16421) {
+                    if (itemStack == null) {
+                        continue;
+                    }
+
+
+                    if (itemStack.getType() == Material.POTION && itemStack.getDurability() == (short) 16421) {
                         potions++;
+                    } else if (!gapple && itemStack.getType() == Material.GOLDEN_APPLE && itemStack.getDurability() == (short) 1) {
+                        // Only let the player have one gapple count.
+                        potions += 15;
+                        gapple = true;
                     }
                 }
 

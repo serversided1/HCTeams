@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
@@ -8,9 +9,8 @@ import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.mBasic.Basic;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamHandler {
 
-	private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
-	private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
+	@Getter private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
+	@Getter private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
 
 	public TeamHandler() {
         CommandHandler.registerTransformer(Team.class, new ParamTransformer() {
@@ -43,7 +43,7 @@ public class TeamHandler {
                 Team team = getTeam(source);
 
                 if (team == null) {
-                    Player bukkitPlayer = Bukkit.getPlayer(source);
+                    Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(source);
 
                     if (bukkitPlayer != null) {
                         source = bukkitPlayer.getName();
@@ -58,39 +58,6 @@ public class TeamHandler {
                 }
 
                 return (team);
-            }
-
-        });
-
-        CommandHandler.registerTransformer(DTRBitmaskType.class, new ParamTransformer() {
-
-            @Override
-            public Object transform(Player sender, String source) {
-                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
-                    if (bitmaskType.getName().equalsIgnoreCase(bitmaskType.getName())) {
-                        return (bitmaskType);
-                    }
-                }
-
-                sender.sendMessage(ChatColor.RED + "No bitmask type with the name " + source + " found.");
-                return (null);
-            }
-
-        });
-
-        CommandHandler.registerTabCompleter(DTRBitmaskType.class, new ParamTabCompleter() {
-
-            @Override
-            public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
-
-                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
-                    if (StringUtils.startsWithIgnoreCase(bitmaskType.getName(), source)) {
-                        completions.add(bitmaskType.getName());
-                    }
-                }
-
-                return (completions);
             }
 
         });
@@ -117,6 +84,84 @@ public class TeamHandler {
 
         });
 
+        CommandHandler.registerTransformer(DTRBitmaskType.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
+                    if (bitmaskType.getName().equalsIgnoreCase(bitmaskType.getName())) {
+                        return (bitmaskType);
+                    }
+                }
+
+                sender.sendMessage(ChatColor.RED + "No bitmask type with the name " + source + " found.");
+                return (null);
+            }
+
+        });
+
+        CommandHandler.registerTabCompleter(DTRBitmaskType.class, new ParamTabCompleter() {
+
+            @Override
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+                if (team == null) {
+                    return (completions);
+                }
+
+                for (Subclaim subclaim : team.getSubclaims()) {
+                    if (StringUtils.startsWithIgnoreCase(subclaim.getName(), source)) {
+                        completions.add(subclaim.getName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
+
+        CommandHandler.registerTransformer(Subclaim.class, new ParamTransformer() {
+
+            @Override
+            public Object transform(Player sender, String source) {
+                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+                if (team == null) {
+                    sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
+                    return (null);
+                }
+
+                Subclaim subclaim = team.getSubclaim(source);
+
+                if (subclaim == null) {
+                    sender.sendMessage(ChatColor.RED + "No subclaim with the name " + source + " found.");
+                    return (null);
+                }
+
+                return (subclaim);
+            }
+
+        });
+
+        CommandHandler.registerTabCompleter(Subclaim.class, new ParamTabCompleter() {
+
+            @Override
+            public List<String> tabComplete(Player sender, String source) {
+                List<String> completions = new ArrayList<String>();
+
+                for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
+                    if (StringUtils.startsWithIgnoreCase(bitmaskType.getName(), source)) {
+                        completions.add(bitmaskType.getName());
+                    }
+                }
+
+                return (completions);
+            }
+
+        });
+
 		loadTeams();
 	}
 
@@ -134,6 +179,7 @@ public class TeamHandler {
 
 	private void loadTeams() {
 		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
 			@Override
 			public Object execute(Jedis jedis) {
 				for (String key : jedis.keys("fox_teams.*")) {
@@ -149,8 +195,8 @@ public class TeamHandler {
 
 				return (null);
 			}
-		});
 
+		});
 	}
 
 	public boolean isTaken(Location loc) {
@@ -173,12 +219,8 @@ public class TeamHandler {
 		return (playerTeamMap.get(name.toLowerCase()));
 	}
 
-	public boolean teamExists(String teamName) {
-		return teamNameMap.containsKey(teamName.toLowerCase());
-	}
-
 	public void addTeam(Team team) {
-		team.setChanged(true);
+		team.flagForSave();
 		teamNameMap.put(team.getName().toLowerCase(), team);
 
 		for (String member : team.getMembers()) {
@@ -186,62 +228,4 @@ public class TeamHandler {
 		}
 	}
 
-	public void removePlayerFromTeam(String name) {
-		playerTeamMap.remove(name.toLowerCase());
-	}
-
-	public boolean isOnTeam(String name) {
-		return playerTeamMap.containsKey(name.toLowerCase());
-	}
-
-	public void renameTeam(Team team, String name) {
-		if (teamExists(name)) {
-			return;
-		}
-
-		final String oldName = team.getName();
-
-		team.setName(name.toLowerCase());
-		team.setFriendlyName(name);
-
-        for (String member : team.getMembers()) {
-            setTeam(member, team);
-        }
-
-		addTeam(team);
-
-		teamNameMap.remove(oldName.toLowerCase());
-
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-            public Object execute(Jedis jedis) {
-                jedis.del("fox_teams." + oldName.toLowerCase());
-                return null;
-            }
-        });
-	}
-
-	public void removeTeam(final String name) {
-		if (teamExists(name)) {
-			Team t = getTeam(name);
-
-            //Refund owner
-            Basic.get().getEconomyManager().depositPlayer(t.getOwner(), t.getBalance());
-
-			for (String names : t.getMembers()) {
-				removePlayerFromTeam(names);
-			}
-
-			LandBoard.getInstance().clear(t);
-		}
-
-		teamNameMap.remove(name.toLowerCase());
-
-		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-			@Override
-			public Object execute(Jedis jedis) {
-				jedis.del("fox_teams." + name.toLowerCase());
-				return null;
-			}
-		});
-	}
 }

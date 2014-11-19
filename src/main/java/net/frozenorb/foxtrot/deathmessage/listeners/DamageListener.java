@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
+import net.frozenorb.foxtrot.deathtracker.DeathTracker;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -64,6 +65,7 @@ public class DamageListener implements Listener {
             ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
         }
 
+        DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.clearDamage(event.getEntity());
     }
 

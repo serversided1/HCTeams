@@ -45,8 +45,6 @@ public class PvPReviveCommand {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getDeathbanMap().revive(target.getName());
-
         if (friendLives == 0) {
             // Use a transferable life.
             FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(sender.getName(), transferableLives - 1);
@@ -56,6 +54,8 @@ public class PvPReviveCommand {
             FoxtrotPlugin.getInstance().getFriendLivesMap().setLives(sender.getName(), friendLives - 1);
             sender.sendMessage(ChatColor.YELLOW + "You have revived " + ChatColor.GREEN + target.getName() + ChatColor.YELLOW + " with a friend life!");
         }
+
+        FoxtrotPlugin.getInstance().getDeathbanMap().revive(target.getName());
     }
 
 }

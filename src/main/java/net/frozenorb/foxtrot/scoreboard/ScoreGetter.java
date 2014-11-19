@@ -85,7 +85,11 @@ public interface ScoreGetter {
         @Override
         public long getMillis(Player player){
             if (PvPClassHandler.getWarmupTasks().containsKey(player.getName())) {
-                return (PvPClassHandler.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis());
+                long diff = PvPClassHandler.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis();
+
+                if (diff > 0) {
+                    return (diff);
+                }
             }
 
             return (NO_SCORE);

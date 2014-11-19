@@ -96,7 +96,7 @@ public class FocusCommand {
         }
 
         //Team check
-        if (!(FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(sender.getName()))) {
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
             sender.sendMessage(ChatColor.RED + "You are not on a team!");
             return;
         }

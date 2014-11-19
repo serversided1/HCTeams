@@ -23,6 +23,12 @@ public class TeamNameClaimCommand {
             name = name.split(" ")[0];
         }
 
+
+        if (!name.matches("^[a-zA-Z0-9]*$")) {
+            sender.sendMessage(ChatColor.RED + "Land names must be alphanumeric!");
+            return;
+        }
+
 		if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
             if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(sender.getLocation()) && team.ownsLocation(sender.getLocation())) {
                 net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(sender.getLocation());

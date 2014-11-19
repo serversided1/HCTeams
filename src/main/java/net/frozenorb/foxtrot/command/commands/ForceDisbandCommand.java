@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.command.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
@@ -18,8 +17,8 @@ public class ForceDisbandCommand {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force-disbanded the team.");
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(target.getName());
-        sender.sendMessage(ChatColor.GRAY + "Force-disbanded the faction " + target.getFriendlyName() + ".");
+        target.disband();
+        sender.sendMessage(ChatColor.GRAY + "Force-disbanded the team " + target.getFriendlyName() + ".");
     }
 
 }

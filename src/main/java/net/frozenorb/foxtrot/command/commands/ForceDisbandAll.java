@@ -33,8 +33,11 @@ public class ForceDisbandAll {
                     }
 
                     for (Team team : teams) {
-                        FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());
+                        team.disband();
                     }
+
+                    FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().clear();
+                    FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().clear();
 
                     FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All factions have been forcibly disbanded!");
                     return Prompt.END_OF_CONVERSATION;

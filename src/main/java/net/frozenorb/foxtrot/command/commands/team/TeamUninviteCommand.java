@@ -39,7 +39,7 @@ public class TeamUninviteCommand {
                 if (remove != null) {
                     FactionActionTracker.logAction(team, "actions", "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
                     team.getInvitations().remove(remove);
-                    team.setChanged(true);
+                    team.flagForSave();
                     sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");
                 } else {
                     sender.sendMessage(ChatColor.RED + "No pending invitation for '" + name + "'!");

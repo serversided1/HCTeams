@@ -5,15 +5,19 @@ import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -42,7 +46,7 @@ public class Team {
 	@Getter private Set<String> members = new HashSet<String>();
 	@Getter private Set<String> captains = new HashSet<String>();
 
-	@Getter @Setter private boolean changed = false;
+	@Getter private boolean needsSave = false;
 	@Getter private boolean loading = false;
 
 	@Getter private Set<String> invitations = new HashSet<String>();
@@ -76,41 +80,41 @@ public class Team {
             }
 
             this.dtr = newDTR;
-            setChanged(true);
+            flagForSave();
         }
 	}
 
 	public void setFriendlyName(String friendlyName) {
-		changed = true;
+		flagForSave();
 		this.friendlyName = friendlyName;
 	}
 
 	public void addMember(String member) {
         if (!member.equalsIgnoreCase("null")) {
-            changed = true;
+            flagForSave();
             members.add(member);
             FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
         }
 	}
 
 	public void addCaptain(String captain) {
-		changed = true;
+		flagForSave();
 		captains.add(captain);
         FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
 	}
 
     public void setBalance(double balance) {
-        changed = true;
+        flagForSave();
         this.balance = balance;
     }
 
     public void setRaidableCooldown(long raidableCooldown) {
-        changed = true;
+        flagForSave();
         this.raidableCooldown = raidableCooldown;
     }
 
     public void setDeathCooldown(long deathCooldown) {
-        changed = true;
+        flagForSave();
         this.deathCooldown = deathCooldown;
     }
 
@@ -126,7 +130,7 @@ public class Team {
 	}
 
 	public void setOwner(String owner) {
-		changed = true;
+		flagForSave();
         FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
 		this.owner = owner;
 
@@ -139,12 +143,54 @@ public class Team {
         String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
-		changed = true;
+		flagForSave();
 		this.hq = hq;
 	}
 
+    public void disband() {
+        Basic.get().getEconomyManager().depositPlayer(owner, balance);
+
+        for (String member : members) {
+            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(member);
+        }
+
+        LandBoard.getInstance().clear(this);
+        FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(name.toLowerCase());
+
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+            @Override
+            public Object execute(Jedis jedis) {
+                jedis.del("fox_teams." + name.toLowerCase());
+                return (null);
+            }
+
+        });
+
+        needsSave = false;
+    }
+
+    public void rename(String newName) {
+        final String oldName = name;
+
+        this.name = newName.toLowerCase();
+        this.friendlyName = newName;
+
+        FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(oldName.toLowerCase());
+        FoxtrotPlugin.getInstance().getTeamHandler().addTeam(this);
+
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+            public Object execute(Jedis jedis) {
+                jedis.del("fox_teams." + oldName.toLowerCase());
+                return (null);
+            }
+
+        });
+    }
+
 	public void flagForSave() {
-		changed = true;
+		needsSave = true;
 	}
 
 	public boolean isOwner(String name) {
@@ -203,7 +249,6 @@ public class Team {
 	}
 
 	public boolean removeMember(String name) {
-		changed = true;
         FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
 
 		for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
@@ -228,11 +273,6 @@ public class Team {
 		while (sc.hasNext()) {
 			Subclaim s = sc.next();
 
-			if (s.getManager().equalsIgnoreCase(name)) {
-				sc.remove();
-				continue;
-			}
-
 			if (s.isMember(name)) {
 				s.removeMember(name);
 			}
@@ -243,9 +283,9 @@ public class Team {
 
 		if (dtr > getMaxDTR()) {
 			dtr = getMaxDTR();
-			changed = true;
 		}
 
+        flagForSave();
 		return (emptyTeam);
 	}
 
@@ -308,9 +348,9 @@ public class Team {
 		return (players);
 	}
 
-	public Subclaim getSubclaim(String name, boolean fullName) {
+	public Subclaim getSubclaim(String name) {
 		for (Subclaim sc : subclaims) {
-			if ((!fullName && sc.getName().equalsIgnoreCase(name)) || sc.getFriendlyName().equalsIgnoreCase(name)) {
+			if (sc.getName().equalsIgnoreCase(name)) {
 				return (sc);
 			}
 		}
@@ -437,47 +477,41 @@ public class Team {
 					}
 				}
 			} else if (identifier.equalsIgnoreCase("Subclaims")) {
-				for (String sc : lineParts) {
-					if (!(sc.length() > 2)) {
-						continue;
-					}
+                for (String subclaim : lineParts) {
+                    subclaim = subclaim.replace("[", "").replace("]", "");
 
-					String[] part = sc.split("\\|");
-					String loc1 = part[0];
-					String world = loc1.split(" ")[0];
-					double x = Double.parseDouble(loc1.split(" ")[1]);
-					double y = Double.parseDouble(loc1.split(" ")[2]);
-					double z = Double.parseDouble(loc1.split(" ")[3]);
-					Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-					String loc2str = part[1];
-					String world2 = loc2str.split(" ")[0];
-					double x2 = Double.parseDouble(loc2str.split(" ")[1]);
-					double y2 = Double.parseDouble(loc2str.split(" ")[2]);
-					double z2 = Double.parseDouble(loc2str.split(" ")[3]);
-					Location loc2 = new Location(Bukkit.getWorld(world2), x2, y2, z2);
-					String manager = part[2];
-					String name = part[3];
-					Subclaim sclaim = new Subclaim(loc, loc2, manager, name);
+                    if (subclaim.contains(":")) {
+                        String[] split = subclaim.split(":");
 
-					if (part.length > 4) {
-						String members = part[4];
+                        int x1 = Integer.valueOf(split[0].trim());
+                        int y1 = Integer.valueOf(split[1].trim());
+                        int z1 = Integer.valueOf(split[2].trim());
+                        int x2 = Integer.valueOf(split[3].trim());
+                        int y2 = Integer.valueOf(split[4].trim());
+                        int z2 = Integer.valueOf(split[5].trim());
+                        String name = split[6].trim();
+                        String members = split[7].trim();
 
-						for (String member : members.split(",")) {
-							sclaim.addMember(member);
-						}
-					}
+                        Location loc1 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x1, y1, z1);
+                        Location loc2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
 
-					subclaims.add(sclaim);
-				}
+                        Subclaim subclaimObj = new Subclaim(loc1, loc2, name);
+                        subclaimObj.setMembers(new ArrayList<String>(Arrays.asList(members.split(","))));
+
+                        getSubclaims().add(subclaimObj);
+                    }
+                }
 			}
 		}
 
 		loading = false;
-		changed = false;
+		needsSave = false;
 	}
 
-	public String saveString() {
-		changed = false;
+	public String saveString(boolean toJedis) {
+		if (toJedis) {
+            needsSave = false;
+        }
 
 		if (loading) {
             return (null);
@@ -488,11 +522,10 @@ public class Team {
 		StringBuilder members = new StringBuilder();
 		StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
-        StringBuilder subclaims = new StringBuilder();
 		Location homeLoc = getHq();
 
 		for (String member : getMembers()) {
-			members.append(member).append(", ");
+			members.append(member.trim()).append(", ");
 		}
 
         if (members.length() > 2) {
@@ -500,7 +533,7 @@ public class Team {
         }
 
 		for (String captain : getCaptains()) {
-            captains.append(captain).append(", ");
+            captains.append(captain.trim()).append(", ");
         }
 
         if (captains.length() > 2) {
@@ -508,26 +541,18 @@ public class Team {
         }
 
         for (String invite : getInvitations()) {
-            invites.append(invite).append(", ");
+            invites.append(invite.trim()).append(", ");
         }
 
         if (invites.length() > 2) {
             invites.setLength(invites.length() - 2);
         }
 
-        for (Subclaim subclaim : getSubclaims()) {
-            subclaims.append(subclaim.saveString()).append(", ");
-        }
-
-        if (subclaims.length() > 2) {
-            subclaims.setLength(subclaims.length() - 2);
-        }
-
 		teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
 		teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
-        teamString.append("Subclaims:").append(subclaims.toString()).append('\n');
+        teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
         teamString.append("Claims:").append(getClaims().toString()).append('\n');
 		teamString.append("DTR:").append(getDtr()).append('\n');
 		teamString.append("Balance:").append(getBalance()).append('\n');

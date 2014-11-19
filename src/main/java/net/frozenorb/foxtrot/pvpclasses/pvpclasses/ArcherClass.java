@@ -134,7 +134,7 @@ public class ArcherClass extends PvPClass {
     }
 
     public ArcherClass() {
-        super("Archer", 5, "LEATHER_", Arrays.asList(Material.SUGAR));
+        super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR));
     }
 
     @Override

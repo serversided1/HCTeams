@@ -14,7 +14,7 @@ public class TeamAcceptCommand {
     @Command(names={ "team accept", "t accept", "f accept", "faction accept", "fac accept", "team a", "t a", "f a", "faction a", "fac a", "team join", "t join", "f join", "faction join", "fac join" }, permissionNode="")
     public static void teamAccept(Player sender, @Param(name="team") Team target) {
         if (target.getInvitations().contains(sender.getName())) {
-            if (FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(sender.getName())) {
+            if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) != null) {
                 sender.sendMessage(ChatColor.RED + "You are already on a team!");
                 return;
             }

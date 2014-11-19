@@ -7,10 +7,13 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.util.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,317 +24,219 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TeamSubclaimCommand implements Listener {
 
-	private static HashMap<String, Selection> selections = new HashMap<String, TeamSubclaimCommand.Selection>();
+	private static Map<String, Selection> selections = new HashMap<String, TeamSubclaimCommand.Selection>();
 	public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_SPADE);
 
 	static {
 		ItemMeta meta = SELECTION_WAND.getItemMeta();
 
 		meta.setDisplayName("§a§oSubclaim Wand");
-		meta.setLore(Arrays.asList("This wand is used to create", "subclaims in your team's claims"));
+        meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect subclaim's corners", ""));
 		SELECTION_WAND.setItemMeta(meta);
 	}
 
     @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim" }, permissionNode="")
-    public static void teamInvite(Player sender, @Param(name="Parameter") String params) {
-        String[] args = ("arg1 " + params).split(" ");
-		Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
-
-		if (t == null) {
-			sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
-			return;
-		}
-
-		Player p = (Player) sender;
-
-		if (args.length > 1) {
-			String cmd = args[1];
-
-			if (cmd.equalsIgnoreCase("grant") || cmd.equalsIgnoreCase("add")) {
-				if (args.length == 4) {
-					String player = args[2];
-					String subclaim = args[3];
-
-					net.frozenorb.foxtrot.team.claims.Subclaim toChange = t.getSubclaim(subclaim, true);
-
-					if (toChange == null) {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-
-					if (t.isMember(player)) {
-						if (toChange.isMember(player)) {
-							sender.sendMessage(ChatColor.RED + "The player already has access to that subclaim!");
-							return;
-						}
-
-						sender.sendMessage(ChatColor.GREEN + t.getActualPlayerName(player) + "§e has been added to the subclaim §a" + toChange.getFriendlyName() + "§e.");
-						toChange.addMember(player);
-						t.setChanged(true);
-
-					} else {
-						sender.sendMessage(ChatColor.RED + "Player '" + player + "' is not on your team!");
-
-					}
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t subclaim grant <player> <subclaim_Name>");
-				}
-			}
-
-			if (cmd.equalsIgnoreCase("revoke") || cmd.equalsIgnoreCase("remove") || cmd.equalsIgnoreCase("del")) {
-				if (args.length == 4) {
-					String player = args[2];
-					String subclaim = args[3];
-
-					net.frozenorb.foxtrot.team.claims.Subclaim toChange = t.getSubclaim(subclaim, true);
-
-					if (toChange == null) {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-
-					if (t.isMember(player)) {
-						if (toChange.getManager().equalsIgnoreCase(player)) {
-							sender.sendMessage(ChatColor.RED + "You cannot revoke the manager's access!");
-							return;
-						}
-
-						if (!toChange.isMember(player)) {
-							sender.sendMessage(ChatColor.RED + "The player already does not have access to that subclaim!");
-							return;
-						}
-
-						sender.sendMessage(ChatColor.GREEN + t.getActualPlayerName(player) + "§e has been removed from the subclaim §a" + toChange.getFriendlyName() + "§e.");
-						toChange.removeMember(player);
-						t.setChanged(true);
-
-					} else {
-						sender.sendMessage(ChatColor.RED + "Player '" + player + "' is not on your team!");
-					}
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t subclaim revoke <player> <subclaim_Name>");
-				}
-			}
-
-			if (cmd.equalsIgnoreCase("reassign") || cmd.equalsIgnoreCase("transfer")) {
-
-				if (args.length == 4) {
-					String subclaim = args[2];
-					String newOwner = args[3];
-
-					net.frozenorb.foxtrot.team.claims.Subclaim toChange = t.getSubclaim(subclaim, true);
-
-					if (toChange == null) {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-					String oldName = toChange.getFriendlyColoredName();
-
-					if (t.isMember(newOwner)) {
-
-						if (t.getSubclaim(t.getActualPlayerName(newOwner) + "/" + toChange.getName(), true) != null) {
-							sender.sendMessage(ChatColor.RED + "A subclaim with the same name already belongs to " + t.getActualPlayerName(newOwner) + "!");
-							return;
-						}
-
-						toChange.setManager(t.getActualPlayerName(newOwner));
-						t.setChanged(true);
-						sender.sendMessage(ChatColor.RED + oldName + "§e has been reassigned to player " + t.getActualPlayerName(newOwner) + "!");
-
-					} else {
-						sender.sendMessage(ChatColor.RED + "Player '" + newOwner + "' is not on your team!");
-					}
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t rename <Subclaim> <NewName>");
-				}
-
-			}
-
-			if (cmd.equalsIgnoreCase("rename")) {
-				if (args.length == 4) {
-					String oldName = args[2];
-					String newName = args[3];
-
-					if (t.getSubclaim(newName, true) != null) {
-						sender.sendMessage(ChatColor.RED + "Your team already has a subclaim with that name!");
-						return;
-					}
-
-					net.frozenorb.foxtrot.team.claims.Subclaim old = t.getSubclaim(oldName, true);
-
-					if (old != null) {
-						if (!newName.startsWith(old.getManager() + "/")) {
-							p.sendMessage(ChatColor.RED + "This subclaim's new name must start with '" + old.getManager() + "/'.");
-							return;
-						}
-
-						if (!StringUtils.isAlphanumeric(newName.substring(newName.indexOf('/') + 1))) {
-							sender.sendMessage(ChatColor.RED + "You can only have letters and numbers in your subclaim name!");
-							return;
-						}
-
-						old.setName(newName.substring(newName.indexOf('/') + 1));
-						t.setChanged(true);
-						sender.sendMessage(ChatColor.GREEN + "Subclaim has been renamed to§e " + old.getFriendlyName() + "§a!");
-
-					} else {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t rename <Subclaim> <NewName>");
-				}
-
-			}
-
-			if (cmd.equalsIgnoreCase("unclaim")) {
-				if (args.length == 3) {
-					String subclaimName = args[2];
-
-					net.frozenorb.foxtrot.team.claims.Subclaim sc = t.getSubclaim(subclaimName, true);
-					if (sc == null) {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-
-					if (sc.getManager().equalsIgnoreCase(p.getName()) || t.isOwner(p.getName()) || t.isCaptain(p.getName())) {
-						t.getSubclaims().remove(sc);
-						t.setChanged(true);
-						p.sendMessage(ChatColor.RED + "You have unclaimed the subclaim §e" + sc.getFriendlyName() + "§c.");
-					} else {
-						sender.sendMessage(ChatColor.RED + "You can only unclaim your own subclaims!");
-					}
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t subclaim unclaim <subclaim<");
-				}
-			}
-
-			if (cmd.equalsIgnoreCase("claim")) {
-				if (args.length == 4) {
-					String managerName = args[2];
-					String subclaimName = args[3];
-
-					if (!StringUtils.isAlphanumeric(subclaimName)) {
-						sender.sendMessage(ChatColor.RED + "You can only have letters and numbers in your subclaim name!");
-						return;
-					}
-
-					if (t.isMember(managerName)) {
-						if (t.getSubclaim(managerName + "/" + subclaimName, true) != null) {
-							sender.sendMessage(ChatColor.RED + "Your team already has a subclaim with that name!");
-							return;
-						}
-
-						if (selections.containsKey(p.getName()) && selections.get(p.getName()).isComplete()) {
-
-							Selection sel = selections.get(p.getName());
-
-							for (Location loc : new CuboidRegion("test123", sel.getLoc1(), sel.getLoc2())) {
-								if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) != t) {
-									p.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc).getFriendlyName() + "§c!");
-									return;
-								}
-
-								net.frozenorb.foxtrot.team.claims.Subclaim wbe = t.getSubclaim(loc);
-
-								if (wbe != null) {
-									p.sendMessage(ChatColor.RED + "This subclaim would conflict with §e" + wbe.getFriendlyName() + "§c!");
-									return;
-								}
-							}
-
-							net.frozenorb.foxtrot.team.claims.Subclaim sc = new net.frozenorb.foxtrot.team.claims.Subclaim(sel.getLoc1(), sel.getLoc2(), t.getActualPlayerName(managerName), subclaimName);
-
-							t.getSubclaims().add(sc);
-							t.setChanged(true);
-
-							p.sendMessage(ChatColor.GREEN + "You have created the subclaim §e" + sc.getFriendlyName() + "§a!");
-							p.getInventory().remove(SELECTION_WAND);
-
-						} else {
-							p.sendMessage(ChatColor.RED + "You do not have a region fully selected!");
-						}
-					} else {
-						sender.sendMessage(ChatColor.RED + "Player '" + managerName + "' is not on your team!");
-					}
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t claim <ManagerName> <SubclaimName>");
-				}
-			}
-
-			if (cmd.equalsIgnoreCase("wand")) {
-				int slot = -1;
-
-				for (int i = 0; i < 9; i++) {
-					if (p.getInventory().getItem(i) == null) {
-						slot = i;
-                        break;
-					}
-				}
-
-				if (slot == -1) {
-					sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the Subclaim Wand!");
-					return;
-				}
-
-				p.getInventory().setItem(slot, SELECTION_WAND.clone());
-			}
-
-			if (cmd.equalsIgnoreCase("list")) {
-				ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim> your = new ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim>();
-				ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim> access = new ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim>();
-				ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim> other = new ArrayList<net.frozenorb.foxtrot.team.claims.Subclaim>();
-
-				for (net.frozenorb.foxtrot.team.claims.Subclaim scs : t.getSubclaims()) {
-					if (scs.getManager().equals(sender.getName())) {
-						your.add(scs);
-						continue;
-					}
-					if (scs.isMember(sender.getName())) {
-						your.add(scs);
-						continue;
-					}
-
-					your.add(scs);
-
-				}
-
-				sender.sendMessage("§9" + t.getFriendlyName() + "§e Subclaim List");
-				sender.sendMessage("§eYour Subclaims:§f " + your.toString().replace("[", "").replace("]", ""));
-				sender.sendMessage("§eAccessible Subclaims:§f " + access.toString().replace("[", "").replace("]", ""));
-				sender.sendMessage("§eOther Subclaims:§f " + other.toString().replace("[", "").replace("]", ""));
-			}
-
-			if (cmd.equalsIgnoreCase("i") || cmd.equalsIgnoreCase("info")) {
-				if (args.length > 2) {
-					String name = args[2];
-					net.frozenorb.foxtrot.team.claims.Subclaim sc = t.getSubclaim(name, true);
-
-					if (sc == null) {
-						sender.sendMessage(ChatColor.RED + "Subclaim could not be found! Please use the full subclaim name!");
-						return;
-					}
-
-					sender.sendMessage(ChatColor.BLUE + sc.getFriendlyName() + "§e Subclaim Info");
-					sender.sendMessage("§eLocation:§7 Pos1. §f" + sc.getLoc1().getBlockX() + "," + sc.getLoc1().getBlockY() + "," + sc.getLoc1().getBlockZ() + " §7Pos2. §f" + sc.getLoc2().getBlockX() + "," + sc.getLoc2().getBlockY() + "," + sc.getLoc2().getBlockZ());
-					sender.sendMessage(ChatColor.YELLOW + "Shared with:§f " + sc.getMembers().toString().replace("[", "").replace("]", ""));
-
-				} else {
-					sender.sendMessage(ChatColor.RED + "/t subclaim info <subclaim>");
-				}
-			}
-		}
-	}
+    public static void teamSubclaim(Player sender) {
+        sender.sendMessage(ChatColor.RED + "/f subclaim wand - obtains a subclaiming wand");
+        sender.sendMessage(ChatColor.RED + "/f subclaim claim <subclaim> - creates a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim add <subclaim> <player> - adds a player to a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim remove <subclaim> <player> - removes a player from a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim list - views all subclaims");
+        sender.sendMessage(ChatColor.RED + "/f subclaim info <subclaim> - views info about a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim unclaim <subclaim> <player> - unclaims a subclaim");
+    }
+
+    @Command(names={ "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team subclaim add", "t subclaim add", "f subclaim add", "faction subclaim add", "fac subclaim add" }, permissionNode="")
+    public static void teamSubclaimGrant(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (!team.getOwner().equals(sender.getName()) && !team.isCaptain(sender.getName())) {
+            sender.sendMessage(ChatColor.RED + "Only the team captains can do this.");
+            return;
+        }
+
+        if (!team.isMember(player.getName())) {
+            sender.sendMessage(ChatColor.RED + player.getName() + " is not on your team!");
+            return;
+        }
+
+        if (subclaim.isMember(player.getName())) {
+            sender.sendMessage(ChatColor.RED + "The player already has access to that subclaim!");
+            return;
+        }
+
+        sender.sendMessage(ChatColor.GREEN + team.getActualPlayerName(player.getName()) + ChatColor.YELLOW + " has been added to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
+        subclaim.addMember(player.getName());
+        team.flagForSave();
+    }
+
+    @Command(names={ "team subclaim revoke", "t subclaim revoke", "f subclaim revoke", "faction subclaim revoke", "fac subclaim revoke", "team subclaim remove", "t subclaim remove", "f subclaim remove", "faction subclaim remove", "fac subclaim remove" }, permissionNode="")
+    public static void teamSubclaimRevoke(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (!team.getOwner().equals(sender.getName()) && !team.isCaptain(sender.getName())) {
+            sender.sendMessage(ChatColor.RED + "Only the team captains can do this.");
+            return;
+        }
+
+        if (!team.isMember(player.getName())) {
+            sender.sendMessage(ChatColor.RED + player.getName() + " is not on your team!");
+            return;
+        }
+
+        if (!subclaim.isMember(player.getName())) {
+            sender.sendMessage(ChatColor.RED + "The player already does not have access to that subclaim!");
+            return;
+        }
+
+        sender.sendMessage(ChatColor.GREEN + team.getActualPlayerName(player.getName()) + ChatColor.YELLOW + " has been removed from the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
+        subclaim.removeMember(player.getName());
+        team.flagForSave();
+    }
+
+    @Command(names={ "team subclaim wand", "t subclaim wand", "f subclaim wand", "faction subclaim wand", "fac subclaim wand", "team subclaim tool", "t subclaim tool", "f subclaim tool", "faction subclaim tool", "fac subclaim tool" }, permissionNode="")
+    public static void teamSubclaimWand(Player sender) {
+        if (!sender.isOp()) {
+            sender.sendMessage(ChatColor.RED + "The subclaiming system is temporarily disabled.");
+            return;
+        }
+
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (team == null) {
+            sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
+            return;
+        }
+
+        int slot = -1;
+
+        for (int i = 0; i < 9; i++) {
+            if (sender.getInventory().getItem(i) == null) {
+                slot = i;
+                break;
+            }
+        }
+
+        if (slot == -1) {
+            sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the Subclaim Wand!");
+            return;
+        }
+
+        sender.getInventory().setItem(slot, SELECTION_WAND.clone());
+    }
+
+    @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list" }, permissionNode="")
+    public static void teamSubclaimList(Player sender) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (team == null) {
+            sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
+            return;
+        }
+
+        List<Subclaim> access = new ArrayList<Subclaim>();
+        List<Subclaim> other = new ArrayList<Subclaim>();
+
+        for (Subclaim scs : team.getSubclaims()) {
+            if (scs.isMember(sender.getName()) || team.getOwner().equalsIgnoreCase(sender.getName()) || team.isCaptain(sender.getName())) {
+                access.add(scs);
+                continue;
+            }
+
+            other.add(scs);
+        }
+
+        sender.sendMessage(ChatColor.BLUE + team.getFriendlyName() + ChatColor.YELLOW + " Subclaim List");
+        sender.sendMessage(ChatColor.YELLOW + "Subclaims you can access: " + ChatColor.WHITE + access.toString().replace("[", "").replace("]", ""));
+        sender.sendMessage(ChatColor.YELLOW + "Other Subclaims: " + ChatColor.WHITE + other.toString().replace("[", "").replace("]", ""));
+    }
+
+    @Command(names={ "team subclaim info", "t subclaim info", "f subclaim info", "faction subclaim info", "fac subclaim info" }, permissionNode="")
+    public static void teamSubclaimInfo(Player sender, @Param(name="subclaim") Subclaim subclaim) {
+        sender.sendMessage(ChatColor.BLUE + subclaim.getName() + ChatColor.YELLOW + " Subclaim Info");
+        sender.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.GRAY + "Pos1. " + ChatColor.WHITE + subclaim.getLoc1().getBlockX() + "," + subclaim.getLoc1().getBlockY() + "," + subclaim.getLoc1().getBlockZ() + ChatColor.GRAY + " Pos2. " + ChatColor.WHITE + subclaim.getLoc2().getBlockX() + "," + subclaim.getLoc2().getBlockY() + "," + subclaim.getLoc2().getBlockZ());
+        sender.sendMessage(ChatColor.YELLOW + "Members: " + ChatColor.WHITE + subclaim.getMembers().toString().replace("[", "").replace("]", ""));
+    }
+
+    @Command(names={ "team subclaim unclaim", "t subclaim unclaim", "f subclaim unclaim", "faction subclaim unclaim", "fac subclaim unclaim" }, permissionNode="")
+    public static void teamSubclaimUnclaim(Player sender, @Param(name="subclaim") Subclaim subclaim) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+            team.getSubclaims().remove(subclaim);
+            team.flagForSave();
+            sender.sendMessage(ChatColor.RED + "You have unclaimed the subclaim " + ChatColor.YELLOW + subclaim.getName() + ChatColor.RED + ".");
+        } else {
+            sender.sendMessage(ChatColor.RED + "Only team captains can unclaim subclaims!");
+        }
+    }
+
+    @Command(names={ "team subclaim claim", "t subclaim claim", "f subclaim claim", "faction subclaim claim", "fac subclaim claim" }, permissionNode="")
+    public static void teamSubclaimClaim(Player sender, @Param(name="subclaim") String subclaim) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+
+        if (team == null) {
+            sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
+            return;
+        }
+
+        if (!StringUtils.isAlphanumeric(subclaim)) {
+            sender.sendMessage(ChatColor.RED + "Subclaim names must be alphanumeric!");
+            return;
+        }
+
+        if (!team.isOwner(sender.getName()) && !team.isCaptain(sender.getName())) {
+            sender.sendMessage(ChatColor.RED + "Only team captains can create subclaims!");
+            return;
+        }
+
+        if (team.getSubclaim(subclaim) != null) {
+            sender.sendMessage(ChatColor.RED + "Your team already has a subclaim with that name!");
+            return;
+        }
+
+        if (!selections.containsKey(sender.getName()) || !selections.get(sender.getName()).isComplete()) {
+            sender.sendMessage(ChatColor.RED + "You do not have a region fully selected!");
+            return;
+        }
+
+        Selection selection = selections.get(sender.getName());
+        int x = Math.abs(selection.getLoc1().getBlockX() - selection.getLoc2().getBlockX());
+        int z = Math.abs(selection.getLoc1().getBlockZ() - selection.getLoc2().getBlockZ());
+
+        if (x < 3 || z < 3) {
+            sender.sendMessage(ChatColor.RED + "Subclaims must be at least 3x3.");
+            return;
+        }
+
+        for (Location loc : new CuboidRegion("test123", selection.getLoc1(), selection.getLoc2())) {
+            if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) != team) {
+                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc).getFriendlyName() + "§c!");
+                return;
+            }
+
+            Subclaim subclaimAtLoc = team.getSubclaim(loc);
+
+            if (subclaimAtLoc != null) {
+                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with " + ChatColor.YELLOW + subclaimAtLoc.getName() + ChatColor.RED + "!");
+                return;
+            }
+        }
+
+        Subclaim sc = new Subclaim(selection.getLoc1(), selection.getLoc2(), subclaim);
+
+        team.getSubclaims().add(sc);
+        team.flagForSave();
+
+        sender.sendMessage(ChatColor.GREEN + "You have created the subclaim " + ChatColor.YELLOW + sc.getName() + ChatColor.GREEN + "!");
+        sender.getInventory().remove(SELECTION_WAND);
+    }
 
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -339,42 +244,40 @@ public class TeamSubclaimCommand implements Listener {
 
 		if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && event.getItem().getType() == SELECTION_WAND.getType()) {
 			if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().contains("Subclaim")) {
-				Selection sel = new Selection(null, null);
-
-				String coordinate = String.format("(%s, %s, %s)", event.getClickedBlock().getX(), event.getClickedBlock().getY(), event.getClickedBlock().getZ());
-
 				if (team != null) {
-					net.frozenorb.foxtrot.team.claims.Subclaim sc = team.getSubclaim(event.getClickedBlock().getLocation());
-					if (sc != null) {
-						event.getPlayer().sendMessage("§c" + coordinate + " is a part of " + sc.getFriendlyName() + "!");
+					Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
+
+					if (subclaim != null) {
+						event.getPlayer().sendMessage(ChatColor.RED + "(" + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ") is a part of " + subclaim.getName() + "!");
+                        event.setCancelled(true);
 						return;
 					}
 
 					if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation()) != team) {
-						event.getPlayer().sendMessage("§cThis block is not a part of your teams' territory!");
+						event.getPlayer().sendMessage(ChatColor.RED + "This block is not a part of your teams' territory!");
+                        event.setCancelled(true);
 						return;
 					}
-
 				}
 
+                Selection selection = new Selection(null, null);
+
 				if (selections.containsKey(event.getPlayer().getName())) {
-					sel = selections.get(event.getPlayer().getName());
+					selection = selections.get(event.getPlayer().getName());
 				}
 
 				int set = 0;
 
 				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					set = 2;
-					sel.setLoc1(event.getClickedBlock().getLocation());
-
+					selection.setLoc1(event.getClickedBlock().getLocation());
 				} else {
 					set = 1;
-					sel.setLoc2(event.getClickedBlock().getLocation());
+					selection.setLoc2(event.getClickedBlock().getLocation());
 				}
 
-				event.getPlayer().sendMessage("§eSubclaim postion " + set + " has been set to " + coordinate + "!");
-
-				selections.put(event.getPlayer().getName(), sel);
+				event.getPlayer().sendMessage(ChatColor.YELLOW + "Set subclaim's location " + ChatColor.LIGHT_PURPLE + set + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
+				selections.put(event.getPlayer().getName(), selection);
 			}
 		}
 	}

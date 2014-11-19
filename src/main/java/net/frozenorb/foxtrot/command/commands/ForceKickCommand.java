@@ -4,8 +4,8 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -14,23 +14,23 @@ import org.bukkit.entity.Player;
 public class ForceKickCommand {
 
     @Command(names={ "forcekick" }, permissionNode="op")
-    public static void forceKick(Player player, @Param(name="Player") String name) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(name);
+    public static void forceKick(Player sender, @Param(name="player") OfflinePlayer player) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         if (team == null) {
-            player.sendMessage(ChatColor.RED + name + " is not on a team!");
+            sender.sendMessage(ChatColor.RED + player.getName() + " is not on a team!");
             return;
         }
 
-        if (team.removeMember(name)) {
-            FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(name);
-            FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(team.getName());
-            LandBoard.getInstance().clear(team);
+        if (team.getMembers().size() == 1) {
+            sender.sendMessage(ChatColor.RED + player.getName() + "'s team has one member. Please use /forcedisband to perform this action.");
+            return;
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(name);
+        team.removeMember(player.getName());
+        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(player.getName());
 
-        player.sendMessage(ChatColor.GRAY + "Force-kicked " + name + " from their team, " + team.getFriendlyName() + ".");
+        sender.sendMessage(ChatColor.GRAY + "Force-kicked " + player.getName() + " from their team, " + team.getFriendlyName() + ".");
     }
 
 }

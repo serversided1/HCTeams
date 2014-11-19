@@ -24,7 +24,6 @@ import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.raid.DTRHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
-import net.frozenorb.foxtrot.server.LocationTickStore;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -114,8 +113,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 		RegionManager.register(this);
 		RegionManager.get();
 
-		LocationTickStore.getInstance().runTaskTimer(this, 1L, 1L);
-
         // DTR regeneration
 		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
 
@@ -123,7 +120,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         new BukkitRunnable() {
 
             public void run() {
-                RedisSaveTask.save();
+                RedisSaveTask.save(false);
             }
 
         }.runTaskTimerAsynchronously(this, 6000L, 6000L);
@@ -202,7 +199,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-			playtimeMap.playerQuit(player.getName());
+			playtimeMap.playerQuit(player.getName(), false);
 			NametagManager.getTeamMap().remove(player.getName());
 			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
@@ -212,8 +209,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 			PvPClassHandler.getEquippedKits().get(str).remove(player);
 		}
 
-		RedisSaveTask.save();
+		RedisSaveTask.save(false);
         FoxtrotPlugin.getInstance().getServerHandler().save();
+        jedisPool.destroy();
 	}
 
 	public <T> T runJedisCommand(JedisCommand<T> jedis) {
@@ -224,6 +222,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 			obj = jedis.execute(j);
 			jedisPool.returnResource(j);
 		} catch(Exception e) {
+            e.printStackTrace();
 			jedisPool.returnBrokenResource(j);
 		} finally {
 			jedisPool.returnResource(j);

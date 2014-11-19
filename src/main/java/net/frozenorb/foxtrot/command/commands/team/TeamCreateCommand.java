@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,7 @@ public class TeamCreateCommand {
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Param(name="team") String name) {
         if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
-            if (!name.matches("^[a-zA-Z0-9]*$")) {
+            if (!StringUtils.isAlphanumeric(name)) {
                 sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
                 return;
             }
@@ -30,7 +31,7 @@ public class TeamCreateCommand {
                 return;
             }
 
-            if (!FoxtrotPlugin.getInstance().getTeamHandler().teamExists(name)) {
+            if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
                 net.frozenorb.foxtrot.team.Team team = new net.frozenorb.foxtrot.team.Team(name);
 
                 team.setOwner(sender.getName());

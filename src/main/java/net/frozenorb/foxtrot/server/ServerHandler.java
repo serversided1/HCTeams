@@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -221,32 +222,34 @@ public class ServerHandler {
 	}
 
 	public RegionData getRegion(Location location) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location);
+        return (getRegion(FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location), location));
+	}
 
+    public RegionData getRegion(Team ownerTo, Location location) {
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
-                return (new RegionData(location, RegionType.SPAWN, ownerTo));
+                return (new RegionData(RegionType.SPAWN, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.ROAD)) {
-                return (new RegionData(location, RegionType.ROAD, ownerTo));
+                return (new RegionData(RegionType.ROAD, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.KOTH)) {
-                return (new RegionData(location, RegionType.KOTH, ownerTo));
+                return (new RegionData(RegionType.KOTH, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                return (new RegionData(location, RegionType.CITADEL_COURTYARD, ownerTo));
+                return (new RegionData(RegionType.CITADEL_COURTYARD, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
-                return (new RegionData(location, RegionType.CITADEL_TOWN, ownerTo));
+                return (new RegionData(RegionType.CITADEL_TOWN, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                return (new RegionData(location, RegionType.CITADEL_KEEP, ownerTo));
+                return (new RegionData(RegionType.CITADEL_KEEP, ownerTo));
             }
         }
 
         if (ownerTo != null) {
-            return (new RegionData(location, RegionType.CLAIMED_LAND, ownerTo));
+            return (new RegionData(RegionType.CLAIMED_LAND, ownerTo));
         } else if (isWarzone(location)) {
-            return (new RegionData(location, RegionType.WARZONE, null));
+            return (new RegionData(RegionType.WARZONE, null));
         }
 
-        return (new RegionData(location, RegionType.WILDNERNESS, null));
-	}
+        return (new RegionData(RegionType.WILDNERNESS, null));
+    }
 
 	public void beginWarp(final Player player, final Team team, int price) {
         boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
@@ -305,9 +308,16 @@ public class ServerHandler {
 
             Team inClaim = LandBoard.getInstance().getTeamAt(player.getLocation());
 
-            if (inClaim != null && !inClaim.isMember(player.getName())) {
-                player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from an enemy's claim!");
-                return;
+            if (inClaim != null) {
+                if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
+                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from an enemy's claim!");
+                    return;
+                }
+
+                if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
+                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from inside of events!");
+                    return;
+                }
             }
         }
 
@@ -388,7 +398,7 @@ public class ServerHandler {
 		final Listener l = new Listener() {
 			@EventHandler
 			public void onPlayerDamage(EntityDamageByEntityEvent e) {
-				if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+				if (e.getDamager() instanceof Player && (e.getEntity() instanceof Player || e.getEntity() instanceof Cow)) {
 					if (((Player) e.getDamager()).getName().equals(p.getName())) {
 						e.setCancelled(true);
 					}

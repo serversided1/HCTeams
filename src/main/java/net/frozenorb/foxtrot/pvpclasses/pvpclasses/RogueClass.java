@@ -30,7 +30,7 @@ public class RogueClass extends PvPClass {
     private static Map<String, Long> backstabCooldown = new HashMap<>();
 
     public RogueClass() {
-        super("Rogue", 5, "CHAINMAIL_", Arrays.asList(Material.SUGAR, Material.FEATHER));
+        super("Rogue", 15, "CHAINMAIL_", Arrays.asList(Material.SUGAR, Material.FEATHER));
     }
 
 	@Override
@@ -141,7 +141,7 @@ public class RogueClass extends PvPClass {
         //***************************//
 
         public String getDescription() {
-            return ("Killed by " + getDamager());
+            return ("Backstabbed by " + getDamager());
         }
 
         public String getDeathMessage() {

@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
 import net.frozenorb.foxtrot.command.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
-import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.server.RegionData;
@@ -14,7 +13,6 @@ import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
@@ -45,8 +43,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,10 +96,6 @@ public class FoxListener implements Listener {
         double fromZ = fromLoc.getZ();
         double fromY = fromLoc.getY();
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && LandBoard.getInstance().getTeamAt(event.getPlayer().getLocation()) != null && LandBoard.getInstance().getTeamAt(event.getPlayer().getLocation()).isMember(event.getPlayer().getName())) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
-        }
-
         if (fromX != toX || fromZ != toZ || fromY != toY) {
             if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
                 if (fromLoc.distance(toLoc) > 0.1 && (fromX != toX || fromZ != toZ || fromY != toY)) {
@@ -113,9 +105,16 @@ public class FoxListener implements Listener {
                 }
             }
 
+            Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
+
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getName())) {
+                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
+            }
+
+            Team ownerFrom = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getFrom());
             ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
-            RegionData from = sm.getRegion(fromLoc);
-            RegionData to = sm.getRegion(toLoc);
+            RegionData from = sm.getRegion(ownerFrom, fromLoc);
+            RegionData to = sm.getRegion(ownerTo, toLoc);
 
             if (!from.equals(to)) {
                 if (!to.getRegionType().getMoveHandler().handleMove(event)) {
@@ -147,11 +146,9 @@ public class FoxListener implements Listener {
         event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
 
         event.setQuitMessage(null);
-        FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName());
+        FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName(), true);
 
         NametagManager.getTeamMap().remove(event.getPlayer().getName());
-
-        // Remove scoreboard
         FoxtrotPlugin.getInstance().getScoreboardHandler().remove(event.getPlayer());
     }
 
@@ -165,22 +162,6 @@ public class FoxListener implements Listener {
         NametagManager.reloadPlayer(event.getPlayer());
 
         event.setJoinMessage(null);
-
-        new BukkitRunnable() {
-
-            public void run() {
-                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-                    @Override
-                    public Object execute(Jedis jedis) {
-                        jedis.hset("ProperPlayerNames", event.getPlayer().getName().toLowerCase(), event.getPlayer().getName());
-                        return (null);
-                    }
-
-                });
-            }
-
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
 
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
@@ -299,6 +280,11 @@ public class FoxListener implements Listener {
                 if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory.");
+
+                    if (event.getMaterial() == Material.TRAP_DOOR || event.getMaterial() == Material.FENCE_GATE || event.getMaterial().name().contains("DOOR")) {
+                        FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
+                    }
+
                     return;
                 }
 
@@ -313,12 +299,12 @@ public class FoxListener implements Listener {
                 }
             } else {
                 if (team != null && !team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
-                    Subclaim subClaim = team.getSubclaim(event.getClickedBlock().getLocation());
+                    Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
-                    if (subClaim != null && !subClaim.isMember(event.getPlayer().getName())) {
+                    if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
                         if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
                             event.setCancelled(true);
-                            event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + subClaim.getFriendlyColoredName() + "§e!");
+                            event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
                             return;
                         }
                     }
@@ -583,19 +569,17 @@ public class FoxListener implements Listener {
         // Lightning
         Location loc = player.getLocation();
 
-        for (World world : Bukkit.getWorlds()) {
-            EntityLightning entity = new EntityLightning(((CraftWorld) world).getHandle(), loc.getX(), loc.getY(), loc.getZ(), true, false);
-            PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(entity);
+        EntityLightning entity = new EntityLightning(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), true, false);
+        PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(entity);
 
-            for (Player online : world.getPlayers()) {
-                if (online.equals(player)) {
-                    continue;
-                }
+        for (Player online : player.getWorld().getPlayers()) {
+            if (online.equals(player)) {
+                continue;
+            }
 
-                if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getName())) {
-                    online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 1F, 1F);
-                    ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
-                }
+            if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getName())) {
+                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 1F, 1F);
+                ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
             }
         }
 

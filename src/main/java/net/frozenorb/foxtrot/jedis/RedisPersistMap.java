@@ -23,7 +23,7 @@ public abstract class RedisPersistMap<T> {
                 Map<String, String> results = jedis.hgetAll(keyPrefix);
 
                 for (Map.Entry<String, String> resultEntry : results.entrySet()) {
-                    T object = getJavaObjectSafe(resultEntry.getValue());
+                    T object = getJavaObjectSafe(resultEntry.getKey(), resultEntry.getValue());
 
                     if (object != null) {
                         wrappedMap.put(resultEntry.getKey(), object);
@@ -45,7 +45,7 @@ public abstract class RedisPersistMap<T> {
                 String result = jedis.hget(keyPrefix, key);
 
                 if (result != null) {
-                    T object = getJavaObjectSafe(result);
+                    T object = getJavaObjectSafe(key, result);
 
                     if (object != null) {
                         wrappedMap.put(key, object);
@@ -100,16 +100,20 @@ public abstract class RedisPersistMap<T> {
 		return (wrappedMap.get(key.toLowerCase()));
 	}
 
-	protected boolean contains(String key) {
+	public boolean contains(String key) {
 		return (wrappedMap.containsKey(key.toLowerCase()));
 	}
 
 	public abstract String getRedisValue(T t);
 
-    public T getJavaObjectSafe(String str) {
+    public T getJavaObjectSafe(String key, String str) {
         try {
             return (getJavaObject(str));
         } catch (Exception e) {
+            System.out.println("Error parsing Redis result.");
+            System.out.println(" - Prefix: " + keyPrefix);
+            System.out.println(" - Key: " + key);
+            System.out.println(" - Value: " + str);
             return (null);
         }
     }

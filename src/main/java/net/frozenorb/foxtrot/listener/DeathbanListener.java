@@ -32,22 +32,13 @@ public class DeathbanListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        if (event.getPlayer().isOp() || event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            return;
+        if (event.getPlayer().isOp()) {
+            System.out.println(event.getPlayer().getName() + "'s hostname: " + event.getHostname());
         }
 
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
             long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getName());
             long left = unbannedOn - System.currentTimeMillis();
-
-            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are death-banned for the remainder of the map.");
-                return;
-            }
-
-            if (event.getPlayer().isOp()) {
-                System.out.println(event.getPlayer().getName() + "'s hostname: " + event.getHostname());
-            }
 
             if (event.getHostname().toLowerCase().contains("revive")) {
                 if (!FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
@@ -129,6 +120,15 @@ public class DeathbanListener implements Listener {
                     lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                 }
             } else {
+                if (event.getPlayer().isOp()) {
+                    return;
+                }
+
+                if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are death-banned for the remainder of the map.");
+                    return;
+                }
+
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You are death-banned for another " + TimeUtils.getDurationBreakdown(left) + ".");
             }
         }

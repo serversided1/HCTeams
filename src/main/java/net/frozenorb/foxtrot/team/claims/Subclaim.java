@@ -1,25 +1,22 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.frozenorb.foxtrot.serialization.ReflectionSerializer;
 import net.frozenorb.foxtrot.serialization.SerializableClass;
+import org.bukkit.Location;
 
-@EqualsAndHashCode(callSuper = false)
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+@EqualsAndHashCode(callSuper=false)
 @SerializableClass
 @Data
 public class Subclaim extends ReflectionSerializer {
 
 	@NonNull private Location loc1, loc2;
-	@NonNull private String manager;
 	@NonNull private String name;
 	private List<String> members = new ArrayList<String>();
 
@@ -34,53 +31,34 @@ public class Subclaim extends ReflectionSerializer {
 			}
 		}
 
-		return (name.equalsIgnoreCase(manager));
+		return (false);
 	}
 
 	public void removeMember(String name) {
-		Iterator<String> miter = members.iterator();
+		Iterator<String> iterator = members.iterator();
 
-		while (miter.hasNext()) {
-			if (miter.next().equalsIgnoreCase(name)) {
-				miter.remove();
+		while (iterator.hasNext()) {
+            String member = iterator.next();
+
+			if (member.equalsIgnoreCase(name)) {
+				iterator.remove();
 			}
 		}
 	}
 
-
-	@Override
+    @Override
 	public String toString() {
-		return (getFriendlyColoredName());
-	}
+		StringBuilder members = new StringBuilder();
 
-	public String saveString() {
-		String msg = "";
-		msg += "world " + loc1.getBlockX() + " " + loc1.getBlockY() + " " + loc1.getBlockZ() + "|";
-		msg += "world " + loc2.getBlockX() + " " + loc2.getBlockY() + " " + loc2.getBlockZ() + "|";
+        for (String member : this.members) {
+            members.append(member).append(",");
+        }
 
-		msg += manager + "|" + name;
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+        }
 
-		boolean first = true;
-		for (String str : members) {
-			if (first) {
-				msg += "|";
-			} else {
-				msg += ",";
-			}
-
-			msg += str;
-			first = false;
-		}
-
-		return (msg);
-	}
-
-	public String getFriendlyColoredName() {
-		return (ChatColor.WHITE + manager + ChatColor.GRAY + "/" + name);
-	}
-
-	public String getFriendlyName() {
-		return (manager + "/" + name);
+        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + members.toString());
 	}
 
 }

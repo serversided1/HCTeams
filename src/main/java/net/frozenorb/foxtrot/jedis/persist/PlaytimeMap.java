@@ -20,25 +20,23 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 
     @Override
     public Long getJavaObject(String str) {
-        try {
-            return (Long.parseLong(str));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Key: " + str);
-            return (0L);
-        }
+        return (Long.parseLong(str));
     }
 
 	public void playerJoined(String player) {
 		joinDate.put(player, System.currentTimeMillis());
 
         if (!contains(player)) {
-            updateValueAsync(player, 0L);
+            updateValue(player, 0L);
         }
 	}
 
-	public void playerQuit(String player) {
-		updateValueAsync(player, getPlaytime(player) + (System.currentTimeMillis() - joinDate.get(player)) / 1000);
+	public void playerQuit(String player, boolean async) {
+        if (async) {
+            updateValueAsync(player, getPlaytime(player) + (System.currentTimeMillis() - joinDate.get(player)) / 1000);
+        } else {
+            updateValue(player, getPlaytime(player) + (System.currentTimeMillis() - joinDate.get(player)) / 1000);
+        }
 	}
 
     public long getCurrentSession(String player) {
@@ -51,10 +49,6 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 
     public long getPlaytime(String player) {
         return (contains(player) ? getValue(player) : 0L);
-    }
-
-    public boolean contains(String player) {
-        return (super.contains(player));
     }
 
 }

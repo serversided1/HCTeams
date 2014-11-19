@@ -39,6 +39,7 @@ public class TeamInviteCommand {
 
                 FactionActionTracker.logAction(team, "actions", "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
                 team.getInvitations().add(target.getName());
+                team.flagForSave();
 
                 if (target.isOnline()) {
                     Player targetPlayer = target.getPlayer();

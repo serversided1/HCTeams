@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 @AllArgsConstructor
 @Data
 public class RegionData {
 
-	private Location location;
 	private RegionType regionType;
 	private Team data;
 
