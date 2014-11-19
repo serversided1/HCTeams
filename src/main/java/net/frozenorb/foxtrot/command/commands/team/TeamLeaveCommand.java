@@ -33,6 +33,7 @@ public class TeamLeaveCommand {
         if (team.removeMember(sender.getName())) {
             team.disband();
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
+            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName().toLowerCase());
         } else {
             FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName().toLowerCase());
             team.flagForSave();
