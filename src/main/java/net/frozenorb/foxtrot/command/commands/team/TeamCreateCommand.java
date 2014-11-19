@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.team.Team;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -32,7 +33,12 @@ public class TeamCreateCommand {
             }
 
             if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
-                net.frozenorb.foxtrot.team.Team team = new net.frozenorb.foxtrot.team.Team(name);
+                sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
+                sender.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
+
+                Team team = new Team(name);
+
+                FactionActionTracker.logAction(team, "actions", "Faction created. [Created by: " + sender.getName() + "]");
 
                 team.setOwner(sender.getName());
                 team.setFriendlyName(name);
@@ -41,12 +47,7 @@ public class TeamCreateCommand {
                 FoxtrotPlugin.getInstance().getTeamHandler().addTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);
 
-
-                sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
-                sender.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
-
-                FactionActionTracker.logAction(team, "actions", "Faction created. [Created by: " + sender.getName() + "]");
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getFriendlyName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {
                 sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             }

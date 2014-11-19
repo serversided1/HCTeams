@@ -55,7 +55,7 @@ public class TeamKickCommand {
                     team.flagForSave();
                 }
 
-                FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(target);
+                FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(target.toLowerCase());
 
                 if (bukkitPlayer != null) {
                     NametagManager.reloadPlayer(bukkitPlayer);

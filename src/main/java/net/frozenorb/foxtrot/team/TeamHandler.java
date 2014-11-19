@@ -224,7 +224,7 @@ public class TeamHandler {
 		teamNameMap.put(team.getName().toLowerCase(), team);
 
 		for (String member : team.getMembers()) {
-			playerTeamMap.put(member, team);
+			playerTeamMap.put(member.toLowerCase(), team);
 		}
 	}
 

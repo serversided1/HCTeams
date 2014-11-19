@@ -28,7 +28,7 @@ public class ForceKickCommand {
         }
 
         team.removeMember(player.getName());
-        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(player.getName());
+        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(player.getName().toLowerCase());
 
         sender.sendMessage(ChatColor.GRAY + "Force-kicked " + player.getName() + " from their team, " + team.getFriendlyName() + ".");
     }

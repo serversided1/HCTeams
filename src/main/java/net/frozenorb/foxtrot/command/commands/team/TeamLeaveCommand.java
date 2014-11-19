@@ -34,8 +34,7 @@ public class TeamLeaveCommand {
             team.disband();
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
         } else {
-            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName());
-
+            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName().toLowerCase());
             team.flagForSave();
 
             for (Player player : Bukkit.getOnlinePlayers()) {

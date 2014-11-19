@@ -72,13 +72,14 @@ public class LandBoard {
 		}
 	}
 
-	public void clear(Team teams) {
+	public void clear(Team team) {
 		Iterator<Entry<Claim, Team>> iter = boardMap.entrySet().iterator();
 
 		while (iter.hasNext()) {
 			Entry<Claim, Team> nxt = iter.next();
 
-			if (nxt.getValue() == teams) {
+			if (nxt.getValue() == team) {
+                updateSync(nxt.getKey());
 				iter.remove();
 			}
 		}

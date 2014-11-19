@@ -119,12 +119,12 @@ public class Team {
     }
 
 	public void removeCaptain(String name) {
-		Iterator<String> iter = captains.iterator();
         FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
+        Iterator<String> iterator = captains.iterator();
 
-		while (iter.hasNext()) {
-			if (iter.next().equalsIgnoreCase(name)) {
-				iter.remove();
+		while (iterator.hasNext()) {
+			if (iterator.next().equalsIgnoreCase(name)) {
+                iterator.remove();
 			}
 		}
 	}
@@ -151,7 +151,7 @@ public class Team {
         Basic.get().getEconomyManager().depositPlayer(owner, balance);
 
         for (String member : members) {
-            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(member);
+            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(member.toLowerCase());
         }
 
         LandBoard.getInstance().clear(this);
@@ -171,7 +171,7 @@ public class Team {
     }
 
     public void rename(String newName) {
-        final String oldName = name;
+        final String oldName = friendlyName;
 
         this.name = newName.toLowerCase();
         this.friendlyName = newName;
@@ -181,6 +181,7 @@ public class Team {
         }
 
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(oldName.toLowerCase());
+        // .addTeam handles updating the player-team cache.
         FoxtrotPlugin.getInstance().getTeamHandler().addTeam(this);
 
         FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {

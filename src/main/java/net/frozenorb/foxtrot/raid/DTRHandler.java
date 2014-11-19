@@ -35,7 +35,7 @@ public class DTRHandler extends BukkitRunnable {
     // We're using this instead of changing the array incase we need to change this value
     // In the future.
 	public static double getBaseDTRIncrement(int teamsize) {
-		return (BASE_DTR_INCREMENT[teamsize - 1] * 3F);
+		return (teamsize == 0 ? 0 : BASE_DTR_INCREMENT[teamsize - 1] * 3F);
 	}
 
     public static double getMaxDTR(int teamsize) {
@@ -72,20 +72,25 @@ public class DTRHandler extends BukkitRunnable {
 
         for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
             if (teamEntry.getKey().getOwner() != null) {
-                if (teamEntry.getKey().getDeathCooldown() > System.currentTimeMillis() || teamEntry.getKey().getRaidableCooldown() > System.currentTimeMillis()) {
-                    wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
-                    continue;
-                }
-
-                if (wasOnCooldown.contains(teamEntry.getKey().getFriendlyName().toLowerCase())) {
-                    wasOnCooldown.remove(teamEntry.getKey().getFriendlyName().toLowerCase());
-
-                    for (Player player : teamEntry.getKey().getOnlineMembers()) {
-                        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                try {
+                    if (teamEntry.getKey().getDeathCooldown() > System.currentTimeMillis() || teamEntry.getKey().getRaidableCooldown() > System.currentTimeMillis()) {
+                        wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
+                        continue;
                     }
-                }
 
-                teamEntry.getKey().setDtr(Math.min(teamEntry.getKey().getDtr() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()).doubleValue(), teamEntry.getKey().getMaxDTR()));
+                    if (wasOnCooldown.contains(teamEntry.getKey().getFriendlyName().toLowerCase())) {
+                        wasOnCooldown.remove(teamEntry.getKey().getFriendlyName().toLowerCase());
+
+                        for (Player player : teamEntry.getKey().getOnlineMembers()) {
+                            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                        }
+                    }
+
+                    teamEntry.getKey().setDtr(Math.min(teamEntry.getKey().getDtr() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()).doubleValue(), teamEntry.getKey().getMaxDTR()));
+                } catch (Exception e) {
+                    System.out.println("Error regenerating DTR for faction " + teamEntry.getKey().getFriendlyName() + ".");
+                    e.printStackTrace();
+                }
             }
         }
 	}
