@@ -176,6 +176,10 @@ public class Team {
         this.name = newName.toLowerCase();
         this.friendlyName = newName;
 
+        for (Claim claim : claims) {
+            claim.setName(claim.getName().replaceAll(oldName, newName));
+        }
+
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(oldName.toLowerCase());
         FoxtrotPlugin.getInstance().getTeamHandler().addTeam(this);
 
