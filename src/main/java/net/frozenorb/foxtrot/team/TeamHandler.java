@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TeamHandler {
 
 	@Getter private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
+    @Getter private volatile ConcurrentHashMap<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<ObjectId, Team>();
 	@Getter private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
 
 	public TeamHandler() {
@@ -177,6 +179,14 @@ public class TeamHandler {
 		return (teamNameMap.get(teamName.toLowerCase()));
 	}
 
+    public Team getTeam(ObjectId teamUniqueId) {
+        if (teamUniqueId == null) {
+            return (null);
+        }
+
+        return (teamUniqueIdMap.get(teamUniqueId));
+    }
+
 	private void loadTeams() {
 		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
@@ -187,6 +197,7 @@ public class TeamHandler {
 					Team team = new Team(key.split("\\.")[1]);
 					team.load(str);
 					teamNameMap.put(team.getName().toLowerCase(), team);
+                    teamUniqueIdMap.put(team.getUniqueId(), team);
 
 					for (String member : team.getMembers()) {
 						playerTeamMap.put(member.toLowerCase(), team);
@@ -222,6 +233,7 @@ public class TeamHandler {
 	public void addTeam(Team team) {
 		team.flagForSave();
 		teamNameMap.put(team.getName().toLowerCase(), team);
+        teamUniqueIdMap.put(team.getUniqueId(), team);
 
 		for (String member : team.getMembers()) {
 			playerTeamMap.put(member.toLowerCase(), team);

@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by macguy8 on 11/7/2014.
  */
-public class ForceDisbandAll {
+public class ForceDisbandAllCommand {
 
     @Command(names={ "forcedisbandall" }, permissionNode="op")
     public static void forceDisbandAll(Player sender) {
@@ -37,6 +37,7 @@ public class ForceDisbandAll {
                     }
 
                     FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().clear();
+                    FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().clear();
                     FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().clear();
 
                     FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All factions have been forcibly disbanded!");

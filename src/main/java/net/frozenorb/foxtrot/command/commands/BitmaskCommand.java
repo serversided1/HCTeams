@@ -36,7 +36,7 @@ public class BitmaskCommand {
             sender.sendMessage(ChatColor.GOLD + bitmaskType.getName() + " (" + bitmaskType.getBitmask() + "): " + ChatColor.YELLOW + bitmaskType.getDescription());
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Raw DTR: " + ChatColor.YELLOW + target.getDtr());
+        sender.sendMessage(ChatColor.GOLD + "Raw DTR: " + ChatColor.YELLOW + target.getDTR());
     }
 
     @Command(names={ "bitmask add", "bitmasks add" }, permissionNode="op")
@@ -46,11 +46,11 @@ public class BitmaskCommand {
             return;
         }
 
-        int dtrInt = (int) target.getDtr();
+        int dtrInt = (int) target.getDTR();
 
         dtrInt |= bitmaskType.getBitmask();
 
-        target.setDtr(dtrInt);
+        target.setDTR(dtrInt);
         bitmaskInfo(sender, target);
     }
 
@@ -61,11 +61,11 @@ public class BitmaskCommand {
             return;
         }
 
-        int dtrInt = (int) target.getDtr();
+        int dtrInt = (int) target.getDTR();
 
         dtrInt &= ~bitmaskType.getBitmask();
 
-        target.setDtr(dtrInt);
+        target.setDTR(dtrInt);
         bitmaskInfo(sender, target);
     }
 

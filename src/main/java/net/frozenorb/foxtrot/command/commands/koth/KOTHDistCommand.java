@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class KOTHDistCommand {
 
     @Command(names={ "KOTH Dist" }, permissionNode="foxtrot.koth.admin")
-    public static void kothSetCapDistance(Player sender, @Param(name="KOTH") KOTH target, @Param(name="Max Distance") int maxDistance) {
+    public static void kothDist(Player sender, @Param(name="KOTH") KOTH target, @Param(name="Max Distance") int maxDistance) {
         target.setCapDistance(maxDistance);
         sender.sendMessage(ChatColor.GRAY + "Set max distance for the " + target.getName() + " KOTH.");
     }

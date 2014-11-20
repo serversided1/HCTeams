@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class KOTHTimeCommand {
 
     @Command(names={ "KOTH Time" }, permissionNode="foxtrot.koth.admin")
-    public static void kothSetCapTime(Player sender, @Param(name="KOTH") KOTH target, @Param(name="Time") int capTime) {
+    public static void kothTime(Player sender, @Param(name="KOTH") KOTH target, @Param(name="Time") int capTime) {
         target.setCapTime(capTime);
         sender.sendMessage(ChatColor.GRAY + "Set cap time for the " + target.getName() + " KOTH.");
     }

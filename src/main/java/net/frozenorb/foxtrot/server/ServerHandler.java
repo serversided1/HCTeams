@@ -354,7 +354,7 @@ public class ServerHandler {
         Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
 
         if (ownerTo != null) {
-            if (ownerTo.getDtr() == 100D) {
+            if (ownerTo.getDTR() == 100D) {
                 return (0.5F);
             }
         }

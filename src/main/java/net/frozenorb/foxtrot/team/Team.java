@@ -15,6 +15,7 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
@@ -39,6 +40,7 @@ public class Team {
     // End configurable values //
 
 	@Getter @Setter private String name;
+    @Getter @Setter private ObjectId uniqueId;
     @Getter private String friendlyName;
     @Getter private Location hq;
 
@@ -50,7 +52,7 @@ public class Team {
 	@Getter private boolean loading = false;
 
 	@Getter private Set<String> invitations = new HashSet<String>();
-	@Getter private double dtr;
+	@Getter private double DTR;
 
 	@Getter private List<Claim> claims = new ArrayList<Claim>();
 
@@ -65,21 +67,21 @@ public class Team {
 		this.name = name;
 	}
 
-	public void setDtr(double newDTR) {
-        if (dtr != newDTR) {
-            if (dtr <= 0 && newDTR > 0) {
+	public void setDTR(double newDTR) {
+        if (DTR != newDTR) {
+            if (DTR <= 0 && newDTR > 0) {
                 FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
             }
 
-            if (Math.abs(newDTR - dtr) > 0.4) {
-                FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
+            if (Math.abs(newDTR - DTR) > 0.4) {
+                FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
             }
 
             if (!isLoading()) {
-                FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + dtr + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (dtr - newDTR) + "]");
+                FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + DTR + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (DTR - newDTR) + "]");
             }
 
-            this.dtr = newDTR;
+            this.DTR = newDTR;
             flagForSave();
         }
 	}
@@ -156,6 +158,7 @@ public class Team {
 
         LandBoard.getInstance().clear(this);
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(name.toLowerCase());
+        FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().remove(uniqueId);
 
         FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
@@ -181,6 +184,7 @@ public class Team {
         }
 
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(oldName.toLowerCase());
+        FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().remove(uniqueId);
         // .addTeam handles updating the player-team cache.
         FoxtrotPlugin.getInstance().getTeamHandler().addTeam(this);
 
@@ -286,8 +290,8 @@ public class Team {
         // Is this needed?
 		boolean emptyTeam = owner == null || members.size() == 0;
 
-		if (dtr > getMaxDTR()) {
-			dtr = getMaxDTR();
+		if (DTR > getMaxDTR()) {
+			DTR = getMaxDTR();
 		}
 
         flagForSave();
@@ -299,7 +303,7 @@ public class Team {
             return (false);
         }
 
-        int dtrInt = (int) dtr;
+        int dtrInt = (int) DTR;
         return (((dtrInt & bitmaskType.getBitmask()) == bitmaskType.getBitmask()));
     }
 
@@ -379,12 +383,12 @@ public class Team {
 
 	public boolean isRaidable() {
         // If their DTR is 0, they ARE raidable.
-		return (dtr <= 0);
+		return (DTR <= 0);
 	}
 
 	public void playerDeath(String p, double dtrLoss) {
-        double newDTR = Math.max(dtr - dtrLoss, -.99);
-        FactionActionTracker.logAction(this, "actions", "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + dtr + ", New DTR: " + newDTR + "]");
+        double newDTR = Math.max(DTR - dtrLoss, -.99);
+        FactionActionTracker.logAction(this, "actions", "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
         for (Player player : getOnlineMembers()) {
             player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
@@ -392,7 +396,7 @@ public class Team {
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
-        setDtr(newDTR);
+        setDTR(newDTR);
 
 		if (isRaidable()) {
             FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
@@ -429,7 +433,9 @@ public class Team {
                 if (!lineParts[0].equals("null")) {
                     setOwner(lineParts[0]);
                 }
-			} else if (identifier.equalsIgnoreCase("Members")) {
+			} else if (identifier.equalsIgnoreCase("UUID")) {
+                uniqueId = new ObjectId(lineParts[0]);
+            } else if (identifier.equalsIgnoreCase("Members")) {
 				for (String name : lineParts) {
 					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
 						addMember(name.trim());
@@ -450,7 +456,7 @@ public class Team {
             } else if (identifier.equalsIgnoreCase("HQ")) {
 				setHQ(parseLocation(lineParts));
 			} else if (identifier.equalsIgnoreCase("DTR")) {
-				setDtr(Double.valueOf(lineParts[0]));
+				setDTR(Double.valueOf(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("Balance")) {
 				setBalance(Double.valueOf(lineParts[0]));
 			} else if (identifier.equalsIgnoreCase("DeathCooldown")) {
@@ -509,6 +515,11 @@ public class Team {
 			}
 		}
 
+        if (uniqueId == null) {
+            uniqueId = new ObjectId();
+            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + getFriendlyName() + "...");
+        }
+
 		loading = false;
 		needsSave = false;
 	}
@@ -553,13 +564,14 @@ public class Team {
             invites.setLength(invites.length() - 2);
         }
 
+        teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
 		teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
 		teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
         teamString.append("Claims:").append(getClaims().toString()).append('\n');
-		teamString.append("DTR:").append(getDtr()).append('\n');
+		teamString.append("DTR:").append(getDTR()).append('\n');
 		teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DeathCooldown:").append(getDeathCooldown()).append('\n');
         teamString.append("RaidableCooldown:").append(getRaidableCooldown()).append('\n');
@@ -691,7 +703,7 @@ public class Team {
             // Get a Team's DTR color.
             ChatColor dtrColor = ChatColor.GREEN;
 
-            if (dtr / getMaxDTR() <= 0.25) {
+            if (DTR / getMaxDTR() <= 0.25) {
                 if (isRaidable()) {
                     dtrColor = ChatColor.DARK_RED;
                 } else {
@@ -699,7 +711,7 @@ public class Team {
                 }
             }
 
-            String dtrMsg = ChatColor.YELLOW + "Deaths Until Raidable: " + dtrColor + DTR_FORMAT.format(dtr);
+            String dtrMsg = ChatColor.YELLOW + "Deaths Until Raidable: " + dtrColor + DTR_FORMAT.format(DTR);
             boolean showTimeUntilRegen = false;
 
             if (getOnlineMemberAmount() == 0) {
@@ -745,7 +757,7 @@ public class Team {
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
 
             if (player.isOp() && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
-                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Info: " + getDtr() + " DTR Bitmask");
+                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Info: " + this.getDTR() + " DTR Bitmask");
             }
         }
 

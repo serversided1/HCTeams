@@ -166,7 +166,7 @@ public class ArcherClass extends PvPClass {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.LOW)
     public void onEntityArrowHit(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
@@ -179,15 +179,10 @@ public class ArcherClass extends PvPClass {
             if (arrow.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) arrow.getMetadata("firedLoc").get(0).value();
                 boolean intoEvent = DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(player.getLocation()) != DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(firedFrom);
-
-                if (intoEvent) {
-                    firedFrom.setY(player.getLocation().getY());
-                }
-
                 int range = Math.round((float) firedFrom.distance(player.getLocation()));
                 float rawDamage = getDamage(range);
 
-                if (rawDamage == -1F) {
+                if (rawDamage == -1F || intoEvent) {
                     ((Player) arrow.getShooter()).sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + range + ChatColor.YELLOW + ")] Damage " + ChatColor.RED + "Neutralized");
                     return;
                 }
@@ -201,10 +196,6 @@ public class ArcherClass extends PvPClass {
                 }
 
                 int damage = Math.round(rawDamage * 2);
-
-                if (intoEvent) {
-                    damage /= 2;
-                }
 
                 if (player.getHealth() - damage <= 0) {
                     event.setCancelled(true);

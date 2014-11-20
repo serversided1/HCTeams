@@ -383,14 +383,14 @@ public class FoxListener implements Listener {
                     for (int i = 0; i < 4; i++) {
                         s.setLine(i, lore.get(i));
                     }
+
                     s.setMetadata("deathSign", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
                     s.update();
-
                 }
             }
         } else if (hand.getType() == Material.MOB_SPAWNER) {
             if (!(e.isCancelled())) {
-                if (hand.hasItemMeta() && hand.getItemMeta().hasDisplayName()) {
+                if (hand.hasItemMeta() && hand.getItemMeta().hasDisplayName() && hand.getItemMeta().getDisplayName().startsWith(ChatColor.RESET.toString())) {
                     String name = ChatColor.stripColor(hand.getItemMeta().getDisplayName());
                     String entName = name.replace(" Spawner", "");
                     EntityType type = EntityType.valueOf(entName.toUpperCase().replaceAll(" ", "_"));

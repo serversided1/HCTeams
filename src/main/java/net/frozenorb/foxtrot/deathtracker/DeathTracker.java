@@ -107,7 +107,7 @@ public class DeathTracker {
 
                 teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
                 teamData.put("Name", playerTeam.getFriendlyName());
-                teamData.put("DTR", playerTeam.getDtr());
+                teamData.put("DTR", playerTeam.getDTR());
                 teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
 
                 killerData.put("Team", teamData);
@@ -176,7 +176,7 @@ public class DeathTracker {
 
             teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
             teamData.put("Name", playerTeam.getFriendlyName());
-            teamData.put("DTR", playerTeam.getDtr());
+            teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
 
             playerData.put("Team", teamData);

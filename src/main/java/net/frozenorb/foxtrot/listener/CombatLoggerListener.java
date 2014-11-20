@@ -137,7 +137,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            if (!FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                 event.setCancelled(true);
                 return;
             }

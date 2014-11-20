@@ -8,9 +8,6 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 public class RegenCommand {
 
     @Command(names={ "Regen", "DTR" }, permissionNode="")
@@ -24,7 +21,7 @@ public class RegenCommand {
             return;
         }
 
-        if (target.getMaxDTR() == target.getDtr()) {
+        if (target.getMaxDTR() == target.getDTR()) {
             sender.sendMessage(ChatColor.YELLOW + "Your team is currently at max DTR, which is §d" + target.getMaxDTR() + "§e.");
             return;
         }
@@ -40,7 +37,7 @@ public class RegenCommand {
     }
 
     private static double hrsToRegain(Team team) {
-        double cur = team.getDtr();
+        double cur = team.getDTR();
         double max = team.getMaxDTR();
         double diff = max - cur;
 

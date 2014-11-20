@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,6 +59,17 @@ public class CrowbarListener implements Listener {
 
             event.getClickedBlock().getWorld().dropItemNaturally(event.getClickedBlock().getLocation(), new ItemStack(Material.ENDER_PORTAL_FRAME));
             event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ANVIL_USE, 1.0F, 1.0F);
+
+            for (int x = -3; x < 3; x++) {
+                for (int z = -3; z < 3; z++) {
+                    Block block = event.getClickedBlock().getLocation().add(x, 0, z).getBlock();
+
+                    if (block.getType() == Material.ENDER_PORTAL) {
+                        block.setType(Material.AIR);
+                        block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.ENDER_PORTAL.getId());
+                    }
+                }
+            }
 
             portals -= 1;
 

@@ -11,14 +11,16 @@ public class KOTHCommand {
 
     @Command(names={ "KOTH" }, permissionNode="foxtrot.koth")
     public static void koth(Player sender) {
-        sender.sendMessage(ChatColor.GRAY + "/koth list - Lists KOTHs");
-        sender.sendMessage(ChatColor.GRAY + "/koth activate <name> - Activates a KOTH");
-        sender.sendMessage(ChatColor.GRAY + "/koth deactivate <name> - Deactivates a KOTH");
-        sender.sendMessage(ChatColor.GRAY + "/koth loc <name> - Set a KOTH's cap location");
-        sender.sendMessage(ChatColor.GRAY + "/koth time <name> <time> - Sets a KOTH's cap time");
-        sender.sendMessage(ChatColor.GRAY + "/koth dist <name> <distance> - Sets a KOTH's cap distance");
-        sender.sendMessage(ChatColor.GRAY + "/koth create <name> - Creates a KOTH");
-        sender.sendMessage(ChatColor.GRAY + "/koth delete <name> - Deletes a KOTH");
+        sender.sendMessage(ChatColor.RED + "/koth list - Lists KOTHs");
+        sender.sendMessage(ChatColor.RED + "/koth activate <name> - Activates a KOTH");
+        sender.sendMessage(ChatColor.RED + "/koth deactivate <name> - Deactivates a KOTH");
+        sender.sendMessage(ChatColor.RED + "/koth loc <name> - Set a KOTH's cap location");
+        sender.sendMessage(ChatColor.RED + "/koth time <name> <time> - Sets a KOTH's cap time");
+        sender.sendMessage(ChatColor.RED + "/koth dist <name> <distance> - Sets a KOTH's cap distance");
+        sender.sendMessage(ChatColor.RED + "/koth level <name> <level> - Sets a KOTH's level");
+        sender.sendMessage(ChatColor.RED + "/koth tp <name> - TPs to a KOTH's");
+        sender.sendMessage(ChatColor.RED + "/koth create <name> - Creates a KOTH");
+        sender.sendMessage(ChatColor.RED + "/koth delete <name> - Deletes a KOTH");
     }
 
 }

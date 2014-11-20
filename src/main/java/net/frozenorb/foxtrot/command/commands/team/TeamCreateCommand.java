@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -42,7 +43,8 @@ public class TeamCreateCommand {
 
                 team.setOwner(sender.getName());
                 team.setFriendlyName(name);
-                team.setDtr(1);
+                team.setDTR(1);
+                team.setUniqueId(new ObjectId());
 
                 FoxtrotPlugin.getInstance().getTeamHandler().addTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);

@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class KOTHLocCommand {
 
     @Command(names={ "KOTH loc" }, permissionNode="foxtrot.koth.admin")
-    public static void kothSetCapDistance(Player sender, @Param(name="KOTH") KOTH target) {
+    public static void kothLoc(Player sender, @Param(name="KOTH") KOTH target) {
         target.setLocation(sender.getLocation());
         sender.sendMessage(ChatColor.GRAY + "Set cap location for the " + target.getName() + " KOTH.");
     }

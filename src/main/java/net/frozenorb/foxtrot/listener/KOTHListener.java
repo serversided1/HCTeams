@@ -76,9 +76,9 @@ public class KOTHListener implements Listener {
 
         if (!citadel) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.BLUE + " " + event.getKoth().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKoth().getTier() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKoth().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
 
-            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKoth().getName() + " KOTH", event.getKoth().getTier());
+            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKoth().getName() + " KOTH", event.getKoth().getLevel());
             ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKoth().getName(), team == null ? event.getPlayer().getName() : team.getFriendlyName());
 
             event.getPlayer().getInventory().addItem(rewardKey);
