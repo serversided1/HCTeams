@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
  */
 public interface ScoreGetter {
 
-    public static final long NO_SCORE = -1;
+    public static final int NO_SCORE = -1;
 
     public static final ScoreGetter SPAWN_TAG = new ScoreGetter() {
 
@@ -25,12 +25,12 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             if (SpawnTagHandler.isTagged(player)) {
                 long diff = SpawnTagHandler.getTag(player);
 
                 if (diff >= 0) {
-                    return (diff);
+                    return ((int) diff / 1000);
                 }
             }
 
@@ -47,9 +47,13 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-                return (EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis());
+                long diff = EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
+
+                if (diff >= 0) {
+                    return ((int) diff / 1000);
+                }
             }
 
             return (NO_SCORE);
@@ -65,9 +69,13 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                return (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis());
+                long diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis();
+
+                if (diff >= 0) {
+                    return ((int) diff / 1000);
+                }
             }
 
             return (NO_SCORE);
@@ -83,12 +91,12 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player){
+        public int getSeconds(Player player) {
             if (PvPClassHandler.getWarmupTasks().containsKey(player.getName())) {
                 long diff = PvPClassHandler.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis();
 
                 if (diff > 0) {
-                    return (diff);
+                    return ((int) diff / 1000);
                 }
             }
 
@@ -105,7 +113,7 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             for (KOTH koth : KOTHHandler.getKOTHs()) {
                 if (koth.isActive()) {
                     if (koth.getName().equals("Citadel")) {
@@ -116,7 +124,7 @@ public interface ScoreGetter {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
                     }
 
-                    return ((long) (koth.getRemainingCapTime() * 1000L));
+                    return (koth.getRemainingCapTime());
                 }
             }
 
@@ -133,9 +141,13 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             if (BardClass.getLastPositiveEffectUsage().containsKey(player.getName()) && BardClass.getLastPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                return (BardClass.getLastPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis());
+                long diff = BardClass.getLastPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
+
+                if (diff > 0) {
+                    return ((int) diff / 1000);
+                }
             }
 
             return (NO_SCORE);
@@ -151,9 +163,13 @@ public interface ScoreGetter {
         }
 
         @Override
-        public long getMillis(Player player) {
+        public int getSeconds(Player player) {
             if (BardClass.getLastNegativeEffectUsage().containsKey(player.getName()) && BardClass.getLastNegativeEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                return (BardClass.getLastNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis());
+                long diff = BardClass.getLastNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis();
+
+                if (diff > 0) {
+                    return ((int) diff / 1000);
+                }
             }
 
             return (NO_SCORE);
@@ -175,6 +191,6 @@ public interface ScoreGetter {
 
     public String getTitle(Player player);
 
-    public long getMillis(Player player);
+    public int getSeconds(Player player);
 
 }

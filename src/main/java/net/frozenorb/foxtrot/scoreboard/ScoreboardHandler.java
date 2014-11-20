@@ -27,7 +27,7 @@ public class ScoreboardHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 2L, 2L); // Possible lag cause?
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     public void update(Player player) {

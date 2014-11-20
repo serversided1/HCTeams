@@ -40,10 +40,10 @@ public class FoxtrotBoard {
         int nextVal = 14;
 
         for (ScoreGetter getter : ScoreGetter.SCORES) {
-            long millis = getter.getMillis(player);
+            int seconds = getter.getSeconds(player);
             String title = getter.getTitle(player);
 
-            if (millis == ScoreGetter.NO_SCORE) {
+            if (seconds == ScoreGetter.NO_SCORE) {
                 if (displayedScores.contains(title)) {
                     obj.getScoreboard().resetScores(title);
                     displayedScores.remove(title);
@@ -51,7 +51,7 @@ public class FoxtrotBoard {
             } else {
                 displayedScores.add(title);
                 obj.getScore(title).setScore(nextVal);
-                getTeam(title, millis).addEntry(title);
+                getTeam(title, seconds).addEntry(title);
                 nextVal -= 1;
             }
         }
@@ -63,7 +63,7 @@ public class FoxtrotBoard {
         }
     }
 
-    private Team getTeam(String title, long millis) {
+    private Team getTeam(String title, int seconds) {
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
@@ -71,14 +71,7 @@ public class FoxtrotBoard {
             team = obj.getScoreboard().registerNewTeam(name);
         }
 
-        String time;
-        double secs = (millis / 1000.0D);
-
-        if (secs >= 60) {
-            time = TimeUtils.getMMSS((int) secs);
-        } else {
-            time = Math.round(10.0D * secs) / 10.0D + "s";
-        }
+        String time = TimeUtils.getMMSS(seconds);
 
         team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
 
