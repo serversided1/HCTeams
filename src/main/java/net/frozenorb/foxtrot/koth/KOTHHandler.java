@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
+import net.frozenorb.foxtrot.koth.tasks.KOTHSchedulerTask;
 import net.minecraft.util.com.google.gson.Gson;
 import net.minecraft.util.org.apache.commons.io.IOUtils;
 import org.bukkit.ChatColor;
@@ -12,10 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 10/31/2014.
@@ -26,6 +25,14 @@ public class KOTHHandler {
 
     public static void init() {
         loadKOTHs();
+
+        Calendar date = Calendar.getInstance();
+
+        date.set(Calendar.MINUTE, 60);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+
+        (new Timer("KOTH Scheduler")).schedule(new KOTHSchedulerTask(), date.getTime(), TimeUnit.HOURS.toMillis(1));
 
         CommandHandler.registerTransformer(KOTH.class, new ParamTransformer() {
 
@@ -69,7 +76,7 @@ public class KOTHHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     public static void loadKOTHs() {
@@ -135,6 +142,29 @@ public class KOTHHandler {
         }
 
         return (null);
+    }
+
+    public static void onSchedulerTick() {
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.DARK_AQUA + "Running KOTH scheduler task...");
+            }
+        }
+
+        // Don't start a KOTH if another one is active.
+        for (KOTH koth : KOTHHandler.getKOTHs()) {
+            if (koth.isActive()) {
+                return;
+            }
+        }
+
+        Calendar date = Calendar.getInstance();
+        int hour = date.get(Calendar.HOUR_OF_DAY);
+        List<KOTH> koths = Arrays.asList(KOTHHandler.getKOTHs().toArray(new KOTH[KOTHHandler.getKOTHs().size()]));
+
+        if (/*koth == 16 || koth ==  18 || koth == 20 || koth == 22 || koth == 24*/true) {
+            koths.get(FoxtrotPlugin.RANDOM.nextInt(koths.size())).activate();
+        }
     }
 
 }
