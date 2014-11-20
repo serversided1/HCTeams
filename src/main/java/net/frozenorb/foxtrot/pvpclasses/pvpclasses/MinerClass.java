@@ -132,6 +132,12 @@ public class MinerClass extends PvPClass implements Listener {
         }
 
         noDamage.put(player.getName(), 15);
+
+        if (invis.containsKey(player.getName()) && invis.get(player.getName()) != 0){
+            invis.put(player.getName(), 10);
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been temporarily removed!");
+        }
     }
 
     @EventHandler
