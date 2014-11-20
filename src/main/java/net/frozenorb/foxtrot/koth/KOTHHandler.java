@@ -162,7 +162,7 @@ public class KOTHHandler {
         int hour = date.get(Calendar.HOUR_OF_DAY);
         List<KOTH> koths = Arrays.asList(KOTHHandler.getKOTHs().toArray(new KOTH[KOTHHandler.getKOTHs().size()]));
 
-        if (/*koth == 16 || koth ==  18 || koth == 20 || koth == 22 || koth == 24*/true) {
+        if (/*koth == 16 || koth ==  18 || koth == 20 || koth == 22 || koth == 24*/false) {
             koths.get(FoxtrotPlugin.RANDOM.nextInt(koths.size())).activate();
         }
     }
