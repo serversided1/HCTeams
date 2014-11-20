@@ -211,6 +211,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		RedisSaveTask.save(false);
         FoxtrotPlugin.getInstance().getServerHandler().save();
+        jedisPool.destroy();
 	}
 
 	public <T> T runJedisCommand(JedisCommand<T> jedisCommand) {
