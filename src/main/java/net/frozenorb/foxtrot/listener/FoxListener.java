@@ -551,8 +551,6 @@ public class FoxListener implements Listener {
                 sword.setItemMeta(meta);
             }
 
-            FoxtrotPlugin.getInstance().getKillsMap().setKills(e.getEntity().getKiller().getName(), 1 + FoxtrotPlugin.getInstance().getKillsMap().getKills(e.getEntity().getKiller().getName()));
-
             // Add player head to item drops
             if (killer.hasPermission("foxtrot.skulldrop")) {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());

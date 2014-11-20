@@ -59,13 +59,16 @@ public class DamageListener implements Listener {
         }
 
         Damage deathCause = record.get(record.size() - 1);
-        event.setDeathMessage(deathCause.getDeathMessage());
 
         // Hacky reflection to change the player's killer
         if (deathCause instanceof PlayerDamage) {
             Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(((PlayerDamage) deathCause).getDamager());
             ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+
+            FoxtrotPlugin.getInstance().getKillsMap().setKills(killer.getName(), FoxtrotPlugin.getInstance().getKillsMap().getKills(killer.getName()) + 1);
         }
+
+        event.setDeathMessage(deathCause.getDeathMessage());
 
         DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.clearDamage(event.getEntity());
