@@ -188,8 +188,8 @@ public class ArcherClass extends PvPClass {
                 }
 
                 if (PvPClassHandler.hasKitOn(player, this)) {
-                    if (rawDamage > 3.5F) {
-                        rawDamage = 3.5F;
+                    if (rawDamage > 2F) {
+                        rawDamage = 2F;
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Reduced " + ChatColor.BLUE + "Incoming Arrow Damage");
