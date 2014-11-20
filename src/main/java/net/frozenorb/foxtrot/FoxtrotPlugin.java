@@ -213,21 +213,27 @@ public class FoxtrotPlugin extends JavaPlugin {
         FoxtrotPlugin.getInstance().getServerHandler().save();
 	}
 
-	public <T> T runJedisCommand(JedisCommand<T> jedis) {
-		Jedis j = jedisPool.getResource();
-		T obj = null;
+	public <T> T runJedisCommand(JedisCommand<T> jedisCommand) {
+		Jedis jedis = jedisPool.getResource();
+		T result = null;
 
 		try {
-			obj = jedis.execute(j);
-			jedisPool.returnResource(j);
-		} catch(Exception e) {
+			result = jedisCommand.execute(jedis);
+			jedisPool.returnResource(jedis);
+		} catch (Exception e) {
             e.printStackTrace();
-			jedisPool.returnBrokenResource(j);
+
+            if (jedis != null) {
+                jedisPool.returnBrokenResource(jedis);
+                jedis = null;
+            }
 		} finally {
-			jedisPool.returnResource(j);
+            if (jedis != null) {
+                jedisPool.returnResource(jedis);
+            }
 		}
 
-		return (obj);
+		return (result);
 	}
 
 	private void setupPersistence() {
