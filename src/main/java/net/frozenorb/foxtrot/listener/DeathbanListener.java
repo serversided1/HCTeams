@@ -75,15 +75,9 @@ public class DeathbanListener implements Listener {
 
                         totalLives--;
 
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                                ChatColor.RED + "You now have " + ChatColor.GOLD + totalLives + " total lives" + ChatColor.RED + "." + ChatColor.RESET + "\n" +
-                                        ChatColor.RED + "To use a life, reconnect within 20 seconds."
-                        );
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You now have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". You are now un-deathbanned.");
                     } else {
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                                ChatColor.RED + "You have " + ChatColor.GOLD + totalLives + " total lives" + ChatColor.RED + "." + ChatColor.RESET + "\n" +
-                                        ChatColor.RED + "To buy a life, go to " + ChatColor.GOLD + "MineHQ.com/shop" + ChatColor.RED + "."
-                        );
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To buy a life, go to MineHQ.com/shop.");
                     }
                 } else {
                     int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getName());
@@ -98,26 +92,16 @@ public class DeathbanListener implements Listener {
                         double value = (millisLeft / 1000D);
                         double sec = Math.round(10.0 * value) / 10.0;
 
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                                ChatColor.RED + "You have recently died." + ChatColor.RESET + "\n" +
-                                        ChatColor.RED + "You will be able to use a life in " + ChatColor.GOLD + sec + ChatColor.RED + "."
-                        );
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have recently died. You will be able to use a life in " + sec + ".");
                         return;
                     }
 
                     if (totalLives > 0) {
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                                ChatColor.RED + "You have " + ChatColor.GOLD + totalLives + " total lives" + ChatColor.RED + "." + ChatColor.RESET + "\n" +
-                                        ChatColor.RED + "To use a life, reconnect within 20 seconds."
-                        );
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
+                        lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                     } else {
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED,
-                                ChatColor.RED + "You have " + ChatColor.GOLD + totalLives + " total lives" + ChatColor.RED + "." + ChatColor.RESET + "\n" +
-                                        ChatColor.RED + "To buy a life, go to " + ChatColor.GOLD + "MineHQ.com/shop" + ChatColor.RED + "."
-                        );
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have no lives. To buy a life, go to MineHQ.com/shop.");
                     }
-
-                    lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                 }
             } else {
                 if (event.getPlayer().isOp()) {

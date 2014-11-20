@@ -25,7 +25,7 @@ public class LastDeathMap extends RedisPersistMap<Long> {
 
     public boolean recentlyDied(String player) {
         if (getValue(player) != null) {
-            return ((getValue(player) - System.currentTimeMillis()) > TimeUnit.MINUTES.toMillis(15));
+            return (System.currentTimeMillis() - getValue(player)) < TimeUnit.MINUTES.toMillis(15);
         }
 
         return (false);
