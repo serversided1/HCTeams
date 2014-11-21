@@ -60,6 +60,8 @@ public class TeamStuckCommand implements Listener {
             return;
         }
 
+        warping.add(sender.getName());
+
         new BukkitRunnable(){
             private int seconds = 300;
 
@@ -193,7 +195,8 @@ public class TeamStuckCommand implements Listener {
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
-            Player player = (Player)event.getEntity();
+            Player player = (Player) event.getEntity();
+
             if (warping.contains(player.getName())) {
                 damaged.add(player.getName());
             }
