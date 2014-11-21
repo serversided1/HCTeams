@@ -3,13 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.frozenorb</groupId>
 	<artifactId>Foxtrot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Foxtrot</name>
+	<version>${git.commit.id.abbrev}</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<timestamp>${maven.build.timestamp}</timestamp>
-		<!-- <computerName>${env.COMPUTERNAME}</computerName> -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -17,8 +14,7 @@
 
 	<build>
 		<defaultGoal>clean package install</defaultGoal>
-		<finalName>${project.artifactId}</finalName>
-
+		<finalName>${project.artifactId}-${git.commit.id.abbrev}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -37,9 +33,6 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>mkremins:fanciful</include>
-							<include>org.projectlombok:lombok</include>
-							<include>org.mongodb:mongo-java-driver</include>
 							<include>redis.clients:jedis</include>
 							<include>commons-pool:commons-pool</include>
 							<include>com.comphenix.packetwrapper:PacketWrapper</include>
@@ -55,6 +48,18 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.1.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -69,49 +74,37 @@
 
 	<repositories>
 		<repository>
-			<id>comphenix-snapshot-repo</id>
+			<id>comphenix-repo</id>
 			<url>http://repo.comphenix.net/content/groups/public/</url>
 		</repository>
-		<repository>
-			<id>maven-repo</id>
-			<url>http://repo1.maven.org/maven2</url>
-		</repository>
+        <repository>
+            <id>md5-repo</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
 	</repositories>
 
 	<dependencies>
-		<!-- No repository for spigot / bukkit :( -->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>LATEST</version>
-
-			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/spigot-api.jar</systemPath>
-		</dependency>
-
+        <!-- How you find this jar is up to you. -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
 			<version>LATEST</version>
-
 			<scope>system</scope>
 			<systemPath>${project.basedir}/jars/spigot.jar</systemPath>
 		</dependency>
 
+        <!-- Jars that are exclusive to MineHQ. -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
-
 			<scope>system</scope>
 			<systemPath>${project.basedir}/jars/mBasic.jar</systemPath>
 		</dependency>
-
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mShared</artifactId>
 			<version>LATEST</version>
-
 			<scope>system</scope>
 			<systemPath>${project.basedir}/jars/mShared.jar</systemPath>
 		</dependency>
@@ -121,12 +114,15 @@
 			<artifactId>ProtocolLib</artifactId>
 			<version>LATEST</version>
 		</dependency>
-
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.7.9-R0.3-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>com.comphenix.packetwrapper</groupId>
 			<artifactId>PacketWrapper</artifactId>
 			<version>LATEST</version>
-
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -134,26 +130,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-			<version>1.4</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>2.2.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.12.6</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
