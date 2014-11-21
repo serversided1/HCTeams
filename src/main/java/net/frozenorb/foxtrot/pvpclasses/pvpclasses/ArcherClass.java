@@ -166,7 +166,7 @@ public class ArcherClass extends PvPClass {
         }
     }
 
-    @EventHandler(priority=EventPriority.LOW)
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityArrowHit(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
@@ -176,7 +176,7 @@ public class ArcherClass extends PvPClass {
             Arrow arrow = (Arrow) event.getDamager();
             Player player = (Player) event.getEntity();
 
-            if (arrow.hasMetadata("firedLoc")) {
+            if (arrow.getShooter() instanceof Player && arrow.hasMetadata("firedLoc")) {
                 Location firedFrom = (Location) arrow.getMetadata("firedLoc").get(0).value();
                 boolean intoEvent = DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(player.getLocation()) != DTRBitmaskType.ARCHER_DAMAGE_NORMALIZED.appliesAt(firedFrom);
                 int range = Math.round((float) firedFrom.distance(player.getLocation()));
