@@ -160,15 +160,19 @@ public class Team {
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(name.toLowerCase());
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().remove(uniqueId);
 
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+        try {
+            FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
-            @Override
-            public Object execute(Jedis jedis) {
-                jedis.del("fox_teams." + name.toLowerCase());
-                return (null);
-            }
+                @Override
+                public Object execute(Jedis jedis) {
+                    jedis.del("fox_teams." + name.toLowerCase());
+                    return (null);
+                }
 
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         needsSave = false;
     }
