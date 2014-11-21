@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  */
 public class KOTHTPCommand {
 
-    @Command(names={ "KOTH TP" }, permissionNode="foxtrot.koth.admin")
+    @Command(names={ "KOTH TP" }, permissionNode="foxtrot.koth")
     public static void kothTP(Player sender, @Param(name="KOTH") KOTH target) {
         sender.teleport(target.getCapLocation().toLocation(FoxtrotPlugin.getInstance().getServer().getWorld(target.getWorld())));
         sender.sendMessage(ChatColor.GRAY + "Teleported to the " + target.getName() + " KOTH.");
