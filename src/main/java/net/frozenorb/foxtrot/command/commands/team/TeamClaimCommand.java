@@ -15,6 +15,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TeamClaimCommand implements Listener {
 
@@ -45,7 +46,13 @@ public class TeamClaimCommand implements Listener {
                 return;
             }
 
-			FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> sender.getInventory().addItem(SELECTION_WAND.clone()), 1L);
+            new BukkitRunnable() {
+
+                public void run() {
+                    sender.getInventory().addItem(SELECTION_WAND.clone());
+                }
+
+            }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
 
 			new VisualClaim(sender, VisualType.CREATE, false).draw(false);
 
@@ -67,7 +74,14 @@ public class TeamClaimCommand implements Listener {
         }
 
         sender.getInventory().remove(SELECTION_WAND);
-        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> sender.getInventory().addItem(SELECTION_WAND.clone()), 1L);
+
+        new BukkitRunnable() {
+
+            public void run() {
+                sender.getInventory().addItem(SELECTION_WAND.clone());
+            }
+
+        }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
 
         new VisualClaim(sender, VisualType.CREATE, true).draw(false);
 

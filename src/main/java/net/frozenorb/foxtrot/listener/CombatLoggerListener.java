@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.nms.FixedVillager;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.minecraft.server.v1_7_R3.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;

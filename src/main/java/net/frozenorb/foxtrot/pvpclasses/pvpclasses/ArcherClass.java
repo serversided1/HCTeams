@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

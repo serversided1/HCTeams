@@ -14,7 +14,7 @@ import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;

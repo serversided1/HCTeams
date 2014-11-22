@@ -22,7 +22,7 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.raid.DTRHandler;
+import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;

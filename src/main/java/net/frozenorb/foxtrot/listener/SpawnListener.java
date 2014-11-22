@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;

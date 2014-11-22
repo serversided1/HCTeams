@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.command.commands;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

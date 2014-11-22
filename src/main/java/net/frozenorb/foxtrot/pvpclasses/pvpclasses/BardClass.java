@@ -6,7 +6,7 @@ import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.ParticleEffects;
 import net.minecraft.util.com.google.common.collect.Lists;
 import org.bukkit.ChatColor;

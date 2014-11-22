@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.team.bitmask;
+package net.frozenorb.foxtrot.team.dtr.bitmask;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;

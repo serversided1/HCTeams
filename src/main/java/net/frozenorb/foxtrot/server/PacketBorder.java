@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;

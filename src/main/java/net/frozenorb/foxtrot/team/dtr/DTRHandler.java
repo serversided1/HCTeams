@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.raid;
+package net.frozenorb.foxtrot.team.dtr;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;

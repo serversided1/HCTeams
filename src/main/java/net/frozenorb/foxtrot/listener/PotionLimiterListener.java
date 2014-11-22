@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.NMSMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

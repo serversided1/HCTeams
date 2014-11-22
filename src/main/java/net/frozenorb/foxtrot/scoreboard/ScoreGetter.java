@@ -93,7 +93,7 @@ public interface ScoreGetter {
         @Override
         public int getSeconds(Player player) {
             if (PvPClassHandler.getWarmupTasks().containsKey(player.getName())) {
-                long diff = PvPClassHandler.getWarmupTasks().get(player.getName()).getEnds() - System.currentTimeMillis();
+                long diff = PvPClassHandler.getWarmupTasks().get(player.getName()).getTime() - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);
