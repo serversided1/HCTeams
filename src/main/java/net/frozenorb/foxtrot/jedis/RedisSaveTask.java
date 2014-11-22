@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
@@ -11,7 +12,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class RedisSaveTask {
+public class RedisSaveTask extends BukkitRunnable {
+
+    public void run() {
+        save(false);
+    }
 
 	public static int save(boolean forceAll) {
 		System.out.println("Saving teams to Jedis...");

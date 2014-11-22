@@ -27,23 +27,15 @@ import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
@@ -56,6 +48,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
 
+    @Getter private PvPClassHandler pvpClassHandler;
 	@Getter private TeamHandler teamHandler;
 	@Getter private ServerHandler serverHandler;
 	@Getter private MapHandler mapHandler;
@@ -105,69 +98,15 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 		Shared.get().getProfileManager().setNametagsEnabled(false);
 
-        KOTHHandler.init();
-        CommandHandler.init();
-        DeathMessageHandler.init();
+		new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
+        new RedisSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L); // Runs every 5 minutes
 
-		RegionManager.register(this);
-		RegionManager.get();
-
-        // DTR regeneration
-		new DTRHandler().runTaskTimer(this, 20L, 20L * 60);
-
-        // Redis save
-        new BukkitRunnable() {
-
-            public void run() {
-                RedisSaveTask.save(false);
-            }
-
-        }.runTaskTimerAsynchronously(this, 6000L, 6000L);
-
-		PvPClassHandler pvpClassHandler = new PvPClassHandler();
-
-		new CommandRegistrar().register();
-
-		teamHandler = new TeamHandler();
-		serverHandler = new ServerHandler();
-		scoreboardHandler = new ScoreboardHandler();
-        mapHandler = new MapHandler();
-        citadelHandler = new CitadelHandler();
-
+        setupHandlers();
         setupPersistence();
-        LandBoard.getInstance().loadFromTeams();
+        setupListeners();
+
+        new CommandRegistrar().register();
         new PacketBorder.BorderThread().start();
-
-        // All the listeners...
-        getServer().getPluginManager().registerEvents(new MapListener(), this);
-        getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
-        getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
-        getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
-        getServer().getPluginManager().registerEvents(new CitadelListener(), this);
-        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
-        getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
-        getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
-        getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
-        getServer().getPluginManager().registerEvents(new EnderpearlListener(), this);
-        getServer().getPluginManager().registerEvents(new EndListener(), this);
-        getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
-        getServer().getPluginManager().registerEvents(new FoxListener(), this);
-        getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
-        getServer().getPluginManager().registerEvents(new KOTHListener(), this);
-        getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
-        getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
-        getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
-        getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
-        getServer().getPluginManager().registerEvents(new RoadListener(), this);
-        getServer().getPluginManager().registerEvents(new SpawnListener(), this);
-        getServer().getPluginManager().registerEvents(new SpawnTagListener(), this);
-        getServer().getPluginManager().registerEvents(new StaffUtilsListener(), this);
-        getServer().getPluginManager().registerEvents(new TeamListener(), this);
-        getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
-
-        getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
-        getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
 
 		for (Player player : getServer().getOnlinePlayers()) {
 			getPlaytimeMap().playerJoined(player.getName());
@@ -195,7 +134,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-			playtimeMap.playerQuit(player.getName(), false);
+			getPlaytimeMap().playerQuit(player.getName(), false);
 			NametagManager.getTeamMap().remove(player.getName());
 			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
 		}
@@ -233,100 +172,83 @@ public class FoxtrotPlugin extends JavaPlugin {
 		return (result);
 	}
 
-	private void setupPersistence() {
-		playtimeMap = new PlaytimeMap();
-		playtimeMap.loadFromRedis();
+    private void setupHandlers() {
+        teamHandler = new TeamHandler();
+        serverHandler = new ServerHandler();
+        scoreboardHandler = new ScoreboardHandler();
+        mapHandler = new MapHandler();
+        citadelHandler = new CitadelHandler();
+        pvpClassHandler = new PvPClassHandler();
 
-		oppleMap = new OppleMap();
-		oppleMap.loadFromRedis();
+        KOTHHandler.init();
+        CommandHandler.init();
+        DeathMessageHandler.init();
 
-		deathbanMap = new DeathbanMap();
-		deathbanMap.loadFromRedis();
-
-		PvPTimerMap = new PvPTimerMap();
-        PvPTimerMap.loadFromRedis();
-
-		killsMap = new KillsMap();
-		killsMap.loadFromRedis();
-
-        chatModeMap = new ChatModeMap();
-        chatModeMap.loadFromRedis();
-
-        toggleLightningMap = new ToggleLightningMap();
-        toggleLightningMap.loadFromRedis();
-
-        toggleGlobalChatMap = new ToggleGlobalChatMap();
-        toggleGlobalChatMap.loadFromRedis();
-
-        fishingKitMap = new FishingKitMap();
-        fishingKitMap.loadFromRedis();
-
-        soulboundLivesMap = new SoulboundLivesMap();
-        soulboundLivesMap.loadFromRedis();
-
-        friendLivesMap = new FriendLivesMap();
-        friendLivesMap.loadFromRedis();
-
-        transferableLivesMap = new TransferableLivesMap();
-        transferableLivesMap.loadFromRedis();
-
-        lastDeathMap = new LastDeathMap();
-        lastDeathMap.loadFromRedis();
-
-        chatSpyMap = new ChatSpyMap();
-        chatSpyMap.loadFromRedis();
-
-        diamondMinedMap = new DiamondMinedMap();
-        diamondMinedMap.loadFromRedis();
-
-        goldMinedMap = new GoldMinedMap();
-        goldMinedMap.loadFromRedis();
-
-        ironMinedMap = new IronMinedMap();
-        ironMinedMap.loadFromRedis();
-
-        coalMinedMap = new CoalMinedMap();
-        coalMinedMap.loadFromRedis();
-
-        redstoneMinedMap = new RedstoneMinedMap();
-        redstoneMinedMap.loadFromRedis();
-
-        lapisMinedMap = new LapisMinedMap();
-        lapisMinedMap.loadFromRedis();
-
-        emeraldMinedMap = new EmeraldMinedMap();
-        emeraldMinedMap.loadFromRedis();
-
-        firstJoinMap = new FirstJoinMap();
-        firstJoinMap.loadFromRedis();
-
-        lastJoinMap = new LastJoinMap();
-        lastJoinMap.loadFromRedis();
-	}
-
-    public List<String> getConsoleLog(){
-        List<String> log = new ArrayList<String>();
-
-        try{
-            FileInputStream input = new FileInputStream(new File("logs", "latest.log"));
-            BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            String strLine;
-
-            while((strLine = br.readLine()) != null){
-                log.add(strLine);
-            }
-
-            br.close();
-            input.close();
-        } catch(Exception e){
-            log.add("Error reading log file!");
-        }
-
-        return log;
+        // Init region system from mUtilities.
+        RegionManager.register(this);
+        RegionManager.get();
     }
 
+    private void setupListeners() {
+        getServer().getPluginManager().registerEvents(new MapListener(), this);
+        getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
+        getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
+        getServer().getPluginManager().registerEvents(new BorderListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new CitadelListener(), this);
+        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
+        getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
+        getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
+        getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new EnderpearlListener(), this);
+        getServer().getPluginManager().registerEvents(new EndListener(), this);
+        getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
+        getServer().getPluginManager().registerEvents(new FoxListener(), this);
+        getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
+        getServer().getPluginManager().registerEvents(new KOTHListener(), this);
+        getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
+        getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
+        getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
+        getServer().getPluginManager().registerEvents(new RoadListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnTagListener(), this);
+        getServer().getPluginManager().registerEvents(new StaffUtilsListener(), this);
+        getServer().getPluginManager().registerEvents(new TeamListener(), this);
+        getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
+
+        getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
+        getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
+    }
+
+	private void setupPersistence() {
+        (playtimeMap = new PlaytimeMap()).loadFromRedis();
+        (oppleMap = new OppleMap()).loadFromRedis();
+        (deathbanMap = new DeathbanMap()).loadFromRedis();
+        (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
+        (killsMap = new KillsMap()).loadFromRedis();
+        (chatModeMap = new ChatModeMap()).loadFromRedis();
+        (toggleLightningMap = new ToggleLightningMap()).loadFromRedis();
+        (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
+        (fishingKitMap = new FishingKitMap()).loadFromRedis();
+        (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();
+        (friendLivesMap = new FriendLivesMap()).loadFromRedis();
+        (transferableLivesMap = new TransferableLivesMap()).loadFromRedis();
+        (lastDeathMap = new LastDeathMap()).loadFromRedis();
+        (chatSpyMap = new ChatSpyMap()).loadFromRedis();
+        (diamondMinedMap = new DiamondMinedMap()).loadFromRedis();
+        (goldMinedMap = new GoldMinedMap()).loadFromRedis();
+        (ironMinedMap = new IronMinedMap()).loadFromRedis();
+        (coalMinedMap = new CoalMinedMap()).loadFromRedis();
+        (redstoneMinedMap = new RedstoneMinedMap()).loadFromRedis();
+        (lapisMinedMap = new LapisMinedMap()).loadFromRedis();
+        (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
+        (firstJoinMap = new FirstJoinMap()).loadFromRedis();
+        (lastJoinMap = new LastJoinMap()).loadFromRedis();
+	}
+
 	public static FoxtrotPlugin getInstance() {
-		return instance;
+		return (instance);
 	}
 
 }
