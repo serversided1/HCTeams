@@ -249,7 +249,7 @@ public class Team {
     }
 
     public boolean isAlly(String name) {
-        //TODO
+        //TODO: Alliance system
         return (false);
     }
 
