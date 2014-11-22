@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -60,6 +61,11 @@ public class TeamStuckCommand implements Listener {
             return;
         }
 
+        if (sender.getWorld().getEnvironment() != World.Environment.NORMAL) {
+            sender.sendMessage(ChatColor.RED +"You can only use this command from the overworld.");
+            return;
+        }
+
         warping.add(sender.getName());
 
         new BukkitRunnable(){
@@ -94,7 +100,7 @@ public class TeamStuckCommand implements Listener {
                 }
 
                 //Begin asynchronously searching for an available location prior to the actual teleport
-                if(seconds == 5){
+                if (seconds == 5) {
                     new BukkitRunnable(){
                         @Override
                         public void run(){
