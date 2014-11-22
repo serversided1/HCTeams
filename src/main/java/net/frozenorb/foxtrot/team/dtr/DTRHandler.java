@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.team.dtr;
 
-import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
@@ -14,8 +13,6 @@ import java.util.Set;
 
 public class DTRHandler extends BukkitRunnable {
 
-    @Getter private static DTRHandler instance;
-
     private static final double[] BASE_DTR_INCREMENT = { 1.5, .5, .45, .4, .36,
             .33, .3, .27, .24, .22, .21, .2, .19, .18, .175, .17, .168, .166,
             .164, .162, .16, .158, .156, .154, .152, .15, .148, .146, .144,
@@ -26,10 +23,6 @@ public class DTRHandler extends BukkitRunnable {
             6.16, 6.16, 6.16, 6.16, 6.16, 6.16 };
 
     private static Set<String> wasOnCooldown = new HashSet<String>();
-
-    public DTRHandler() {
-        instance = this;
-    }
 
     // * 3 is to 'speed up' DTR regen while keeping the ratios the same.
     // We're using this instead of changing the array incase we need to change this value
@@ -42,12 +35,12 @@ public class DTRHandler extends BukkitRunnable {
         return (teamsize == 0 ? 100D : MAX_DTR[teamsize - 1]);
     }
 
-    public static boolean isOnCD(Team team) {
-        return (wasOnCooldown.contains(team.getFriendlyName().toLowerCase()));
+    public static boolean isOnCooldown(Team team) {
+        return (team.getDeathCooldown() > System.currentTimeMillis() || team.getRaidableCooldown() > System.currentTimeMillis());
     }
 
     public static boolean isRegenerating(Team team) {
-        return (!wasOnCooldown.contains(team.getFriendlyName().toLowerCase()) && team.getDTR() != team.getMaxDTR());
+        return (!isOnCooldown(team) && team.getDTR() != team.getMaxDTR());
     }
 
     public static void setCooldown(Team team) {
@@ -73,7 +66,7 @@ public class DTRHandler extends BukkitRunnable {
         for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
             if (teamEntry.getKey().getOwner() != null) {
                 try {
-                    if (teamEntry.getKey().getDeathCooldown() > System.currentTimeMillis() || teamEntry.getKey().getRaidableCooldown() > System.currentTimeMillis()) {
+                    if (isOnCooldown(teamEntry.getKey())) {
                         wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
                         continue;
                     }

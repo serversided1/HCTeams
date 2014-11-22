@@ -278,6 +278,8 @@ public class Team {
 
             if (iter.hasNext()) {
                 this.owner = members.iterator().next();
+            } else {
+                this.owner = null;
             }
         }
 
@@ -328,12 +330,12 @@ public class Team {
     public List<Player> getOnlineMembers() {
         List<Player> players = new ArrayList<Player>();
 
-        for (String m : getMembers()) {
-            if (m == null) {
+        for (String member : getMembers()) {
+            if (member == null) {
                 continue;
             }
 
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(member);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 players.add(exactPlayer);
@@ -346,15 +348,15 @@ public class Team {
     public List<String> getOfflineMembers() {
         List<String> players = new ArrayList<String>();
 
-        for (String m : getMembers()) {
-            if (m == null) {
+        for (String member : getMembers()) {
+            if (member == null) {
                 continue;
             }
 
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(member);
 
             if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
-                players.add(m);
+                players.add(member);
             }
         }
 
@@ -612,139 +614,8 @@ public class Team {
 
         player.sendMessage(gray);
 
-        // A string comparison is needed here as saving and reload the data results in a string known as 'null', not a null value.
-        if (owner != null && !owner.equalsIgnoreCase("null")) {
-            Location hq = getHq();
-            String hqString = hq != null ? "§f" + hq.getBlockX() + ", " + hq.getBlockZ() + "" : "§fNone";
-
-            player.sendMessage("§9" + getFriendlyName() + " §7[" + getOnlineMemberAmount() + "/" + getSize() + "]  §3-§e HQ: " + hqString);
-            KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
-            Player owner = Bukkit.getPlayerExact(getOwner());
-
-            if (owner != null && !owner.hasMetadata("invisible")) {
-                player.sendMessage("§eLeader: §a" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
-            } else {
-                player.sendMessage("§eLeader: §7" + getOwner() + "§e[§a" + km.getKills(getOwner()) + "§e]");
-            }
-
-            boolean first = true;
-            boolean first2 = true;
-
-            StringBuilder members = new StringBuilder("§eMembers: ");
-            StringBuilder captains = new StringBuilder("§eCaptains: ");
-
-            int captainAmount = 0;
-            int memberAmount = 0;
-
-            for (Player online : getOnlineMembers()) {
-                if (online.hasMetadata("invisible")) {
-                    continue;
-                }
-
-                StringBuilder toAdd = members;
-                if (isOwner(online.getName())) {
-                    continue;
-                }
-
-                if (isCaptain(online.getName())) {
-                    toAdd = captains;
-                    if (!first2) {
-                        toAdd.append("§7, ");
-                    }
-                    captainAmount++;
-
-                    toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-                    first2 = false;
-                } else {
-                    if (!first) {
-                        toAdd.append("§7, ");
-                    }
-                    memberAmount++;
-
-                    toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-                    first = false;
-                }
-            }
-            for (String offline : getOfflineMembers()) {
-                StringBuilder toAdd = members;
-
-                if (isOwner(offline)) {
-                    continue;
-                }
-                if (isCaptain(offline)) {
-                    toAdd = captains;
-                    if (!first2) {
-                        toAdd.append("§7, ");
-                    } else {
-                        first2 = false;
-                    }
-
-                    captainAmount++;
-                    toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-                } else {
-                    if (!first) {
-                        toAdd.append("§7, ");
-                    } else {
-                        first = false;
-                    }
-
-                    memberAmount++;
-                    toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
-                }
-            }
-
-            if (captainAmount > 0) {
-                player.sendMessage(captains.toString());
-            }
-
-            if (memberAmount > 0) {
-                player.sendMessage(members.toString());
-            }
-
-            // Round the Team's balance.
-            player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(balance));
-
-            // Get a Team's DTR color.
-            ChatColor dtrColor = ChatColor.GREEN;
-
-            if (DTR / getMaxDTR() <= 0.25) {
-                if (isRaidable()) {
-                    dtrColor = ChatColor.DARK_RED;
-                } else {
-                    dtrColor = ChatColor.YELLOW;
-                }
-            }
-
-            String dtrMsg = ChatColor.YELLOW + "Deaths Until Raidable: " + dtrColor + DTR_FORMAT.format(DTR);
-            boolean showTimeUntilRegen = false;
-
-            if (getOnlineMemberAmount() == 0) {
-                // No players online.
-                dtrMsg += ChatColor.GRAY + "◀";
-            } else {
-                if (DTRHandler.isRegenerating(this)) {
-                    // Regenerating
-                    dtrMsg += ChatColor.GREEN + "▲";
-                } else {
-                    if (DTRHandler.isOnCD(this)) {
-                        // On cooldown
-                        dtrMsg += ChatColor.RED + "■";
-                        showTimeUntilRegen = true;
-                    } else {
-                        dtrMsg += ChatColor.GREEN + "◀";
-                    }
-                }
-            }
-
-            player.sendMessage(dtrMsg);
-
-            if (showTimeUntilRegen) {
-                long till = Math.max(getRaidableCooldown(), getDeathCooldown());
-                int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
-                player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
-            }
-        } else {
-            String hqString = hq != null ? "§f" + hq.getBlockX() + ", " + hq.getBlockZ() + "" : "§fNone";
+        if (owner == null || owner.equals("null")) {
+            String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
 
             if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
                 player.sendMessage(ChatColor.AQUA + getFriendlyName() + ChatColor.GOLD + " KOTH");
@@ -759,10 +630,131 @@ public class Team {
             }
 
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
+            return;
+        }
 
-            if (player.isOp() && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
-                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Info: " + this.getDTR() + " DTR Bitmask");
+        String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
+
+        player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
+        KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
+        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(owner);
+
+        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + owner + ChatColor.YELLOW + "[" + ChatColor.GREEN + km.getKills(owner) + ChatColor.YELLOW + "]");
+
+        boolean first = true;
+        boolean first2 = true;
+
+        StringBuilder members = new StringBuilder("§eMembers: ");
+        StringBuilder captains = new StringBuilder("§eCaptains: ");
+
+        int captainAmount = 0;
+        int memberAmount = 0;
+
+        /*for (String m : getMembers()) {
+            if (m == null) {
+                continue;
             }
+
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+
+            if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
+                players.add(m);
+            }
+        }*/
+
+        for (Player online : getOnlineMembers()) {
+            if (online.hasMetadata("invisible")) {
+                continue;
+            }
+
+            StringBuilder toAdd = members;
+            if (isOwner(online.getName())) {
+                continue;
+            }
+
+            if (isCaptain(online.getName())) {
+                toAdd = captains;
+                if (!first2) {
+                    toAdd.append("§7, ");
+                }
+                captainAmount++;
+
+                toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
+                first2 = false;
+            } else {
+                if (!first) {
+                    toAdd.append("§7, ");
+                }
+                memberAmount++;
+
+                toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
+                first = false;
+            }
+        }
+        for (String offline : getOfflineMembers()) {
+            StringBuilder toAdd = members;
+
+            if (isOwner(offline)) {
+                continue;
+            }
+            if (isCaptain(offline)) {
+                toAdd = captains;
+                if (!first2) {
+                    toAdd.append("§7, ");
+                } else {
+                    first2 = false;
+                }
+
+                captainAmount++;
+                toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+            } else {
+                if (!first) {
+                    toAdd.append("§7, ");
+                } else {
+                    first = false;
+                }
+
+                memberAmount++;
+                toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+            }
+        }
+
+        if (captainAmount > 0) {
+            player.sendMessage(captains.toString());
+        }
+
+        if (memberAmount > 0) {
+            player.sendMessage(members.toString());
+        }
+
+        player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(balance));
+        String dtrMsg = ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(DTR);
+        boolean showTimeUntilRegen = false;
+
+        if (getOnlineMemberAmount() == 0) {
+            // No players online.
+            dtrMsg += ChatColor.GRAY + "◀";
+        } else {
+            if (DTRHandler.isRegenerating(this)) {
+                // Regenerating
+                dtrMsg += ChatColor.GREEN + "▲";
+            } else {
+                if (DTRHandler.isOnCooldown(this)) {
+                    // On cooldown
+                    dtrMsg += ChatColor.RED + "■";
+                    showTimeUntilRegen = true;
+                } else {
+                    dtrMsg += ChatColor.GREEN + "◀";
+                }
+            }
+        }
+
+        player.sendMessage(dtrMsg);
+
+        if (showTimeUntilRegen) {
+            long till = Math.max(getRaidableCooldown(), getDeathCooldown());
+            int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
         }
 
         player.sendMessage(gray);
@@ -775,6 +767,20 @@ public class Team {
         }
 
         return (super.equals(obj));
+    }
+
+    public ChatColor getDTRColor() {
+        ChatColor dtrColor = ChatColor.GREEN;
+
+        if (DTR / getMaxDTR() <= 0.25) {
+            if (isRaidable()) {
+                dtrColor = ChatColor.DARK_RED;
+            } else {
+                dtrColor = ChatColor.YELLOW;
+            }
+        }
+
+        return (dtrColor);
     }
 
 }
