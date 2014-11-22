@@ -38,7 +38,7 @@ public class DeathbanMap extends RedisPersistMap<Long> {
     }
 
     public void revive(String player) {
-        updateValueAsync(player, 0L);
+        updateValue(player, 0L);
     }
 
     public long getDeathban(String player) {
