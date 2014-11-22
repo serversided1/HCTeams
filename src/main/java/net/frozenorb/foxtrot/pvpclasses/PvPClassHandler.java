@@ -43,6 +43,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
             FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvPClass, FoxtrotPlugin.getInstance());
         }
 
+        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskTimer(FoxtrotPlugin.getInstance(), this, 2L, 2L);
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
     }
 
