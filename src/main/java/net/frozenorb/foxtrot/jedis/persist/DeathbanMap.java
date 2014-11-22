@@ -5,21 +5,21 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class DeathbanMap extends RedisPersistMap<Long> {
 
-	public DeathbanMap() {
-		super("Deathbans");
-	}
+    public DeathbanMap() {
+        super("Deathbans");
+    }
 
-	@Override
-	public String getRedisValue(Long time) {
-		return (String.valueOf(time));
-	}
+    @Override
+    public String getRedisValue(Long time) {
+        return (String.valueOf(time));
+    }
 
-	@Override
-	public Long getJavaObject(String str) {
-		return (Long.parseLong(str));
-	}
+    @Override
+    public Long getJavaObject(String str) {
+        return (Long.parseLong(str));
+    }
 
-	public boolean isDeathbanned(String player) {
+    public boolean isDeathbanned(String player) {
         if (getValue(player) != null) {
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                 // Ignore deathbans less than 5 days (at EOTW we deathban for 10 days)
@@ -30,12 +30,12 @@ public class DeathbanMap extends RedisPersistMap<Long> {
         }
 
         return (false);
-	}
+    }
 
-	public void deathban(String player, long seconds) {
-		updateValue(player, System.currentTimeMillis() + (seconds * 1000));
+    public void deathban(String player, long seconds) {
+        updateValue(player, System.currentTimeMillis() + (seconds * 1000));
         FoxtrotPlugin.getInstance().getLastDeathMap().addDeath(player);
-	}
+    }
 
     public void revive(String player) {
         updateValueAsync(player, 0L);

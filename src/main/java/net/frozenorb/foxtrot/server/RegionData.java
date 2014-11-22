@@ -10,24 +10,24 @@ import org.bukkit.entity.Player;
 @Data
 public class RegionData {
 
-	private RegionType regionType;
-	private Team data;
+    private RegionType regionType;
+    private Team data;
 
-	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof RegionData)) {
-			return (false);
-		}
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof RegionData)) {
+            return (false);
+        }
 
-		RegionData other = (RegionData) obj;
+        RegionData other = (RegionData) obj;
 
-		return (other.regionType == regionType && (data == null || other.data.equals(data)));
-	}
+        return (other.regionType == regionType && (data == null || other.data.equals(data)));
+    }
 
-	public int hashCode() {
-		return (super.hashCode());
-	}
+    public int hashCode() {
+        return (super.hashCode());
+    }
 
-	public String getName(Player player) {
+    public String getName(Player player) {
         switch (regionType) {
             case SPAWN:
                 switch (player.getWorld().getEnvironment()) {
@@ -63,6 +63,6 @@ public class RegionData {
             default:
                 return (ChatColor.DARK_RED + "N/A");
         }
-	}
+    }
 
 }

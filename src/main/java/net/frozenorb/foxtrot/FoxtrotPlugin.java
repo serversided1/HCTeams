@@ -42,25 +42,25 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 
-	private static FoxtrotPlugin instance;
+    private static FoxtrotPlugin instance;
 
     public static final Random RANDOM = new Random();
 
-	private JedisPool jedisPool;
+    private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
 
     @Getter private PvPClassHandler pvpClassHandler;
-	@Getter private TeamHandler teamHandler;
-	@Getter private ServerHandler serverHandler;
-	@Getter private MapHandler mapHandler;
-	@Getter private ScoreboardHandler scoreboardHandler;
+    @Getter private TeamHandler teamHandler;
+    @Getter private ServerHandler serverHandler;
+    @Getter private MapHandler mapHandler;
+    @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
 
-	@Getter private PlaytimeMap playtimeMap;
-	@Getter private OppleMap oppleMap;
-	@Getter private DeathbanMap deathbanMap;
-	@Getter private PvPTimerMap PvPTimerMap;
-	@Getter private KillsMap killsMap;
+    @Getter private PlaytimeMap playtimeMap;
+    @Getter private OppleMap oppleMap;
+    @Getter private DeathbanMap deathbanMap;
+    @Getter private PvPTimerMap PvPTimerMap;
+    @Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
     @Getter private ToggleLightningMap toggleLightningMap;
     @Getter private FishingKitMap fishingKitMap;
@@ -80,8 +80,8 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private FriendLivesMap friendLivesMap;
     @Getter private TransferableLivesMap transferableLivesMap;
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
         instance = this;
 
         try {
@@ -91,15 +91,15 @@ public class FoxtrotPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-		try {
-			EntityRegistrar.registerCustomEntities();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            EntityRegistrar.registerCustomEntities();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		Shared.get().getProfileManager().setNametagsEnabled(false);
+        Shared.get().getProfileManager().setNametagsEnabled(false);
 
-		new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
+        new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
         new RedisSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L); // Runs every 5 minutes
 
         setupHandlers();
@@ -109,69 +109,69 @@ public class FoxtrotPlugin extends JavaPlugin {
         new CommandRegistrar().register();
         new PacketBorder.BorderThread().start();
 
-		for (Player player : getServer().getOnlinePlayers()) {
-			getPlaytimeMap().playerJoined(player.getName());
-			NametagManager.reloadPlayer(player);
-			player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
-		}
+        for (Player player : getServer().getOnlinePlayers()) {
+            getPlaytimeMap().playerJoined(player.getName());
+            NametagManager.reloadPlayer(player);
+            player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
+        }
 
-		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
 
             // No sign GUI when placing death signs.
-			@Override
-			public void onPacketSending(PacketEvent event) {
-				WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
-				Player player = event.getPlayer();
-				Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
+                Player player = event.getPlayer();
+                Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
 
-				if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
-					event.setCancelled(true);
-				}
-			}
+                if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
+                    event.setCancelled(true);
+                }
+            }
 
-		});
-	}
+        });
+    }
 
-	@Override
-	public void onDisable() {
-		for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-			getPlaytimeMap().playerQuit(player.getName(), false);
-			NametagManager.getTeamMap().remove(player.getName());
-			player.setMetadata("loggedout", new FixedMetadataValue(this, true));
-		}
+    @Override
+    public void onDisable() {
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            getPlaytimeMap().playerQuit(player.getName(), false);
+            NametagManager.getTeamMap().remove(player.getName());
+            player.setMetadata("loggedout", new FixedMetadataValue(this, true));
+        }
 
-		for (String str : PvPClassHandler.getEquippedKits().keySet()) {
-			Player player = getServer().getPlayerExact(str);
-			PvPClassHandler.getEquippedKits().get(str).remove(player);
-		}
+        for (String str : PvPClassHandler.getEquippedKits().keySet()) {
+            Player player = getServer().getPlayerExact(str);
+            PvPClassHandler.getEquippedKits().get(str).remove(player);
+        }
 
-		RedisSaveTask.save(false);
+        RedisSaveTask.save(false);
         FoxtrotPlugin.getInstance().getServerHandler().save();
         jedisPool.destroy();
-	}
+    }
 
-	public <T> T runJedisCommand(JedisCommand<T> jedisCommand) {
-		Jedis jedis = jedisPool.getResource();
-		T result = null;
+    public <T> T runJedisCommand(JedisCommand<T> jedisCommand) {
+        Jedis jedis = jedisPool.getResource();
+        T result = null;
 
-		try {
-			result = jedisCommand.execute(jedis);
-			jedisPool.returnResource(jedis);
-		} catch (Exception e) {
+        try {
+            result = jedisCommand.execute(jedis);
+            jedisPool.returnResource(jedis);
+        } catch (Exception e) {
             e.printStackTrace();
 
             if (jedis != null) {
                 jedisPool.returnBrokenResource(jedis);
                 jedis = null;
             }
-		} finally {
+        } finally {
             if (jedis != null) {
                 jedisPool.returnResource(jedis);
             }
-		}
+        }
 
-		return (result);
-	}
+        return (result);
+    }
 
     private void setupHandlers() {
         teamHandler = new TeamHandler();
@@ -224,7 +224,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
     }
 
-	private void setupPersistence() {
+    private void setupPersistence() {
         (playtimeMap = new PlaytimeMap()).loadFromRedis();
         (oppleMap = new OppleMap()).loadFromRedis();
         (deathbanMap = new DeathbanMap()).loadFromRedis();
@@ -248,10 +248,10 @@ public class FoxtrotPlugin extends JavaPlugin {
         (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
         (firstJoinMap = new FirstJoinMap()).loadFromRedis();
         (lastJoinMap = new LastJoinMap()).loadFromRedis();
-	}
+    }
 
-	public static FoxtrotPlugin getInstance() {
-		return (instance);
-	}
+    public static FoxtrotPlugin getInstance() {
+        return (instance);
+    }
 
 }

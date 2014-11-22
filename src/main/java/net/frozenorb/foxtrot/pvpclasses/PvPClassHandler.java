@@ -47,53 +47,53 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
     }
 
-	@Override
-	public void run() {
-		for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+    @Override
+    public void run() {
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             // Cancel kit warmup if the player took off armor
-			if (warmupTasks.containsKey(player.getName())) {
-				PvPClass trying = warmupTasks.get(player.getName()).getPvpClass();
+            if (warmupTasks.containsKey(player.getName())) {
+                PvPClass trying = warmupTasks.get(player.getName()).getPvpClass();
 
-				if (!trying.qualifies(player.getInventory())) {
-					warmupTasks.get(player.getName()).cancel();
-					warmupTasks.remove(player.getName());
-				}
-			}
+                if (!trying.qualifies(player.getInventory())) {
+                    warmupTasks.get(player.getName()).cancel();
+                    warmupTasks.remove(player.getName());
+                }
+            }
 
             // Remove kit if player took off armor, otherwise .tick();
-			if (equippedKits.containsKey(player.getName())) {
-				PvPClass equippedPvPClass = equippedKits.get(player.getName());
+            if (equippedKits.containsKey(player.getName())) {
+                PvPClass equippedPvPClass = equippedKits.get(player.getName());
 
-				if (!equippedPvPClass.qualifies(player.getInventory())) {
-					equippedKits.remove(player.getName());
+                if (!equippedPvPClass.qualifies(player.getInventory())) {
+                    equippedKits.remove(player.getName());
                     equippedPvPClass.remove(player);
-				} else {
+                } else {
                     equippedPvPClass.tick(player);
                 }
-			}
+            }
 
             // Start kit warmup
-			for (PvPClass pvPClass : pvpClasses) {
-				if (pvPClass.qualifies(player.getInventory())) {
+            for (PvPClass pvPClass : pvpClasses) {
+                if (pvPClass.qualifies(player.getInventory())) {
                     // If they're already warming up
-					if (warmupTasks.containsKey(player.getName()) && warmupTasks.get(player.getName()).getPvpClass() == pvPClass) {
-						continue;
-					}
+                    if (warmupTasks.containsKey(player.getName()) && warmupTasks.get(player.getName()).getPvpClass() == pvPClass) {
+                        continue;
+                    }
 
                     // If they have the kit equipped
-					if (equippedKits.containsKey(player.getName()) && equippedKits.get(player.getName()) == pvPClass) {
-						continue;
-					}
+                    if (equippedKits.containsKey(player.getName()) && equippedKits.get(player.getName()) == pvPClass) {
+                        continue;
+                    }
 
-					startWarmup(player, pvPClass);
-				}
-			}
-		}
-	}
+                    startWarmup(player, pvPClass);
+                }
+            }
+        }
+    }
 
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getPlayer().getItemInHand() == null) {
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getPlayer().getItemInHand() == null) {
             return;
         }
 
@@ -108,7 +108,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 }
             }
         }
-	}
+    }
 
     public static boolean hasKitOn(Player player, PvPClass pvPClass) {
         return (equippedKits.containsKey(player.getName()) && equippedKits.get(player.getName()) == pvPClass);

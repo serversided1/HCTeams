@@ -13,18 +13,18 @@ package net.frozenorb.foxtrot.serialization;
  */
 public interface Serializable<T> {
 
-	/**
-	 * Serializes the data into the appropriate data type.
-	 * 
-	 * @return serialized data
-	 */
-	public T serialize();
+    /**
+     * Serializes the data into the appropriate data type.
+     *
+     * @return serialized data
+     */
+    public T serialize();
 
-	/**
-	 * Deserializes the class and loads the class data from the given object.
-	 * 
-	 * @param data
-	 *            the data to use to load the class
-	 */
-	public void deserialize(T data);
+    /**
+     * Deserializes the class and loads the class data from the given object.
+     *
+     * @param data
+     *            the data to use to load the class
+     */
+    public void deserialize(T data);
 }

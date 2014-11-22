@@ -74,11 +74,11 @@ public class MinerClass extends PvPClass implements Listener {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
-	@Override
-	public void apply(Player player) {
+    @Override
+    public void apply(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0));
         player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 1));
-	}
+    }
 
     @Override
     public void tick(Player player) {
@@ -91,12 +91,12 @@ public class MinerClass extends PvPClass implements Listener {
         }
     }
 
-	@Override
-	public void remove(Player player) {
+    @Override
+    public void remove(Player player) {
         removeInfiniteEffects(player);
         noDamage.remove(player.getName());
         invis.remove(player.getName());
-	}
+    }
 
     @EventHandler(priority= EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {

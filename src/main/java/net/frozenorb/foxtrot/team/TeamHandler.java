@@ -25,10 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TeamHandler {
 
     @Getter private volatile ConcurrentHashMap<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<ObjectId, Team>();
-	@Getter private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
-	@Getter private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
+    @Getter private volatile ConcurrentHashMap<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
+    @Getter private volatile ConcurrentHashMap<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
 
-	public TeamHandler() {
+    public TeamHandler() {
         CommandHandler.registerTransformer(Team.class, new TeamTransformer());
         CommandHandler.registerTabCompleter(Team.class, new TeamTabCompleter());
         CommandHandler.registerTransformer(DTRBitmaskType.class, new DTRBitmaskTypeTransformer());
@@ -36,20 +36,20 @@ public class TeamHandler {
         CommandHandler.registerTransformer(Subclaim.class, new SubclaimTransformer());
         CommandHandler.registerTabCompleter(Subclaim.class, new SubclaimTabCompleter());
 
-		loadTeams();
-	}
+        loadTeams();
+    }
 
-	public List<Team> getTeams() {
-		return (new ArrayList<Team>(teamNameMap.values()));
-	}
+    public List<Team> getTeams() {
+        return (new ArrayList<Team>(teamNameMap.values()));
+    }
 
-	public void setTeam(String playerName, Team team) {
-		playerTeamMap.put(playerName.toLowerCase(), team);
-	}
+    public void setTeam(String playerName, Team team) {
+        playerTeamMap.put(playerName.toLowerCase(), team);
+    }
 
-	public Team getTeam(String teamName) {
-		return (teamNameMap.get(teamName.toLowerCase()));
-	}
+    public Team getTeam(String teamName) {
+        return (teamNameMap.get(teamName.toLowerCase()));
+    }
 
     public Team getTeam(ObjectId teamUniqueId) {
         if (teamUniqueId == null) {
@@ -59,59 +59,59 @@ public class TeamHandler {
         return (teamUniqueIdMap.get(teamUniqueId));
     }
 
-	private void loadTeams() {
-		FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+    private void loadTeams() {
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
-			@Override
-			public Object execute(Jedis jedis) {
-				for (String key : jedis.keys("fox_teams.*")) {
-					String loadString = jedis.get(key);
+            @Override
+            public Object execute(Jedis jedis) {
+                for (String key : jedis.keys("fox_teams.*")) {
+                    String loadString = jedis.get(key);
 
-					Team team = new Team(key.split("\\.")[1]);
-					team.load(loadString);
+                    Team team = new Team(key.split("\\.")[1]);
+                    team.load(loadString);
 
-					teamNameMap.put(team.getName().toLowerCase(), team);
+                    teamNameMap.put(team.getName().toLowerCase(), team);
                     teamUniqueIdMap.put(team.getUniqueId(), team);
 
-					for (String member : team.getMembers()) {
-						playerTeamMap.put(member.toLowerCase(), team);
-					}
-				}
+                    for (String member : team.getMembers()) {
+                        playerTeamMap.put(member.toLowerCase(), team);
+                    }
+                }
 
-				return (null);
-			}
+                return (null);
+            }
 
-		});
-	}
+        });
+    }
 
-	public boolean isTaken(Location location) {
-		return (getOwner(location) != null);
-	}
+    public boolean isTaken(Location location) {
+        return (getOwner(location) != null);
+    }
 
-	public Team getOwner(Claim claim) {
-		return (LandBoard.getInstance().getTeamAt(claim));
-	}
+    public Team getOwner(Claim claim) {
+        return (LandBoard.getInstance().getTeamAt(claim));
+    }
 
-	public Team getOwner(Location location) {
-		return (LandBoard.getInstance().getTeamAt(location));
-	}
+    public Team getOwner(Location location) {
+        return (LandBoard.getInstance().getTeamAt(location));
+    }
 
-	public Team getPlayerTeam(String name) {
-		if (!playerTeamMap.containsKey(name.toLowerCase())) {
+    public Team getPlayerTeam(String name) {
+        if (!playerTeamMap.containsKey(name.toLowerCase())) {
             return (null);
         }
 
-		return (playerTeamMap.get(name.toLowerCase()));
-	}
+        return (playerTeamMap.get(name.toLowerCase()));
+    }
 
-	public void addTeam(Team team) {
-		team.flagForSave();
-		teamNameMap.put(team.getName().toLowerCase(), team);
+    public void addTeam(Team team) {
+        team.flagForSave();
+        teamNameMap.put(team.getName().toLowerCase(), team);
         teamUniqueIdMap.put(team.getUniqueId(), team);
 
-		for (String member : team.getMembers()) {
-			playerTeamMap.put(member.toLowerCase(), team);
-		}
-	}
+        for (String member : team.getMembers()) {
+            playerTeamMap.put(member.toLowerCase(), team);
+        }
+    }
 
 }

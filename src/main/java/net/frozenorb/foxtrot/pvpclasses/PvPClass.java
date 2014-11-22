@@ -16,14 +16,14 @@ public abstract class PvPClass implements Listener {
     @Getter String armorContains;
     @Getter List<Material> consumables;
 
-	public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
+    public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
         this.name = name;
         this.warmup = warmup;
         this.armorContains = armorContains;
         this.consumables = consumables;
     }
 
-	public void apply(Player player) {
+    public void apply(Player player) {
 
     }
 
@@ -31,7 +31,7 @@ public abstract class PvPClass implements Listener {
 
     }
 
-	public void remove(Player player) {
+    public void remove(Player player) {
 
     }
 
@@ -43,11 +43,11 @@ public abstract class PvPClass implements Listener {
         }
     }
 
-	public boolean itemConsumed(Player player, Material type) {
+    public boolean itemConsumed(Player player, Material type) {
         return (true);
     }
 
-	public boolean qualifies(PlayerInventory armor) {
+    public boolean qualifies(PlayerInventory armor) {
         return (armor.getHelmet() != null && armor.getChestplate() != null && armor.getLeggings() != null && armor.getBoots() != null &&
                        armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
     }

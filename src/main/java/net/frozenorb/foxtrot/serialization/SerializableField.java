@@ -18,18 +18,18 @@ import net.frozenorb.Utilities.Serialization.ReflectionSerializer;
 @Target(value = { ElementType.TYPE })
 public @interface SerializableField {
 
-	/**
-	 * Gets the class to serialize and deserialize the field's value.
-	 * 
-	 * @return serializing class
-	 */
-	Class<?> serializer() default Object.class;
+    /**
+     * Gets the class to serialize and deserialize the field's value.
+     *
+     * @return serializing class
+     */
+    Class<?> serializer() default Object.class;
 
-	/**
-	 * The field to serialize the value as
-	 * 
-	 * @return the name to put in the json objet
-	 */
-	String name() default "${ACTUAL_FIELD_NAME}";
+    /**
+     * The field to serialize the value as
+     *
+     * @return the name to put in the json objet
+     */
+    String name() default "${ACTUAL_FIELD_NAME}";
 
 }

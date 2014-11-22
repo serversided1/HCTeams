@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("deprecation")
 public class ServerHandler {
 
-	public static int WARZONE_RADIUS = 1000;
+    public static int WARZONE_RADIUS = 1000;
 
     // NEXT MAP //
     // http://minecraft.gamepedia.com/Potion#Data_value_table
@@ -68,32 +68,32 @@ public class ServerHandler {
         8234, 8266, 16426, 16458 // Slowness Potions
     );
 
-	@Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
+    @Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
 
-	@Getter private Set<String> usedNames = new HashSet<String>();
+    @Getter private Set<String> usedNames = new HashSet<String>();
     @Getter private Set<String> highRollers = new HashSet<String>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
 
-	public ServerHandler() {
-		try {
-			File f = new File("usedNames.json");
+    public ServerHandler() {
+        try {
+            File f = new File("usedNames.json");
 
-			if (!f.exists()) {
-				f.createNewFile();
-			}
+            if (!f.exists()) {
+                f.createNewFile();
+            }
 
-			BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
-			if (dbo != null) {
-				for (Object o : (BasicDBList) dbo.get("names")) {
-					usedNames.add((String) o);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            if (dbo != null) {
+                for (Object o : (BasicDBList) dbo.get("names")) {
+                    usedNames.add((String) o);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             File f = new File("highRollers.json");
@@ -129,28 +129,28 @@ public class ServerHandler {
             }
 
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
-	}
+    }
 
-	public void save() {
-		try {
-			File f = new File("usedNames.json");
+    public void save() {
+        try {
+            File f = new File("usedNames.json");
 
-			if (!f.exists()) {
-				f.createNewFile();
-			}
+            if (!f.exists()) {
+                f.createNewFile();
+            }
 
-			BasicDBObject dbo = new BasicDBObject();
-			BasicDBList list = new BasicDBList();
+            BasicDBObject dbo = new BasicDBObject();
+            BasicDBList list = new BasicDBList();
 
-			for (String n : usedNames) {
-				list.add(n);
-			}
+            for (String n : usedNames) {
+                list.add(n);
+            }
 
-			dbo.put("names", list);
-			FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+            dbo.put("names", list);
+            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             File f = new File("highRollers.json");
@@ -171,59 +171,59 @@ public class ServerHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-	}
+    }
 
-	public boolean isBannedPotion(int value) {
-		for (int i : DISALLOWED_POTIONS) {
-			if (i == value) {
-				return (true);
-			}
-		}
+    public boolean isBannedPotion(int value) {
+        for (int i : DISALLOWED_POTIONS) {
+            if (i == value) {
+                return (true);
+            }
+        }
 
-		return (false);
-	}
+        return (false);
+    }
 
-	public boolean isWarzone(Location loc) {
-		if (loc.getWorld().getEnvironment() != Environment.NORMAL) {
-			return (false);
-		}
+    public boolean isWarzone(Location loc) {
+        if (loc.getWorld().getEnvironment() != Environment.NORMAL) {
+            return (false);
+        }
 
-		return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS);
-	}
+        return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS);
+    }
 
-	public void startLogoutSequence(final Player player) {
-		player.sendMessage(ChatColor.YELLOW + "§lLogging out... §ePlease wait§c 30§e seconds.");
-		final AtomicInteger seconds = new AtomicInteger(30);
+    public void startLogoutSequence(final Player player) {
+        player.sendMessage(ChatColor.YELLOW + "§lLogging out... §ePlease wait§c 30§e seconds.");
+        final AtomicInteger seconds = new AtomicInteger(30);
 
-		BukkitTask taskid = new BukkitRunnable() {
+        BukkitTask taskid = new BukkitRunnable() {
 
-			@Override
-			public void run() {
-				seconds.set(seconds.get() - 1);
-				player.sendMessage(ChatColor.RED + "" + seconds.get() + "§e seconds...");
+            @Override
+            public void run() {
+                seconds.set(seconds.get() - 1);
+                player.sendMessage(ChatColor.RED + "" + seconds.get() + "§e seconds...");
 
-				if (seconds.get() == 0) {
-					if (tasks.containsKey(player.getName())) {
-						tasks.remove(player.getName());
-						player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-						player.kickPlayer("§cYou have been safely logged out of the server!");
-						cancel();
-					}
-				}
+                if (seconds.get() == 0) {
+                    if (tasks.containsKey(player.getName())) {
+                        tasks.remove(player.getName());
+                        player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                        player.kickPlayer("§cYou have been safely logged out of the server!");
+                        cancel();
+                    }
+                }
 
-			}
-		}.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+            }
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
 
-		if (tasks.containsKey(player.getName())) {
-			Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
-		}
+        if (tasks.containsKey(player.getName())) {
+            Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
+        }
 
-		tasks.put(player.getName(), taskid.getTaskId());
-	}
+        tasks.put(player.getName(), taskid.getTaskId());
+    }
 
-	public RegionData getRegion(Location location) {
+    public RegionData getRegion(Location location) {
         return (getRegion(FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location), location));
-	}
+    }
 
     public RegionData getRegion(Team ownerTo, Location location) {
         if (ownerTo != null && ownerTo.getOwner() == null) {
@@ -251,7 +251,7 @@ public class ServerHandler {
         return (new RegionData(RegionType.WILDNERNESS, null));
     }
 
-	public void beginWarp(final Player player, final Team team, int price) {
+    public void beginWarp(final Player player, final Team team, int price) {
         boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
 
         if (FreezeCommand.isFrozen(player)) {
@@ -259,7 +259,7 @@ public class ServerHandler {
             return;
         }
 
-		TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
+        TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
         double bal = tm.getPlayerTeam(player.getName()).getBalance();
 
         if (bal < price) {
@@ -330,25 +330,25 @@ public class ServerHandler {
         tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
 
         FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
-		player.teleport(team.getHq());
-	}
+        player.teleport(team.getHq());
+    }
 
-	public boolean isUnclaimed(Location loc) {
-		return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc));
-	}
+    public boolean isUnclaimed(Location loc) {
+        return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc));
+    }
 
-	public boolean isAdminOverride(Player player) {
-		return (player.getGameMode() == GameMode.CREATIVE);
-	}
+    public boolean isAdminOverride(Player player) {
+        return (player.getGameMode() == GameMode.CREATIVE);
+    }
 
-	public Location getSpawnLocation() {
-		return (Bukkit.getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
-	}
+    public Location getSpawnLocation() {
+        return (Bukkit.getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
+    }
 
-	public boolean isUnclaimedOrRaidable(Location loc) {
-		Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
-		return (owner == null || owner.isRaidable());
-	}
+    public boolean isUnclaimedOrRaidable(Location loc) {
+        Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        return (owner == null || owner.isRaidable());
+    }
 
     public float getDTRLossAt(Location loc) {
         Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
@@ -390,30 +390,30 @@ public class ServerHandler {
         return ((int) Math.min(max, ban));
     }
 
-	public void disablePlayerAttacking(final Player p, int seconds) {
-		if (seconds == 10) {
-			p.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
-		}
+    public void disablePlayerAttacking(final Player p, int seconds) {
+        if (seconds == 10) {
+            p.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
+        }
 
-		final Listener l = new Listener() {
-			@EventHandler
-			public void onPlayerDamage(EntityDamageByEntityEvent e) {
-				if (e.getDamager() instanceof Player && (e.getEntity() instanceof Player || e.getEntity() instanceof Cow)) {
-					if (((Player) e.getDamager()).getName().equals(p.getName())) {
-						e.setCancelled(true);
-					}
-				}
+        final Listener l = new Listener() {
+            @EventHandler
+            public void onPlayerDamage(EntityDamageByEntityEvent e) {
+                if (e.getDamager() instanceof Player && (e.getEntity() instanceof Player || e.getEntity() instanceof Cow)) {
+                    if (((Player) e.getDamager()).getName().equals(p.getName())) {
+                        e.setCancelled(true);
+                    }
+                }
 
-			}
-		};
+            }
+        };
 
-		Bukkit.getPluginManager().registerEvents(l, FoxtrotPlugin.getInstance());
-		Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-			public void run() {
-				HandlerList.unregisterAll(l);
-			}
-		}, seconds * 20);
-	}
+        Bukkit.getPluginManager().registerEvents(l, FoxtrotPlugin.getInstance());
+        Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+            public void run() {
+                HandlerList.unregisterAll(l);
+            }
+        }, seconds * 20);
+    }
 
     public boolean isSpawnBufferZone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NORMAL){
@@ -439,85 +439,85 @@ public class ServerHandler {
         return ((x < radius && x > -radius) && (z < radius && z > -radius));
     }
 
-	public void handleShopSign(Sign sign, Player p) {
-		ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
+    public void handleShopSign(Sign sign, Player p) {
+        ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
-		if (it == null) {
-			System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
-			return;
-		}
+        if (it == null) {
+            System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
+            return;
+        }
 
-		if (sign.getLine(0).toLowerCase().contains("buy")) {
-			int price = 0;
-			int amount = 0;
+        if (sign.getLine(0).toLowerCase().contains("buy")) {
+            int price = 0;
+            int amount = 0;
 
-			try {
-				price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-				amount = Integer.parseInt(sign.getLine(1));
-			} catch (NumberFormatException e) {
-				return;
-			}
+            try {
+                price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+                amount = Integer.parseInt(sign.getLine(1));
+            } catch (NumberFormatException e) {
+                return;
+            }
 
-			if (Basic.get().getEconomyManager().getBalance(p.getName()) >= price) {
-				if (p.getInventory().firstEmpty() != -1) {
-					Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
+            if (Basic.get().getEconomyManager().getBalance(p.getName()) >= price) {
+                if (p.getInventory().firstEmpty() != -1) {
+                    Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
 
-					it.setAmount(amount);
-					p.getInventory().addItem(it);
+                    it.setAmount(amount);
+                    p.getInventory().addItem(it);
                     p.updateInventory();
 
-					String[] msgs = {
-							"§cBOUGHT§r " + amount,
-							"for §c$" + NumberFormat.getNumberInstance(Locale.US).format(price),
-							"New Balance:",
-							"§c$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
+                    String[] msgs = {
+                            "§cBOUGHT§r " + amount,
+                            "for §c$" + NumberFormat.getNumberInstance(Locale.US).format(price),
+                            "New Balance:",
+                            "§c$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
 
-					showSignPacket(p, sign, msgs);
-				} else {
-					showSignPacket(p, sign, new String[] { "§c§lError!", "",
-							"§cNo space", "§cin inventory!" });
-				}
-			} else {
-				showSignPacket(p, sign, new String[] { "§cInsufficient",
-						"§cfunds for", sign.getLine(2), sign.getLine(3) });
-			}
-		} else if (sign.getLine(0).toLowerCase().contains("sell")) {
-			int price = 0;
+                    showSignPacket(p, sign, msgs);
+                } else {
+                    showSignPacket(p, sign, new String[] { "§c§lError!", "",
+                            "§cNo space", "§cin inventory!" });
+                }
+            } else {
+                showSignPacket(p, sign, new String[] { "§cInsufficient",
+                        "§cfunds for", sign.getLine(2), sign.getLine(3) });
+            }
+        } else if (sign.getLine(0).toLowerCase().contains("sell")) {
+            int price = 0;
 
-			try {
-				int totalStackPrice = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-				int amount = Integer.parseInt(sign.getLine(1));
+            try {
+                int totalStackPrice = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+                int amount = Integer.parseInt(sign.getLine(1));
 
-				price = (int) ((double) totalStackPrice / (double) amount);
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
-				System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
-				return;
-			}
+                price = (int) ((double) totalStackPrice / (double) amount);
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace();
+                System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
+                return;
+            }
 
-			int amountInInventory = Math.min(64, countItems(p, it.getType(), (int) it.getDurability()));
+            int amountInInventory = Math.min(64, countItems(p, it.getType(), (int) it.getDurability()));
 
-			if (amountInInventory == 0) {
-				showSignPacket(p, sign, new String[] { "§cYou do not",
-						"§chave any", sign.getLine(2), "§con you!" });
-			} else {
-				int totalPrice = amountInInventory * price;
-				removeItem(p, it, amountInInventory);
-				p.updateInventory();
+            if (amountInInventory == 0) {
+                showSignPacket(p, sign, new String[] { "§cYou do not",
+                        "§chave any", sign.getLine(2), "§con you!" });
+            } else {
+                int totalPrice = amountInInventory * price;
+                removeItem(p, it, amountInInventory);
+                p.updateInventory();
 
-				Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
+                Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
 
-				String[] msgs = {
-						"§aSOLD§r " + amountInInventory,
-						"for §a$" + NumberFormat.getNumberInstance(Locale.US).format(totalPrice),
-						"New Balance:",
-						"§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
+                String[] msgs = {
+                        "§aSOLD§r " + amountInInventory,
+                        "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(totalPrice),
+                        "New Balance:",
+                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
 
-				showSignPacket(p, sign, msgs);
-			}
-		}
-	}
+                showSignPacket(p, sign, msgs);
+            }
+        }
+    }
 
     public void handleKitSign(Sign sign, Player player){
         String kit = ChatColor.stripColor(sign.getLine(1));
@@ -540,26 +540,26 @@ public class ServerHandler {
         }
     }
 
-	public void removeItem(Player p, ItemStack it, int amount) {
-		boolean specialDamage = it.getType().getMaxDurability() == (short) 0;
+    public void removeItem(Player p, ItemStack it, int amount) {
+        boolean specialDamage = it.getType().getMaxDurability() == (short) 0;
 
-		for (int a = 0; a < amount; a++) {
-			for (ItemStack i : p.getInventory()) {
-				if (i != null) {
-					if (i.getType() == it.getType() && (!specialDamage || it.getDurability() == i.getDurability())) {
-						if (i.getAmount() == 1) {
-							p.getInventory().clear(p.getInventory().first(i));
-							break;
-						} else {
-							i.setAmount(i.getAmount() - 1);
-							break;
-						}
-					}
-				}
-			}
-		}
+        for (int a = 0; a < amount; a++) {
+            for (ItemStack i : p.getInventory()) {
+                if (i != null) {
+                    if (i.getType() == it.getType() && (!specialDamage || it.getDurability() == i.getDurability())) {
+                        if (i.getAmount() == 1) {
+                            p.getInventory().clear(p.getInventory().first(i));
+                            break;
+                        } else {
+                            i.setAmount(i.getAmount() - 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
-	}
+    }
 
     public ItemStack generateDeathSign(String killed, String killer) {
         ItemStack deathsign = new ItemStack(Material.SIGN);
@@ -603,44 +603,44 @@ public class ServerHandler {
         return (kothsign);
     }
 
-	private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();
+    private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();
 
-	public void showSignPacket(Player p, final Sign sign, String[] lines) {
-		PacketPlayOutUpdateSign sgn = new PacketPlayOutUpdateSign(sign.getX(), sign.getY(), sign.getZ(), lines);
-		((CraftPlayer) p).getHandle().playerConnection.sendPacket(sgn);
+    public void showSignPacket(Player p, final Sign sign, String[] lines) {
+        PacketPlayOutUpdateSign sgn = new PacketPlayOutUpdateSign(sign.getX(), sign.getY(), sign.getZ(), lines);
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(sgn);
 
         if(showSignTasks.containsKey(sign)){
             showSignTasks.remove(sign).cancel();
         }
 
-		BukkitRunnable br = new BukkitRunnable(){
-			@Override
-			public void run(){
-				sign.update();
-				showSignTasks.remove(sign);
-			}
-		};
+        BukkitRunnable br = new BukkitRunnable(){
+            @Override
+            public void run(){
+                sign.update();
+                showSignTasks.remove(sign);
+            }
+        };
 
-		showSignTasks.put(sign, br);
-		br.runTaskLater(FoxtrotPlugin.getInstance(), 90L);
-	}
+        showSignTasks.put(sign, br);
+        br.runTaskLater(FoxtrotPlugin.getInstance(), 90L);
+    }
 
-	public int countItems(Player player, Material material, int damageValue) {
-		PlayerInventory inventory = player.getInventory();
-		ItemStack[] items = inventory.getContents();
-		int amount = 0;
+    public int countItems(Player player, Material material, int damageValue) {
+        PlayerInventory inventory = player.getInventory();
+        ItemStack[] items = inventory.getContents();
+        int amount = 0;
 
-		for (ItemStack item : items) {
-			if (item != null) {
-				boolean specialDamage = material.getMaxDurability() == (short) 0;
+        for (ItemStack item : items) {
+            if (item != null) {
+                boolean specialDamage = material.getMaxDurability() == (short) 0;
 
-				if (item.getType() != null && item.getType() == material && (!specialDamage || item.getDurability() == (short) damageValue)) {
-					amount += item.getAmount();
-				}
-			}
-		}
+                if (item.getType() != null && item.getType() == material && (!specialDamage || item.getDurability() == (short) damageValue)) {
+                    amount += item.getAmount();
+                }
+            }
+        }
 
-		return (amount);
-	}
+        return (amount);
+    }
 
 }

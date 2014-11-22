@@ -11,16 +11,16 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class PlayerDamagePair {
-	public static final int FALL_DAMAGE_ASSIST_SECONDS = 30;
-	
-	private UUID victimUUID, damagerUUID;
+    public static final int FALL_DAMAGE_ASSIST_SECONDS = 30;
 
-	public Player getVictim() {
-		return Bukkit.getPlayer(victimUUID);
-	}
+    private UUID victimUUID, damagerUUID;
 
-	public Player getDamager() {
-		return Bukkit.getPlayer(damagerUUID);
-	}
+    public Player getVictim() {
+        return Bukkit.getPlayer(victimUUID);
+    }
+
+    public Player getDamager() {
+        return Bukkit.getPlayer(damagerUUID);
+    }
 
 }

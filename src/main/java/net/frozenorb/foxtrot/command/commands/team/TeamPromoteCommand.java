@@ -42,6 +42,6 @@ public class TeamPromoteCommand {
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team leaders can do this.");
         }
-	}
+    }
 
 }

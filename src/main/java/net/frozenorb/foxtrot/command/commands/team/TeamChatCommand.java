@@ -11,10 +11,10 @@ public class TeamChatCommand {
 
     @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permissionNode="")
     public static void teamChat(Player sender, @Param(name="chat mode", defaultValue="toggle") String params) {
-		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
             return;
-		}
+        }
 
         ChatMode chatMode = null;
 
@@ -27,7 +27,7 @@ public class TeamChatCommand {
         }
 
         setChat(sender, chatMode);
-	}
+    }
 
     private static void setChat(Player player, ChatMode chatMode) {
         if (chatMode != null) {

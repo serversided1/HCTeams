@@ -33,11 +33,11 @@ public class RogueClass extends PvPClass {
         super("Rogue", 15, "CHAINMAIL_", Arrays.asList(Material.SUGAR, Material.FEATHER));
     }
 
-	@Override
-	public void apply(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+    @Override
+    public void apply(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1));
-	}
+    }
 
     @Override
     public void tick(Player player) {
@@ -84,17 +84,17 @@ public class RogueClass extends PvPClass {
         return (true);
     }
 
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onEntityArrowHit(EntityDamageByEntityEvent event) {
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onEntityArrowHit(EntityDamageByEntityEvent event) {
         if (event.isCancelled()) {
             return;
         }
 
-		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-			Player damager = (Player) event.getDamager();
-			Player victim = (Player) event.getEntity();
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            Player victim = (Player) event.getEntity();
 
-			if (damager.getItemInHand() != null && damager.getItemInHand().getType() == Material.GOLD_SWORD && PvPClassHandler.hasKitOn(damager, this)) {
+            if (damager.getItemInHand() != null && damager.getItemInHand().getType() == Material.GOLD_SWORD && PvPClassHandler.hasKitOn(damager, this)) {
                 if (backstabCooldown.containsKey(damager.getName()) && backstabCooldown.get(damager.getName()) > System.currentTimeMillis()) {
                     return;
                 }
@@ -109,11 +109,11 @@ public class RogueClass extends PvPClass {
 
                 double degrees = playerVector.angle(entityVector);
 
-				if (Math.abs(degrees) < 1.4) {
-					damager.setItemInHand(new ItemStack(Material.AIR));
+                if (Math.abs(degrees) < 1.4) {
+                    damager.setItemInHand(new ItemStack(Material.AIR));
 
-					damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
-					damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
+                    damager.playSound(damager.getLocation(), Sound.ITEM_BREAK, 1F, 1F);
+                    damager.getWorld().playEffect(victim.getEyeLocation(), Effect.STEP_SOUND, Material.REDSTONE_BLOCK);
 
                     if (victim.getHealth() - 7D <= 0) {
                         event.setCancelled(true);
@@ -122,13 +122,13 @@ public class RogueClass extends PvPClass {
                     }
 
                     DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
-					victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
-				} else {
-					damager.sendMessage(ChatColor.RED + "Backstab failed!");
-				}
-			}
-		}
-	}
+                    victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
+                } else {
+                    damager.sendMessage(ChatColor.RED + "Backstab failed!");
+                }
+            }
+        }
+    }
 
     public class BackstabDamage extends PlayerDamage {
 

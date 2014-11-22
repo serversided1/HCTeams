@@ -34,7 +34,7 @@ public class EndListener implements Listener {
     private Map<String, Long> msgCooldown = new HashMap<>();
 
     // Display a message and give the killer the egg (when the dragon is killed)
-	@EventHandler
+    @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof EnderDragon) {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());

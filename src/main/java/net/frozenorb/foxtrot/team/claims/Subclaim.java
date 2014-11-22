@@ -16,39 +16,39 @@ import java.util.List;
 @Data
 public class Subclaim extends ReflectionSerializer {
 
-	@NonNull private Location loc1, loc2;
-	@NonNull private String name;
-	private List<String> members = new ArrayList<String>();
+    @NonNull private Location loc1, loc2;
+    @NonNull private String name;
+    private List<String> members = new ArrayList<String>();
 
-	public void addMember(String name) {
-		members.add(name);
-	}
+    public void addMember(String name) {
+        members.add(name);
+    }
 
-	public boolean isMember(String name) {
-		for (String str : members) {
-			if (str.equalsIgnoreCase(name)) {
-				return (true);
-			}
-		}
+    public boolean isMember(String name) {
+        for (String str : members) {
+            if (str.equalsIgnoreCase(name)) {
+                return (true);
+            }
+        }
 
-		return (false);
-	}
+        return (false);
+    }
 
-	public void removeMember(String name) {
-		Iterator<String> iterator = members.iterator();
+    public void removeMember(String name) {
+        Iterator<String> iterator = members.iterator();
 
-		while (iterator.hasNext()) {
+        while (iterator.hasNext()) {
             String member = iterator.next();
 
-			if (member.equalsIgnoreCase(name)) {
-				iterator.remove();
-			}
-		}
-	}
+            if (member.equalsIgnoreCase(name)) {
+                iterator.remove();
+            }
+        }
+    }
 
     @Override
-	public String toString() {
-		StringBuilder members = new StringBuilder();
+    public String toString() {
+        StringBuilder members = new StringBuilder();
 
         for (String member : this.members) {
             members.append(member).append(",");
@@ -59,6 +59,6 @@ public class Subclaim extends ReflectionSerializer {
         }
 
         return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + members.toString());
-	}
+    }
 
 }

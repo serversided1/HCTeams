@@ -8,7 +8,7 @@ public class TeamHelpCommand {
 
     @Command(names={ "team help", "t help", "f help", "faction help", "fac help" }, permissionNode="")
     public static void teamHelp(Player player) {
-		TeamCommand.team(player);
-	}
+        TeamCommand.team(player);
+    }
 
 }

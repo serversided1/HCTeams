@@ -10,6 +10,6 @@ public class TeamMapCommand {
     @Command(names={ "team map", "t map", "f map", "faction map", "fac map", "map" }, permissionNode="")
     public static void teamMap(Player sender) {
         (new VisualClaim(sender, VisualType.MAP, false)).draw(false);
-	}
+    }
 
 }

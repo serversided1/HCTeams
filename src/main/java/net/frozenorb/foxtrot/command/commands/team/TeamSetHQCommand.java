@@ -12,9 +12,9 @@ public class TeamSetHQCommand {
 
     @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome" }, permissionNode="")
     public static void teamSetHQ(Player sender) {
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-		if (team == null) {
+        if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
@@ -37,6 +37,6 @@ public class TeamSetHQCommand {
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }
-	}
+    }
 
 }

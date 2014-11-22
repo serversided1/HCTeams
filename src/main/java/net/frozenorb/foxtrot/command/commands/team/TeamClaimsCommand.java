@@ -10,15 +10,15 @@ public class TeamClaimsCommand {
 
     @Command(names={ "team claims", "t claims", "f claims", "faction claims", "fac claims" }, permissionNode="")
     public static void teamClaims(Player sender, @Param(name="team") Team target) {
-		if (target.getClaims().size() == 0) {
+        if (target.getClaims().size() == 0) {
             sender.sendMessage(ChatColor.RED + "That team has no claimed land!");
-		} else {
-			sender.sendMessage(ChatColor.GRAY + "-- " + ChatColor.DARK_AQUA + target.getFriendlyName() + "'s Claims" + ChatColor.GRAY + " --");
+        } else {
+            sender.sendMessage(ChatColor.GRAY + "-- " + ChatColor.DARK_AQUA + target.getFriendlyName() + "'s Claims" + ChatColor.GRAY + " --");
 
-			for (net.frozenorb.foxtrot.team.claims.Claim claim : target.getClaims()) {
-				sender.sendMessage(ChatColor.GRAY + " " + claim.getFriendlyName());
-			}
-		}
-	}
+            for (net.frozenorb.foxtrot.team.claims.Claim claim : target.getClaims()) {
+                sender.sendMessage(ChatColor.GRAY + " " + claim.getFriendlyName());
+            }
+        }
+    }
 
 }

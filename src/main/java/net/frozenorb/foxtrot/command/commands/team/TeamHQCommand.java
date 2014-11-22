@@ -11,17 +11,17 @@ public class TeamHQCommand {
 
     @Command(names={ "team hq", "t hq", "f hq", "faction hq", "fac hq", "team home", "t home", "f home", "faction home", "fac home", "home" }, permissionNode="")
     public static void teamHQ(Player sender) {
-		if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "You are not on a team!");
-			return;
-		}
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "You are not on a team!");
+            return;
+        }
 
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team.getHq() == null) {
-			sender.sendMessage(ChatColor.RED + "HQ not set.");
-			return;
-		}
+            sender.sendMessage(ChatColor.RED + "HQ not set.");
+            return;
+        }
 
         if (sender.getWorld().getEnvironment() == Environment.THE_END) {
             sender.sendMessage(ChatColor.RED + "You can only exit the End through the End Portal!");
@@ -33,7 +33,7 @@ public class TeamHQCommand {
             return;
         }
 
-		FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75);
-	}
+        FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75);
+    }
 
 }

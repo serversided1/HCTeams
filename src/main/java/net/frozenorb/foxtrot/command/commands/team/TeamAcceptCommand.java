@@ -35,6 +35,6 @@ public class TeamAcceptCommand {
         } else {
             sender.sendMessage(ChatColor.RED + "This team has not invited you!");
         }
-	}
+    }
 
 }

@@ -21,27 +21,27 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface SerializableClass {
 
-	/**
-	 * Whether the fields of any superclasses should be serialized or not
-	 * 
-	 * @return serialize super classes
-	 */
-	boolean serializeSuperclasses() default false;
+    /**
+     * Whether the fields of any superclasses should be serialized or not
+     *
+     * @return serialize super classes
+     */
+    boolean serializeSuperclasses() default false;
 
-	/**
-	 * Gets the max amount of superclasses to serialize, if
-	 * serializeSuperclasses() is true
-	 * <p>
-	 * The starting class is ignored
-	 * 
-	 * @return the amount of superclasses to serialize
-	 */
-	int maxSuperclassDepth() default 0;
+    /**
+     * Gets the max amount of superclasses to serialize, if
+     * serializeSuperclasses() is true
+     * <p>
+     * The starting class is ignored
+     *
+     * @return the amount of superclasses to serialize
+     */
+    int maxSuperclassDepth() default 0;
 
-	/**
-	 * Whether the output of the serialization should have a '#className' field
-	 * 
-	 * @return signatures
-	 */
-	boolean appendClassSignature() default true;
+    /**
+     * Whether the output of the serialization should have a '#className' field
+     *
+     * @return signatures
+     */
+    boolean appendClassSignature() default true;
 }

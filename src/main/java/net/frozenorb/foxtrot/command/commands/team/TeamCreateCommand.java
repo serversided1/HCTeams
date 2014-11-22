@@ -56,6 +56,6 @@ public class TeamCreateCommand {
         } else {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
         }
-	}
+    }
 
 }

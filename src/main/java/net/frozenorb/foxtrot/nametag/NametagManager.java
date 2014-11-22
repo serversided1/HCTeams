@@ -20,10 +20,10 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class NametagManager {
 
-	private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
+    private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
     private static int teamCreateIndex = 1;
 
-	@Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
+    @Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
     static {
         new BukkitRunnable() {
@@ -43,11 +43,11 @@ public class NametagManager {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
-	public static void reloadPlayer(Player toRefresh) {
+    public static void reloadPlayer(Player toRefresh) {
         for (Player refreshFor : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             reloadPlayer(toRefresh, refreshFor);
         }
-	}
+    }
 
     public static void reloadPlayer(Player toRefresh, Player refreshFor) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
@@ -132,34 +132,34 @@ public class NametagManager {
         return (newTeam);
     }
 
-	public static void sendTeamsToPlayer(Player player) {
+    public static void sendTeamsToPlayer(Player player) {
         for (Player toRefresh : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             reloadPlayer(toRefresh, player);
         }
-	}
+    }
 
-	public static void sendPacketsAddTeam(TeamInfo team, Player p) {
-		try {
+    public static void sendPacketsAddTeam(TeamInfo team, Player p) {
+        try {
             (new ScoreboardTeamPacketMod(team.getName(), team.getPrefix(), team.getSuffix(), new ArrayList<String>(), 0)).sendToPlayer(p);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void sendPacketsAddToTeam(TeamInfo team, String[] player, Player p) {
-		try {
+    public static void sendPacketsAddToTeam(TeamInfo team, String[] player, Player p) {
+        try {
             (new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 3)).sendToPlayer(p);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static void sendPacketsRemoveFromTeam(TeamInfo team, String player, Player tp) {
-		try {
+    public static void sendPacketsRemoveFromTeam(TeamInfo team, String player, Player tp) {
+        try {
             (new ScoreboardTeamPacketMod(team.getName(), Arrays.asList(player), 4)).sendToPlayer(tp);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -12,14 +12,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class RedisPersistMap<T> {
 
-	private HashMap<String, T> wrappedMap = new HashMap<String, T>();
+    private HashMap<String, T> wrappedMap = new HashMap<String, T>();
 
-	@NonNull private String keyPrefix;
+    @NonNull private String keyPrefix;
 
-	public void loadFromRedis() {
+    public void loadFromRedis() {
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
-			public Object execute(Jedis jedis) {
+            public Object execute(Jedis jedis) {
                 Map<String, String> results = jedis.hgetAll(keyPrefix);
 
                 for (Map.Entry<String, String> resultEntry : results.entrySet()) {
@@ -30,13 +30,13 @@ public abstract class RedisPersistMap<T> {
                     }
                 }
 
-				return (null);
-			}
+                return (null);
+            }
 
-		};
+        };
 
-		FoxtrotPlugin.getInstance().runJedisCommand(jdc);
-	}
+        FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+    }
 
     public void reloadValue(String key) {
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
@@ -60,8 +60,8 @@ public abstract class RedisPersistMap<T> {
         FoxtrotPlugin.getInstance().runJedisCommand(jdc);
     }
 
-	protected void updateValue(final String key, T value) {
-		wrappedMap.put(key.toLowerCase(), value);
+    protected void updateValue(final String key, T value) {
+        wrappedMap.put(key.toLowerCase(), value);
 
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
@@ -73,7 +73,7 @@ public abstract class RedisPersistMap<T> {
         };
 
         FoxtrotPlugin.getInstance().runJedisCommand(jdc);
-	}
+    }
 
     protected void updateValueAsync(final String key, T value) {
         wrappedMap.put(key.toLowerCase(), value);
@@ -96,15 +96,15 @@ public abstract class RedisPersistMap<T> {
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
-	protected T getValue(String key) {
-		return (wrappedMap.get(key.toLowerCase()));
-	}
+    protected T getValue(String key) {
+        return (wrappedMap.get(key.toLowerCase()));
+    }
 
-	public boolean contains(String key) {
-		return (wrappedMap.containsKey(key.toLowerCase()));
-	}
+    public boolean contains(String key) {
+        return (wrappedMap.containsKey(key.toLowerCase()));
+    }
 
-	public abstract String getRedisValue(T t);
+    public abstract String getRedisValue(T t);
 
     public T getJavaObjectSafe(String key, String str) {
         try {
@@ -118,6 +118,6 @@ public abstract class RedisPersistMap<T> {
         }
     }
 
-	public abstract T getJavaObject(String str);
+    public abstract T getJavaObject(String str);
 
 }

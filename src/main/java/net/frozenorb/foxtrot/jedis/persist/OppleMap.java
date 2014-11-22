@@ -4,9 +4,9 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class OppleMap extends RedisPersistMap<Long> {
 
-	public OppleMap() {
-		super("OppleCooldowns");
-	}
+    public OppleMap() {
+        super("OppleCooldowns");
+    }
 
     @Override
     public String getRedisValue(Long time) {

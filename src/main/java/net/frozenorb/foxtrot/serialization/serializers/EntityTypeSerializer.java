@@ -8,14 +8,14 @@ import com.mongodb.BasicDBObject;
 
 public class EntityTypeSerializer implements JSONSerializer<EntityType> {
 
-	@Override
-	public BasicDBObject serialize(EntityType o) {
-		return new BasicDBObject("name", o.name());
-	}
+    @Override
+    public BasicDBObject serialize(EntityType o) {
+        return new BasicDBObject("name", o.name());
+    }
 
-	@Override
-	public EntityType deserialize(BasicDBObject dbobj) {
-		return EntityType.valueOf(dbobj.getString("name"));
-	}
+    @Override
+    public EntityType deserialize(BasicDBObject dbobj) {
+        return EntityType.valueOf(dbobj.getString("name"));
+    }
 
 }

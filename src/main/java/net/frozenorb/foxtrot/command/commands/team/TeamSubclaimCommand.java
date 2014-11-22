@@ -30,16 +30,16 @@ import java.util.Map;
 
 public class TeamSubclaimCommand implements Listener {
 
-	private static Map<String, Selection> selections = new HashMap<String, TeamSubclaimCommand.Selection>();
-	public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_SPADE);
+    private static Map<String, Selection> selections = new HashMap<String, TeamSubclaimCommand.Selection>();
+    public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_SPADE);
 
-	static {
-		ItemMeta meta = SELECTION_WAND.getItemMeta();
+    static {
+        ItemMeta meta = SELECTION_WAND.getItemMeta();
 
-		meta.setDisplayName("§a§oSubclaim Wand");
+        meta.setDisplayName("§a§oSubclaim Wand");
         meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect subclaim's corners", ""));
-		SELECTION_WAND.setItemMeta(meta);
-	}
+        SELECTION_WAND.setItemMeta(meta);
+    }
 
     @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim" }, permissionNode="")
     public static void teamSubclaim(Player sender) {
@@ -238,68 +238,68 @@ public class TeamSubclaimCommand implements Listener {
         sender.getInventory().remove(SELECTION_WAND);
     }
 
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
-		if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && event.getItem().getType() == SELECTION_WAND.getType()) {
-			if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().contains("Subclaim")) {
-				if (team != null) {
-					Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
+        if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && event.getItem().getType() == SELECTION_WAND.getType()) {
+            if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().contains("Subclaim")) {
+                if (team != null) {
+                    Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
-					if (subclaim != null) {
-						event.getPlayer().sendMessage(ChatColor.RED + "(" + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ") is a part of " + subclaim.getName() + "!");
+                    if (subclaim != null) {
+                        event.getPlayer().sendMessage(ChatColor.RED + "(" + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ") is a part of " + subclaim.getName() + "!");
                         event.setCancelled(true);
-						return;
-					}
+                        return;
+                    }
 
-					if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation()) != team) {
-						event.getPlayer().sendMessage(ChatColor.RED + "This block is not a part of your teams' territory!");
+                    if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation()) != team) {
+                        event.getPlayer().sendMessage(ChatColor.RED + "This block is not a part of your teams' territory!");
                         event.setCancelled(true);
-						return;
-					}
-				}
+                        return;
+                    }
+                }
 
                 Selection selection = new Selection(null, null);
 
-				if (selections.containsKey(event.getPlayer().getName())) {
-					selection = selections.get(event.getPlayer().getName());
-				}
+                if (selections.containsKey(event.getPlayer().getName())) {
+                    selection = selections.get(event.getPlayer().getName());
+                }
 
-				int set = 0;
+                int set = 0;
 
-				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-					set = 2;
-					selection.setLoc1(event.getClickedBlock().getLocation());
-				} else {
-					set = 1;
-					selection.setLoc2(event.getClickedBlock().getLocation());
-				}
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    set = 2;
+                    selection.setLoc1(event.getClickedBlock().getLocation());
+                } else {
+                    set = 1;
+                    selection.setLoc2(event.getClickedBlock().getLocation());
+                }
 
-				event.getPlayer().sendMessage(ChatColor.YELLOW + "Set subclaim's location " + ChatColor.LIGHT_PURPLE + set + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
-				selections.put(event.getPlayer().getName(), selection);
-			}
-		}
-	}
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Set subclaim's location " + ChatColor.LIGHT_PURPLE + set + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
+                selections.put(event.getPlayer().getName(), selection);
+            }
+        }
+    }
 
-	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if (event.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
-			event.getItemDrop().remove();
-		}
-	}
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (event.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
+            event.getItemDrop().remove();
+        }
+    }
 
-	@Data
-	@AllArgsConstructor
-	private static class Selection {
+    @Data
+    @AllArgsConstructor
+    private static class Selection {
 
-		private Location loc1;
+        private Location loc1;
         private Location loc2;
 
         public boolean isComplete() {
             return (loc1 != null && loc2 != null);
         }
 
-	}
+    }
 
 }

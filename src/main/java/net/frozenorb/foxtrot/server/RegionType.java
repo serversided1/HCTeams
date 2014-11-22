@@ -23,20 +23,20 @@ public enum RegionType {
         return (true);
     }),
 
-	WARZONE((event) -> true),
+    WARZONE((event) -> true),
 
-	WILDNERNESS((event) -> true),
+    WILDNERNESS((event) -> true),
 
-	KOTH((event) -> {
-		if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+    KOTH((event) -> {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             event.setTo(event.getFrom());
-			return (false);
-		}
+            return (false);
+        }
 
-		return (true);
-	}),
+        return (true);
+    }),
 
     ROAD((event) -> true),
 
@@ -73,26 +73,26 @@ public enum RegionType {
         return (true);
     }),
 
-	CLAIMED_LAND((event) -> {
-		Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
+    CLAIMED_LAND((event) -> {
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
 
-		if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
-			if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {
-				event.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-				event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-			}
-		}
+        if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
+            if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
+                event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+            }
+        }
 
-		if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
-			event.setTo(event.getFrom());
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+            event.setTo(event.getFrom());
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-			return (false);
-		}
+            return (false);
+        }
 
-		return (true);
-	});
+        return (true);
+    });
 
-	@Getter private RegionMoveHandler moveHandler;
+    @Getter private RegionMoveHandler moveHandler;
 
 }

@@ -67,6 +67,6 @@ public class TeamKickCommand {
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }
-	}
+    }
 
 }

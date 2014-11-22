@@ -36,6 +36,6 @@ public class TeamDepositCommand {
         FactionActionTracker.logAction(team, "actions", "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() + amount) + " [Amount: " + amount + ", Deposited by: " + sender.getName() + "]");
         team.setBalance(team.getBalance() + amount);
         team.getOnlineMembers().forEach(pe -> pe.sendMessage("§e" + sender.getName() + " deposited §d" + amount + " §einto the team balance."));
-	}
+    }
 
 }

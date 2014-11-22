@@ -7,9 +7,9 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public static final long PENDING_USE = -10L;
 
-	public PvPTimerMap() {
-		super("PvPTimers");
-	}
+    public PvPTimerMap() {
+        super("PvPTimers");
+    }
 
     @Override
     public String getRedisValue(Long time) {
@@ -25,11 +25,11 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
         updateValueAsync(player, PENDING_USE);
     }
 
-	public void createTimer(String player, int seconds) {
-		updateValueAsync(player, System.currentTimeMillis() + (seconds * 1000));
-	}
+    public void createTimer(String player, int seconds) {
+        updateValueAsync(player, System.currentTimeMillis() + (seconds * 1000));
+    }
 
-	public boolean hasTimer(String player) {
+    public boolean hasTimer(String player) {
         if (contains(player)) {
             if (getValue(player) == PENDING_USE) {
                 return (false);
@@ -38,8 +38,8 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
             return (getValue(player) > System.currentTimeMillis());
         }
 
-		return (false);
-	}
+        return (false);
+    }
 
     public long getTimer(String player) {
         return (contains(player) ? getValue(player) : -1L);

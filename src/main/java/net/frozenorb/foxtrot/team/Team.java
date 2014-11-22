@@ -32,42 +32,42 @@ public class Team {
 
     // Configurable values //
 
-	public static final int MAX_TEAM_SIZE = 30;
+    public static final int MAX_TEAM_SIZE = 30;
     public static final int MAX_CLAIMS = 2;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
 
     // End configurable values //
 
-	@Getter @Setter private String name;
+    @Getter @Setter private String name;
     @Getter @Setter private ObjectId uniqueId;
     @Getter private String friendlyName;
     @Getter private Location hq;
 
-	@Getter private String owner = null;
-	@Getter private Set<String> members = new HashSet<String>();
-	@Getter private Set<String> captains = new HashSet<String>();
+    @Getter private String owner = null;
+    @Getter private Set<String> members = new HashSet<String>();
+    @Getter private Set<String> captains = new HashSet<String>();
 
-	@Getter private boolean needsSave = false;
-	@Getter private boolean loading = false;
+    @Getter private boolean needsSave = false;
+    @Getter private boolean loading = false;
 
-	@Getter private Set<String> invitations = new HashSet<String>();
-	@Getter private double DTR;
+    @Getter private Set<String> invitations = new HashSet<String>();
+    @Getter private double DTR;
 
-	@Getter private List<Claim> claims = new ArrayList<Claim>();
+    @Getter private List<Claim> claims = new ArrayList<Claim>();
 
-	@Getter private long raidableCooldown;
-	@Getter private long deathCooldown;
+    @Getter private long raidableCooldown;
+    @Getter private long deathCooldown;
 
-	@Getter private double balance;
+    @Getter private double balance;
 
-	@Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
+    @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
 
-	public Team(String name) {
-		this.name = name;
-	}
+    public Team(String name) {
+        this.name = name;
+    }
 
-	public void setDTR(double newDTR) {
+    public void setDTR(double newDTR) {
         if (DTR != newDTR) {
             if (DTR <= 0 && newDTR > 0) {
                 FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
@@ -84,26 +84,26 @@ public class Team {
             this.DTR = newDTR;
             flagForSave();
         }
-	}
+    }
 
-	public void setFriendlyName(String friendlyName) {
-		flagForSave();
-		this.friendlyName = friendlyName;
-	}
+    public void setFriendlyName(String friendlyName) {
+        flagForSave();
+        this.friendlyName = friendlyName;
+    }
 
-	public void addMember(String member) {
+    public void addMember(String member) {
         if (!member.equalsIgnoreCase("null")) {
             flagForSave();
             members.add(member);
             FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
         }
-	}
+    }
 
-	public void addCaptain(String captain) {
-		flagForSave();
-		captains.add(captain);
+    public void addCaptain(String captain) {
+        flagForSave();
+        captains.add(captain);
         FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
-	}
+    }
 
     public void setBalance(double balance) {
         flagForSave();
@@ -120,34 +120,34 @@ public class Team {
         this.deathCooldown = deathCooldown;
     }
 
-	public void removeCaptain(String name) {
+    public void removeCaptain(String name) {
         FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
         Iterator<String> iterator = captains.iterator();
 
-		while (iterator.hasNext()) {
-			if (iterator.next().equalsIgnoreCase(name)) {
+        while (iterator.hasNext()) {
+            if (iterator.next().equalsIgnoreCase(name)) {
                 iterator.remove();
-			}
-		}
-	}
+            }
+        }
+    }
 
-	public void setOwner(String owner) {
-		flagForSave();
+    public void setOwner(String owner) {
+        flagForSave();
         FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
-		this.owner = owner;
+        this.owner = owner;
 
         if (owner != null && !owner.equals("null")) {
             members.add(owner);
         }
-	}
+    }
 
-	public void setHQ(Location hq) {
+    public void setHQ(Location hq) {
         String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
-		flagForSave();
-		this.hq = hq;
-	}
+        flagForSave();
+        this.hq = hq;
+    }
 
     public void disband() {
         Basic.get().getEconomyManager().depositPlayer(owner, balance);
@@ -202,47 +202,47 @@ public class Team {
         });
     }
 
-	public void flagForSave() {
-		needsSave = true;
-	}
+    public void flagForSave() {
+        needsSave = true;
+    }
 
-	public boolean isOwner(String name) {
-		return (owner != null && owner.equalsIgnoreCase(name));
-	}
+    public boolean isOwner(String name) {
+        return (owner != null && owner.equalsIgnoreCase(name));
+    }
 
-	public String getActualPlayerName(String pName) {
-		for (String str : members) {
-			if (pName.equalsIgnoreCase(str)) {
+    public String getActualPlayerName(String pName) {
+        for (String str : members) {
+            if (pName.equalsIgnoreCase(str)) {
                 return (str);
             }
-		}
+        }
 
-		return (null);
-	}
+        return (null);
+    }
 
-	public boolean isMember(Player player) {
-		return (isMember(player.getName()));
-	}
+    public boolean isMember(Player player) {
+        return (isMember(player.getName()));
+    }
 
-	public boolean isMember(String name) {
-		for (String member : members) {
-			if (name.equalsIgnoreCase(member)) {
+    public boolean isMember(String name) {
+        for (String member : members) {
+            if (name.equalsIgnoreCase(member)) {
                 return (true);
             }
-		}
+        }
 
-		return (false);
-	}
+        return (false);
+    }
 
-	public boolean isCaptain(String name) {
-		for (String member : captains) {
-			if (name.equalsIgnoreCase(member)) {
+    public boolean isCaptain(String name) {
+        for (String member : captains) {
+            if (name.equalsIgnoreCase(member)) {
                 return (true);
             }
-		}
+        }
 
-		return (false);
-	}
+        return (false);
+    }
 
     public boolean isAlly(Player player) {
         return (isAlly(player.getName()));
@@ -253,54 +253,54 @@ public class Team {
         return (false);
     }
 
-	public boolean ownsLocation(Location loc) {
-		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
-	}
+    public boolean ownsLocation(Location loc) {
+        return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
+    }
 
-	public boolean ownsClaim(Claim cc) {
-		return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(cc) == this);
-	}
+    public boolean ownsClaim(Claim cc) {
+        return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(cc) == this);
+    }
 
-	public boolean removeMember(String name) {
+    public boolean removeMember(String name) {
         FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
 
-		for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
-			if (iterator.next().equalsIgnoreCase(name)) {
-				iterator.remove();
-				break;
-			}
-		}
+        for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
+            if (iterator.next().equalsIgnoreCase(name)) {
+                iterator.remove();
+                break;
+            }
+        }
 
-		removeCaptain(name);
+        removeCaptain(name);
 
-		if (isOwner(name)) {
-			Iterator<String> iter = members.iterator();
+        if (isOwner(name)) {
+            Iterator<String> iter = members.iterator();
 
-			if (iter.hasNext()) {
-				this.owner = members.iterator().next();
-			}
-		}
+            if (iter.hasNext()) {
+                this.owner = members.iterator().next();
+            }
+        }
 
-		Iterator<Subclaim> sc = subclaims.iterator();
+        Iterator<Subclaim> sc = subclaims.iterator();
 
-		while (sc.hasNext()) {
-			Subclaim s = sc.next();
+        while (sc.hasNext()) {
+            Subclaim s = sc.next();
 
-			if (s.isMember(name)) {
-				s.removeMember(name);
-			}
-		}
+            if (s.isMember(name)) {
+                s.removeMember(name);
+            }
+        }
 
         // Is this needed?
-		boolean emptyTeam = owner == null || members.size() == 0;
+        boolean emptyTeam = owner == null || members.size() == 0;
 
-		if (DTR > getMaxDTR()) {
-			DTR = getMaxDTR();
-		}
+        if (DTR > getMaxDTR()) {
+            DTR = getMaxDTR();
+        }
 
         flagForSave();
-		return (emptyTeam);
-	}
+        return (emptyTeam);
+    }
 
     public boolean hasDTRBitmask(DTRBitmaskType bitmaskType) {
         if (getOwner() != null) {
@@ -311,86 +311,86 @@ public class Team {
         return (((dtrInt & bitmaskType.getBitmask()) == bitmaskType.getBitmask()));
     }
 
-	public int getOnlineMemberAmount() {
-		int amt = 0;
+    public int getOnlineMemberAmount() {
+        int amt = 0;
 
-		for (String m : getMembers()) {
+        for (String m : getMembers()) {
             Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
 
-			if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
-				amt++;
-			}
-		}
+            if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
+                amt++;
+            }
+        }
 
-		return (amt);
-	}
+        return (amt);
+    }
 
-	public List<Player> getOnlineMembers() {
-		List<Player> players = new ArrayList<Player>();
+    public List<Player> getOnlineMembers() {
+        List<Player> players = new ArrayList<Player>();
 
-		for (String m : getMembers()) {
+        for (String m : getMembers()) {
             if (m == null) {
                 continue;
             }
 
             Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
 
-			if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
-				players.add(exactPlayer);
-			}
-		}
+            if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
+                players.add(exactPlayer);
+            }
+        }
 
-		return (players);
-	}
+        return (players);
+    }
 
-	public List<String> getOfflineMembers() {
-		List<String> players = new ArrayList<String>();
+    public List<String> getOfflineMembers() {
+        List<String> players = new ArrayList<String>();
 
-		for (String m : getMembers()) {
+        for (String m : getMembers()) {
             if (m == null) {
                 continue;
             }
 
             Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
 
-			if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
-				players.add(m);
-			}
-		}
+            if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
+                players.add(m);
+            }
+        }
 
-		return (players);
-	}
+        return (players);
+    }
 
-	public Subclaim getSubclaim(String name) {
-		for (Subclaim sc : subclaims) {
-			if (sc.getName().equalsIgnoreCase(name)) {
-				return (sc);
-			}
-		}
+    public Subclaim getSubclaim(String name) {
+        for (Subclaim sc : subclaims) {
+            if (sc.getName().equalsIgnoreCase(name)) {
+                return (sc);
+            }
+        }
 
-		return (null);
-	}
+        return (null);
+    }
 
-	public Subclaim getSubclaim(Location loc) {
-		for (Subclaim sc : subclaims) {
-			if (new CuboidRegion(sc.getName(), sc.getLoc1(), sc.getLoc2()).contains(loc)) {
-				return (sc);
-			}
-		}
+    public Subclaim getSubclaim(Location loc) {
+        for (Subclaim sc : subclaims) {
+            if (new CuboidRegion(sc.getName(), sc.getLoc1(), sc.getLoc2()).contains(loc)) {
+                return (sc);
+            }
+        }
 
-		return (null);
-	}
+        return (null);
+    }
 
-	public int getSize() {
-		return (getMembers().size());
-	}
+    public int getSize() {
+        return (getMembers().size());
+    }
 
-	public boolean isRaidable() {
+    public boolean isRaidable() {
         // If their DTR is 0, they ARE raidable.
-		return (DTR <= 0);
-	}
+        return (DTR <= 0);
+    }
 
-	public void playerDeath(String p, double dtrLoss) {
+    public void playerDeath(String p, double dtrLoss) {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
         FactionActionTracker.logAction(this, "actions", "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
@@ -402,18 +402,18 @@ public class Team {
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
         setDTR(newDTR);
 
-		if (isRaidable()) {
+        if (isRaidable()) {
             FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
-			raidableCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
-		}
+            raidableCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
+        }
 
-		DTRHandler.setCooldown(this);
-		deathCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
-	}
+        DTRHandler.setCooldown(this);
+        deathCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
+    }
 
-	public BigDecimal getDTRIncrement() {
-		return (getDTRIncrement(getOnlineMemberAmount()));
-	}
+    public BigDecimal getDTRIncrement() {
+        return (getDTRIncrement(getOnlineMemberAmount()));
+    }
 
     // I'm not quite sure why we're using BigDecimals here.
     public BigDecimal getDTRIncrement(int playersOnline) {
@@ -421,77 +421,77 @@ public class Team {
         return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
     }
 
-	public double getMaxDTR() {
-		return (DTRHandler.getMaxDTR(getSize()));
-	}
+    public double getMaxDTR() {
+        return (DTRHandler.getMaxDTR(getSize()));
+    }
 
-	public void load(String str) {
-		loading = true;
-		String[] lines = str.split("\n");
+    public void load(String str) {
+        loading = true;
+        String[] lines = str.split("\n");
 
-		for (String line : lines) {
-			String identifier = line.substring(0, line.indexOf(':'));
-			String[] lineParts = line.substring(line.indexOf(':') + 1).split(",");
+        for (String line : lines) {
+            String identifier = line.substring(0, line.indexOf(':'));
+            String[] lineParts = line.substring(line.indexOf(':') + 1).split(",");
 
-			if (identifier.equalsIgnoreCase("Owner")) {
+            if (identifier.equalsIgnoreCase("Owner")) {
                 if (!lineParts[0].equals("null")) {
                     setOwner(lineParts[0]);
                 }
-			} else if (identifier.equalsIgnoreCase("UUID")) {
+            } else if (identifier.equalsIgnoreCase("UUID")) {
                 uniqueId = new ObjectId(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Members")) {
-				for (String name : lineParts) {
-					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
-						addMember(name.trim());
-					}
-				}
-			} else if (identifier.equalsIgnoreCase("Captains")) {
-				for (String name : lineParts) {
-					if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
-						addCaptain(name.trim());
-					}
-				}
-			} else if (identifier.equalsIgnoreCase("Invited")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
+                        addMember(name.trim());
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("Captains")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
+                        addCaptain(name.trim());
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("Invited")) {
                 for (String name : lineParts) {
                     if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
                         getInvitations().add(name);
                     }
                 }
             } else if (identifier.equalsIgnoreCase("HQ")) {
-				setHQ(parseLocation(lineParts));
-			} else if (identifier.equalsIgnoreCase("DTR")) {
-				setDTR(Double.valueOf(lineParts[0]));
-			} else if (identifier.equalsIgnoreCase("Balance")) {
-				setBalance(Double.valueOf(lineParts[0]));
-			} else if (identifier.equalsIgnoreCase("DeathCooldown")) {
+                setHQ(parseLocation(lineParts));
+            } else if (identifier.equalsIgnoreCase("DTR")) {
+                setDTR(Double.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Balance")) {
+                setBalance(Double.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("DeathCooldown")) {
                 setDeathCooldown(Long.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("RaidableCooldown")) {
                 setRaidableCooldown(Long.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
-				setFriendlyName(lineParts[0]);
-			} else if (identifier.equalsIgnoreCase("Claims")) {
-				for (String claim : lineParts) {
-					claim = claim.replace("[", "").replace("]", "");
+                setFriendlyName(lineParts[0]);
+            } else if (identifier.equalsIgnoreCase("Claims")) {
+                for (String claim : lineParts) {
+                    claim = claim.replace("[", "").replace("]", "");
 
-					if (claim.contains(":")) {
+                    if (claim.contains(":")) {
                         String[] split = claim.split(":");
 
-						int x1 = Integer.valueOf(split[0].trim());
-						int y1 = Integer.valueOf(split[1].trim());
-						int z1 = Integer.valueOf(split[2].trim());
-						int x2 = Integer.valueOf(split[3].trim());
-						int y2 = Integer.valueOf(split[4].trim());
-						int z2 = Integer.valueOf(split[5].trim());
-						String name = split[6].trim();
+                        int x1 = Integer.valueOf(split[0].trim());
+                        int y1 = Integer.valueOf(split[1].trim());
+                        int z1 = Integer.valueOf(split[2].trim());
+                        int x2 = Integer.valueOf(split[3].trim());
+                        int y2 = Integer.valueOf(split[4].trim());
+                        int z2 = Integer.valueOf(split[5].trim());
+                        String name = split[6].trim();
                         String world = split[7].trim();
 
-						Claim claimObj = new Claim(world, x1, y1, z1, x2, y2, z2);
-						claimObj.setName(name);
+                        Claim claimObj = new Claim(world, x1, y1, z1, x2, y2, z2);
+                        claimObj.setName(name);
 
-						getClaims().add(claimObj);
-					}
-				}
-			} else if (identifier.equalsIgnoreCase("Subclaims")) {
+                        getClaims().add(claimObj);
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("Subclaims")) {
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
 
@@ -516,43 +516,43 @@ public class Team {
                         getSubclaims().add(subclaimObj);
                     }
                 }
-			}
-		}
+            }
+        }
 
         if (uniqueId == null) {
             uniqueId = new ObjectId();
             FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + getFriendlyName() + "...");
         }
 
-		loading = false;
-		needsSave = false;
-	}
+        loading = false;
+        needsSave = false;
+    }
 
-	public String saveString(boolean toJedis) {
-		if (toJedis) {
+    public String saveString(boolean toJedis) {
+        if (toJedis) {
             needsSave = false;
         }
 
-		if (loading) {
+        if (loading) {
             return (null);
         }
 
-		StringBuilder teamString = new StringBuilder();
+        StringBuilder teamString = new StringBuilder();
 
-		StringBuilder members = new StringBuilder();
-		StringBuilder captains = new StringBuilder();
+        StringBuilder members = new StringBuilder();
+        StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
-		Location homeLoc = getHq();
+        Location homeLoc = getHq();
 
-		for (String member : getMembers()) {
-			members.append(member.trim()).append(", ");
-		}
+        for (String member : getMembers()) {
+            members.append(member.trim()).append(", ");
+        }
 
         if (members.length() > 2) {
             members.setLength(members.length() - 2);
         }
 
-		for (String captain : getCaptains()) {
+        for (String captain : getCaptains()) {
             captains.append(captain.trim()).append(", ");
         }
 
@@ -569,45 +569,45 @@ public class Team {
         }
 
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
-		teamString.append("Owner:").append(getOwner()).append('\n');
+        teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
-		teamString.append("Members:").append(members.toString()).append('\n');
+        teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
         teamString.append("Claims:").append(getClaims().toString()).append('\n');
-		teamString.append("DTR:").append(getDTR()).append('\n');
-		teamString.append("Balance:").append(getBalance()).append('\n');
+        teamString.append("DTR:").append(getDTR()).append('\n');
+        teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DeathCooldown:").append(getDeathCooldown()).append('\n');
         teamString.append("RaidableCooldown:").append(getRaidableCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getFriendlyName()).append('\n');
 
-		if (homeLoc != null) {
+        if (homeLoc != null) {
             teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
         }
 
         return (teamString.toString());
-	}
+    }
 
-	public int getMaxClaimAmount() {
-		return (MAX_CLAIMS);
-	}
+    public int getMaxClaimAmount() {
+        return (MAX_CLAIMS);
+    }
 
-	private Location parseLocation(String[] args) {
-		if (args.length != 6) {
+    private Location parseLocation(String[] args) {
+        if (args.length != 6) {
             return (null);
         }
 
-		World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
-		double x = Double.parseDouble(args[1]);
-		double y = Double.parseDouble(args[2]);
-		double z = Double.parseDouble(args[3]);
-		float yaw = Float.parseFloat(args[4]);
-		float pitch = Float.parseFloat(args[5]);
+        World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
+        double x = Double.parseDouble(args[1]);
+        double y = Double.parseDouble(args[2]);
+        double z = Double.parseDouble(args[3]);
+        float yaw = Float.parseFloat(args[4]);
+        float pitch = Float.parseFloat(args[5]);
 
-		return (new Location(world, x, y, z, yaw, pitch));
-	}
+        return (new Location(world, x, y, z, yaw, pitch));
+    }
 
-	public void sendTeamInfo(Player player) {
+    public void sendTeamInfo(Player player) {
         String gray = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
         player.sendMessage(gray);
@@ -765,16 +765,16 @@ public class Team {
             }
         }
 
-		player.sendMessage(gray);
-	}
+        player.sendMessage(gray);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Team) {
-			return ((Team) obj).getName().equals(getName());
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Team) {
+            return ((Team) obj).getName().equals(getName());
+        }
 
-		return (super.equals(obj));
-	}
+        return (super.equals(obj));
+    }
 
 }

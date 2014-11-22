@@ -43,6 +43,6 @@ public class TeamLeaderCommand {
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");
         }
-	}
+    }
 
 }

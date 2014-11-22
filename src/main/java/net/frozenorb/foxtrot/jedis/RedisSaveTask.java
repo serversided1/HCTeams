@@ -18,29 +18,29 @@ public class RedisSaveTask extends BukkitRunnable {
         save(false);
     }
 
-	public static int save(boolean forceAll) {
-		System.out.println("Saving teams to Jedis...");
+    public static int save(boolean forceAll) {
+        System.out.println("Saving teams to Jedis...");
 
-		JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
+        JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
 
-			@Override
-			public Integer execute(Jedis jedis) {
+            @Override
+            public Integer execute(Jedis jedis) {
                 int changed = 0;
 
-				for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-					if (team.isNeedsSave() || forceAll) {
+                for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+                    if (team.isNeedsSave() || forceAll) {
                         changed++;
                         jedis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
-					}
-				}
+                    }
+                }
 
                 jedis.set("TeamsLastUpdated", String.valueOf((float) (System.currentTimeMillis() / 1000L)));
-				return (changed);
-			}
-		};
+                return (changed);
+            }
+        };
 
         long startMs = System.currentTimeMillis();
-		int teamsSaved = FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+        int teamsSaved = FoxtrotPlugin.getInstance().runJedisCommand(jdc);
         int time = (int) (System.currentTimeMillis() - startMs);
 
         System.out.println("Saved " + teamsSaved + " teams to Redis in " + time + "ms.");

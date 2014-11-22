@@ -13,12 +13,12 @@ public class TeamLeaveCommand {
 
     @Command(names={ "team leave", "t leave", "f leave", "faction leave", "fac leave" }, permissionNode="")
     public static void teamLeave(Player sender) {
-		Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-		if (team == null) {
-			sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
+        if (team == null) {
+            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
-		}
+        }
 
         if (team.isOwner(sender.getName()) && team.getSize() > 1) {
             sender.sendMessage(ChatColor.RED + "Please choose a new leader before leaving your team!");
@@ -49,6 +49,6 @@ public class TeamLeaveCommand {
 
         NametagManager.reloadPlayer(sender);
         NametagManager.sendTeamsToPlayer(sender);
-	}
+    }
 
 }

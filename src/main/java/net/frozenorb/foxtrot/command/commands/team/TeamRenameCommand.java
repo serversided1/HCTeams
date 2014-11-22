@@ -44,6 +44,6 @@ public class TeamRenameCommand {
         } else {
             sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
         }
-	}
+    }
 
 }
