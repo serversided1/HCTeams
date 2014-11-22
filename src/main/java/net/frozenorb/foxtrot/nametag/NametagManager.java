@@ -40,7 +40,7 @@ public class NametagManager {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 4L, 4L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
 	public static void reloadPlayer(Player toRefresh) {
