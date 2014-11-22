@@ -97,74 +97,65 @@ public class FoxListener implements Listener {
             return;
         }
 
-        Location fromLoc = event.getFrom();
-        Location toLoc = event.getTo();
-        double toX = toLoc.getX();
-        double toZ = toLoc.getZ();
-        double toY = toLoc.getY();
-        double fromX = fromLoc.getX();
-        double fromZ = fromLoc.getZ();
-        double fromY = fromLoc.getY();
-
-        if (fromX != toX || fromZ != toZ || fromY != toY) {
-            pmeSafeLogout.startTiming();
-            if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
-                if (fromLoc.distance(toLoc) > 0.1 && (fromX != toX || fromZ != toZ || fromY != toY)) {
-                    Bukkit.getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
-                    ServerHandler.getTasks().remove(event.getPlayer().getName());
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
-                }
-            }
-            pmeSafeLogout.stopTiming();
-
-            pmeTeamGrab.startTiming();
-            Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
-            pmeTeamGrab.stopTiming();
-
-            pmePvPTimer.startTiming();
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getName())) {
-                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
-            }
-            pmePvPTimer.stopTiming();
-
-            pmeTeamGrab.startTiming();
-            Team ownerFrom = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getFrom());
-            pmeTeamGrab.stopTiming();
-            ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
-            pmeRegionGrab.startTiming();
-            RegionData from = sm.getRegion(ownerFrom, fromLoc);
-            RegionData to = sm.getRegion(ownerTo, toLoc);
-            pmeRegionGrab.stopTiming();
-
-            pmeRegionNotify.startTiming();
-            if (!from.equals(to)) {
-                pmeRegionNotifyHM.startTiming();
-                if (!to.getRegionType().getMoveHandler().handleMove(event)) {
-                    return;
-                }
-                pmeRegionNotifyHM.stopTiming();
-
-                pmeRegionNotifySpawn.startTiming();
-                // PVP Timer
-                if (from.getRegionType() == RegionType.SPAWN) {
-                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
-                        FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getName(), 30 * 60);
-                    }
-                }
-                pmeRegionNotifySpawn.stopTiming();
-
-                pmeRegionNotifyBM.startTiming();
-                boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
-                boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
-                pmeRegionNotifyBM.stopTiming();
-
-                String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
-                String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
-
-                event.getPlayer().sendMessage(new String[] { fromStr, toStr });
-            }
-            pmeRegionNotify.stopTiming();
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
         }
+
+        pmeSafeLogout.startTiming();
+        if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
+            FoxtrotPlugin.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
+            ServerHandler.getTasks().remove(event.getPlayer().getName());
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
+        }
+        pmeSafeLogout.stopTiming();
+
+        pmeTeamGrab.startTiming();
+        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
+        pmeTeamGrab.stopTiming();
+
+        pmePvPTimer.startTiming();
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getName())) {
+            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
+        }
+        pmePvPTimer.stopTiming();
+
+        pmeTeamGrab.startTiming();
+        Team ownerFrom = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getFrom());
+        pmeTeamGrab.stopTiming();
+        ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
+        pmeRegionGrab.startTiming();
+        RegionData from = sm.getRegion(ownerFrom, event.getFrom());
+        RegionData to = sm.getRegion(ownerTo, event.getTo());
+        pmeRegionGrab.stopTiming();
+
+        pmeRegionNotify.startTiming();
+        if (!from.equals(to)) {
+            pmeRegionNotifyHM.startTiming();
+            if (!to.getRegionType().getMoveHandler().handleMove(event)) {
+                return;
+            }
+            pmeRegionNotifyHM.stopTiming();
+
+            pmeRegionNotifySpawn.startTiming();
+            // PVP Timer
+            if (from.getRegionType() == RegionType.SPAWN) {
+                if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
+                    FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getName(), 30 * 60);
+                }
+            }
+            pmeRegionNotifySpawn.stopTiming();
+
+            pmeRegionNotifyBM.startTiming();
+            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
+            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
+            pmeRegionNotifyBM.stopTiming();
+
+            String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
+            String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
+
+            event.getPlayer().sendMessage(new String[] { fromStr, toStr });
+        }
+        pmeRegionNotify.stopTiming();
     }
 
     @SuppressWarnings("unchecked")
