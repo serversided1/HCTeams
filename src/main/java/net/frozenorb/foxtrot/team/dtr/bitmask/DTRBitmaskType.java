@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.team.dtr.bitmask;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.Location;
 
 /**
@@ -56,7 +57,7 @@ public enum DTRBitmaskType {
     }
 
     public boolean appliesAt(Location location) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location);
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
         return (ownerTo != null && ownerTo.getOwner() == null && ownerTo.hasDTRBitmask(this));
     }
 

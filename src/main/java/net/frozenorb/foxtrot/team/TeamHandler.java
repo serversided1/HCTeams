@@ -84,18 +84,6 @@ public class TeamHandler {
         });
     }
 
-    public boolean isTaken(Location location) {
-        return (getOwner(location) != null);
-    }
-
-    public Team getOwner(Claim claim) {
-        return (LandBoard.getInstance().getTeamAt(claim));
-    }
-
-    public Team getOwner(Location location) {
-        return (LandBoard.getInstance().getTeamAt(location));
-    }
-
     public Team getPlayerTeam(String name) {
         if (!playerTeamMap.containsKey(name.toLowerCase())) {
             return (null);

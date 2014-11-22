@@ -222,7 +222,7 @@ public class ServerHandler {
     }
 
     public RegionData getRegion(Location location) {
-        return (getRegion(FoxtrotPlugin.getInstance().getTeamHandler().getOwner(location), location));
+        return (getRegion(LandBoard.getInstance().getTeam(location), location));
     }
 
     public RegionData getRegion(Team ownerTo, Location location) {
@@ -306,7 +306,7 @@ public class ServerHandler {
                 return;
             }
 
-            Team inClaim = LandBoard.getInstance().getTeamAt(player.getLocation());
+            Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
             if (inClaim != null) {
                 if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
@@ -334,7 +334,7 @@ public class ServerHandler {
     }
 
     public boolean isUnclaimed(Location loc) {
-        return (!FoxtrotPlugin.getInstance().getTeamHandler().isTaken(loc) && !isWarzone(loc));
+        return (LandBoard.getInstance().getClaim(loc) == null && !isWarzone(loc));
     }
 
     public boolean isAdminOverride(Player player) {
@@ -346,12 +346,12 @@ public class ServerHandler {
     }
 
     public boolean isUnclaimedOrRaidable(Location loc) {
-        Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        Team owner = LandBoard.getInstance().getTeam(loc);
         return (owner == null || owner.isRaidable());
     }
 
     public float getDTRLossAt(Location loc) {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        Team ownerTo = LandBoard.getInstance().getTeam(loc);
 
         if (ownerTo != null) {
             if (ownerTo.getDTR() == 100D) {
@@ -367,7 +367,7 @@ public class ServerHandler {
             return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc);
+        Team ownerTo = LandBoard.getInstance().getTeam(loc);
 
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {

@@ -257,12 +257,12 @@ public class Team {
         return (false);
     }
 
-    public boolean ownsLocation(Location loc) {
-        return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) == this);
+    public boolean ownsLocation(Location location) {
+        return (LandBoard.getInstance().getTeam(location) == this);
     }
 
-    public boolean ownsClaim(Claim cc) {
-        return (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(cc) == this);
+    public boolean ownsClaim(Claim claim) {
+        return (claims.contains(claim));
     }
 
     public boolean removeMember(String name) {

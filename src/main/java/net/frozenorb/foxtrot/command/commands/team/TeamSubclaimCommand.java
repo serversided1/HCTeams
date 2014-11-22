@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.ListUtils;
 import org.apache.commons.lang.StringUtils;
@@ -216,8 +217,8 @@ public class TeamSubclaimCommand implements Listener {
         }
 
         for (Location loc : new CuboidRegion("test123", selection.getLoc1(), selection.getLoc2())) {
-            if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc) != team) {
-                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + FoxtrotPlugin.getInstance().getTeamHandler().getOwner(loc).getFriendlyName() + "§c!");
+            if (LandBoard.getInstance().getTeam(loc) != team) {
+                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + LandBoard.getInstance().getTeam(loc).getFriendlyName() + "§c!");
                 return;
             }
 
@@ -244,18 +245,18 @@ public class TeamSubclaimCommand implements Listener {
 
         if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && event.getItem().getType() == SELECTION_WAND.getType()) {
             if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().contains("Subclaim")) {
+                event.setCancelled(true);
+
                 if (team != null) {
                     Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
                     if (subclaim != null) {
                         event.getPlayer().sendMessage(ChatColor.RED + "(" + event.getClickedBlock().getX() + ", " + event.getClickedBlock().getY() + ", " + event.getClickedBlock().getZ() + ") is a part of " + subclaim.getName() + "!");
-                        event.setCancelled(true);
                         return;
                     }
 
-                    if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation()) != team) {
+                    if (LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation()) != team) {
                         event.getPlayer().sendMessage(ChatColor.RED + "This block is not a part of your teams' territory!");
-                        event.setCancelled(true);
                         return;
                     }
                 }

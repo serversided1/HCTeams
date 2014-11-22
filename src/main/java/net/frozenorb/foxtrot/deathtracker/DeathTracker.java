@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
@@ -77,7 +78,7 @@ public class DeathTracker {
             locationData.put("Y", killer.getLocation().getY());
             locationData.put("Z", killer.getLocation().getZ());
 
-            Team claimOwner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(killer.getLocation());
+            Team claimOwner = LandBoard.getInstance().getTeam(killer.getLocation());
 
             if (claimOwner == null) {
                 locationData.put("Claim", "N/A");
@@ -145,7 +146,7 @@ public class DeathTracker {
         locationData.put("Y", player.getLocation().getY());
         locationData.put("Z", player.getLocation().getZ());
 
-        Team claimOwner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(player.getLocation());
+        Team claimOwner = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (claimOwner == null) {
             locationData.put("Claim", "N/A");

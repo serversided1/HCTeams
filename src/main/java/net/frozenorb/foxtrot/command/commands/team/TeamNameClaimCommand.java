@@ -30,8 +30,8 @@ public class TeamNameClaimCommand {
         }
 
         if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
-            if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(sender.getLocation()) && team.ownsLocation(sender.getLocation())) {
-                net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaimAt(sender.getLocation());
+            if (LandBoard.getInstance().getTeam(sender.getLocation()) != null && team.ownsLocation(sender.getLocation())) {
+                net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaim(sender.getLocation());
 
                 cc.setName(name);
                 sender.sendMessage(ChatColor.YELLOW + "You have renamed this claim to: " + ChatColor.WHITE + name);

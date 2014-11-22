@@ -12,6 +12,7 @@ import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.util.InvUtils;
@@ -110,7 +111,7 @@ public class FoxListener implements Listener {
         pmeSafeLogout.stopTiming();
 
         pmeTeamGrab.startTiming();
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
+        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
         pmeTeamGrab.stopTiming();
 
         pmePvPTimer.startTiming();
@@ -120,7 +121,7 @@ public class FoxListener implements Listener {
         pmePvPTimer.stopTiming();
 
         pmeTeamGrab.startTiming();
-        Team ownerFrom = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getFrom());
+        Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
         pmeTeamGrab.stopTiming();
         ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
         pmeRegionGrab.startTiming();
@@ -287,7 +288,7 @@ public class FoxListener implements Listener {
                 return;
             }
 
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
+            Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
             if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
                 if (Arrays.asList(FoxListener.NO_INTERACT_WITH_SPAWN).contains(event.getMaterial()) || Arrays.asList(FoxListener.NO_INTERACT_IN_SPAWN).contains(event.getClickedBlock().getType())) {

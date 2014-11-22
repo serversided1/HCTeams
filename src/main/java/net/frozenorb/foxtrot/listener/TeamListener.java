@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -73,8 +74,8 @@ public class TeamListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(event.getBlock().getLocation())) {
-            Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
+        if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null) {
+            Team owner = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
             if (event.getCause() == BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL && owner.isMember(event.getPlayer())) {
                 return;
@@ -94,7 +95,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory!");
@@ -112,7 +113,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory!");
@@ -140,8 +141,8 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team pistonTeam = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
-        Team targetTeam = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(retractBlock.getLocation());
+        Team pistonTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
+        Team targetTeam = LandBoard.getInstance().getTeam(retractBlock.getLocation());
 
         if (pistonTeam == targetTeam) {
             return;
@@ -157,8 +158,8 @@ public class TeamListener implements Listener {
         }
 
         Block targetBlock = event.getBlock().getRelative(event.getDirection(), event.getLength() + 1);
-        Team pistonTeam = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlock().getLocation());
-        Team targetTeam = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(targetBlock.getLocation());
+        Team pistonTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
+        Team targetTeam = LandBoard.getInstance().getTeam(targetBlock.getLocation());
 
         if (targetTeam == pistonTeam) {
             return;
@@ -175,7 +176,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
             event.setCancelled(true);
@@ -192,7 +193,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
         if (team != null && !team.isMember((Player) event.getRemover())) {
             event.setCancelled(true);
@@ -209,7 +210,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getRightClicked().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getRightClicked().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
             event.setCancelled(true);
@@ -227,7 +228,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
+        Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
         if (team != null && !team.isMember((Player) event.getDamager())) {
             event.setCancelled(true);
@@ -269,7 +270,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Team owner = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getBlockClicked().getRelative(event.getBlockFace()).getLocation());
+        Team owner = LandBoard.getInstance().getTeam(event.getBlockClicked().getRelative(event.getBlockFace()).getLocation());
 
         if (owner != null && !owner.isMember(event.getPlayer())) {
             event.setCancelled(true);

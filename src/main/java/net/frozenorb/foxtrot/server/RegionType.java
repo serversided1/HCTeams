@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 
@@ -74,7 +75,7 @@ public enum RegionType {
     }),
 
     CLAIMED_LAND((event) -> {
-        Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getTo());
+        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
         if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
             if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {

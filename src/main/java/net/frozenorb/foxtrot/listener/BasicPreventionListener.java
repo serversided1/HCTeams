@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
@@ -125,7 +126,7 @@ public class BasicPreventionListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getTeamHandler().isTaken(event.getBlock().getLocation())) {
+        if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null) {
             event.setCancelled(true);
         }
     }

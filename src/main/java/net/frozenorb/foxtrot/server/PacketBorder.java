@@ -84,7 +84,7 @@ public class PacketBorder {
     }
 
     public static void checkPlayer(Player player) {
-        try {
+        /*try {
             PacketBorder border = new PacketBorder();
             int x = player.getLocation().getBlockX();
             int z = player.getLocation().getBlockZ();
@@ -129,7 +129,7 @@ public class PacketBorder {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public static class BorderThread extends Thread {
@@ -138,7 +138,7 @@ public class PacketBorder {
         public void run() {
             while (true) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    //checkPlayer(player);
+                    checkPlayer(player);
                 }
 
                 try {

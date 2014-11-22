@@ -67,7 +67,7 @@ public class KOTHRewardKeyListener implements Listener {
 
             ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
 
-            if (chosenItem == null || chosenItem.getType() == Material.AIR) {
+            if (chosenItem == null || chosenItem.getType() == Material.AIR || chosenItem.getAmount() == 0) {
                 continue;
             }
 

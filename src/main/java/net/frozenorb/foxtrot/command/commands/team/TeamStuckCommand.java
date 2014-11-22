@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.TeamHandler;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -176,9 +177,9 @@ public class TeamStuckCommand implements Listener {
     }
 
     private static Location nearestSafeLocation(Location origin) {
-        TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
+        LandBoard landBoard = LandBoard.getInstance();
 
-        if (!tm.isTaken(origin)) {
+        if (landBoard.getClaim(origin) == null) {
             return origin.getWorld().getHighestBlockAt(origin).getLocation();
         }
 
@@ -187,9 +188,9 @@ public class TeamStuckCommand implements Listener {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
-                if (!tm.isTaken(atPos)) {
+                if (landBoard.getClaim(origin) == null) {
                     return atPos.getWorld().getHighestBlockAt(atPos).getLocation();
-                } else if (!tm.isTaken(atNeg)) {
+                } else if (landBoard.getClaim(origin) == null) {
                     return atNeg.getWorld().getHighestBlockAt(atNeg).getLocation();
                 }
             }

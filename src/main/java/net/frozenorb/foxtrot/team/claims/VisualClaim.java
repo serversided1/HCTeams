@@ -80,24 +80,14 @@ public class VisualClaim implements Listener {
 
         if (type == VisualType.MAP) {
             int iter = 0;
-            Map<Team, Material> storageReference = new HashMap<Team, Material>();
-            Map<Claim, Material> sendMaps = new HashMap<Claim, Material>();
+            Map<Map.Entry<Claim, Team>, Material> sendMaps = new HashMap<Map.Entry<Claim, Team>, Material>();
 
-            for (Claim claim : LandBoard.getInstance().getClaims()) {
-                if (claim.isWithin(x, z, MAP_RADIUS, player.getLocation().getWorld().getName())) {
-                    Team owner = LandBoard.getInstance().getTeamAt(claim);
-                    Material mat = getMaterial(iter);
+            for (Map.Entry<Claim, Team> regionData : LandBoard.getInstance().getRegionData(player.getLocation(), MAP_RADIUS, 256, MAP_RADIUS)) {
+                Material mat = getMaterial(iter);
+                iter++;
 
-                    if (storageReference.containsKey(owner)) {
-                        mat = storageReference.get(owner);
-                    } else {
-                        iter++;
-                    }
-
-                    drawPillars(claim, mat);
-                    sendMaps.put(claim, mat);
-                    storageReference.put(owner, mat);
-                }
+                drawPillars(regionData.getKey(), mat);
+                sendMaps.put(regionData, mat);
             }
 
             if (sendMaps.isEmpty()) {
@@ -106,8 +96,8 @@ public class VisualClaim implements Listener {
             }
 
             if (!silent) {
-                for (Map.Entry<Claim, Material> claim : sendMaps.entrySet()) {
-                    player.sendMessage("§eLand §9" + claim.getKey().getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + "§a) §eis claimed by §9" + LandBoard.getInstance().getTeamAt(claim.getKey()).getFriendlyName());
+                for (Map.Entry<Map.Entry<Claim, Team>, Material> claim : sendMaps.entrySet()) {
+                    player.sendMessage("§eLand §9" + claim.getKey().getKey().getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + "§a) §eis claimed by §9" + claim.getKey().getValue().getFriendlyName());
                 }
             }
         }
@@ -145,7 +135,7 @@ public class VisualClaim implements Listener {
 
         for (Coordinate coordinate : claim.outset(CuboidDirection.Horizontal, 1)) {
             Location loc = new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), coordinate.getX(), 80, coordinate.getZ());
-            Claim cc = LandBoard.getInstance().getClaimAt(loc);
+            Claim cc = LandBoard.getInstance().getClaim(loc);
 
             if (cc != null) {
                 touchingClaims.add(cc);
@@ -189,10 +179,10 @@ public class VisualClaim implements Listener {
             int x = Math.abs(corner1.getBlockX() - corner2.getBlockX());
             int z = Math.abs(corner1.getBlockZ() - corner2.getBlockZ());
 
-            if (price < playerTeam.getBalance()) {
-                player.sendMessage(ChatColor.YELLOW + "Claim cost: " + ChatColor.RED + price + ChatColor.YELLOW + ", Current size: (" + ChatColor.WHITE + x + ", " + z + ChatColor.YELLOW + "), " + ChatColor.WHITE + (x * z) + ChatColor.YELLOW + " blocks");
+            if (price > playerTeam.getBalance()) {
+                player.sendMessage(ChatColor.YELLOW + "Claim cost: " + ChatColor.RED + "$" + price + ChatColor.YELLOW + ", Current size: (" + ChatColor.WHITE + x + ", " + z + ChatColor.YELLOW + "), " + ChatColor.WHITE + (x * z) + ChatColor.YELLOW + " blocks");
             } else {
-                player.sendMessage(ChatColor.YELLOW + "Claim cost: " + ChatColor.GREEN + price + ChatColor.YELLOW + ", Current size: (" + ChatColor.WHITE + x + ", " + z + ChatColor.YELLOW + "), " + ChatColor.WHITE + (x * z) + ChatColor.YELLOW + " blocks");
+                player.sendMessage(ChatColor.YELLOW + "Claim cost: " + ChatColor.GREEN + "$" + price + ChatColor.YELLOW + ", Current size: (" + ChatColor.WHITE + x + ", " + z + ChatColor.YELLOW + "), " + ChatColor.WHITE + (x * z) + ChatColor.YELLOW + " blocks");
             }
         }
     }
@@ -278,7 +268,7 @@ public class VisualClaim implements Listener {
 
             if (!bypass) {
                 team.setBalance(team.getBalance() - price);
-                player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + team.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: " + price + ")");
+                player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) team.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + price + ")");
             }
 
             FactionActionTracker.logAction(team, "actions", "Land Claim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");

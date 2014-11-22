@@ -76,7 +76,7 @@ public class KOTHHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 5L, 5L);
     }
 
     public static void loadKOTHs() {

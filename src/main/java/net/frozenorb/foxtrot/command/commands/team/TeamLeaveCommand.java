@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class TeamLeaveCommand {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getOwner(sender.getLocation()) == team) {
+        if (LandBoard.getInstance().getTeam(sender.getLocation()) == team) {
             sender.sendMessage(ChatColor.RED + "You cannot leave your team while on team territory.");
             return;
         }
