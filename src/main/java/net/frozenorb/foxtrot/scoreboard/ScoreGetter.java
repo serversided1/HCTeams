@@ -121,7 +121,7 @@ public interface ScoreGetter {
                     } else if (koth.getName().equals("EOTW")) {
                         KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
                     } else {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName() + " KOTH";
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
                     }
 
                     return (koth.getRemainingCapTime());
