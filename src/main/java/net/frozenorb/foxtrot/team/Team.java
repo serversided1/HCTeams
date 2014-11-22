@@ -150,7 +150,11 @@ public class Team {
     }
 
     public void disband() {
-        Basic.get().getEconomyManager().depositPlayer(owner, balance);
+        try {
+            Basic.get().getEconomyManager().depositPlayer(owner, balance);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for (String member : members) {
             FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(member.toLowerCase());
