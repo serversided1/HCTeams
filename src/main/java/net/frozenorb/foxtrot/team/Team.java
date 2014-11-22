@@ -637,9 +637,9 @@ public class Team {
 
         player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
         KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
-        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(owner);
+        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(this.owner);
 
-        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + owner + ChatColor.YELLOW + "[" + ChatColor.GREEN + km.getKills(owner) + ChatColor.YELLOW + "]");
+        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + this.owner + ChatColor.YELLOW + "[" + ChatColor.GREEN + km.getKills(this.owner) + ChatColor.YELLOW + "]");
 
         boolean first = true;
         boolean first2 = true;
