@@ -630,6 +630,7 @@ public class Team {
             }
 
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
+            player.sendMessage(gray);
             return;
         }
 
