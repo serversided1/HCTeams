@@ -78,7 +78,6 @@ public class TeamHandler {
 					}
 				}
 
-                LandBoard.getInstance().loadFromTeams();
 				return (null);
 			}
 

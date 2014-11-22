@@ -22,6 +22,7 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
@@ -174,6 +175,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     private void setupHandlers() {
         teamHandler = new TeamHandler();
+        LandBoard.getInstance().loadFromTeams();
+
         serverHandler = new ServerHandler();
         scoreboardHandler = new ScoreboardHandler();
         mapHandler = new MapHandler();
