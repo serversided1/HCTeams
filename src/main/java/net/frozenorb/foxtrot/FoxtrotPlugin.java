@@ -156,7 +156,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         try {
             result = jedisCommand.execute(jedis);
-            jedisPool.returnResource(jedis);
         } catch (Exception e) {
             e.printStackTrace();
 
