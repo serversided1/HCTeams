@@ -88,6 +88,15 @@ public class FoxtrotPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+        instance = this;
+
+        try {
+            jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
+            mongoPool = new MongoClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 		try {
 			EntityRegistrar.registerCustomEntities();
 		} catch (Exception e) {
@@ -95,16 +104,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 		}
 
 		Shared.get().getProfileManager().setNametagsEnabled(false);
-
-		instance = this;
-
-        // Database init
-        try {
-            jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
-            mongoPool = new MongoClient();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         KOTHHandler.init();
         CommandHandler.init();
@@ -126,9 +125,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         }.runTaskTimerAsynchronously(this, 6000L, 6000L);
 
 		PvPClassHandler pvpClassHandler = new PvPClassHandler();
-
-        pvpClassHandler.runTaskTimer(this, 2L, 2L);
-		getServer().getPluginManager().registerEvents(pvpClassHandler, this);
 
 		new CommandRegistrar().register();
 
@@ -174,7 +170,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
 
 		for (Player player : getServer().getOnlinePlayers()) {
-			playtimeMap.playerJoined(player.getName());
+			getPlaytimeMap().playerJoined(player.getName());
 			NametagManager.reloadPlayer(player);
 			player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
 		}
