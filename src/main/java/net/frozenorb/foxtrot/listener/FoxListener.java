@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
 import net.frozenorb.foxtrot.command.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
@@ -298,6 +299,22 @@ public class FoxListener implements Listener {
 
             if (team != null && !team.isMember(event.getPlayer())) {
                 if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
+                    if (event.getClickedBlock().getType() == Material.CHEST) {
+                        CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
+
+                        if (DTRBitmaskType.CITADEL_TOWN.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelTown(event.getPlayer())) {
+                            return;
+                        }
+
+                        if (DTRBitmaskType.CITADEL_COURTYARD.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelCourtyard(event.getPlayer())) {
+                            return;
+                        }
+
+                        if (DTRBitmaskType.CITADEL_KEEP.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelKeep(event.getPlayer())) {
+                            return;
+                        }
+                    }
+
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory.");
 
