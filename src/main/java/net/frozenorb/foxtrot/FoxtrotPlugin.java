@@ -9,9 +9,8 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
-import net.frozenorb.foxtrot.command.CommandRegistrar;
-import net.frozenorb.foxtrot.command.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.command.commands.team.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -106,7 +105,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupPersistence();
         setupListeners();
 
-        new CommandRegistrar().register();
         new PacketBorder.BorderThread().start();
 
         for (Player player : getServer().getOnlinePlayers()) {
