@@ -29,7 +29,7 @@ public class TeamListCommand {
             if (player.hasMetadata("invisible")) {
                 continue;
             }
-            
+
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
             if (playerTeam != null) {
