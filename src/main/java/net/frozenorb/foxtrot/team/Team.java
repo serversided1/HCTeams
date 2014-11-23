@@ -90,6 +90,39 @@ public class Team {
         this.name = name;
     }
 
+    public String getName(Player player) {
+        if (owner == null) {
+            if (hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
+                switch (player.getWorld().getEnvironment()) {
+                    case NETHER:
+                        return (ChatColor.GREEN + "Nether Spawn");
+                    case THE_END:
+                        return (ChatColor.GREEN + "The End Spawn");
+                }
+
+                return (ChatColor.GREEN + "Spawn");
+            } else if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
+                return (ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
+            } else if (hasDTRBitmask(DTRBitmaskType.ROAD)) {
+                return (ChatColor.RED + "Road");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
+                return (ChatColor.DARK_PURPLE + "Citadel Courtyard");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
+                return (ChatColor.DARK_PURPLE + "Citadel Keep");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
+                return (ChatColor.DARK_PURPLE + "Citadel Town");
+            }
+        }
+
+        if (isMember(player)) {
+            return (ChatColor.GREEN + getName());
+        } else if (isAlly(player)) {
+            return (ChatColor.LIGHT_PURPLE + getName());
+        } else {
+            return (ChatColor.RED + getName());
+        }
+    }
+
     public void addMember(String member) {
         if (!member.equalsIgnoreCase("null")) {
             flagForSave();
@@ -640,7 +673,7 @@ public class Team {
 
         String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
 
-        player.sendMessage(ChatColor.BLUE + this.getName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
+        player.sendMessage(ChatColor.BLUE + getName(player) + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
         KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
         Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(this.owner);
 

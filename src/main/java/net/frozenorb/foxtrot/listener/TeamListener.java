@@ -98,7 +98,7 @@ public class TeamListener implements Listener {
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s territory!");
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
             event.setCancelled(true);
         }
     }
@@ -116,7 +116,7 @@ public class TeamListener implements Listener {
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (team != null && !team.isMember(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s territory!");
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
             event.setCancelled(true);
 
             if (!Arrays.asList(FoxListener.NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS).contains(event.getBlock().getType())) {
@@ -258,7 +258,6 @@ public class TeamListener implements Listener {
             Player victim = (Player) event.getEntity();
 
             if (team != null && team.isMember(victim.getName()) && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-                damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.GREEN + victim.getName() + ChatColor.YELLOW + ".");
                 event.setCancelled(true);
             }
         }
@@ -276,7 +275,7 @@ public class TeamListener implements Listener {
             event.setCancelled(true);
             event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
             event.setItemStack(new ItemStack(event.getBucket()));
-            return;
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
         }
     }
 
