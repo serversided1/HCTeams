@@ -150,7 +150,9 @@ public class Team {
 
     public void disband() {
         try {
-            Basic.get().getEconomyManager().depositPlayer(owner, balance);
+            if (owner != null) {
+                Basic.get().getEconomyManager().depositPlayer(owner, balance);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
