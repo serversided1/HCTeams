@@ -236,7 +236,7 @@ public class CommandHandler implements Listener {
     //***********************//
 
     @Command(names={"ListCommands"}, permissionNode="foxtrot.listcommands")
-    public static void listCommands(Player sender) {
+    public static void listCommands(CommandSender sender) {
         for (CommandData command : commands) {
             StringBuilder stringBuilder = new StringBuilder();
 
