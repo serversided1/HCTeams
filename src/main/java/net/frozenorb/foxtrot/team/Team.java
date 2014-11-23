@@ -67,27 +67,29 @@ public class Team {
     }
 
     public void setDTR(double newDTR) {
-        if (DTR != newDTR) {
-            if (DTR <= 0 && newDTR > 0) {
-                FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
-            }
-
-            if (Math.abs(newDTR - DTR) > 0.4) {
-                FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
-            }
-
-            if (!isLoading()) {
-                FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] Team: " + name + " > " + "Old DTR: [" + DTR + "] | New DTR: [" + newDTR + "] | DTR Diff: [" + (DTR - newDTR) + "]");
-            }
-
-            this.DTR = newDTR;
-            flagForSave();
+        if (DTR == newDTR) {
+            return;
         }
+
+        if (DTR <= 0 && newDTR > 0) {
+            FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
+        }
+
+        if (Math.abs(newDTR - DTR) > 0.4) {
+            FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+        }
+
+        if (!isLoading()) {
+            FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR);
+        }
+
+        this.DTR = newDTR;
+        flagForSave();
     }
 
     public void setName(String name) {
-        flagForSave();
         this.name = name;
+        flagForSave();
     }
 
     public String getName(Player player) {
@@ -124,36 +126,37 @@ public class Team {
     }
 
     public void addMember(String member) {
-        if (!member.equalsIgnoreCase("null")) {
-            flagForSave();
-            members.add(member);
-            FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
+        if (member.equalsIgnoreCase("null")) {
+            return;
         }
+
+        members.add(member);
+        FactionActionTracker.logAction(this, "actions", "Member Added: " + member);
+        flagForSave();
     }
 
     public void addCaptain(String captain) {
-        flagForSave();
         captains.add(captain);
         FactionActionTracker.logAction(this, "actions", "Captain Added: " + captain);
+        flagForSave();
     }
 
     public void setBalance(double balance) {
-        flagForSave();
         this.balance = balance;
+        flagForSave();
     }
 
     public void setRaidableCooldown(long raidableCooldown) {
-        flagForSave();
         this.raidableCooldown = raidableCooldown;
+        flagForSave();
     }
 
     public void setDeathCooldown(long deathCooldown) {
-        flagForSave();
         this.deathCooldown = deathCooldown;
+        flagForSave();
     }
 
     public void removeCaptain(String name) {
-        FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
         Iterator<String> iterator = captains.iterator();
 
         while (iterator.hasNext()) {
@@ -161,24 +164,29 @@ public class Team {
                 iterator.remove();
             }
         }
+
+        FactionActionTracker.logAction(this, "actions", "Captain Removed: " + name);
+        flagForSave();
     }
 
     public void setOwner(String owner) {
-        flagForSave();
-        FactionActionTracker.logAction(this, "actions", "Owner Changed: " + this.owner + " -> " + owner);
+        String oldOwner = this.owner;
         this.owner = owner;
 
         if (owner != null && !owner.equals("null")) {
             members.add(owner);
         }
+
+        FactionActionTracker.logAction(this, "actions", "Owner Changed: " + oldOwner + " -> " + owner);
+        flagForSave();
     }
 
     public void setHQ(Location hq) {
         String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
+        this.hq = hq;
         FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
         flagForSave();
-        this.hq = hq;
     }
 
     public void disband() {
@@ -237,6 +245,8 @@ public class Team {
             }
 
         });
+
+        flagForSave();
     }
 
     public void flagForSave() {
@@ -299,11 +309,13 @@ public class Team {
     }
 
     public boolean removeMember(String name) {
-        FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
+        Iterator<String> membersIterator = members.iterator();
 
-        for (Iterator<String> iterator = members.iterator(); iterator.hasNext();) {
-            if (iterator.next().equalsIgnoreCase(name)) {
-                iterator.remove();
+        while (membersIterator.hasNext()) {
+            String member = membersIterator.next();
+
+            if (member.equalsIgnoreCase(name)) {
+                membersIterator.remove();
                 break;
             }
         }
@@ -311,34 +323,32 @@ public class Team {
         removeCaptain(name);
 
         if (isOwner(name)) {
-            Iterator<String> iter = members.iterator();
+            membersIterator = members.iterator();
 
-            if (iter.hasNext()) {
-                this.owner = members.iterator().next();
+            if (membersIterator.hasNext()) {
+                this.owner = membersIterator.next();
             } else {
                 this.owner = null;
             }
         }
 
-        Iterator<Subclaim> sc = subclaims.iterator();
+        Iterator<Subclaim> subclaimIterator = subclaims.iterator();
 
-        while (sc.hasNext()) {
-            Subclaim s = sc.next();
+        while (subclaimIterator.hasNext()) {
+            Subclaim subclaim = subclaimIterator.next();
 
-            if (s.isMember(name)) {
-                s.removeMember(name);
+            if (subclaim.isMember(name)) {
+                subclaim.removeMember(name);
             }
         }
-
-        // Is this needed?
-        boolean emptyTeam = owner == null || members.size() == 0;
 
         if (DTR > getMaxDTR()) {
             DTR = getMaxDTR();
         }
 
+        FactionActionTracker.logAction(this, "actions", "Member Removed: " + name);
         flagForSave();
-        return (emptyTeam);
+        return (owner == null || members.size() == 0);
     }
 
     public boolean hasDTRBitmask(DTRBitmaskType bitmaskType) {
@@ -353,8 +363,8 @@ public class Team {
     public int getOnlineMemberAmount() {
         int amt = 0;
 
-        for (String m : getMembers()) {
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+        for (String members : getMembers()) {
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(members);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 amt++;
@@ -425,7 +435,6 @@ public class Team {
     }
 
     public boolean isRaidable() {
-        // If their DTR is 0, they ARE raidable.
         return (DTR <= 0);
     }
 
