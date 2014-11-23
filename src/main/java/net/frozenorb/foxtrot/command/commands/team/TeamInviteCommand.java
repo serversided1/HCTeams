@@ -43,8 +43,8 @@ public class TeamInviteCommand {
 
                 if (target.isOnline()) {
                     Player targetPlayer = target.getPlayer();
-                    targetPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.DARK_AQUA + "'.");
-                    targetPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/f join " + team.getFriendlyName() + ChatColor.DARK_AQUA + "' to join.");
+                    targetPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getName() + ChatColor.DARK_AQUA + "'.");
+                    targetPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/f join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
                 }
 
                 sender.sendMessage("§e" + target.getName() + " has been invited to the team!");

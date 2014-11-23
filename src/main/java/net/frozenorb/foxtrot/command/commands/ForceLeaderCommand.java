@@ -21,12 +21,12 @@ public class ForceLeaderCommand {
             sender.sendMessage(ChatColor.RED + "That player has never played here!");
         } else {
             if (target != null && !team.isMember(target)) {
-                sender.sendMessage(ChatColor.RED + "That player is not a member of " + team.getFriendlyName() + ".");
+                sender.sendMessage(ChatColor.RED + "That player is not a member of " + team.getName() + ".");
                 return;
             }
 
             team.setOwner(target);
-            sender.sendMessage(ChatColor.GREEN + target + " is now the owner of §b" + team.getFriendlyName());
+            sender.sendMessage(ChatColor.GREEN + target + " is now the owner of §b" + team.getName());
         }
     }
 

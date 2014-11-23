@@ -24,7 +24,7 @@ public class TeamShadowMuteCommand {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {
-            factionShadowMutes.put(player, target.getFriendlyName());
+            factionShadowMutes.put(player, target.getName());
         }
 
         FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
@@ -39,7 +39,7 @@ public class TeamShadowMuteCommand {
                 while (mutesIterator.hasNext()) {
                     java.util.Map.Entry<String, String> mute = mutesIterator.next();
 
-                    if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+                    if (mute.getValue().equalsIgnoreCase(target.getName())) {
                         mutesIterator.remove();
                     }
                 }
@@ -47,7 +47,7 @@ public class TeamShadowMuteCommand {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.GRAY + "Shadow muted the faction " + target.getFriendlyName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
+        sender.sendMessage(ChatColor.GRAY + "Shadow muted the faction " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
     }
 
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
@@ -58,12 +58,12 @@ public class TeamShadowMuteCommand {
         while (mutesIterator.hasNext()) {
             java.util.Map.Entry<String, String> mute = mutesIterator.next();
 
-            if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+            if (mute.getValue().equalsIgnoreCase(target.getName())) {
                 mutesIterator.remove();
             }
         }
 
-        sender.sendMessage(ChatColor.GRAY + "Un-shadowmuted the faction " + target.getFriendlyName() + ChatColor.GRAY  + ".");
+        sender.sendMessage(ChatColor.GRAY + "Un-shadowmuted the faction " + target.getName() + ChatColor.GRAY  + ".");
     }
 
 }

@@ -51,8 +51,8 @@ public class ChatListener implements Listener {
                     event.setCancelled(true);
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
-                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "FM: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "FM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                         }
                     }
 
@@ -76,7 +76,7 @@ public class ChatListener implements Listener {
                     event.setCancelled(true);
                     FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
                 } else {
-                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
                     String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -86,8 +86,8 @@ public class ChatListener implements Listener {
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE));
                         } else {
                             if (TeamShadowMuteCommand.factionShadowMutes.containsKey(event.getPlayer().getName())) {
-                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
-                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "SM: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "SM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                                 }
 
                                 continue;
@@ -113,7 +113,7 @@ public class ChatListener implements Listener {
 
                 //TODO: Log this properly
                 FactionActionTracker.logAction(team, "allychat", event.getPlayer().getName() + ": " + event.getMessage());
-                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getFriendlyName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 event.setCancelled(true);
 
                 break;
@@ -121,13 +121,13 @@ public class ChatListener implements Listener {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (team.isMember(player)) {
                         player.sendMessage(ChatColor.DARK_AQUA + "(Team) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
-                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getFriendlyName().toLowerCase())) {
-                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "FC: " + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "FC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
                 FactionActionTracker.logAction(team, "teamchat", event.getPlayer().getName() + ": " + event.getMessage());
-                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getFriendlyName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 event.setCancelled(true);
 
                 break;

@@ -44,7 +44,7 @@ public class DTRHandler extends BukkitRunnable {
     }
 
     public static void setCooldown(Team team) {
-        wasOnCooldown.add(team.getFriendlyName().toLowerCase());
+        wasOnCooldown.add(team.getName().toLowerCase());
     }
 
     @Override
@@ -67,12 +67,12 @@ public class DTRHandler extends BukkitRunnable {
             if (teamEntry.getKey().getOwner() != null) {
                 try {
                     if (isOnCooldown(teamEntry.getKey())) {
-                        wasOnCooldown.add(teamEntry.getKey().getFriendlyName().toLowerCase());
+                        wasOnCooldown.add(teamEntry.getKey().getName().toLowerCase());
                         continue;
                     }
 
-                    if (wasOnCooldown.contains(teamEntry.getKey().getFriendlyName().toLowerCase())) {
-                        wasOnCooldown.remove(teamEntry.getKey().getFriendlyName().toLowerCase());
+                    if (wasOnCooldown.contains(teamEntry.getKey().getName().toLowerCase())) {
+                        wasOnCooldown.remove(teamEntry.getKey().getName().toLowerCase());
 
                         for (Player player : teamEntry.getKey().getOnlineMembers()) {
                             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
@@ -81,7 +81,7 @@ public class DTRHandler extends BukkitRunnable {
 
                     teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()).doubleValue(), teamEntry.getKey().getMaxDTR()));
                 } catch (Exception e) {
-                    System.out.println("Error regenerating DTR for faction " + teamEntry.getKey().getFriendlyName() + ".");
+                    System.out.println("Error regenerating DTR for faction " + teamEntry.getKey().getName() + ".");
                     e.printStackTrace();
                 }
             }

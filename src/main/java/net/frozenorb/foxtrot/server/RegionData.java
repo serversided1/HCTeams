@@ -43,16 +43,16 @@ public class RegionData {
             case WILDNERNESS:
                 return (ChatColor.GRAY + "The Wilderness");
             case KOTH:
-                return (ChatColor.AQUA + data.getFriendlyName() + ChatColor.GOLD + " KOTH");
+                return (ChatColor.AQUA + data.getName() + ChatColor.GOLD + " KOTH");
             case ROAD:
                 return (ChatColor.RED + "Road");
             case CLAIMED_LAND:
                 if (data.isMember(player.getName())) {
-                    return (ChatColor.GREEN + data.getFriendlyName());
+                    return (ChatColor.GREEN + data.getName());
                 } else if (data.isAlly(player.getName())) {
-                    return (ChatColor.LIGHT_PURPLE + data.getFriendlyName());
+                    return (ChatColor.LIGHT_PURPLE + data.getName());
                 } else {
-                    return (ChatColor.RED + data.getFriendlyName());
+                    return (ChatColor.RED + data.getName());
                 }
             case CITADEL_COURTYARD:
                 return (ChatColor.DARK_PURPLE + "Citadel Courtyard");

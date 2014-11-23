@@ -39,9 +39,8 @@ public class Team {
 
     // End configurable values //
 
-    @Getter @Setter private String name;
     @Getter @Setter private ObjectId uniqueId;
-    @Getter private String friendlyName;
+    @Getter private String name;
     @Getter private Location hq;
 
     @Getter private String owner = null;
@@ -86,9 +85,9 @@ public class Team {
         }
     }
 
-    public void setFriendlyName(String friendlyName) {
+    public void setName(String name) {
         flagForSave();
-        this.friendlyName = friendlyName;
+        this.name = name;
     }
 
     public void addMember(String member) {
@@ -182,10 +181,9 @@ public class Team {
     }
 
     public void rename(String newName) {
-        final String oldName = friendlyName;
+        final String oldName = name;
 
-        this.name = newName.toLowerCase();
-        this.friendlyName = newName;
+        this.name = newName;
 
         for (Claim claim : claims) {
             claim.setName(claim.getName().replaceAll(oldName, newName));
@@ -474,7 +472,7 @@ public class Team {
             } else if (identifier.equalsIgnoreCase("RaidableCooldown")) {
                 setRaidableCooldown(Long.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
-                setFriendlyName(lineParts[0]);
+                setName(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Claims")) {
                 for (String claim : lineParts) {
                     claim = claim.replace("[", "").replace("]", "");
@@ -527,7 +525,7 @@ public class Team {
 
         if (uniqueId == null) {
             uniqueId = new ObjectId();
-            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + getFriendlyName() + "...");
+            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + this.getName() + "...");
         }
 
         loading = false;
@@ -585,7 +583,7 @@ public class Team {
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DeathCooldown:").append(getDeathCooldown()).append('\n');
         teamString.append("RaidableCooldown:").append(getRaidableCooldown()).append('\n');
-        teamString.append("FriendlyName:").append(getFriendlyName()).append('\n');
+        teamString.append("FriendlyName:").append(this.getName()).append('\n');
 
         if (homeLoc != null) {
             teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
@@ -622,7 +620,7 @@ public class Team {
             String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
 
             if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
-                player.sendMessage(ChatColor.AQUA + getFriendlyName() + ChatColor.GOLD + " KOTH");
+                player.sendMessage(ChatColor.AQUA + this.getName() + ChatColor.GOLD + " KOTH");
             } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Town");
             }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
@@ -630,7 +628,7 @@ public class Team {
             }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Keep");
             } else {
-                player.sendMessage(ChatColor.BLUE + getFriendlyName());
+                player.sendMessage(ChatColor.BLUE + this.getName());
             }
 
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
@@ -640,7 +638,7 @@ public class Team {
 
         String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
 
-        player.sendMessage(ChatColor.BLUE + getFriendlyName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
+        player.sendMessage(ChatColor.BLUE + this.getName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
         KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
         Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(this.owner);
 

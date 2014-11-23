@@ -18,7 +18,7 @@ public class ForceDisbandCommand {
         }
 
         target.disband();
-        sender.sendMessage(ChatColor.GRAY + "Force-disbanded the team " + target.getFriendlyName() + ".");
+        sender.sendMessage(ChatColor.GRAY + "Force-disbanded the team " + target.getName() + ".");
     }
 
 }

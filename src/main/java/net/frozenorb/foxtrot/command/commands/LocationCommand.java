@@ -16,7 +16,7 @@ public class LocationCommand {
         net.frozenorb.foxtrot.team.Team owner = LandBoard.getInstance().getTeam(loc);
 
         if (owner != null) {
-            sender.sendMessage("§eYou are in §c" + owner.getFriendlyName() + "§e's territory.");
+            sender.sendMessage("§eYou are in §c" + owner.getName() + "§e's territory.");
             return;
         }
 

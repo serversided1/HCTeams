@@ -42,14 +42,14 @@ public class TeamCreateCommand {
                 FactionActionTracker.logAction(team, "actions", "Faction created. [Created by: " + sender.getName() + "]");
 
                 team.setOwner(sender.getName());
-                team.setFriendlyName(name);
+                team.setName(name);
                 team.setDTR(1);
                 team.setUniqueId(new ObjectId());
 
                 FoxtrotPlugin.getInstance().getTeamHandler().addTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);
 
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getFriendlyName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {
                 sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             }

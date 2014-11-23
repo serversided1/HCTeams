@@ -17,7 +17,7 @@ public class TeamInvitesCommand {
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             if (team.getInvitations().contains(sender.getName())) {
-                yourInvites.append(ChatColor.GRAY).append(team.getFriendlyName()).append(ChatColor.YELLOW).append(", ");
+                yourInvites.append(ChatColor.GRAY).append(team.getName()).append(ChatColor.YELLOW).append(", ");
             }
         }
 

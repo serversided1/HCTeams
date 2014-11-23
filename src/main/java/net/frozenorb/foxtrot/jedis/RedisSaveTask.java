@@ -54,7 +54,7 @@ public class RedisSaveTask extends BukkitRunnable {
                     continue;
                 }
 
-                dealtWith.put(member, team.getFriendlyName());
+                dealtWith.put(member, team.getName());
             }
         }
 

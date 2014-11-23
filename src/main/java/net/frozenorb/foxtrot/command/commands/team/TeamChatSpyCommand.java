@@ -31,32 +31,32 @@ public class TeamChatSpyCommand {
 
     @Command(names={ "team chatspy add", "t chatspy add", "f chatspy add", "faction chatspy add", "fac chatspy add" }, permissionNode="foxtrot.chatspy")
     public static void teamChatSpyAdd(Player sender, @Param(name="Team") Team target) {
-        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getFriendlyName().toLowerCase())) {
-            sender.sendMessage(ChatColor.RED + "You are already spying on " + target.getFriendlyName() + ".");
+        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getName().toLowerCase())) {
+            sender.sendMessage(ChatColor.RED + "You are already spying on " + target.getName() + ".");
             return;
         }
 
         ArrayList<String> teams = new ArrayList<String>(FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()));
 
-        teams.add(target.getFriendlyName().toLowerCase());
+        teams.add(target.getName().toLowerCase());
 
         FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), teams);
-        sender.sendMessage(ChatColor.GREEN + "You are now spying on the chat of " + ChatColor.YELLOW + target.getFriendlyName() + ChatColor.GREEN + ".");
+        sender.sendMessage(ChatColor.GREEN + "You are now spying on the chat of " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + ".");
     }
 
     @Command(names={ "team chatspy del", "t chatspy del", "f chatspy del", "faction chatspy del", "fac chatspy del" }, permissionNode="foxtrot.chatspy")
     public static void teamChatSpyDel(Player sender, @Param(name="Team") Team target) {
-        if (!FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getFriendlyName().toLowerCase())) {
-            sender.sendMessage(ChatColor.RED + "You are not spying on " + target.getFriendlyName() + ".");
+        if (!FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getName().toLowerCase())) {
+            sender.sendMessage(ChatColor.RED + "You are not spying on " + target.getName() + ".");
             return;
         }
 
         ArrayList<String> teams = new ArrayList<String>(FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()));
 
-        teams.remove(target.getFriendlyName().toLowerCase());
+        teams.remove(target.getName().toLowerCase());
 
         FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), teams);
-        sender.sendMessage(ChatColor.GREEN + "You are no longer spying on the chat of " + ChatColor.YELLOW + target.getFriendlyName() + ChatColor.GREEN + ".");
+        sender.sendMessage(ChatColor.GREEN + "You are no longer spying on the chat of " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + ".");
     }
 
     @Command(names={ "team chatspy clear", "t chatspy clear", "f chatspy clear", "faction chatspy clear", "fac chatspy clear" }, permissionNode="foxtrot.chatspy")

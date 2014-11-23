@@ -26,7 +26,7 @@ public class BitmaskCommand {
             return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Bitmask flags of " + ChatColor.GOLD + target.getFriendlyName() + ChatColor.YELLOW + ":");
+        sender.sendMessage(ChatColor.YELLOW + "Bitmask flags of " + ChatColor.GOLD + target.getName() + ChatColor.YELLOW + ":");
 
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
             if (!target.hasDTRBitmask(bitmaskType)) {

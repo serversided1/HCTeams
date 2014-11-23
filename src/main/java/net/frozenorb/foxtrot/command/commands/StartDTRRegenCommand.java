@@ -15,7 +15,7 @@ public class StartDTRRegenCommand {
     public static void startDTRRegen(Player sender, @Param(name="Target") Team target) {
         target.setDeathCooldown(System.currentTimeMillis());
         target.setRaidableCooldown(System.currentTimeMillis());
-        sender.sendMessage(ChatColor.GRAY + target.getFriendlyName() + ChatColor.GRAY + " is now regenerating DTR.");
+        sender.sendMessage(ChatColor.GRAY + target.getName() + ChatColor.GRAY + " is now regenerating DTR.");
     }
 
 }

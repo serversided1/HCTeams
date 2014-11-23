@@ -18,7 +18,7 @@ public class TeamNullLeaderCommand {
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             if (team.getOwner() == null || team.getOwner().equals("null")) {
                 nullLeaders++;
-                sender.sendMessage(ChatColor.RED + "- " + team.getFriendlyName());
+                sender.sendMessage(ChatColor.RED + "- " + team.getName());
             }
         }
 

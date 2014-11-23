@@ -13,7 +13,7 @@ public class TeamClaimsCommand {
         if (target.getClaims().size() == 0) {
             sender.sendMessage(ChatColor.RED + "That team has no claimed land!");
         } else {
-            sender.sendMessage(ChatColor.GRAY + "-- " + ChatColor.DARK_AQUA + target.getFriendlyName() + "'s Claims" + ChatColor.GRAY + " --");
+            sender.sendMessage(ChatColor.GRAY + "-- " + ChatColor.DARK_AQUA + target.getName() + "'s Claims" + ChatColor.GRAY + " --");
 
             for (net.frozenorb.foxtrot.team.claims.Claim claim : target.getClaims()) {
                 sender.sendMessage(ChatColor.GRAY + " " + claim.getFriendlyName());

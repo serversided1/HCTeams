@@ -18,8 +18,8 @@ public class TeamTabCompleter extends ParamTabCompleter {
         List<String> completions = new ArrayList<String>();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            if (StringUtils.startsWithIgnoreCase(team.getFriendlyName(), source)) {
-                completions.add(team.getFriendlyName());
+            if (StringUtils.startsWithIgnoreCase(team.getName(), source)) {
+                completions.add(team.getName());
             }
         }
 

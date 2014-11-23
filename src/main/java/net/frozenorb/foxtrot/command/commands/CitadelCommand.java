@@ -30,7 +30,7 @@ public class CitadelCommand {
                 sender.sendMessage(ChatColor.YELLOW + "Citadel was not captured last week.");
             }
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + capper.getFriendlyName() + ChatColor.YELLOW + ".");
+            sender.sendMessage(ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + capper.getName() + ChatColor.YELLOW + ".");
         }
 
         Date townLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getTownLootable();
@@ -38,13 +38,13 @@ public class CitadelCommand {
 
         sender.sendMessage(ChatColor.GOLD + "Citadel Town: " + ChatColor.WHITE + "Lootable " + (townLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(townLootable)) + ".");
         sender.sendMessage(ChatColor.GOLD + "Citadel Courtyard: " + ChatColor.WHITE + "Lootable " + (courtyardLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(courtyardLootable)) + ".");
-        sender.sendMessage(ChatColor.GOLD + "Citadel Lootable: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getFriendlyName()) + ".");
+        sender.sendMessage(ChatColor.GOLD + "Citadel Lootable: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getName()) + ".");
     }
 
     @Command(names={ "Citadel SetCapper" }, permissionNode="op")
     public static void citadelSetCapper(Player sender, @Param(name="target") Team target, @Param(name="level", defaultValue="2") int level) {
         FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(target.getUniqueId(), level);
-        sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getFriendlyName() + " (" + target.getUniqueId() + ")" + ChatColor.YELLOW + " as the Citadel capper.");
+        sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getName() + " (" + target.getUniqueId() + ")" + ChatColor.YELLOW + " as the Citadel capper.");
     }
 
 }

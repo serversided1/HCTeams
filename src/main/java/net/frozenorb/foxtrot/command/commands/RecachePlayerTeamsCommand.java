@@ -41,11 +41,11 @@ public class RecachePlayerTeamsCommand {
             for (String member : team.getMembers()) {
                 if (dealtWith.containsKey(member) && !errors.contains(member)) {
                     errors.add(member);
-                    sender.sendMessage(ChatColor.RED + " - " + member + " (Team: " + team.getFriendlyName() + ", Expected: " + dealtWith.get(member) + ")");
+                    sender.sendMessage(ChatColor.RED + " - " + member + " (Team: " + team.getName() + ", Expected: " + dealtWith.get(member) + ")");
                     continue;
                 }
 
-                dealtWith.put(member, team.getFriendlyName());
+                dealtWith.put(member, team.getName());
             }
         }
 

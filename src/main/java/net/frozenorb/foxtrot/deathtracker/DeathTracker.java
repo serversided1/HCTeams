@@ -83,7 +83,7 @@ public class DeathTracker {
             if (claimOwner == null) {
                 locationData.put("Claim", "N/A");
             } else {
-                locationData.put("Claim", claimOwner.getFriendlyName());
+                locationData.put("Claim", claimOwner.getName());
             }
 
             killerData.put("PotionEffects", potionEffects);
@@ -107,7 +107,7 @@ public class DeathTracker {
                 int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
 
                 teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
-                teamData.put("Name", playerTeam.getFriendlyName());
+                teamData.put("Name", playerTeam.getName());
                 teamData.put("DTR", playerTeam.getDTR());
                 teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
 
@@ -151,7 +151,7 @@ public class DeathTracker {
         if (claimOwner == null) {
             locationData.put("Claim", "N/A");
         } else {
-            locationData.put("Claim", claimOwner.getFriendlyName());
+            locationData.put("Claim", claimOwner.getName());
         }
 
         playerData.put("PotionEffects", potionEffects);
@@ -176,7 +176,7 @@ public class DeathTracker {
             int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
 
             teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
-            teamData.put("Name", playerTeam.getFriendlyName());
+            teamData.put("Name", playerTeam.getName());
             teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
 

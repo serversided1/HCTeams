@@ -153,7 +153,7 @@ public class TeamSubclaimCommand implements Listener {
             other.add(scs);
         }
 
-        sender.sendMessage(ChatColor.BLUE + team.getFriendlyName() + ChatColor.YELLOW + " Subclaim List");
+        sender.sendMessage(ChatColor.BLUE + team.getName() + ChatColor.YELLOW + " Subclaim List");
         sender.sendMessage(ChatColor.YELLOW + "Subclaims you can access: " + ChatColor.WHITE + access.toString().replace("[", "").replace("]", ""));
         sender.sendMessage(ChatColor.YELLOW + "Other Subclaims: " + ChatColor.WHITE + other.toString().replace("[", "").replace("]", ""));
     }
@@ -218,7 +218,7 @@ public class TeamSubclaimCommand implements Listener {
 
         for (Location loc : new CuboidRegion("test123", selection.getLoc1(), selection.getLoc2())) {
             if (LandBoard.getInstance().getTeam(loc) != team) {
-                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + LandBoard.getInstance().getTeam(loc).getFriendlyName() + "§c!");
+                sender.sendMessage(ChatColor.RED + "This subclaim would conflict with the claims of team §e" + LandBoard.getInstance().getTeam(loc).getName() + "§c!");
                 return;
             }
 

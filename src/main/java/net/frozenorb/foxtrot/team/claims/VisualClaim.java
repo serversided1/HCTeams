@@ -97,7 +97,7 @@ public class VisualClaim implements Listener {
 
             if (!silent) {
                 for (Map.Entry<Map.Entry<Claim, Team>, Material> claim : sendMaps.entrySet()) {
-                    player.sendMessage("§eLand §9" + claim.getKey().getKey().getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + "§a) §eis claimed by §9" + claim.getKey().getValue().getFriendlyName());
+                    player.sendMessage("§eLand §9" + claim.getKey().getKey().getName() + "§a(§b" + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + "§a) §eis claimed by §9" + claim.getKey().getValue().getName());
                 }
             }
         }
@@ -255,7 +255,7 @@ public class VisualClaim implements Listener {
                 return;
             }
 
-            claim.setName(team.getFriendlyName() + "_" + (100 + FoxtrotPlugin.RANDOM.nextInt(800)));
+            claim.setName(team.getName() + "_" + (100 + FoxtrotPlugin.RANDOM.nextInt(800)));
             claim.setY1(0);
             claim.setY2(256);
 

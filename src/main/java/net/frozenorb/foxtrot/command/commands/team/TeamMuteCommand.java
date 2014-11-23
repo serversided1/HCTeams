@@ -26,7 +26,7 @@ public class TeamMuteCommand {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {
-            factionMutes.put(player, target.getFriendlyName());
+            factionMutes.put(player, target.getName());
 
             Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(player);
 
@@ -47,7 +47,7 @@ public class TeamMuteCommand {
                 while (mutesIterator.hasNext()) {
                     Map.Entry<String, String> mute = mutesIterator.next();
 
-                    if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+                    if (mute.getValue().equalsIgnoreCase(target.getName())) {
                         Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(mute.getKey());
 
                         if (bukkitPlayer != null) {
@@ -61,7 +61,7 @@ public class TeamMuteCommand {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.GRAY + "Muted the faction " + target.getFriendlyName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + " for " + reason + ".");
+        sender.sendMessage(ChatColor.GRAY + "Muted the faction " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + " for " + reason + ".");
     }
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
@@ -72,7 +72,7 @@ public class TeamMuteCommand {
         while (mutesIterator.hasNext()) {
             Map.Entry<String, String> mute = mutesIterator.next();
 
-            if (mute.getValue().equalsIgnoreCase(target.getFriendlyName())) {
+            if (mute.getValue().equalsIgnoreCase(target.getName())) {
                 Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(mute.getKey());
 
                 if (bukkitPlayer != null) {
@@ -83,7 +83,7 @@ public class TeamMuteCommand {
             }
         }
 
-        sender.sendMessage(ChatColor.GRAY + "Unmuted the faction " + target.getFriendlyName() + ChatColor.GRAY  + ".");
+        sender.sendMessage(ChatColor.GRAY + "Unmuted the faction " + target.getName() + ChatColor.GRAY  + ".");
     }
 
 }
