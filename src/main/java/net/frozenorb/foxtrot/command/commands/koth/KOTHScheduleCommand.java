@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -27,11 +28,13 @@ public class KOTHScheduleCommand {
             activationTime.set(Calendar.SECOND, 0);
             activationTime.set(Calendar.MILLISECOND, 0);
 
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + (new SimpleDateFormat()).format(activationTime.getTime()) + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + (new SimpleDateFormat()).format(activationTime.getTime()).split(" ")[1] + ChatColor.GOLD + ".");
         }
 
         if (sent == 0) {
             sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.RED + "KOTH Schedule: " + ChatColor.YELLOW + "Undefined");
+        } else {
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + (new SimpleDateFormat()).format(new Date()) + ChatColor.GOLD + ".");
         }
     }
 

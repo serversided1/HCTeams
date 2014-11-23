@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 public class KOTHCommand {
 
-    @Command(names={ "KOTH Time", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="foxtrot.koth")
     public static void kothSchedule(Player sender) {
         for (KOTH koth : KOTHHandler.getKOTHs()) {
             if (koth.isActive()) {
@@ -37,6 +38,7 @@ public class KOTHCommand {
                 activationTime.set(Calendar.MILLISECOND, 0);
 
                 sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + (new SimpleDateFormat()).format(activationTime.getTime()) + ChatColor.GOLD + ".");
+                sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + (new SimpleDateFormat()).format(new Date()) + ChatColor.GOLD + ".");
                 return;
             }
         }
