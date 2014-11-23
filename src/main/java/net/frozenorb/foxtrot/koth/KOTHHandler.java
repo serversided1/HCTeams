@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.koth;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import com.mysql.jdbc.StringUtils;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
@@ -7,8 +9,12 @@ import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.koth.tasks.KOTHSchedulerTask;
 import net.minecraft.util.com.google.gson.Gson;
+import net.minecraft.util.org.apache.commons.io.FileUtils;
 import net.minecraft.util.org.apache.commons.io.IOUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -22,9 +28,11 @@ import java.util.concurrent.TimeUnit;
 public class KOTHHandler {
 
     private static Set<KOTH> KOTHs = new HashSet<KOTH>();
+    private static Map<Integer, String> kothSchedule = new HashMap<Integer, String>();
 
     public static void init() {
         loadKOTHs();
+        loadSchedules();
 
         Calendar date = Calendar.getInstance();
 
@@ -37,7 +45,7 @@ public class KOTHHandler {
         CommandHandler.registerTransformer(KOTH.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
+            public Object transform(CommandSender sender, String source) {
                 KOTH koth = getKOTH(source);
 
                 if (koth == null) {
@@ -97,6 +105,29 @@ public class KOTHHandler {
                     KOTHs.add((new Gson()).fromJson(writer.toString(), KOTH.class));
 
                     e.close();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadSchedules() {
+        kothSchedule.clear();
+
+        try {
+            File kothSchedule = new File("kothSchedule.json");
+
+            if (!kothSchedule.exists()) {
+                kothSchedule.createNewFile();
+                FileUtils.write(kothSchedule, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(new BasicDBObject().toString())));
+            }
+
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(kothSchedule));
+
+            if (dbo != null) {
+                for (Map.Entry<String, Object> entry : dbo.entrySet()) {
+                    KOTHHandler.kothSchedule.put(Integer.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
                 }
             }
         } catch (Exception e) {
