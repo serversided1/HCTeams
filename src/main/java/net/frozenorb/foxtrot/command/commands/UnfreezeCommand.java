@@ -15,7 +15,7 @@ import java.util.Set;
  */
 public class UnfreezeCommand {
 
-    @Command(names={ "unfreeze" }, permissionNode="foxtrot.unfreeze")
+    @Command(names={ "unfreeze" }, permissionNode="foxtrot.freeze")
     public static void spawn(Player sender, @Param(name="Params") String argString) {
         String[] args = argString.split(" ");
 
