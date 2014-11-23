@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -107,24 +108,36 @@ public class LandBoard {
             }
         }
 
-        updateSync(regionData.getKey());
+        updateClaim(regionData.getKey());
     }
 
-    public void updateSync(Claim modified) {
+    public void updateClaim(Claim modified) {
         ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
         visualClaims.addAll(VisualClaim.getCurrentMaps().values());
 
-        for (VisualClaim vc : visualClaims) {
-            if (modified.isWithin(vc.getPlayer().getLocation().getBlockX(), vc.getPlayer().getLocation().getBlockZ(), VisualClaim.MAP_RADIUS, modified.getWorld())) {
-                vc.draw(true);
-                vc.draw(true);
+        for (VisualClaim visualClaim : visualClaims) {
+            if (modified.isWithin(visualClaim.getPlayer().getLocation().getBlockX(), visualClaim.getPlayer().getLocation().getBlockZ(), VisualClaim.MAP_RADIUS, modified.getWorld())) {
+                visualClaim.draw(true);
+                visualClaim.draw(true);
+            }
+        }
+    }
+
+    public void updateSubclaim(Subclaim modified) {
+        ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
+        visualClaims.addAll(VisualClaim.getCurrentSubclaimMaps().values());
+
+        for (VisualClaim visualClaim : visualClaims) {
+            if (modified.getLoc1().distanceSquared(visualClaim.getPlayer().getLocation()) < VisualClaim.MAP_RADIUS * VisualClaim.MAP_RADIUS || modified.getLoc2().distanceSquared(visualClaim.getPlayer().getLocation()) < VisualClaim.MAP_RADIUS * VisualClaim.MAP_RADIUS) {
+                visualClaim.draw(true);
+                visualClaim.draw(true);
             }
         }
     }
 
     public void clear(Team team) {
         for (Claim claim : team.getClaims()) {
-            setTeamAt(claim, team);
+            setTeamAt(claim, null);
         }
     }
 
@@ -132,6 +145,7 @@ public class LandBoard {
         if (instance == null) {
             instance = new LandBoard();
         }
+
 
         return (instance);
     }

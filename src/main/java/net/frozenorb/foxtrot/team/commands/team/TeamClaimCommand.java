@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
-import net.frozenorb.foxtrot.team.claims.VisualClaim.VisualType;
+import net.frozenorb.foxtrot.team.claims.VisualClaimType;
 import net.frozenorb.foxtrot.util.ListUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -54,10 +54,10 @@ public class TeamClaimCommand implements Listener {
 
             }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
 
-            new VisualClaim(sender, VisualType.CREATE, false).draw(false);
+            new VisualClaim(sender, VisualClaimType.CREATE, false).draw(false);
 
             if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
-                new VisualClaim(sender, VisualType.MAP, false).draw(false);
+                new VisualClaim(sender, VisualClaimType.MAP, false).draw(true);
             }
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
@@ -83,10 +83,10 @@ public class TeamClaimCommand implements Listener {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
 
-        new VisualClaim(sender, VisualType.CREATE, true).draw(false);
+        new VisualClaim(sender, VisualClaimType.CREATE, true).draw(false);
 
         if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
-            new VisualClaim(sender, VisualType.MAP, true).draw(false);
+            new VisualClaim(sender, VisualClaimType.MAP, true).draw(true);
         }
     }
 

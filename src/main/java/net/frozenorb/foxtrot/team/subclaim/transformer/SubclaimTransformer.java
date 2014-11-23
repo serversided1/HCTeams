@@ -22,6 +22,17 @@ public class SubclaimTransformer extends ParamTransformer {
             return (null);
         }
 
+        if (sender instanceof Player && source.equals("location")) {
+            Subclaim subclaim = team.getSubclaim(((Player) sender).getLocation());
+
+            if (subclaim == null) {
+                sender.sendMessage(ChatColor.RED + "You are not inside of a subclaim.");
+                return (null);
+            }
+
+            return (subclaim);
+        }
+
         Subclaim subclaim = team.getSubclaim(source);
 
         if (subclaim == null) {

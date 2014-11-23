@@ -7,8 +7,11 @@ import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class TeamUnclaimCommand {
 
@@ -33,7 +36,7 @@ public class TeamUnclaimCommand {
 
         if (all.equalsIgnoreCase("all")) {
             int claims = team.getClaims().size();
-            double refund = 0.0D;
+            int refund = 0;
 
             for (Claim claim : team.getClaims()) {
                 refund += Claim.getPrice(claim, team, false);
@@ -41,10 +44,17 @@ public class TeamUnclaimCommand {
             }
 
             team.setBalance(team.getBalance() + refund);
+            LandBoard.getInstance().clear(team);
             team.getClaims().clear();
+
+            for (Subclaim subclaim : team.getSubclaims()) {
+                LandBoard.getInstance().updateSubclaim(subclaim);
+            }
+
+            team.getSubclaims().clear();
             team.setHQ(null);
             team.flagForSave();
-            LandBoard.getInstance().clear(team);
+
             sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.RED + ")! Your team was refunded " + ChatColor.LIGHT_PURPLE + "$" + refund + ChatColor.RED + ".");
             return;
         }
@@ -55,6 +65,14 @@ public class TeamUnclaimCommand {
 
             team.setBalance(team.getBalance() + refund);
             team.getClaims().remove(claim);
+
+            for (Subclaim subclaim : new ArrayList<Subclaim>(team.getSubclaims())) {
+                if (claim.contains(subclaim.getLoc1()) || claim.contains(subclaim.getLoc2())) {
+                    team.getSubclaims().remove(subclaim);
+                    LandBoard.getInstance().updateSubclaim(subclaim);
+                }
+            }
+
             team.flagForSave();
 
             LandBoard.getInstance().setTeamAt(claim, null);

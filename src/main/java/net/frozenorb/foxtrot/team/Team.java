@@ -553,7 +553,11 @@ public class Team {
                         int y2 = Integer.valueOf(split[4].trim());
                         int z2 = Integer.valueOf(split[5].trim());
                         String name = split[6].trim();
-                        String members = split[7].trim();
+                        String members = "";
+
+                        if (split.length >= 8) {
+                            members = split[7].trim();
+                        }
 
                         Location loc1 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x1, y1, z1);
                         Location loc2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
