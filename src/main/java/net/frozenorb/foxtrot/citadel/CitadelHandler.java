@@ -4,9 +4,11 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
@@ -20,12 +22,23 @@ import java.util.Date;
  */
 public class CitadelHandler {
 
+    public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
+
     @Getter private ObjectId capper;
     @Getter private int level;
     @Getter private Date townLootable;
     @Getter private Date courtyardLootable;
 
     public CitadelHandler() {
+        loadCitadelInfo();
+    }
+
+    public void reloadCitadelInfo() {
+        loadCitadelInfo();
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
+    }
+
+    private void loadCitadelInfo() {
         try {
             File citadelInfo = new File("citadelInfo.json");
 
@@ -54,11 +67,7 @@ public class CitadelHandler {
         }
     }
 
-    public void setCapper(ObjectId capper, int level) {
-        this.capper = capper;
-        this.townLootable = generateTownLootableDate();
-        this.courtyardLootable = generateCourtyardLootableDate();
-
+    private void saveCitadelInfo() {
         try {
             File citadelInfo = new File("citadelInfo.json");
             BasicDBObject dbo = new BasicDBObject();
@@ -73,6 +82,15 @@ public class CitadelHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setCapper(ObjectId capper, int level) {
+        this.capper = capper;
+        this.level = level;
+        this.townLootable = generateTownLootableDate();
+        this.courtyardLootable = generateCourtyardLootableDate();
+
+        saveCitadelInfo();
     }
 
     public boolean canLootCitadelTown(Player player) {
