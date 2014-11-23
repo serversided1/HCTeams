@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.koth;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import com.mysql.jdbc.StringUtils;
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
@@ -27,8 +28,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class KOTHHandler {
 
-    private static Set<KOTH> KOTHs = new HashSet<KOTH>();
-    private static Map<Integer, String> kothSchedule = new HashMap<Integer, String>();
+    @Getter private static Set<KOTH> KOTHs = new HashSet<KOTH>();
+    @Getter private static Map<Integer, String> kothSchedule = new HashMap<Integer, String>();
 
     public static void init() {
         loadKOTHs();
@@ -161,10 +162,6 @@ public class KOTHHandler {
         }
     }
 
-    public static Set<KOTH> getKOTHs() {
-        return (KOTHs);
-    }
-
     public static KOTH getKOTH(String name) {
         for (KOTH koth : KOTHs) {
             if (koth.getName().equalsIgnoreCase(name)) {
@@ -191,10 +188,16 @@ public class KOTHHandler {
 
         Calendar date = Calendar.getInstance();
         int hour = date.get(Calendar.HOUR_OF_DAY);
-        List<KOTH> koths = Arrays.asList(KOTHHandler.getKOTHs().toArray(new KOTH[KOTHHandler.getKOTHs().size()]));
 
-        if (/*koth == 16 || koth ==  18 || koth == 20 || koth == 22 || koth == 24*/false) {
-            koths.get(FoxtrotPlugin.RANDOM.nextInt(koths.size())).activate();
+        if (kothSchedule.containsKey(hour)) {
+            KOTH koth = getKOTH(kothSchedule.get(hour));
+
+            if (koth == null) {
+                FoxtrotPlugin.getInstance().getLogger().warning("The KOTH Scheduler has a schedule for a KOTH named " + kothSchedule.get(hour) + ", but the KOTH does not exist.");
+                return;
+            }
+
+            koth.activate();
         }
     }
 
