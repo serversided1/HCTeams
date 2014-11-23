@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -12,8 +13,8 @@ import org.bukkit.entity.Player;
 public class TeamTransformer extends ParamTransformer {
 
     @Override
-    public Object transform(Player sender, String source) {
-        if (source.equalsIgnoreCase("self") || source.equals("")) {
+    public Object transform(CommandSender sender, String source) {
+        if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
             if (team == null) {

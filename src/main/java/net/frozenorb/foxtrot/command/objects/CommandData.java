@@ -12,18 +12,20 @@ import java.util.List;
  */
 public class CommandData {
 
+    @Getter private boolean console;
     @Getter private String[] names;
     @Getter private String[] flags;
     @Getter private String permissionNode;
     @Getter private List<ParamData> parameters = new ArrayList<ParamData>();
     @Getter private Method method;
 
-    public CommandData(Method method, Command commandAnnotation, List<ParamData> parameters) {
+    public CommandData(Method method, Command commandAnnotation, List<ParamData> parameters, boolean console) {
         this.names = commandAnnotation.names();
         this.flags = commandAnnotation.flags();
         this.permissionNode = commandAnnotation.permissionNode();
         this.parameters = parameters;
         this.method = method;
+        this.console = console;
     }
 
     public String getName() {

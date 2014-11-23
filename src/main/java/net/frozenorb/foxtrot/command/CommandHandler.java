@@ -4,15 +4,18 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.command.objects.*;
+import net.minecraft.server.v1_7_R3.CommandSeed;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.annotation.Annotation;
@@ -75,7 +78,7 @@ public class CommandHandler implements Listener {
         registerTransformer(int.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
+            public Object transform(CommandSender sender, String source) {
                 try {
                     return (Integer.valueOf(source));
                 } catch (NumberFormatException exception) {
@@ -89,7 +92,7 @@ public class CommandHandler implements Listener {
         registerTransformer(float.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
+            public Object transform(CommandSender sender, String source) {
                 try {
                     return (Float.valueOf(source));
                 } catch (NumberFormatException exception) {
@@ -103,7 +106,7 @@ public class CommandHandler implements Listener {
         registerTransformer(boolean.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
+            public Object transform(CommandSender sender, String source) {
                 try {
                     return (Boolean.valueOf(source));
                 } catch (NumberFormatException exception) {
@@ -133,8 +136,8 @@ public class CommandHandler implements Listener {
         registerTransformer(Player.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
-                if (source.equalsIgnoreCase("self") || source.equals("")) {
+            public Object transform(CommandSender sender, String source) {
+                if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
                     return (sender);
                 }
 
@@ -169,8 +172,8 @@ public class CommandHandler implements Listener {
         registerTransformer(OfflinePlayer.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
-                if (source.equalsIgnoreCase("self") || source.equals("")) {
+            public Object transform(CommandSender sender, String source) {
+                if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
                     return (sender);
                 }
 
@@ -198,7 +201,7 @@ public class CommandHandler implements Listener {
         registerTransformer(World.class, new ParamTransformer() {
 
             @Override
-            public Object transform(Player sender, String source) {
+            public Object transform(CommandSender sender, String source) {
                 World world = FoxtrotPlugin.getInstance().getServer().getWorld(source);
 
                 if (world == null) {
@@ -255,6 +258,10 @@ public class CommandHandler implements Listener {
         }
 
         for (Map.Entry<Class<?>, ParamTransformer> entry : parameterTransformers.entrySet()) {
+            if (parameterTabCompleters.containsKey(entry.getKey())) {
+                continue;
+            }
+
             sender.sendMessage(ChatColor.RED + entry.getKey().getSimpleName() + " is an accepted parameter type, but doesn't have a tab completer registered.");
         }
     }
@@ -299,7 +306,7 @@ public class CommandHandler implements Listener {
             }
         }
 
-        commands.add(new CommandData(method, command, paramData));
+        commands.add(new CommandData(method, command, paramData, !method.getParameterTypes()[0].getClass().equals(Player.class)));
 
         Collections.sort(commands, new Comparator<CommandData>() {
 
@@ -397,7 +404,85 @@ public class CommandHandler implements Listener {
         }
     }
 
-    public static Object transformParameter(Player sender, String parameter, Class<?> transformTo) {
+    @EventHandler
+    public void onConsoleCommand(ServerCommandEvent event) {
+        String[] args = new String[] { };
+        CommandData found = null;
+
+        CommandLoop:
+        for (CommandData commandData : commands) {
+            for (String alias : commandData.getNames()) {
+                String messageString = event.getCommand().toLowerCase() + " ";
+                String aliasString = alias.toLowerCase() + " ";
+
+                if (messageString.startsWith(aliasString)) {
+                    found = commandData;
+
+                    if (event.getCommand().length() > alias.length() + 1) {
+                        args = (event.getCommand().substring(alias.length() + 1)).split(" ");
+                    }
+
+                    break CommandLoop;
+                }
+            }
+        }
+
+        if (found == null) {
+            return;
+        }
+
+        event.setCommand("");
+
+        if (!found.isConsole()) {
+            event.getSender().sendMessage(ChatColor.RED + "This command does not support execution from the console.");
+            return;
+        }
+
+        ArrayList<Object> transformedParams = new ArrayList<Object>();
+
+        transformedParams.add(event.getSender()); // Add the sender
+
+        for (int paramIndex = 0; paramIndex < found.getParameters().size(); paramIndex++) {
+            ParamData param = found.getParameters().get(paramIndex);
+            String passedParam = (paramIndex < args.length ? args[paramIndex] : param.getDefaultValue()).trim();
+
+            if (paramIndex >= args.length && (param.getDefaultValue() == null || param.getDefaultValue().equals(""))) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (ParamData paramHelp : found.getParameters()) {
+                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? "<" : "[").append(paramHelp.getName());
+                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? ">" : "]").append(" ");
+                }
+
+                event.getSender().sendMessage(ChatColor.RED + "Usage: /" + found.getName() + " " + stringBuilder.toString());
+                return;
+            }
+
+            if (param.isWildcard() && !passedParam.trim().equals(param.getDefaultValue().trim())) {
+                passedParam = toString(args, paramIndex);
+            }
+
+            Object result = transformParameter(event.getSender(), passedParam, param.getParameterClass());
+
+            if (result == null) {
+                return;
+            }
+
+            transformedParams.add(result);
+
+            if (param.isWildcard()) {
+                break;
+            }
+        }
+
+        try {
+            found.getMethod().invoke(null, transformedParams.toArray(new Object[transformedParams.size()]));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Object transformParameter(CommandSender sender, String parameter, Class<?> transformTo) {
         if (transformTo.equals(String.class)) {
             return (parameter);
         }
