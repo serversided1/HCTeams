@@ -67,7 +67,7 @@ public class  SpawnListener implements Listener {
         } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
             event.setCancelled(true);
 
-            if (event.getBlock().getType() != Material.LONG_GRASS && event.getBlock().getType() == Material.GRASS) {
+            if (event.getBlock().getType() != Material.LONG_GRASS && event.getBlock().getType() != Material.GRASS) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build this close to spawn!");
             }
         }
