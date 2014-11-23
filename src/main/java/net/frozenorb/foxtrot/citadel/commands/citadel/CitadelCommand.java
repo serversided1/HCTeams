@@ -18,7 +18,7 @@ import java.util.Date;
  */
 public class CitadelCommand {
 
-    @Command(names={ "Citadel" }, permissionNode="")
+    @Command(names={ "citadel" }, permissionNode="")
     public static void citadel(Player sender) {
         Team capper = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(FoxtrotPlugin.getInstance().getCitadelHandler().getCapper());
 

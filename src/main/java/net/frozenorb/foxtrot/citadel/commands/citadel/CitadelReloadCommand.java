@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  */
 public class CitadelReloadCommand {
 
-    @Command(names = {"Citadel Reload"}, permissionNode = "op")
+    @Command(names = {"citadel reload"}, permissionNode = "op")
     public static void citadelReload(Player sender) {
         FoxtrotPlugin.getInstance().getCitadelHandler().reloadCitadelInfo();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Reloaded the Citadel config.");
