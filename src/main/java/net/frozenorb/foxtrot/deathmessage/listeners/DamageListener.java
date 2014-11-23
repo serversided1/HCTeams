@@ -1,12 +1,17 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
+import net.frozenorb.foxtrot.deathtracker.DeathTracker;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -20,7 +25,7 @@ public class DamageListener implements Listener {
 
     //***************************//
 
-    @EventHandler(ignoreCancelled=true)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
@@ -35,11 +40,12 @@ public class DamageListener implements Listener {
         if (event2.isCancelled()) {
             event.setCancelled(true);
         } else {
-            net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
+            event2.getTrackerDamage().setHealthAfter(((Player) event.getEntity()).getHealthScale());
+            DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
         }
     }
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getDeathMessage() == null || event.getDeathMessage().isEmpty()) {
             return;
@@ -53,8 +59,18 @@ public class DamageListener implements Listener {
         }
 
         Damage deathCause = record.get(record.size() - 1);
+
+        // Hacky reflection to change the player's killer
+        if (deathCause instanceof PlayerDamage) {
+            Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(((PlayerDamage) deathCause).getDamager());
+            ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+
+            FoxtrotPlugin.getInstance().getKillsMap().setKills(killer.getName(), FoxtrotPlugin.getInstance().getKillsMap().getKills(killer.getName()) + 1);
+        }
+
         event.setDeathMessage(deathCause.getDeathMessage());
 
+        DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.clearDamage(event.getEntity());
     }
 

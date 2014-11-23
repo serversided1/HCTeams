@@ -1,85 +1,64 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.bukkit.Location;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.frozenorb.foxtrot.serialization.ReflectionSerializer;
 import net.frozenorb.foxtrot.serialization.SerializableClass;
+import org.bukkit.Location;
 
-@EqualsAndHashCode(callSuper = false)
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+@EqualsAndHashCode(callSuper=false)
 @SerializableClass
 @Data
 public class Subclaim extends ReflectionSerializer {
-	@NonNull private Location loc1, loc2;
-	@NonNull private String manager;
-	@NonNull private String name;
-	private ArrayList<String> members = new ArrayList<String>();
 
-	public void addMember(String name) {
-		members.add(name);
-	}
+    @NonNull private Location loc1, loc2;
+    @NonNull private String name;
+    private List<String> members = new ArrayList<String>();
 
-	public boolean isMember(String name) {
+    public void addMember(String name) {
+        members.add(name);
+    }
 
-		for (String str : members) {
-			if (str.equalsIgnoreCase(name)) {
-				return true;
-			}
-		}
-		return name.equalsIgnoreCase(manager);
-	}
+    public boolean isMember(String name) {
+        for (String str : members) {
+            if (str.equalsIgnoreCase(name)) {
+                return (true);
+            }
+        }
 
-	public void removeMember(String name) {
+        return (false);
+    }
 
-		Iterator<String> miter = members.iterator();
+    public void removeMember(String name) {
+        Iterator<String> iterator = members.iterator();
 
-		while (miter.hasNext()) {
-			if (miter.next().equalsIgnoreCase(name)) {
-				miter.remove();
-			}
-		}
+        while (iterator.hasNext()) {
+            String member = iterator.next();
 
-	}
+            if (member.equalsIgnoreCase(name)) {
+                iterator.remove();
+            }
+        }
+    }
 
-	@Override
-	public String toString() {
-		return getFriendlyColoredName();
-	}
+    @Override
+    public String toString() {
+        StringBuilder members = new StringBuilder();
 
-	public String saveString() {
+        for (String member : this.members) {
+            members.append(member).append(",");
+        }
 
-		String msg = "";
-		msg += "world " + loc1.getBlockX() + " " + loc1.getBlockY() + " " + loc1.getBlockZ() + "|";
-		msg += "world " + loc2.getBlockX() + " " + loc2.getBlockY() + " " + loc2.getBlockZ() + "|";
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+        }
 
-		msg += manager + "|" + name;
+        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + members.toString());
+    }
 
-		boolean first = true;
-		for (String str : members) {
-			if (first) {
-				msg += "|";
-			} else {
-				msg += ",";
-			}
-
-			msg += str;
-			first = false;
-		}
-
-		return msg;
-
-	}
-
-	public String getFriendlyColoredName() {
-		return "§f" + manager + "§7/" + name;
-	}
-
-	public String getFriendlyName() {
-		return manager + "/" + name;
-	}
 }

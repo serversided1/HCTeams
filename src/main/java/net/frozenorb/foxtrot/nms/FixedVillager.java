@@ -8,21 +8,21 @@ import java.lang.reflect.Field;
 @SuppressWarnings("rawtypes")
 public class FixedVillager extends EntityVillager {
 
-	public FixedVillager(World w) {
-		super(w);
+    public FixedVillager(World w) {
+        super(w);
 
-		try {
-			Field gsa = PathfinderGoalSelector.class.getDeclaredField("b");
-			gsa.setAccessible(true);
+        try {
+            Field gsa = PathfinderGoalSelector.class.getDeclaredField("b");
+            gsa.setAccessible(true);
 
-			gsa.set(goalSelector, new UnsafeList());
-			gsa.set(targetSelector, new UnsafeList());
+            gsa.set(goalSelector, new UnsafeList());
+            gsa.set(targetSelector, new UnsafeList());
 
-		}
-		catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-			ex.printStackTrace();
-		}
-	}
+        }
+        catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @Override
     public EntityAgeable createChild(EntityAgeable entityAgeable) {
@@ -30,15 +30,15 @@ public class FixedVillager extends EntityVillager {
     }
 
     @Override
-	public void h() {
-		motX = 0D;
-		motY = 0D;
-		motZ = 0D;
+    public void h() {
+        motX = 0D;
+        motY = 0D;
+        motZ = 0D;
 
-		super.h();
-	}
+        super.h();
+    }
 
-	@Override
-	public void collide(Entity arg0) {}
+    @Override
+    public void collide(Entity arg0) {}
 
 }

@@ -2,7 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.NMSMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,7 +34,7 @@ public class PotionLimiterListener implements Listener {
         ItemStack potion = event.getPotion().getItem();
 
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(livingEntity.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(livingEntity.getLocation())) {
                 event.setIntensity(livingEntity, 0D);
             }
         }
@@ -51,7 +52,7 @@ public class PotionLimiterListener implements Listener {
             if (iterator.hasNext()) {
                 if (Arrays.asList(FoxListener.DEBUFFS).contains(iterator.next().getType())) {
                     if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
-                        SpawnTag.applyTag((Player) event.getPotion().getShooter());
+                        SpawnTagHandler.addSeconds((Player) event.getPotion().getShooter(), SpawnTagHandler.MAX_SPAWN_TAG);
                     }
                 }
             }

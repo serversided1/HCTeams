@@ -1,12 +1,16 @@
 package net.frozenorb.foxtrot.server;
 
-import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -15,9 +19,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @SuppressWarnings({ "deprecation", "unchecked" })
 public class PacketBorder {
-    private static ConcurrentHashMap<String, HashMap<Location, Long>> borderBlocksSent = new ConcurrentHashMap<String, HashMap<Location, Long>>();
 
-    private ConcurrentLinkedQueue<Claim> regions = new ConcurrentLinkedQueue<Claim>();
+    private static ConcurrentHashMap<String, HashMap<Location, Long>> borderBlocksSent = new ConcurrentHashMap<String, HashMap<Location, Long>>();
+    @Getter private ConcurrentLinkedQueue<Claim> regions = new ConcurrentLinkedQueue<Claim>();
 
     public void addRegion(Claim rg) {
         regions.add(rg);
@@ -52,13 +56,9 @@ public class PacketBorder {
                     for (int i = -4; i < 5; i++) {
                         Location check = playerYLocation.clone().add(0, i, 0);
 
-                        if (cr.contains(check.getBlockX(), check.getBlockY(), check.getBlockZ())) {
-                            if (check.distanceSquared(player.getLocation()) <= 64D) {
-                                if (!check.getBlock().getType().isSolid()) {
-                                    player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
-                                    borderBlocksSent.get(player.getName()).put(check, System.currentTimeMillis());
-                                }
-                            }
+                        if (!check.getBlock().getType().isSolid() && check.distanceSquared(player.getLocation()) <= 64D) {
+                            player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
+                            borderBlocksSent.get(player.getName()).put(check, System.currentTimeMillis());
                         }
                     }
                 }
@@ -84,72 +84,52 @@ public class PacketBorder {
     }
 
     public static void checkPlayer(Player player) {
-        try {
+        /*try {
             PacketBorder border = new PacketBorder();
-            Set<CuboidRegion> regionManagerRegions = Collections.synchronizedSet((Set<CuboidRegion>) RegionManager.get().getRegions().clone());
-
             int x = player.getLocation().getBlockX();
             int z = player.getLocation().getBlockZ();
 
-            if (player.getWorld().getEnvironment() == World.Environment.THE_END) {
-                for (CuboidRegion cr : regionManagerRegions) {
-                    if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
-                        if (cr.hasTag("endspawn") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !cr.contains(player.getLocation()) && player.getGameMode() != GameMode.CREATIVE) {
-                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
+            for (Claim claim : LandBoard.getInstance().getClaims()) {
+                if (claim.isWithin(x, z, 8, player.getWorld().getName()) && player.getGameMode() != GameMode.CREATIVE) {
+                    Team owner = LandBoard.getInstance().getTeamAt(claim);
+
+                    if (owner.getOwner() == null) {
+                        if (owner.hasDTRBitmask(DTRBitmaskType.DENY_REENTRY) && !claim.contains(player)) {
+                            border.addRegion(claim.clone());
+                        } else if (owner.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                            Claim claimClone = claim.clone();
+
+                            claimClone.setY1(0);
+                            claimClone.setY2(256);
+
+                            border.addRegion(claimClone);
+                        } else if ((owner.hasDTRBitmask(DTRBitmaskType.KOTH) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                            Claim claimClone = claim.clone();
+
+                            claimClone.setY1(0);
+                            claimClone.setY2(256);
+
+                            border.addRegion(claimClone);
                         }
+                    } else if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                        Claim claimClone = claim.clone();
 
-                        if (SpawnTag.isTagged(player) && cr.hasTag("endexit") && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
+                        claimClone.setY1(0);
+                        claimClone.setY2(256);
 
-                            Location min = crAdd.getMinimumPoint();
-                            Location max = crAdd.getMaximumPoint();
-
-                            min.setY(0D);
-                            max.setY(256D);
-
-                            crAdd.setLocation(min, max);
-                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
-                        }
+                        border.addRegion(claimClone);
                     }
                 }
-            } else if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                for (Claim cBack : LandBoard.getInstance().getClaims()) {
-                    if (cBack.isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                        Claim c = cBack.clone();
-
-                        c.setY1(0);
-                        c.setY2(256);
-
-                        border.addRegion(c);
-                    }
-                }
-            } else if (SpawnTag.isTagged(player)) {
-                for (CuboidRegion cr : regionManagerRegions) {
-                    if (cr.getMaximumPoint().getWorld().equals(player.getWorld())) {
-                        if ((cr.hasTag("overworldspawn") || cr.hasTag("netherspawn") || cr.hasTag("endspawn")) && new Claim(cr.getMinimumPoint(), cr.getMaximumPoint()).isWithin(x, z, 8) && player.getGameMode() != GameMode.CREATIVE && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-                            CuboidRegion crAdd = new CuboidRegion("", cr.getMinimumPoint(), cr.getMaximumPoint());
-
-                            Location min = crAdd.getMinimumPoint();
-                            Location max = crAdd.getMaximumPoint();
-
-                            min.setY(0D);
-                            max.setY(256D);
-
-                            crAdd.setLocation(min, max);
-                            border.addRegion(new Claim(crAdd.getMinimumPoint(), crAdd.getMaximumPoint()));
-                        }
-                    }
-                }
-            } else {
-                clearPlayer(player);
-                return;
             }
 
-            border.sendToPlayer(player);
+            if (border.getRegions().size() == 0) {
+                clearPlayer(player);
+            } else {
+                border.sendToPlayer(player);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public static class BorderThread extends Thread {

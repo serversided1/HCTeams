@@ -36,7 +36,6 @@ public class EOTWCommand {
             Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED + "The world border has moved");
             Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.RED + "to 1000.");
             Bukkit.broadcastMessage(ChatColor.RED + "███████");
-            // NEXT MAP
         } else {
             sender.sendMessage(ChatColor.RED + "The server is no longer in EOTW mode.");
         }

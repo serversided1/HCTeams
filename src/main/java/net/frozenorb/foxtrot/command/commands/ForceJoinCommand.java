@@ -11,7 +11,7 @@ public class ForceJoinCommand {
 
     @Command(names={ "ForceJoin" }, permissionNode="foxtrot.forcejoin")
     public static void forceJoin(Player sender, @Param(name="Team") Team team,  @Param(name="Target", defaultValue="self") Player target) {
-        if (FoxtrotPlugin.getInstance().getTeamHandler().isOnTeam(target.getName())) {
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(target.getName()) != null) {
             if (target == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");
             } else {
@@ -23,7 +23,7 @@ public class ForceJoinCommand {
 
         team.addMember(target.getName());
         FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target.getName(), team);
-        target.sendMessage(ChatColor.GREEN + "You are now a member of §b" + team.getFriendlyName() + "§a!");
+        target.sendMessage(ChatColor.GREEN + "You are now a member of §b" + team.getName() + "§a!");
 
         if (target != sender) {
             sender.sendMessage("§aPlayer added to team!");

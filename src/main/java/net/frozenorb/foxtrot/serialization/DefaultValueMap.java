@@ -9,44 +9,44 @@ import java.util.HashMap;
  * 
  */
 public class DefaultValueMap extends HashMap<Class<?>, Object> {
-	private static final long serialVersionUID = 8693766426388395238L;
+    private static final long serialVersionUID = 8693766426388395238L;
 
-	private static volatile DefaultValueMap instance;
+    private static volatile DefaultValueMap instance;
 
-	DefaultValueMap() {
+    DefaultValueMap() {
 
-		put(String.class, "");
+        put(String.class, "");
 
-		put(Integer.class, 0);
-		put(int.class, 0);
+        put(Integer.class, 0);
+        put(int.class, 0);
 
-		put(Long.class, 0L);
-		put(long.class, 0L);
+        put(Long.class, 0L);
+        put(long.class, 0L);
 
-		put(Character.class, '\0');
-		put(char.class, '\0');
+        put(Character.class, '\0');
+        put(char.class, '\0');
 
-		put(Boolean.class, false);
-		put(boolean.class, false);
+        put(Boolean.class, false);
+        put(boolean.class, false);
 
-	}
+    }
 
-	/**
-	 * Lazy-creation, thread-safe, singleton instance getter.
-	 * 
-	 * @return {@link PlayContextCache} instance
-	 */
-	public static DefaultValueMap getInstance() {
-		if (instance == null) {
+    /**
+     * Lazy-creation, thread-safe, singleton instance getter.
+     *
+     * @return {@link PlayContextCache} instance
+     */
+    public static DefaultValueMap getInstance() {
+        if (instance == null) {
 
-			synchronized (DefaultValueMap.class){
+            synchronized (DefaultValueMap.class){
 
-				if (instance == null) {
-					instance = new DefaultValueMap();
-				}
-			}
-		}
-		return instance;
-	}
+                if (instance == null) {
+                    instance = new DefaultValueMap();
+                }
+            }
+        }
+        return instance;
+    }
 
 }

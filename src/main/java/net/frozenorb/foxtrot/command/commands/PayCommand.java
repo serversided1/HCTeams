@@ -37,13 +37,6 @@ public class PayCommand {
             return;
         }
 
-        /*
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(player.getLocation()) && !FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName()).ownsLocation(player.getLocation())) {
-            sender.sendMessage(ChatColor.RED+"You can only do this in spawn or in your own territory!");
-            return;
-        }
-        */
-
         if (value < 50) {
             sender.sendMessage(ChatColor.RED + "You must send at least $50!");
             return;

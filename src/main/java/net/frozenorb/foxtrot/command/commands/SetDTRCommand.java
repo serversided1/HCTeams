@@ -10,8 +10,8 @@ public class SetDTRCommand {
 
     @Command(names={ "SetDTR" }, permissionNode="foxtrot.setdtr")
     public static void setDTR(Player sender, @Param(name="Target") Team target, @Param(name="DTR") float value) {
-        target.setDtr(value);
-        sender.sendMessage(ChatColor.YELLOW + target.getFriendlyName() + " has a new DTR of: " + value);
+        target.setDTR(value);
+        sender.sendMessage(ChatColor.YELLOW + target.getName() + " has a new DTR of: " + value);
     }
 
 }

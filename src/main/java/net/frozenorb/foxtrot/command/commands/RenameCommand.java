@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class RenameCommand {
 
     @Command(names={ "Rename" }, permissionNode="foxtrot.rename")
-    public static void rename(Player sender, @Param(name="Name") String name) {
+    public static void rename(Player sender, @Param(name="Name",wildcard=true) String name) {
         ItemStack inHand = sender.getItemInHand();
 
         if (inHand == null || inHand.getType() == Material.AIR) {

@@ -11,16 +11,16 @@ import net.minecraft.server.v1_7_R3.EntityTypes;
  */
 public class EntityRegistrar {
 
-	public static void registerCustomEntities() throws Exception {
+    public static void registerCustomEntities() throws Exception {
 
-		registerCustomEntity(FixedVillager.class, "Villager", 120);
-	}
+        registerCustomEntity(FixedVillager.class, "Villager", 120);
+    }
 
-	@SuppressWarnings("rawtypes")
-	public static void registerCustomEntity(Class entityClass, String name, int id)
-			throws Exception {
+    @SuppressWarnings("rawtypes")
+    public static void registerCustomEntity(Class entityClass, String name, int id)
+            throws Exception {
 
-		ReflectionUtils.putInPrivateStaticMap(EntityTypes.class, "d", entityClass, name);
-		ReflectionUtils.putInPrivateStaticMap(EntityTypes.class, "f", entityClass, Integer.valueOf(id));
-	}
+        ReflectionUtils.putInPrivateStaticMap(EntityTypes.class, "d", entityClass, name);
+        ReflectionUtils.putInPrivateStaticMap(EntityTypes.class, "f", entityClass, Integer.valueOf(id));
+    }
 }

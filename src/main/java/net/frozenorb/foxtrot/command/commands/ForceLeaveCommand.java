@@ -21,8 +21,7 @@ public class ForceLeaveCommand {
         }
 
         team.removeMember(player.getName());
-        team.setOwner(null);
-        FoxtrotPlugin.getInstance().getTeamHandler().removePlayerFromTeam(player.getName());
+        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(player.getName().toLowerCase());
         player.sendMessage(ChatColor.GRAY + "Force-left your team.");
     }
 

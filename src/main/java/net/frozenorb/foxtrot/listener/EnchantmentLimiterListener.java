@@ -1,29 +1,28 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -33,87 +32,50 @@ import java.util.*;
  */
 public class EnchantmentLimiterListener implements Listener {
 
-    public EnchantmentLimiterListener() {
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    boolean fixed = false;
-                    ItemStack hand = player.getItemInHand();
+    private Map<String, Long> lastArmorCheck = new HashMap<String, Long>();
+    private Map<String, Long> lastSwordCheck = new HashMap<String, Long>();
 
-                    if (conformEnchants(hand)) {
-                        player.setItemInHand(hand);
-                        fixed = true;
-                    }
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && !event.isCancelled() && checkArmor((Player) event.getEntity())) {
+            ItemStack[] armor = ((Player) event.getEntity()).getInventory().getArmorContents();
+            boolean fixed = false;
 
-                    for (ItemStack item : player.getInventory()) {
-                        if (conformEnchants(item)) {
-                            fixed = true;
-                        }
-                    }
-
-                    ItemStack[] armor = player.getInventory().getArmorContents();
-
-                    for (int i = 0; i < armor.length; i++) {
-                        if (conformEnchants(armor[i])) {
-                            fixed = true;
-                        }
-                    }
-
-                    if (fixed) {
-                        player.getInventory().setArmorContents(armor);
-                        player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "We detected illegal enchantments on items in your inventory, and have removed those enchantments.");
-                    }
+            for (int i = 0; i < armor.length; i++) {
+                if (InvUtils.conformEnchants(armor[i], true)) {
+                    fixed = true;
                 }
             }
 
-            private boolean conformEnchants(ItemStack item){
-                if (item == null) {
-                    return (false);
-                }
-
-                boolean fixed = false;
-                Map<Enchantment, Integer> enchants = item.getEnchantments();
-
-                for (Enchantment enchantment : enchants.keySet()) {
-                    int level = enchants.get(enchantment);
-
-                    if (ServerHandler.getMaxEnchantments().containsKey(enchantment)) {
-                        int max = ServerHandler.getMaxEnchantments().get(enchantment);
-
-                        if (level > max) {
-                            item.addUnsafeEnchantment(enchantment, max);
-                            fixed = true;
-                        }
-                    } else {
-                        item.removeEnchantment(enchantment);
-                        fixed = true;
-                    }
-                }
-
-                return (fixed);
-            }
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 200L, 200L); //10 seconds
-    }
-
-    @EventHandler(priority=EventPriority.HIGH)
-    public void onEnchantItem(EnchantItemEvent event) {
-        Map<Enchantment, Integer> enchants = new HashMap<>();
-
-        for (Enchantment enchantment : event.getEnchantsToAdd().keySet()) {
-            int level = event.getEnchantsToAdd().get(enchantment);
-
-            if (ServerHandler.getMaxEnchantments().containsKey(enchantment)) {
-                if (level > ServerHandler.getMaxEnchantments().get(enchantment)) {
-                    enchants.put(enchantment, ServerHandler.getMaxEnchantments().get(enchantment));
-                } else {
-                    enchants.put(enchantment, level);
-                }
+            if (fixed) {
+                ((Player) event.getEntity()).sendMessage(ChatColor.YELLOW + "We detected that your armor had some illegal enchantments, and have reduced the invalid enchantments.");
             }
         }
+    }
 
-        event.getEnchantsToAdd().clear();
-        event.getEnchantsToAdd().putAll(enchants);
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!event.isCancelled() && event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
+            Player player = (Player) event.getDamager();
+            ItemStack hand = player.getItemInHand();
+
+            if (InvUtils.conformEnchants(hand, true)) {
+                player.setItemInHand(hand);
+                player.sendMessage(ChatColor.YELLOW + "We detected that your sword had some illegal enchantments, and have reduced the invalid enchantments.");
+            }
+        }
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && !event.isCancelled() && event.getItem() != null && event.getItem().getType() == Material.BOW) {
+            ItemStack hand = event.getPlayer().getItemInHand();
+
+            if (InvUtils.conformEnchants(hand, true)) {
+                event.getPlayer().setItemInHand(hand);
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "We detected that your bow had some illegal enchantments, and have reduced the invalid enchantments.");
+            }
+        }
     }
 
     @EventHandler(priority=EventPriority.HIGH)
@@ -130,7 +92,7 @@ public class EnchantmentLimiterListener implements Listener {
         if (event.getInventory().getType() == InventoryType.MERCHANT) {
             for (ItemStack item : event.getInventory()) {
                 if (item != null) {
-                    InvUtils.fixItem(item);
+                    InvUtils.conformEnchants(item, true);
                 }
             }
         }
@@ -150,24 +112,6 @@ public class EnchantmentLimiterListener implements Listener {
 
         if (item == null) {
             return;
-        }
-
-        boolean book = item.getType() == Material.ENCHANTED_BOOK;
-
-        for (Map.Entry<Enchantment, Integer> entry : ServerHandler.getMaxEnchantments().entrySet()) {
-            if (book) {
-                EnchantmentStorageMeta esm = (EnchantmentStorageMeta) item.getItemMeta();
-
-                if (esm.hasStoredEnchant(entry.getKey()) && esm.getStoredEnchantLevel(entry.getKey()) > entry.getValue()) {
-                    player.sendMessage(ChatColor.RED + "That book would be too strong to use!");
-                    event.setCancelled(true);
-                    return;
-                }
-            } else {
-                if (item.containsEnchantment(entry.getKey()) && item.getEnchantmentLevel(entry.getKey()) > entry.getValue()) {
-                    item.addEnchantment(entry.getKey(), entry.getValue());
-                }
-            }
         }
 
         ItemMeta meta = item.getItemMeta();
@@ -240,15 +184,35 @@ public class EnchantmentLimiterListener implements Listener {
         Iterator<ItemStack> iter = event.getDrops().iterator();
 
         while (iter.hasNext()) {
-            InvUtils.fixItem(iter.next());
+            InvUtils.conformEnchants(iter.next(), true);
         }
     }
 
     @EventHandler
     public void onPlayerFishEvent(PlayerFishEvent event) {
         if (event.getCaught() instanceof Item) {
-            InvUtils.fixItem(((Item) event.getCaught()).getItemStack());
+            InvUtils.conformEnchants(((Item) event.getCaught()).getItemStack(), true);
         }
+    }
+
+    public boolean checkArmor(Player player) {
+        boolean check = !lastArmorCheck.containsKey(player.getName()) || (System.currentTimeMillis() - lastArmorCheck.get(player.getName())) > 5000L;
+
+        if (check) {
+            lastArmorCheck.put(player.getName(), System.currentTimeMillis());
+        }
+
+        return (check);
+    }
+
+    public boolean checkSword(Player player) {
+        boolean check = !lastSwordCheck.containsKey(player.getName()) || (System.currentTimeMillis() - lastSwordCheck.get(player.getName())) > 5000L;
+
+        if (check) {
+            lastSwordCheck.put(player.getName(), System.currentTimeMillis());
+        }
+
+        return (check);
     }
 
 }

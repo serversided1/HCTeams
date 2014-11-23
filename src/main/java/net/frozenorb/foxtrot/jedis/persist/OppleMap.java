@@ -4,9 +4,9 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class OppleMap extends RedisPersistMap<Long> {
 
-	public OppleMap() {
-		super("OppleCooldowns");
-	}
+    public OppleMap() {
+        super("OppleCooldowns");
+    }
 
     @Override
     public String getRedisValue(Long time) {
@@ -27,7 +27,7 @@ public class OppleMap extends RedisPersistMap<Long> {
     }
 
     public void useGoldenApple(String player, long seconds) {
-        updateValue(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
+        updateValueAsync(player.toLowerCase(), System.currentTimeMillis() + (seconds * 1000));
     }
 
     public void resetCooldown(String player) {
@@ -35,7 +35,7 @@ public class OppleMap extends RedisPersistMap<Long> {
     }
 
     public long getCooldown(String player) {
-        return (getValue(player));
+        return (contains(player) ? getValue(player) : -1L);
     }
 
 }

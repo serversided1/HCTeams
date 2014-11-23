@@ -57,7 +57,6 @@ public class KOTHListener implements Listener {
             Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
             Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
         }
-
     }
 
     @EventHandler
@@ -66,7 +65,7 @@ public class KOTHListener implements Listener {
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
         if (team != null) {
-            teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]";
+            teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
         }
 
         for (int i = 0; i < 6; i++) {
@@ -74,12 +73,13 @@ public class KOTHListener implements Listener {
         }
 
         boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.BLUE + " " + event.getKoth().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKoth().getTier() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
 
         if (!citadel) {
-            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKoth().getName() + " KOTH", event.getKoth().getTier());
-            ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKoth().getName(), team == null ? event.getPlayer().getName() : team.getFriendlyName());
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.BLUE + " " + event.getKoth().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKoth().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
+
+            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKoth().getName() + " KOTH", event.getKoth().getLevel());
+            ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKoth().getName(), team == null ? event.getPlayer().getName() : team.getName());
 
             event.getPlayer().getInventory().addItem(rewardKey);
             event.getPlayer().getInventory().addItem(kothSign);
@@ -91,6 +91,15 @@ public class KOTHListener implements Listener {
             if (!event.getPlayer().getInventory().contains(kothSign)) {
                 event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), kothSign);
             }
+        } else {
+            Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.GOLD + "[Citadel]");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.YELLOW + "controlled by");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName());
+            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
         }
     }
 

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.SpawnTag;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
@@ -34,14 +34,14 @@ public class EndListener implements Listener {
     private Map<String, Long> msgCooldown = new HashMap<>();
 
     // Display a message and give the killer the egg (when the dragon is killed)
-	@EventHandler
+    @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof EnderDragon) {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
             String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
             if (team != null) {
-                teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getFriendlyName() + ChatColor.GOLD + "]";
+                teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
             }
 
             for (int i = 0; i < 6; i++) {
@@ -144,7 +144,7 @@ public class EndListener implements Listener {
 
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) {
             // Don't let players leave the end while combat tagged
-            if (SpawnTag.isTagged(event.getPlayer())) {
+            if (SpawnTagHandler.isTagged(event.getPlayer())) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
@@ -164,7 +164,7 @@ public class EndListener implements Listener {
             }
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
             // Don't let players enter the end while combat tagged
-            if (SpawnTag.isTagged(event.getPlayer())) {
+            if (SpawnTagHandler.isTagged(event.getPlayer())) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {

@@ -6,10 +6,14 @@ import org.bukkit.entity.Player;
 
 public class SaveCommand {
 
-    @Command(names={ "Save", "SaveMyShit", "SaveRedis" }, permissionNode="op")
-    public static void playSound(Player sender) {
-        RedisSaveTask.getInstance().save();
-        sender.sendMessage("§cSaved!");
+    @Command(names={ "Save", "SaveRedis" }, permissionNode="op")
+    public static void save(Player sender) {
+        RedisSaveTask.save(false);
+    }
+
+    @Command(names={ "Save ForceAll", "SaveRedis ForceAll" }, permissionNode="op")
+    public static void saveForceAll(Player sender) {
+        RedisSaveTask.save(true);
     }
 
 }

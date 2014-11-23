@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.SpawnTag;
-import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,12 +38,10 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
-            Team ownerTo = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getEntity().getLocation());
-
-            if (ownerTo == null || ownerTo.getDtr() != 100D) {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
-            } else {
+            if (DTRBitmaskType.SIXTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 60000L);
+            } else {
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
             }
         }
     }
@@ -75,17 +73,17 @@ public class EnderpearlListener implements Listener {
         Location target = event.getTo();
         Location from = event.getFrom();
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(target)) {
+            if (!DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");
                 return;
             }
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(target) || !FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(from)) {
+        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(target) || !DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
             if (event.getPlayer().getWorld().getEnvironment() != World.Environment.THE_END) {
-                SpawnTag.addSeconds(event.getPlayer(), 8);
+                SpawnTagHandler.addSeconds(event.getPlayer(), 8);
             }
         }
 

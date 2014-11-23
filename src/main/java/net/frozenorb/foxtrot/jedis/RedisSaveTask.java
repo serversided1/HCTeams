@@ -1,49 +1,76 @@
 package net.frozenorb.foxtrot.jedis;
 
-import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import redis.clients.jedis.Jedis;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class RedisSaveTask extends BukkitRunnable {
 
-	@Getter private static RedisSaveTask instance;
+    public void run() {
+        save(false);
+    }
 
-	public RedisSaveTask() {
-		instance = this;
-	}
+    public static int save(boolean forceAll) {
+        System.out.println("Saving teams to Jedis...");
 
-	@Override
-	public void run() {
-		save();
-	}
+        JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
 
-	public void save() {
-		System.out.println("Saving teams to Jedis...");
-
-		JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
-
-			@Override
-			public Integer execute(Jedis jedis) {
+            @Override
+            public Integer execute(Jedis jedis) {
                 int changed = 0;
 
-				for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-					if (team.isChanged()) {
+                for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+                    if (team.isNeedsSave() || forceAll) {
                         changed++;
-						team.save(jedis);
-					}
-				}
+                        jedis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
+                    }
+                }
 
                 jedis.set("TeamsLastUpdated", String.valueOf((float) (System.currentTimeMillis() / 1000L)));
-				return (changed);
-			}
-		};
+                return (changed);
+            }
+        };
 
-		int teamsSaved = FoxtrotPlugin.getInstance().runJedisCommand(jdc);
-        System.out.println("Saved " + teamsSaved + " teams to Jedis.");
+        long startMs = System.currentTimeMillis();
+        int teamsSaved = FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+        int time = (int) (System.currentTimeMillis() - startMs);
+
+        System.out.println("Saved " + teamsSaved + " teams to Redis in " + time + "ms.");
+        Map<String, String> dealtWith = new HashMap<String, String>();
+        Set<String> errors = new HashSet<String>();
+
+        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+            for (String member : team.getMembers()) {
+                if (dealtWith.containsKey(member) && !errors.contains(member)) {
+                    errors.add(member);
+                    continue;
+                }
+
+                dealtWith.put(member, team.getName());
+            }
+        }
+
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.DARK_PURPLE + "Saved " + teamsSaved + " teams to Redis in " + time + " ms.");
+
+                if (errors.size() == 0) {
+                    player.sendMessage(ChatColor.DARK_PURPLE + "No errors found while checking player team cache.");
+                } else {
+                    player.sendMessage(ChatColor.DARK_PURPLE.toString() + errors.size() + " error(s) found while checking player team cache.");
+                }
+            }
+        }
+
+        return (teamsSaved);
     }
 
 }

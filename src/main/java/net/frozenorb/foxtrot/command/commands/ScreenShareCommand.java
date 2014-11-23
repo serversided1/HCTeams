@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class ScreenShareCommand {
 
-    @Command(names={ "ScreenShare", "SS" }, permissionNode="op")
+    @Command(names={ "ScreenShare", "SS" }, permissionNode="foxtrot.screenshare")
     public static void playSound(Player sender, @Param(name="Target") Player target) {
         FreezeCommand.freeze(target);
 

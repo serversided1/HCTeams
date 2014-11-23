@@ -41,7 +41,6 @@ public class FreezeCommand {
                         newLoc.setPitch(to.getPitch());
                         newLoc.setYaw(to.getYaw());
                         event.setTo(newLoc);
-                        //player.sendMessage(FROZEN_MESSAGE);
                     }
                 }
             }

@@ -1,14 +1,15 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public static final long PENDING_USE = -10L;
 
-	public PvPTimerMap() {
-		super("PvPTimers");
-	}
+    public PvPTimerMap() {
+        super("PvPTimers");
+    }
 
     @Override
     public String getRedisValue(Long time) {
@@ -24,11 +25,11 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
         updateValueAsync(player, PENDING_USE);
     }
 
-	public void createTimer(String player, int seconds) {
-		updateValue(player, System.currentTimeMillis() + (seconds * 1000));
-	}
+    public void createTimer(String player, int seconds) {
+        updateValueAsync(player, System.currentTimeMillis() + (seconds * 1000));
+    }
 
-	public boolean hasTimer(String player) {
+    public boolean hasTimer(String player) {
         if (contains(player)) {
             if (getValue(player) == PENDING_USE) {
                 return (false);
@@ -37,8 +38,8 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
             return (getValue(player) > System.currentTimeMillis());
         }
 
-		return (false);
-	}
+        return (false);
+    }
 
     public long getTimer(String player) {
         return (contains(player) ? getValue(player) : -1L);
@@ -50,6 +51,15 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public boolean contains(String player) {
         return (super.contains(player));
+    }
+
+    @Override
+    public Long getValue(String player) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+            return (-1L);
+        }
+
+        return (super.getValue(player));
     }
 
 }

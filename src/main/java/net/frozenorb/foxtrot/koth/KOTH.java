@@ -27,28 +27,20 @@ public class KOTH {
     //***************************//
 
     @SerializedName("Name")
-    @Getter
-    private String name;
+    @Getter private String name;
     @SerializedName("Location")
-    @Getter
-    private BlockVector capLocation;
+    @Getter private BlockVector capLocation;
     @SerializedName("World")
-    @Getter
-    private String world;
+    @Getter private String world;
     @SerializedName("MaxDistance")
-    @Getter
-    private int capDistance;
+    @Getter private int capDistance;
     @SerializedName("CapTime")
-    @Getter
-    private int capTime;
+    @Getter private int capTime;
 
-    private transient boolean active;
-    @Getter
-    private transient String currentCapper;
-    @Getter
-    private transient float remainingCapTime;
-    @Getter @Setter
-    private transient int tier;
+    @Getter private transient boolean active;
+    @Getter private transient String currentCapper;
+    @Getter private transient int remainingCapTime;
+    @Getter @Setter private transient int level;
 
     //***************************//
 
@@ -58,7 +50,7 @@ public class KOTH {
         this.world = location.getWorld().getName();
         this.capDistance = 3;
         this.capTime = 60 * 15;
-        this.tier = 2;
+        this.level = 2;
 
         KOTHHandler.getKOTHs().add(this);
         KOTHHandler.saveKOTHs();
@@ -82,10 +74,6 @@ public class KOTH {
         KOTHHandler.saveKOTHs();
     }
 
-    public boolean isActive() {
-        return (active);
-    }
-
     public boolean activate() {
         if (active) {
             return (false);
@@ -96,7 +84,7 @@ public class KOTH {
         this.active = true;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
-        this.tier = 2;
+        this.level = 2;
 
         return (true);
     }
@@ -111,7 +99,7 @@ public class KOTH {
         this.active = false;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
-        this.tier = 2;
+        this.level = 2;
 
         return (true);
     }
@@ -159,16 +147,17 @@ public class KOTH {
                 resetCapTime();
             } else {
                 if (remainingCapTime % 10 == 0 && remainingCapTime > 1) {
-                    capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
+                    boolean citadel = name.equalsIgnoreCase("Citadel");
+                    capper.sendMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
                 }
 
                 if (remainingCapTime <= 0) {
                     finishCapping();
-                } else if (remainingCapTime % (60 * 3) == 0) {
+                } else if (remainingCapTime % 180 == 0) {
                     FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 
-                this.remainingCapTime -= 0.05;
+                this.remainingCapTime--;
             }
         } else {
             List<Player> onCap = new ArrayList<Player>();

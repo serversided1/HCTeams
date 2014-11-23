@@ -2,13 +2,17 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,16 +32,16 @@ public class CrowbarListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isClaimedAndRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getOwner(event.getClickedBlock().getLocation());
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
             if (team != null && !team.isMember(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getFriendlyName() + ChatColor.YELLOW + "'s territory!");
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s territory!");
                 return;
             }
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isGlobalSpawn(event.getClickedBlock().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar spawn!");
             return;
         }
@@ -56,6 +60,17 @@ public class CrowbarListener implements Listener {
 
             event.getClickedBlock().getWorld().dropItemNaturally(event.getClickedBlock().getLocation(), new ItemStack(Material.ENDER_PORTAL_FRAME));
             event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(), Sound.ANVIL_USE, 1.0F, 1.0F);
+
+            for (int x = -3; x < 3; x++) {
+                for (int z = -3; z < 3; z++) {
+                    Block block = event.getClickedBlock().getLocation().add(x, 0, z).getBlock();
+
+                    if (block.getType() == Material.ENDER_PORTAL) {
+                        block.setType(Material.AIR);
+                        block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.ENDER_PORTAL.getId());
+                    }
+                }
+            }
 
             portals -= 1;
 
@@ -131,6 +146,14 @@ public class CrowbarListener implements Listener {
             event.getPlayer().setItemInHand(event.getItem());
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Crowbars can only break end portals and mob spawners!");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getBlock().getType() == Material.MOB_SPAWNER && event.getBlock().getWorld().getEnvironment() == World.Environment.NETHER) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot break mob spawners in the nether!");
             event.setCancelled(true);
         }
     }
