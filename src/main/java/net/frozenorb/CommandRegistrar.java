@@ -85,6 +85,7 @@ public class CommandRegistrar {
         loadCommandsFromPackage("net.frozenorb.foxtrot.koth");
         loadCommandsFromPackage("net.frozenorb.foxtrot.server");
         loadCommandsFromPackage("net.frozenorb.foxtrot.team");
+        loadCommandsFromPackage("net.frozenorb.foxtrot.citadel");
     }
 
 }

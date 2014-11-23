@@ -1,6 +1,7 @@
-package net.frozenorb.foxtrot.command.commands;
+package net.frozenorb.foxtrot.citadel.commands.citadel;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 public class CitadelCommand {
 
-    @Command(names={ "Citadel" }, permissionNode="")
+    @Command(names={ "citadel" }, permissionNode="")
     public static void citadel(Player sender) {
         Team capper = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(FoxtrotPlugin.getInstance().getCitadelHandler().getCapper());
 
@@ -25,12 +26,12 @@ public class CitadelCommand {
             KOTH citadel = KOTHHandler.getKOTH("Citadel");
 
             if (citadel != null && citadel.isActive()) {
-                sender.sendMessage(ChatColor.YELLOW + "Citadel can be captured now.");
+                sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel can be captured now.");
             } else {
-                sender.sendMessage(ChatColor.YELLOW + "Citadel was not captured last week.");
+                sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel was not captured last week.");
             }
         } else {
-            sender.sendMessage(ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + capper.getName() + ChatColor.YELLOW + ".");
+            sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + capper.getName() + ChatColor.YELLOW + ".");
         }
 
         Date townLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getTownLootable();
@@ -39,12 +40,6 @@ public class CitadelCommand {
         sender.sendMessage(ChatColor.GOLD + "Citadel Town: " + ChatColor.WHITE + "Lootable " + (townLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(townLootable)) + ".");
         sender.sendMessage(ChatColor.GOLD + "Citadel Courtyard: " + ChatColor.WHITE + "Lootable " + (courtyardLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(courtyardLootable)) + ".");
         sender.sendMessage(ChatColor.GOLD + "Citadel Lootable: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getName()) + ".");
-    }
-
-    @Command(names={ "Citadel SetCapper" }, permissionNode="op")
-    public static void citadelSetCapper(Player sender, @Param(name="target") Team target, @Param(name="level", defaultValue="2") int level) {
-        FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(target.getUniqueId(), level);
-        sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getName() + " (" + target.getUniqueId() + ")" + ChatColor.YELLOW + " as the Citadel capper.");
     }
 
 }

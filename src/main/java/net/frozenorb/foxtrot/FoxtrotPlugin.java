@@ -8,6 +8,7 @@ import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
@@ -195,7 +196,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
-        getServer().getPluginManager().registerEvents(new CitadelListener(), this);
         getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
