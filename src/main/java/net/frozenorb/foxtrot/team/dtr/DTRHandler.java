@@ -52,6 +52,10 @@ public class DTRHandler extends BukkitRunnable {
         Map<Team, Integer> playerOnlineMap = new HashMap<Team, Integer>();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (player.hasMetadata("invisible")) {
+                continue;
+            }
+
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
             if (playerTeam != null) {
