@@ -14,7 +14,7 @@ public class DTRBitmaskTypeTransformer extends ParamTransformer {
     @Override
     public Object transform(CommandSender sender, String source) {
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
-            if (bitmaskType.getName().equalsIgnoreCase(bitmaskType.getName())) {
+            if (source.equalsIgnoreCase(bitmaskType.getName())) {
                 return (bitmaskType);
             }
         }

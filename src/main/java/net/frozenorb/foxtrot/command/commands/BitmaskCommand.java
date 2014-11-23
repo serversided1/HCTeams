@@ -46,9 +46,14 @@ public class BitmaskCommand {
             return;
         }
 
+        if (target.hasDTRBitmask(bitmaskType)) {
+            sender.sendMessage(ChatColor.RED + "This claim already has the bitmask value " + bitmaskType.getName() + ".");
+            return;
+        }
+
         int dtrInt = (int) target.getDTR();
 
-        dtrInt |= bitmaskType.getBitmask();
+        dtrInt += bitmaskType.getBitmask();
 
         target.setDTR(dtrInt);
         bitmaskInfo(sender, target);
@@ -61,9 +66,14 @@ public class BitmaskCommand {
             return;
         }
 
+        if (!target.hasDTRBitmask(bitmaskType)) {
+            sender.sendMessage(ChatColor.RED + "This claim doesn't have the bitmask value " + bitmaskType.getName() + ".");
+            return;
+        }
+
         int dtrInt = (int) target.getDTR();
 
-        dtrInt &= ~bitmaskType.getBitmask();
+        dtrInt -= bitmaskType.getBitmask();
 
         target.setDTR(dtrInt);
         bitmaskInfo(sender, target);
