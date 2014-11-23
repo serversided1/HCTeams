@@ -14,7 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by macguy8 on 11/5/2014.
  */
-public class FoundDiamondsListener implements Listener {
+public class FoundDiamondsListenerTemp implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
