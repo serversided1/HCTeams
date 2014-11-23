@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.command;
 
+import net.frozenorb.CommandRegistrar;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.command.objects.*;
-import net.minecraft.server.v1_7_R3.CommandSeed;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
