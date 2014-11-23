@@ -36,7 +36,7 @@ public class CrowbarListener implements Listener {
             Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
             if (team != null && !team.isMember(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s territory!");
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
                 return;
             }
         }
