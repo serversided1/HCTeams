@@ -204,7 +204,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
         getServer().getPluginManager().registerEvents(new EnderpearlListener(), this);
         getServer().getPluginManager().registerEvents(new EndListener(), this);
-        getServer().getPluginManager().registerEvents(new FoundDiamondsListenerTemp(), this);
+        getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
         getServer().getPluginManager().registerEvents(new FoxListener(), this);
         getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
         getServer().getPluginManager().registerEvents(new KOTHListener(), this);
