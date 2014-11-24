@@ -66,6 +66,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
                 if (!equippedPvPClass.qualifies(player.getInventory())) {
                     equippedKits.remove(player.getName());
+                    player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.RED + "Disabled!");
                     equippedPvPClass.remove(player);
                 } else {
                     equippedPvPClass.tick(player);
