@@ -294,7 +294,7 @@ public class FoxListener implements Listener {
                 if (event.getItem() != null) {
                     if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
                         event.getItem().setType(Material.BOOK);
-                        
+
                         event.getPlayer().sendMessage(ChatColor.GREEN + "You reverted this book to its original form!");
                         event.setCancelled(true);
                     }

@@ -35,19 +35,24 @@ public class DeathbanListener implements Listener {
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
             long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getName());
             long left = unbannedOn - System.currentTimeMillis();
-            //TimeUtils.getDurationBreakdown(left)
+
+            if (event.getPlayer().isOp()) {
+                // This is so staff (mostly Stimpay) can know when their 'natural' deathban will expire.
+                event.getPlayer().sendMessage(ChatColor.RED + "You would be deathbanned for another " + TimeUtils.getDurationBreakdown(left) + ".");
+                return;
+            }
 
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned for the remainder of the map.");
                 return;
             }
 
-            if (lastJoinedRevive.containsKey(event.getPlayer().getName()) && (System.currentTimeMillis() - lastJoinedRevive.get(event.getPlayer().getName())) < 1000 * 20) {
-                int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getName());
-                int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getName());
-                int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getName());
-                int totalLives = soulboundLives + friendLives + transferableLives;
+            int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getName());
+            int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getName());
+            int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getName());
+            int totalLives = soulboundLives + friendLives + transferableLives;
 
+            if (lastJoinedRevive.containsKey(event.getPlayer().getName()) && (System.currentTimeMillis() - lastJoinedRevive.get(event.getPlayer().getName())) < 1000 * 20) {
                 if (totalLives > 0) {
                     FoxtrotPlugin.getInstance().getDeathbanMap().revive(event.getPlayer().getName());
 
@@ -66,32 +71,24 @@ public class DeathbanListener implements Listener {
 
                     totalLives--;
 
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You now have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". You are now un-deathbanned.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You now have " + totalLives + " " + (totalLives == 1 ? "life" : "lives") + " left. You have been revived.");
                 } else {
                     event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You do not have any lives. To buy a life, go to MineHQ.com/shop.");
                 }
             } else {
-                int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getName());
-                int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getName());
-                int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getName());
-                int totalLives = soulboundLives + friendLives + transferableLives;
-
-                if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(event.getPlayer().getName())) {
-                    long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(event.getPlayer().getName()) - System.currentTimeMillis();
-                    millisLeft -= TimeUnit.MINUTES.toMillis(15);
-
-                    double value = (millisLeft / 1000D);
-                    double sec = Math.round(10.0 * value) / 10.0;
-
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have recently died. You will be able to use a life in " + sec + ".");
-                    return;
-                }
-
                 if (totalLives > 0) {
+                    if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(event.getPlayer().getName())) {
+                        long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(event.getPlayer().getName()) - System.currentTimeMillis();
+                        millisLeft = TimeUnit.MINUTES.toMillis(15) - millisLeft;
+
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have recently died. You will be able to use a life in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
+                        return;
+                    }
+
                     event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
                     lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                 } else {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have no lives. To buy a life, go to MineHQ.com/shop.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have no lives. To buy a life, go to MineHQ.com/store.");
                 }
             }
         }
