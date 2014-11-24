@@ -35,7 +35,8 @@ public class InvUtils {
     }
 
     public static boolean conformEnchants(ItemStack item, boolean removeUndefined) {
-        if (item == null) {
+        return (false);
+        /*if (item == null) {
             return (false);
         }
 
@@ -58,7 +59,7 @@ public class InvUtils {
             }
         }
 
-        return (fixed);
+        return (fixed);*/
     }
 
     public static ItemStack addToPart(ItemStack item, String title, String key, int max){

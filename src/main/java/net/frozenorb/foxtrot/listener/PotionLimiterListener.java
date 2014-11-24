@@ -31,7 +31,7 @@ public class PotionLimiterListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPotionSplash(PotionSplashEvent event) {
-        ItemStack potion = event.getPotion().getItem();
+        /*ItemStack potion = event.getPotion().getItem();
 
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
             if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(livingEntity.getLocation())) {
@@ -56,24 +56,24 @@ public class PotionLimiterListener implements Listener {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (event.getItem().getType() != Material.POTION) {
+        /*if (event.getItem().getType() != Material.POTION) {
             return;
         }
 
         if (ServerHandler.DISALLOWED_POTIONS.contains((int) event.getItem().getDurability())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
-        }
+        }*/
     }
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
-        if (event.isCancelled()) {
+        /*if (event.isCancelled()) {
             return;
         }
 
@@ -114,7 +114,7 @@ public class PotionLimiterListener implements Listener {
                 }
 
             }
-        }, 1);
+        }, 1);*/
     }
 
 }

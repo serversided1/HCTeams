@@ -37,7 +37,7 @@ public class EnchantmentLimiterListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && !event.isCancelled() && checkArmor((Player) event.getEntity())) {
+        /*if (event.getEntity() instanceof Player && !event.isCancelled() && checkArmor((Player) event.getEntity())) {
             ItemStack[] armor = ((Player) event.getEntity()).getInventory().getArmorContents();
             boolean fixed = false;
 
@@ -50,12 +50,12 @@ public class EnchantmentLimiterListener implements Listener {
             if (fixed) {
                 ((Player) event.getEntity()).sendMessage(ChatColor.YELLOW + "We detected that your armor had some illegal enchantments, and have reduced the invalid enchantments.");
             }
-        }
+        }*/
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!event.isCancelled() && event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
+        /*if (!event.isCancelled() && event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
             Player player = (Player) event.getDamager();
             ItemStack hand = player.getItemInHand();
 
@@ -63,19 +63,19 @@ public class EnchantmentLimiterListener implements Listener {
                 player.setItemInHand(hand);
                 player.sendMessage(ChatColor.YELLOW + "We detected that your sword had some illegal enchantments, and have reduced the invalid enchantments.");
             }
-        }
+        }*/
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && !event.isCancelled() && event.getItem() != null && event.getItem().getType() == Material.BOW) {
+        /*if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && !event.isCancelled() && event.getItem() != null && event.getItem().getType() == Material.BOW) {
             ItemStack hand = event.getPlayer().getItemInHand();
 
             if (InvUtils.conformEnchants(hand, true)) {
                 event.getPlayer().setItemInHand(hand);
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "We detected that your bow had some illegal enchantments, and have reduced the invalid enchantments.");
             }
-        }
+        }*/
     }
 
     @EventHandler(priority=EventPriority.HIGH)
@@ -181,18 +181,18 @@ public class EnchantmentLimiterListener implements Listener {
 
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
-        Iterator<ItemStack> iter = event.getDrops().iterator();
+        /*Iterator<ItemStack> iter = event.getDrops().iterator();
 
         while (iter.hasNext()) {
             InvUtils.conformEnchants(iter.next(), true);
-        }
+        }*/
     }
 
     @EventHandler
     public void onPlayerFishEvent(PlayerFishEvent event) {
-        if (event.getCaught() instanceof Item) {
+        /*if (event.getCaught() instanceof Item) {
             InvUtils.conformEnchants(((Item) event.getCaught()).getItemStack(), true);
-        }
+        }*/
     }
 
     public boolean checkArmor(Player player) {
