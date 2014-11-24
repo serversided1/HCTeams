@@ -6,6 +6,8 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +26,6 @@ import java.util.Set;
 public class TeamStuckCommand implements Listener {
 
     private static final double MAX_DISTANCE = 5;
-    private static final double TOTAL_MOVEMENT = 20;
 
     private static final Set<Integer> warn = new HashSet<>();
 
@@ -68,7 +69,7 @@ public class TeamStuckCommand implements Listener {
 
         new BukkitRunnable() {
 
-            private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 30 : 300;
+            private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5: 300;
 
             private Location loc = sender.getLocation();
             private Location prevLoc;
@@ -112,7 +113,7 @@ public class TeamStuckCommand implements Listener {
                         kick(sender);
                     } else {
                         sender.teleport(nearest);
-                        sender.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
+                        sender.sendMessage(ChatColor.YELLOW + "Teleported you to the nearest safe area!");
                     }
 
                     warping.remove(sender.getName());
@@ -144,7 +145,7 @@ public class TeamStuckCommand implements Listener {
         LandBoard landBoard = LandBoard.getInstance();
 
         if (landBoard.getClaim(origin) == null) {
-            return (getActualHighestBlock(origin));
+            return (getActualHighestBlock(origin.getBlock()).getLocation().add(0 , 1, 0));
         }
 
         // Start iterating outward on both positive and negative X & Z.
@@ -153,10 +154,10 @@ public class TeamStuckCommand implements Listener {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
-                if (landBoard.getClaim(origin) == null) {
-                    return (atPos.getWorld().getHighestBlockAt(atPos).getLocation());
-                } else if (landBoard.getClaim(origin) == null) {
-                    return (atNeg.getWorld().getHighestBlockAt(atNeg).getLocation());
+                if (landBoard.getClaim(atPos) == null) {
+                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0 , 1, 0));
+                } else if (landBoard.getClaim(atNeg) == null) {
+                    return (getActualHighestBlock(atNeg.getBlock()).getLocation().add(0 , 1, 0));
                 }
             }
         }
@@ -175,19 +176,19 @@ public class TeamStuckCommand implements Listener {
         }
     }
 
-    private static Location getActualHighestBlock(Location location) {
-        location.setY(256);
+    private static Block getActualHighestBlock(Block block) {
+        block = block.getWorld().getHighestBlockAt(block.getLocation());
 
-        while (location.getBlock().getType() == Material.AIR && location.getBlockY() > 0) {
-            location = location.subtract(0, 1, 0);
+        while (block.getType() == Material.AIR && block.getY() > 0) {
+            block = block.getRelative(BlockFace.DOWN);
         }
 
-        return (location);
+        return (block);
     }
 
     private static void kick(Player player){
         player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-        player.kickPlayer(ChatColor.RED + "We couldn't find a location to TP you, so we safely logged you out for now. Contact a staff member before logging back on!" + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
+        player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
     }
 
 }
