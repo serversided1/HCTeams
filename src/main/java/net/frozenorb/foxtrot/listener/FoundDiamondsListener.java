@@ -41,7 +41,7 @@ public class FoundDiamondsListener implements Listener {
                 }
             }
 
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage("[FD] " + ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
         }
     }
 
