@@ -686,7 +686,7 @@ public class Team {
 
         String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
 
-        player.sendMessage(ChatColor.BLUE + getName(player) + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
+        player.sendMessage(ChatColor.BLUE + getName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
         KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
         Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(this.owner);
 
