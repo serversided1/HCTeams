@@ -5,9 +5,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,24 +66,22 @@ public class TeamStuckCommand implements Listener {
 
         warping.add(sender.getName());
 
-        new BukkitRunnable(){
-            private int seconds = 300;
+        new BukkitRunnable() {
 
-            Location loc = sender.getLocation();
+            private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 30 : 300;
+
+            private Location loc = sender.getLocation();
+            private Location prevLoc;
+
             private int xStart = (int) loc.getX();
             private int yStart = (int) loc.getY();
             private int zStart = (int) loc.getZ();
 
             private Location nearest;
-            private boolean nearestFound = false;
-            private boolean tpOnceFound = false;
-
-            private Location prevLoc;
-            private double totalMovement = 0;
 
             @Override
-            public void run(){
-                if(damaged.contains(sender.getName())){
+            public void run() {
+                if (damaged.contains(sender.getName())) {
                     sender.sendMessage(ChatColor.RED + "You took damage, teleportation cancelled!");
                     damaged.remove(sender.getName());
                     warping.remove(sender.getName());
@@ -101,41 +97,22 @@ public class TeamStuckCommand implements Listener {
 
                 //Begin asynchronously searching for an available location prior to the actual teleport
                 if (seconds == 5) {
-                    new BukkitRunnable(){
-                        @Override
-                        public void run(){
-                            nearest = nearestSafeLocation(sender.getLocation());
-                            nearestFound = true;
+                    new BukkitRunnable() {
 
-                            if(tpOnceFound){
-                                new BukkitRunnable(){
-                                    @Override
-                                    public void run(){
-                                        if(nearest == null){
-                                            kick(sender);
-                                        } else {
-                                            sender.sendMessage(ChatColor.GREEN + "Found location, sorry for delay! Teleported you to the nearest safe area!");
-                                            sender.teleport(nearest);
-                                        }
-                                    }
-                                }.runTask(FoxtrotPlugin.getInstance());
-                            }
+                        @Override
+                        public void run() {
+                            nearest = nearestSafeLocation(sender.getLocation());
                         }
+
                     }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
                 }
 
-                if(seconds <= 0){
-                    if(nearestFound){
-                        if(nearest == null){
-                            kick(sender);
-                        } else {
-                            sender.teleport(nearest);
-                            sender.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
-                        }
+                if (seconds <= 0) {
+                    if (nearest == null) {
+                        kick(sender);
                     } else {
-                        sender.sendMessage(ChatColor.RED + "Still searching for a safe location, this is taking fairly long. Please report this to a staff member.");
-                        sender.sendMessage(ChatColor.RED + "You will be teleported once a location is found.");
-                        tpOnceFound = true;
+                        sender.teleport(nearest);
+                        sender.sendMessage(ChatColor.GREEN + "Teleported you to the nearest safe area!");
                     }
 
                     warping.remove(sender.getName());
@@ -146,56 +123,45 @@ public class TeamStuckCommand implements Listener {
                 Location loc = sender.getLocation();
 
                 //More than 5 blocks away
-                if((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)){
-                    cancel();
+                if ((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)) {
                     sender.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
                     warping.remove(sender.getName());
+                    cancel();
                     return;
                 }
 
-                //More than 20 blocks of accumulated movement
-                if(prevLoc != null){
-                    totalMovement += loc.distanceSquared(prevLoc);
-                    prevLoc = loc;
-
-                    if(totalMovement >= TOTAL_MOVEMENT * TOTAL_MOVEMENT){
-                        sender.sendMessage(ChatColor.RED + "You walked more than " + TOTAL_MOVEMENT + " total meters, teleport cancelled!");
-                        warping.remove(sender.getName());
-                        cancel();
-                        return;
-                    }
-                }
-
-                if (warn.contains(seconds)){
-                    sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED + "" + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.RED + "!");
+                if (warn.contains(seconds)) {
+                    sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED.toString() + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.YELLOW + "!");
                 }
 
                 seconds--;
             }
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
     }
 
     private static Location nearestSafeLocation(Location origin) {
         LandBoard landBoard = LandBoard.getInstance();
 
         if (landBoard.getClaim(origin) == null) {
-            return origin.getWorld().getHighestBlockAt(origin).getLocation();
+            return (getActualHighestBlock(origin));
         }
 
-        for (int xPos = 0, xNeg = 0; xPos < 500; xPos++, xNeg--) {
-            for (int zPos = 0, zNeg = 0; zPos < 500; zPos++, zNeg--) {
+        // Start iterating outward on both positive and negative X & Z.
+        for (int xPos = 0, xNeg = 0; xPos < 250; xPos++, xNeg--) {
+            for (int zPos = 0, zNeg = 0; zPos < 250; zPos++, zNeg--) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
                 if (landBoard.getClaim(origin) == null) {
-                    return atPos.getWorld().getHighestBlockAt(atPos).getLocation();
+                    return (atPos.getWorld().getHighestBlockAt(atPos).getLocation());
                 } else if (landBoard.getClaim(origin) == null) {
-                    return atNeg.getWorld().getHighestBlockAt(atNeg).getLocation();
+                    return (atNeg.getWorld().getHighestBlockAt(atNeg).getLocation());
                 }
             }
         }
 
-        return null;
+        return (null);
     }
 
     @EventHandler
@@ -209,8 +175,19 @@ public class TeamStuckCommand implements Listener {
         }
     }
 
+    private static Location getActualHighestBlock(Location location) {
+        location.setY(256);
+
+        while (location.getBlock().getType() == Material.AIR && location.getBlockY() > 0) {
+            location = location.subtract(0, 1, 0);
+        }
+
+        return (location);
+    }
+
     private static void kick(Player player){
         player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
-        player.kickPlayer("§cWe couldn't find a location to TP you, so we safely logged you out for now." + "\n" + "§cContact a staff member before logging back on!" + "\n" + "§bTeamSpeak: ts.minehq.com");
+        player.kickPlayer(ChatColor.RED + "We couldn't find a location to TP you, so we safely logged you out for now. Contact a staff member before logging back on!" + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
     }
+
 }
