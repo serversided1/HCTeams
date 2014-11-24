@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.team.commands.pvp;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -36,12 +37,9 @@ public class PvPReviveCommand {
 
         if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(target.getName())) {
             long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(target.getName()) - System.currentTimeMillis();
-            millisLeft -= TimeUnit.MINUTES.toMillis(15);
+            millisLeft = TimeUnit.MINUTES.toMillis(15) - millisLeft;
 
-            double value = (millisLeft / 1000D);
-            double sec = Math.round(10.0 * value) / 10.0;
-
-            sender.sendMessage(ChatColor.RED + "That player just died, and cannot be revived. They will be able to be revived in " + sec + ".");
+            sender.sendMessage(ChatColor.RED + "That player just died, and cannot be revived. They will be able to be revived in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
             return;
         }
 
