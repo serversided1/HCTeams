@@ -79,9 +79,9 @@ public class DeathbanListener implements Listener {
                 if (totalLives > 0) {
                     if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(event.getPlayer().getName())) {
                         long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(event.getPlayer().getName()) - System.currentTimeMillis();
-                        millisLeft = TimeUnit.MINUTES.toMillis(15) - millisLeft;
+                        millisLeft = TimeUnit.MINUTES.toMillis(15) - Math.abs(millisLeft);
 
-                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have recently died. You will be able to use a life in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
+                        event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You will be able to use a life in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
                         return;
                     }
 

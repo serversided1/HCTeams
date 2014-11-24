@@ -37,7 +37,7 @@ public class PvPReviveCommand {
 
         if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(target.getName())) {
             long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(target.getName()) - System.currentTimeMillis();
-            millisLeft = TimeUnit.MINUTES.toMillis(15) - millisLeft;
+            millisLeft = TimeUnit.MINUTES.toMillis(15) - Math.abs(millisLeft);
 
             sender.sendMessage(ChatColor.RED + "That player just died, and cannot be revived. They will be able to be revived in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
             return;
