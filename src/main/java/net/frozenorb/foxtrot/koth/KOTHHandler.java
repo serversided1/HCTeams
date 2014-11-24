@@ -85,7 +85,8 @@ public class KOTHHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 5L, 5L);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 5L, 20L);
+        // The initial delay of 5 ticks is to 'offset' us with the scoreboard handler.
     }
 
     public static void loadKOTHs() {
