@@ -35,7 +35,7 @@ public class DeathTracker {
     public static void logDeath(Player player, Player killer) {
         BasicDBObject deathData = generateDeathData(player, killer);
         File logToFolder = new File("deathtracker" + File.separator + player.getName());
-        File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "N/A" : killer.getName()) + "-" + (new Date().toString()) + ".log");
+        File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
 
         try {
             logTo.getParentFile().mkdirs();
