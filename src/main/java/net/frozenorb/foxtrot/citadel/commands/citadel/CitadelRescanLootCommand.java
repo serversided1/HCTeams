@@ -14,6 +14,7 @@ public class CitadelRescanLootCommand {
     @Command(names={"citadel rescanloot"}, permissionNode="op")
     public static void citadelRespawnLoot(Player sender) {
         FoxtrotPlugin.getInstance().getCitadelHandler().scanLoot();
+        FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Rescanned all Citadel loot.");
     }
 
