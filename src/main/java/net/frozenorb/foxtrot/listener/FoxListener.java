@@ -56,14 +56,14 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
 
-    private CustomTimingsHandler pmeSafeLogout = new CustomTimingsHandler("PME Safe Logout (Foxtrot)");
-    private CustomTimingsHandler pmePvPTimer = new CustomTimingsHandler("PME PvP Timer (Foxtrot)");
-    private CustomTimingsHandler pmeTeamGrab = new CustomTimingsHandler("PME Team Grab (Foxtrot)");
-    private CustomTimingsHandler pmeRegionGrab = new CustomTimingsHandler("PME Region Grab (Foxtrot)");
-    private CustomTimingsHandler pmeRegionNotify = new CustomTimingsHandler("PME Region Notify (Foxtrot)");
-    private CustomTimingsHandler pmeRegionNotifyHM = new CustomTimingsHandler("PME Region Notify HM (Foxtrot)");
-    private CustomTimingsHandler pmeRegionNotifySpawn = new CustomTimingsHandler("PME Region Notify Spawn (Foxtrot)");
-    private CustomTimingsHandler pmeRegionNotifyBM = new CustomTimingsHandler("PME Region Notify BM (Foxtrot)");
+    private CustomTimingsHandler pmeSafeLogout = new CustomTimingsHandler("Foxtrot - PME Safe Logout");
+    private CustomTimingsHandler pmePvPTimer = new CustomTimingsHandler("Foxtrot - PME PvP Time ");
+    private CustomTimingsHandler pmeTeamGrab = new CustomTimingsHandler("Foxtrot - PME Team Grab");
+    private CustomTimingsHandler pmeRegionGrab = new CustomTimingsHandler("Foxtrot - PME Region Gra");
+    private CustomTimingsHandler pmeRegionNotify = new CustomTimingsHandler("Foxtrot - PME Region Notify");
+    private CustomTimingsHandler pmeRegionNotifyHM = new CustomTimingsHandler("Foxtrot - PME Region Notify HM");
+    private CustomTimingsHandler pmeRegionNotifySpawn = new CustomTimingsHandler("Foxtrot - PME Region Notify Spawn");
+    private CustomTimingsHandler pmeRegionNotifyBM = new CustomTimingsHandler("Foxtrot - PME Region Notify BM");
 
     public static final PotionEffectType[] DEBUFFS = { PotionEffectType.POISON,
             PotionEffectType.SLOW, PotionEffectType.WEAKNESS,
