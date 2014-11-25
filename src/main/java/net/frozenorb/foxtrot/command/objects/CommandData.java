@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.command.objects;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.command.annotations.Command;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class CommandData {
     @Getter private String permissionNode;
     @Getter private List<ParamData> parameters = new ArrayList<ParamData>();
     @Getter private Method method;
+    @Getter private CustomTimingsHandler timingsHandler;
 
     public CommandData(Method method, Command commandAnnotation, List<ParamData> parameters, boolean console) {
         this.names = commandAnnotation.names();
@@ -26,6 +28,7 @@ public class CommandData {
         this.parameters = parameters;
         this.method = method;
         this.console = console;
+        this.timingsHandler = new CustomTimingsHandler("Foxtrot - CH " + getName() + " Process");
     }
 
     public String getName() {

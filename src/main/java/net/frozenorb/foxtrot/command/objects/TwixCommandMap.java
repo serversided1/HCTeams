@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.util.*;
 
@@ -13,6 +14,8 @@ import java.util.*;
  * Created by macguy8 on 11/2/2014.
  */
 public class TwixCommandMap extends SimpleCommandMap {
+
+    private CustomTimingsHandler foxTabComplete = new CustomTimingsHandler("Foxtrot - CH Command Tab Complete");
 
     //***********************//
 
@@ -22,6 +25,7 @@ public class TwixCommandMap extends SimpleCommandMap {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine) {
+        foxTabComplete.startTiming();
         try {
             if (!(sender instanceof Player)) {
                 return (null);
@@ -112,6 +116,8 @@ public class TwixCommandMap extends SimpleCommandMap {
         } catch (Exception e) {
             e.printStackTrace();
             return (new ArrayList<String>());
+        } finally {
+            foxTabComplete.stopTiming();
         }
     }
 

@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -34,6 +35,8 @@ public class CommandHandler implements Listener {
     private static List<CommandData> commands = new ArrayList<CommandData>();
     private static Map<Class<?>, ParamTransformer> parameterTransformers = new HashMap<Class<?>, ParamTransformer>();
     private static Map<Class<?>, ParamTabCompleter> parameterTabCompleters = new HashMap<Class<?>, ParamTabCompleter>();
+
+    private CustomTimingsHandler foxCommandProcess = new CustomTimingsHandler("Foxtrot - CH Command Process");
 
     //***********************//
 
@@ -320,6 +323,7 @@ public class CommandHandler implements Listener {
 
     @EventHandler
     public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
+        foxCommandProcess.startTiming();
         String[] args = new String[] { };
         CommandData found = null;
 
@@ -396,12 +400,17 @@ public class CommandHandler implements Listener {
             }
         }
 
+        foxCommandProcess.stopTiming();
+        found.getTimingsHandler().startTiming();
+
         try {
             found.getMethod().invoke(null, transformedParams.toArray(new Object[transformedParams.size()]));
         } catch (Exception e) {
             event.getPlayer().sendMessage(ChatColor.RED + "It appears there was some issues processing your command...");
             e.printStackTrace();
         }
+
+        found.getTimingsHandler().stopTiming();
     }
 
     @EventHandler
