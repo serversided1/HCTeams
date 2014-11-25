@@ -44,20 +44,20 @@ public class TeamSubclaimCommand implements Listener {
         SELECTION_WAND.setItemMeta(meta);
     }
 
-    @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim" }, permissionNode="")
+    @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim", "team sub", "t sub", "f sub", "faction sub", "fac sub" }, permissionNode="")
     public static void teamSubclaim(Player sender) {
-        sender.sendMessage(ChatColor.RED + "/f subclaim wand - obtains a subclaiming wand");
+        sender.sendMessage(ChatColor.RED + "/f subclaim start - starts the subclaiming process");
         sender.sendMessage(ChatColor.RED + "/f subclaim map - toggles a visual subclaim map");
-        sender.sendMessage(ChatColor.RED + "/f subclaim claim <subclaim> - creates a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim add <subclaim> <player> - adds a player to a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim remove <subclaim> <player> - removes a player from a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim create <subclaim> - creates a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim addplayer <player> <subclaim> - adds a player to a subclaim");
+        sender.sendMessage(ChatColor.RED + "/f subclaim removeplayer <player> <subclaim> - removes a player from a subclaim");
         sender.sendMessage(ChatColor.RED + "/f subclaim list - views all subclaims");
         sender.sendMessage(ChatColor.RED + "/f subclaim info <subclaim> - views info about a subclaim");
         sender.sendMessage(ChatColor.RED + "/f subclaim unclaim <subclaim> <player> - unclaims a subclaim");
     }
 
-    @Command(names={ "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team subclaim add", "t subclaim add", "f subclaim add", "faction subclaim add", "fac subclaim add" }, permissionNode="")
-    public static void teamSubclaimGrant(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
+    @Command(names={ "team subclaim addplayer", "t subclaim addplayer", "f subclaim addplayer", "faction subclaim addplayer", "fac subclaim addplayer", "team sub addplayer", "t sub addplayer", "f sub addplayer", "faction sub addplayer", "fac sub addplayer", "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team sub grant", "t sub grant", "f sub grant", "faction sub grant", "fac sub grant" }, permissionNode="")
+    public static void teamSubclaimAddPlayer(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (!team.getOwner().equals(sender.getName()) && !team.isCaptain(sender.getName())) {
@@ -80,8 +80,8 @@ public class TeamSubclaimCommand implements Listener {
         team.flagForSave();
     }
 
-    @Command(names={ "team subclaim revoke", "t subclaim revoke", "f subclaim revoke", "faction subclaim revoke", "fac subclaim revoke", "team subclaim remove", "t subclaim remove", "f subclaim remove", "faction subclaim remove", "fac subclaim remove" }, permissionNode="")
-    public static void teamSubclaimRevoke(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
+    @Command(names={ "team subclaim removeplayer", "t subclaim removeplayer", "f subclaim removeplayer", "faction subclaim removeplayer", "fac subclaim removeplayer", "team sub removeplayer", "t sub removeplayer", "f sub removeplayer", "faction sub removeplayer", "fac sub removeplayer", "team subclaim revoke", "t subclaim revoke", "f subclaim revoke", "faction subclaim revoke", "fac subclaim revoke", "team sub revoke", "t sub revoke", "f sub revoke", "faction sub revoke", "fac sub revoke" }, permissionNode="")
+    public static void teamSubclaimRemovePlayer(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (!team.getOwner().equals(sender.getName()) && !team.isCaptain(sender.getName())) {
@@ -104,8 +104,8 @@ public class TeamSubclaimCommand implements Listener {
         team.flagForSave();
     }
 
-    @Command(names={ "team subclaim wand", "t subclaim wand", "f subclaim wand", "faction subclaim wand", "fac subclaim wand", "team subclaim tool", "t subclaim tool", "f subclaim tool", "faction subclaim tool", "fac subclaim tool" }, permissionNode="")
-    public static void teamSubclaimWand(Player sender) {
+    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim wand", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub wand", "faction sub start", "fac sub start" }, permissionNode="")
+    public static void teamSubclaimStart(Player sender) {
         if (!sender.isOp()) {
             sender.sendMessage(ChatColor.RED + "The subclaiming system is temporarily disabled.");
             return;
@@ -132,10 +132,14 @@ public class TeamSubclaimCommand implements Listener {
             return;
         }
 
+        if (!VisualClaim.getCurrentSubclaimMaps().containsKey(sender.getName())) {
+            new VisualClaim(sender, VisualClaimType.SUBCLAIM_MAP, true).draw(true);
+        }
+
         sender.getInventory().setItem(slot, SELECTION_WAND.clone());
     }
 
-    @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list" }, permissionNode="")
+    @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list", "team sub list", "t sub list", "f sub list", "faction sub list", "fac sub list" }, permissionNode="")
     public static void teamSubclaimList(Player sender) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
@@ -169,7 +173,7 @@ public class TeamSubclaimCommand implements Listener {
         sender.sendMessage(ChatColor.YELLOW + "Other Subclaims: " + ChatColor.WHITE + other.toString());
     }
 
-    @Command(names={ "team subclaim info", "t subclaim info", "f subclaim info", "faction subclaim info", "fac subclaim info" }, permissionNode="")
+    @Command(names={ "team subclaim info", "t subclaim info", "f subclaim info", "faction subclaim info", "fac subclaim info", "team sub info", "t sub info", "f sub info", "faction sub info", "fac sub info" }, permissionNode="")
     public static void teamSubclaimInfo(Player sender, @Param(name="subclaim", defaultValue="location") Subclaim subclaim) {
         sender.sendMessage(ChatColor.BLUE + subclaim.getName() + ChatColor.YELLOW + " Subclaim Info");
         sender.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.GRAY + "Pos1. " + ChatColor.WHITE + subclaim.getLoc1().getBlockX() + "," + subclaim.getLoc1().getBlockY() + "," + subclaim.getLoc1().getBlockZ() + ChatColor.GRAY + " Pos2. " + ChatColor.WHITE + subclaim.getLoc2().getBlockX() + "," + subclaim.getLoc2().getBlockY() + "," + subclaim.getLoc2().getBlockZ());
@@ -190,8 +194,8 @@ public class TeamSubclaimCommand implements Listener {
         }
     }
 
-    @Command(names={ "team subclaim claim", "t subclaim claim", "f subclaim claim", "faction subclaim claim", "fac subclaim claim" }, permissionNode="")
-    public static void teamSubclaimClaim(Player sender, @Param(name="subclaim") String subclaim) {
+    @Command(names={ "team subclaim create", "t subclaim create", "f subclaim create", "faction subclaim create", "fac subclaim create", "team sub create", "t sub create", "f sub create", "faction sub create", "fac sub create" }, permissionNode="")
+    public static void teamSubclaimCreate(Player sender, @Param(name="subclaim") String subclaim) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {
@@ -252,12 +256,12 @@ public class TeamSubclaimCommand implements Listener {
         sender.getInventory().remove(SELECTION_WAND);
     }
 
-    @Command(names={ "team subclaim map", "t subclaim map", "f subclaim map", "faction subclaim map", "fac subclaim map" }, permissionNode="")
+    @Command(names={ "team subclaim map", "t subclaim map", "f subclaim map", "faction subclaim map", "fac subclaim map", "team sub map", "t sub map", "f sub map", "faction sub map", "fac sub map" }, permissionNode="")
     public static void teamSubclaimMap(Player sender) {
         (new VisualClaim(sender, VisualClaimType.SUBCLAIM_MAP, false)).draw(false);
     }
 
-    @Command(names={ "team subclaim opmap", "t subclaim opmap", "f subclaim opmap", "faction subclaim opmap", "fac subclaim opmap" }, permissionNode="op")
+    @Command(names={ "team subclaim opmap", "t subclaim opmap", "f subclaim opmap", "faction subclaim opmap", "fac subclaim opmap", "team sub opmap", "t sub opmap", "f sub opmap", "faction sub opmap", "fac sub opmap" }, permissionNode="op")
     public static void teamSubclaimOpMap(Player sender) {
         (new VisualClaim(sender, VisualClaimType.SUBCLAIM_MAP, true)).draw(false);
     }
