@@ -198,7 +198,7 @@ public class CombatLoggerListener implements Listener {
         if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
             if (enemyWithinRange && !event.getPlayer().isDead()) {
                 String playerName = ChatColor.RED.toString() + event.getPlayer().getName();
-                FoxtrotPlugin.getInstance().getLogger().info(playerName + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ").");
+                FoxtrotPlugin.getInstance().getLogger().info(event.getPlayer().getName() + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ")");
 
                 ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
                 ItemStack[] inv = event.getPlayer().getInventory().getContents();
