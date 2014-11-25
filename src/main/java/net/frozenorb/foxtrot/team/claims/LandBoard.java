@@ -63,7 +63,7 @@ public class LandBoard {
 
         for (Entry<Claim, Team> regionEntry : boardMap.entrySet()) {
             if (!regions.contains(regionEntry)) {
-                if (max.getWorld().getName().equals(min.getWorld())
+                if (max.getWorld().getName().equals(regionEntry.getKey().getWorld())
                         && (max.getBlockX() >= regionEntry.getKey().getX1())
                         && (min.getBlockX() <= regionEntry.getKey().getX2())
                         && (max.getBlockZ() >= regionEntry.getKey().getZ1())
