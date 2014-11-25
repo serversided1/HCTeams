@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -97,9 +98,13 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-        if (team != null && !team.isMember(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
-            event.setCancelled(true);
+        if (team != null) {
+            if (!team.isMember(event.getPlayer())) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+                event.setCancelled(true);
+            } else {
+
+            }
         }
     }
 
@@ -115,17 +120,31 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-        if (team != null && !team.isMember(event.getPlayer())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
-            event.setCancelled(true);
+        if (team != null) {
+            if (!team.isMember(event.getPlayer())) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+                event.setCancelled(true);
 
-            if (!Arrays.asList(FoxListener.NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS).contains(event.getBlock().getType())) {
-                if (event.getBlock().isEmpty() || event.getBlock().getType().isTransparent() || !event.getBlock().getType().isSolid()) {
-                    return;
+                if (!Arrays.asList(FoxListener.NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS).contains(event.getBlock().getType())) {
+                    if (event.getBlock().isEmpty() || event.getBlock().getType().isTransparent() || !event.getBlock().getType().isSolid()) {
+                        return;
+                    }
                 }
+
+                FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
+                return;
             }
 
-            FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
+            if (!team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+                Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
+
+                if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
+                }
+
+                return;
+            }
         }
     }
 

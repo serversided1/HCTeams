@@ -34,7 +34,6 @@ public class DeathbanMap extends RedisPersistMap<Long> {
 
     public void deathban(String player, long seconds) {
         updateValue(player, System.currentTimeMillis() + (seconds * 1000));
-        FoxtrotPlugin.getInstance().getLastDeathMap().addDeath(player);
     }
 
     public void revive(String player) {

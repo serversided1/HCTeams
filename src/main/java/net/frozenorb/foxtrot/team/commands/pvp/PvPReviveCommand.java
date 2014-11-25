@@ -35,14 +35,6 @@ public class PvPReviveCommand {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getLastDeathMap().recentlyDied(target.getName())) {
-            long millisLeft = FoxtrotPlugin.getInstance().getLastDeathMap().getLastDeath(target.getName()) - System.currentTimeMillis();
-            millisLeft = TimeUnit.MINUTES.toMillis(15) - Math.abs(millisLeft);
-
-            sender.sendMessage(ChatColor.RED + "That player just died, and cannot be revived. They will be able to be revived in " + TimeUtils.getDurationBreakdown(millisLeft) + ".");
-            return;
-        }
-
         if (friendLives == 0) {
             // Use a transferable life.
             FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(sender.getName(), transferableLives - 1);
