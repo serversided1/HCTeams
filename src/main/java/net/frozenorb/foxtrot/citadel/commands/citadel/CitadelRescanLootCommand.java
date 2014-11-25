@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  */
 public class CitadelRescanLootCommand {
 
-    @Command(names = {"citadel rescanloot"}, permissionNode = "op")
+    @Command(names={"citadel rescanloot"}, permissionNode="op")
     public static void citadelRespawnLoot(Player sender) {
         FoxtrotPlugin.getInstance().getCitadelHandler().scanLoot();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Rescanned all Citadel loot.");

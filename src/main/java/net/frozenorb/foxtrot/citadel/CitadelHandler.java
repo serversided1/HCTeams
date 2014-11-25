@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelLootTask;
@@ -19,11 +20,13 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -78,9 +81,11 @@ public class CitadelHandler {
                 BasicDBList chests = (BasicDBList) dbo.get("chests");
                 LocationSerializer locationSerializer = new LocationSerializer();
 
-                for (Object chestObj : chests) {
-                    BasicDBObject chest = (BasicDBObject) chestObj;
-                    citadelChests.put(locationSerializer.deserialize((BasicDBObject) chest.get("location")), chest.getLong("time"));
+                if (chests != null) {
+                    for (Object chestObj : chests) {
+                        BasicDBObject chest = (BasicDBObject) chestObj;
+                        citadelChests.put(locationSerializer.deserialize((BasicDBObject) chest.get("location")), chest.getLong("time"));
+                    }
                 }
             }
         } catch (Exception e) {
@@ -97,6 +102,20 @@ public class CitadelHandler {
             dbo.put("level", level);
             dbo.put("townLootable", townLootable);
             dbo.put("courtyardLootable", courtyardLootable);
+
+            BasicDBList chests = new BasicDBList();
+            LocationSerializer locationSerializer = new LocationSerializer();
+
+            for (Map.Entry<Location, Long> citadelChestEntry : citadelChests.entrySet()) {
+                BasicDBObject chest = new BasicDBObject();
+
+                chest.put("location", locationSerializer.serialize(citadelChestEntry.getKey()));
+                chest.put("time", citadelChestEntry.getValue());
+
+                chests.add(chest);
+            }
+
+            dbo.put("chests", chests);
 
             citadelInfo.delete();
             FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
@@ -173,20 +192,12 @@ public class CitadelHandler {
 
             if (team.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
                 for (Claim claim : team.getClaims()) {
-                    Location minLocation = claim.getMinimumPoint();
-                    Location maxLocation = claim.getMaximumPoint();
-
-                    // We do an increment of 5 instead of 16 because... Well because I want to be sure it doesn't break.
-                    for (int x = 0; x < (maxLocation.getBlockX() - minLocation.getBlockX()); x += 5) {
-                        for (int z = 0; z < (maxLocation.getBlockZ() - minLocation.getBlockZ()); z += 5) {
-                            Chunk chunk = claim.getMinimumPoint().getWorld().getChunkAt(x, z);
-
-                            for (BlockState tileEntity : chunk.getTileEntities()) {
-                                if (tileEntity instanceof Chest) {
-                                    citadelChests.put(tileEntity.getLocation(), System.currentTimeMillis());
-                                }
-                            }
+                    for (Location location : new CuboidRegion("Citadel", claim.getMinimumPoint(), claim.getMaximumPoint())) {
+                        if (location.getBlock().getType() != Material.CHEST) {
+                            continue;
                         }
+
+                        citadelChests.put(location, System.currentTimeMillis());
                     }
                 }
             }
@@ -220,6 +231,9 @@ public class CitadelHandler {
                 return;
             }
 
+            // Re-checking the bitmask flags happens for 2 reasons...
+            // 1) To get what part of it's in (even though we could be caching)
+            // 2) To ensure there's never a way to get respawning chests in your base
             if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
                 chest.getBlockInventory().clear();
                 generateCitadelTownChest(chest);
@@ -234,15 +248,15 @@ public class CitadelHandler {
     }
 
     private void generateCitadelTownChest(Chest chest) {
-
+        chest.getBlockInventory().addItem(new ItemStack(Material.CHEST));
     }
 
     private void generateCitadelCourtyardChest(Chest chest) {
-
+        chest.getBlockInventory().addItem(new ItemStack(Material.POISONOUS_POTATO));
     }
 
     private void generateCitadelKeepChest(Chest chest) {
-
+        chest.getBlockInventory().addItem(new ItemStack(Material.DIAMOND));
     }
 
 }

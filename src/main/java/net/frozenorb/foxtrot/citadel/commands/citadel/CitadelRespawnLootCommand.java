@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  */
 public class CitadelRespawnLootCommand {
 
-    @Command(names = {"citadel respawnloot"}, permissionNode = "op")
+    @Command(names={"citadel respawnloot"}, permissionNode="op")
     public static void citadelRespawnLoot(Player sender) {
         FoxtrotPlugin.getInstance().getCitadelHandler().generateAllCitadelChests();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Respawned all Citadel loot.");

@@ -39,7 +39,7 @@ public class CitadelCommand {
 
         sender.sendMessage(ChatColor.GOLD + "Citadel Town: " + ChatColor.WHITE + "Lootable " + (townLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(townLootable)) + ".");
         sender.sendMessage(ChatColor.GOLD + "Citadel Courtyard: " + ChatColor.WHITE + "Lootable " + (courtyardLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(courtyardLootable)) + ".");
-        sender.sendMessage(ChatColor.GOLD + "Citadel Lootable: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getName()) + ".");
+        sender.sendMessage(ChatColor.GOLD + "Citadel Keep: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getName()) + ".");
     }
 
 }
