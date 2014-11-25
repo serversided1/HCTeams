@@ -39,7 +39,7 @@ public class CitadelListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onKOTHCaptured(KOTHCapturedEvent event) {
         if (event.getKoth().getName().equalsIgnoreCase("Citadel")) {
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
