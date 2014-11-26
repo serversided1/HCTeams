@@ -38,8 +38,8 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
-            if (DTRBitmaskType.SIXTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 60000L);
+            if (DTRBitmaskType.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 30000L);
             } else {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
             }

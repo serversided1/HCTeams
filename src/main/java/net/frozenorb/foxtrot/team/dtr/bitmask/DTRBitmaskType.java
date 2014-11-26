@@ -24,7 +24,7 @@ public enum DTRBitmaskType {
     FIVE_MINUTE_DEATHBAN(8, "5m-Deathban", "Determines if a region has a 5m deathban"),
 
     // Used in Citadel
-    SIXTY_SECOND_ENDERPEARL_COOLDOWN(16, "60s-Enderpearl-Cooldown", "Determines if a region has a 60s enderpearl cooldown"),
+    THIRTY_SECOND_ENDERPEARL_COOLDOWN(16, "30s-Enderpearl-Cooldown", "Determines if a region has a 30s enderpearl cooldown"),
 
     // Used in KOTHs & Citadel
     ARCHER_DAMAGE_NORMALIZED(32, "Archer-Damage-Normalized", "Determines if a region has archer damaged normalized"),
