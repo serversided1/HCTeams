@@ -102,8 +102,18 @@ public class TeamListener implements Listener {
             if (!team.isMember(event.getPlayer())) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
                 event.setCancelled(true);
-            } else {
+                return;
+            }
 
+            if (!team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+                Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
+
+                if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
+                }
+
+                return;
             }
         }
     }
