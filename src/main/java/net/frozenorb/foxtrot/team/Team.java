@@ -99,7 +99,11 @@ public class Team {
                     case NETHER:
                         return (ChatColor.GREEN + "Nether Spawn");
                     case THE_END:
-                        return (ChatColor.GREEN + "The End Spawn");
+                        if (hasDTRBitmask(DTRBitmaskType.DENY_REENTRY)) {
+                            return (ChatColor.GREEN + "The End Spawn");
+                        } else {
+                            return (ChatColor.GREEN + "The End Exit");
+                        }
                 }
 
                 return (ChatColor.GREEN + "Spawn");
