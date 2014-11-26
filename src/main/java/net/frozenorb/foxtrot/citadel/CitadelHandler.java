@@ -9,12 +9,14 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelLootTask;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
+import net.frozenorb.foxtrot.serialization.serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.dtr.bitmask.transformer.DTRBitmaskTypeTransformer;
+import net.frozenorb.mBasic.CommandSystem.Commands.Item;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -44,6 +46,7 @@ public class CitadelHandler {
     @Getter private Date townLootable;
     @Getter private Date courtyardLootable;
     @Getter private Map<Location, Long> citadelChests = new HashMap<Location, Long>();
+    @Getter private Map<String, List<ItemStack>> citadelLoot = new HashMap<String, List<ItemStack>>();
 
     public CitadelHandler() {
         loadCitadelInfo();
@@ -87,6 +90,22 @@ public class CitadelHandler {
                         citadelChests.put(locationSerializer.deserialize((BasicDBObject) chest.get("location")), chest.getLong("time"));
                     }
                 }
+
+                ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
+
+                for (String type : Arrays.asList("town1", "town2", "town3", "courtyard1", "courtyard2", "courtyard3", "keep1", "keep2", "keep3")) {
+                    BasicDBList list = (BasicDBList) dbo.get(type);
+                    List<ItemStack> loot = new ArrayList<ItemStack>();
+
+                    if (list != null) {
+                        for (Object itemObj : list) {
+                            BasicDBObject item = (BasicDBObject) itemObj;
+                            loot.add(itemStackSerializer.deserialize(item));
+                        }
+                    }
+
+                    citadelLoot.put(type, loot);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,6 +135,19 @@ public class CitadelHandler {
             }
 
             dbo.put("chests", chests);
+            ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
+
+            for (String type : Arrays.asList("town1", "town2", "town3", "courtyard1", "courtyard2", "courtyard3", "keep1", "keep2", "keep3")) {
+                BasicDBList list = new BasicDBList();
+
+                if (citadelLoot.containsKey(type)) {
+                    for (ItemStack itemStack : citadelLoot.get(type)) {
+                        list.add(itemStackSerializer.serialize(itemStack));
+                    }
+                }
+
+                dbo.put(type, list);
+            }
 
             citadelInfo.delete();
             FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
@@ -248,15 +280,44 @@ public class CitadelHandler {
     }
 
     private void generateCitadelTownChest(Chest chest) {
-        chest.getBlockInventory().addItem(new ItemStack(Material.CHEST));
+        for (ItemStack loot : getRandomLoot("town" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+            chest.getBlockInventory().addItem(loot);
+        }
     }
 
     private void generateCitadelCourtyardChest(Chest chest) {
-        chest.getBlockInventory().addItem(new ItemStack(Material.POISONOUS_POTATO));
+        for (ItemStack loot : getRandomLoot("courtyard" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+            chest.getBlockInventory().addItem(loot);
+        }
     }
 
     private void generateCitadelKeepChest(Chest chest) {
-        chest.getBlockInventory().addItem(new ItemStack(Material.DIAMOND));
+        for (ItemStack loot : getRandomLoot("keep" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+            chest.getBlockInventory().addItem(loot);
+        }
+    }
+
+    private List<ItemStack> getRandomLoot(String  table, int items) {
+        List<ItemStack> loot = new ArrayList<ItemStack>();
+
+        if (citadelLoot.containsKey(table)) {
+            List<ItemStack> allowedLoot = citadelLoot.get(table);
+
+            for (int i = 0; i < items; i++) {
+                ItemStack chosen = allowedLoot.get(FoxtrotPlugin.RANDOM.nextInt(allowedLoot.size()));
+
+                if (chosen.getAmount() > 1) {
+                    ItemStack targetClone = chosen.clone();
+
+                    targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosen.getAmount()));
+                    loot.add(targetClone);
+                } else {
+                    loot.add(chosen);
+                }
+            }
+        }
+
+        return (loot);
     }
 
 }
