@@ -66,7 +66,7 @@
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<excludes>
-					<exclude>jars</exclude>
+					<exclude>**/*.jar</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -90,7 +90,7 @@
 			<artifactId>spigot</artifactId>
 			<version>LATEST</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/spigot.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/resources/jars/spigot.jar</systemPath>
 		</dependency>
 
         <!-- Jars that are exclusive to MineHQ. -->
@@ -99,14 +99,14 @@
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/mBasic.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/resources/jars/mBasic.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mShared</artifactId>
 			<version>LATEST</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/jars/mShared.jar</systemPath>
+			<systemPath>${project.basedir}/src/main/resources/jars/mShared.jar</systemPath>
 		</dependency>
 
 		<dependency>
