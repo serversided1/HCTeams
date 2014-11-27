@@ -3,121 +3,118 @@ package net.frozenorb.foxtrot.server;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings({ "deprecation", "unchecked" })
 public class PacketBorder {
 
-    private static ConcurrentHashMap<String, HashMap<Location, Long>> borderBlocksSent = new ConcurrentHashMap<String, HashMap<Location, Long>>();
+    public static final int REGION_DISTANCE = 8;
+
+    private static ConcurrentHashMap<String, Map<Location, Long>> sentBlockChanges = new ConcurrentHashMap<String, Map<Location, Long>>();
     @Getter private ConcurrentLinkedQueue<Claim> regions = new ConcurrentLinkedQueue<Claim>();
 
-    public void addRegion(Claim rg) {
-        regions.add(rg);
+    public void addClaim(Claim claim) {
+        regions.add(claim);
     }
 
     public void sendToPlayer(Player player) {
         try {
-            final Collection<Claim> syncRegions = Collections.synchronizedCollection(regions);
+            final Collection<Claim> syncClaims = Collections.synchronizedCollection(regions);
 
-            if (!borderBlocksSent.containsKey(player.getName())) {
-                borderBlocksSent.put(player.getName(), new HashMap<Location, Long>());
+            if (!sentBlockChanges.containsKey(player.getName())) {
+                sentBlockChanges.put(player.getName(), new HashMap<Location, Long>());
             }
 
-            Iterator<Map.Entry<Location, Long>> bordersIterator = borderBlocksSent.get(player.getName()).entrySet().iterator();
+            Iterator<Map.Entry<Location, Long>> bordersIterator = sentBlockChanges.get(player.getName()).entrySet().iterator();
 
+            // Remove borders after they 'expire' -- This is used to get rid of block changes the player has walked away from,
+            // whose value in the map hasn't been updated recently.
             while (bordersIterator.hasNext()) {
                 Map.Entry<Location, Long> border = bordersIterator.next();
 
-                if (System.currentTimeMillis() >= border.getValue() + 3000L) {
+                if (System.currentTimeMillis() >= border.getValue()) {
                     player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
                     bordersIterator.remove();
                 }
             }
 
-            for (Claim cr : syncRegions) {
-                for (Coordinate loc : cr) {
-                    int x = loc.getX();
-                    int z = loc.getZ();
+            for (Claim claim : syncClaims) {
+                for (Coordinate coordinate : claim) {
+                    Location onPlayerY = new Location(player.getWorld(), coordinate.getX(), player.getLocation().getY(), coordinate.getZ());
 
-                    Location playerYLocation = new Location(player.getWorld(), x, player.getLocation().getY(), z);
+                    // Ignore an entire pillar if the block closest to the player is further than the max distance (none of the others will be close enough, either)
+                    if (onPlayerY.distanceSquared(player.getLocation()) > REGION_DISTANCE * REGION_DISTANCE) {
+                        continue;
+                    }
 
                     for (int i = -4; i < 5; i++) {
-                        Location check = playerYLocation.clone().add(0, i, 0);
+                        Location check = onPlayerY.clone().add(0, i, 0);
 
-                        if (!check.getBlock().getType().isSolid() && check.distanceSquared(player.getLocation()) <= 64D) {
+                        if (!check.getBlock().getType().isSolid() && check.distanceSquared(onPlayerY) < REGION_DISTANCE * REGION_DISTANCE) {
                             player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
-                            borderBlocksSent.get(player.getName()).put(check, System.currentTimeMillis());
+                            sentBlockChanges.get(player.getName()).put(check, System.currentTimeMillis() + 3000L);
                         }
                     }
                 }
             }
         } catch (Exception e) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.RED + "An exception was thrown while trying to send border packets to you.");
+            }
+
             e.printStackTrace();
         }
     }
 
     public static void clearPlayer(Player player) {
-        if (!borderBlocksSent.containsKey(player.getName())) {
-            return;
-        }
+        try {
+            if (!sentBlockChanges.containsKey(player.getName())) {
+                return;
+            }
 
-        Iterator<Map.Entry<Location, Long>> bordersIterator = borderBlocksSent.get(player.getName()).entrySet().iterator();
+            Iterator<Map.Entry<Location, Long>> bordersIterator = sentBlockChanges.get(player.getName()).entrySet().iterator();
 
-        while (bordersIterator.hasNext()) {
-            Map.Entry<Location, Long> border = bordersIterator.next();
+            while (bordersIterator.hasNext()) {
+                Location changedBlock = bordersIterator.next().getKey();
 
-            player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
-            bordersIterator.remove();
+                player.sendBlockChange(changedBlock, changedBlock.getBlock().getType(), changedBlock.getBlock().getData());
+                bordersIterator.remove();
+            }
+        } catch (Exception e) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.RED + "An exception was thrown while trying to clear border packets for you.");
+            }
+
+            e.printStackTrace();
         }
     }
 
     public static void checkPlayer(Player player) {
-        /*try {
+        try {
             PacketBorder border = new PacketBorder();
-            int x = player.getLocation().getBlockX();
-            int z = player.getLocation().getBlockZ();
 
-            for (Claim claim : LandBoard.getInstance().getClaims()) {
-                if (claim.isWithin(x, z, 8, player.getWorld().getName()) && player.getGameMode() != GameMode.CREATIVE) {
-                    Team owner = LandBoard.getInstance().getTeamAt(claim);
-
-                    if (owner.getOwner() == null) {
-                        if (owner.hasDTRBitmask(DTRBitmaskType.DENY_REENTRY) && !claim.contains(player)) {
-                            border.addRegion(claim.clone());
-                        } else if (owner.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-                            Claim claimClone = claim.clone();
-
-                            claimClone.setY1(0);
-                            claimClone.setY2(256);
-
-                            border.addRegion(claimClone);
-                        } else if ((owner.hasDTRBitmask(DTRBitmaskType.KOTH) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || owner.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                            Claim claimClone = claim.clone();
-
-                            claimClone.setY1(0);
-                            claimClone.setY2(256);
-
-                            border.addRegion(claimClone);
+            for (Map.Entry<Claim, Team> claimTeamEntry : LandBoard.getInstance().getRegionData(player.getLocation(), REGION_DISTANCE, REGION_DISTANCE, REGION_DISTANCE)) {
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    if (claimTeamEntry.getValue().getOwner() == null) {
+                        if (claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.DENY_REENTRY) && !claimTeamEntry.getKey().contains(player)) {
+                            border.addClaim(claimTeamEntry.getKey().clone());
+                        } else if (claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                            border.addClaim(claimTeamEntry.getKey().clone());
+                        } else if ((claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.KOTH) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                            border.addClaim(claimTeamEntry.getKey().clone());
                         }
                     } else if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                        Claim claimClone = claim.clone();
-
-                        claimClone.setY1(0);
-                        claimClone.setY2(256);
-
-                        border.addRegion(claimClone);
+                        border.addClaim(claimTeamEntry.getKey().clone());
                     }
                 }
             }
@@ -128,16 +125,23 @@ public class PacketBorder {
                 border.sendToPlayer(player);
             }
         } catch (Exception e) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.RED + "An exception was thrown while trying to calculate border packets for you.");
+            }
+
             e.printStackTrace();
-        }*/
+        }
     }
 
     public static class BorderThread extends Thread {
 
-        @Override
         public void run() {
             while (true) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (!player.isOp()) {
+                        continue;
+                    }
+
                     checkPlayer(player);
                 }
 
