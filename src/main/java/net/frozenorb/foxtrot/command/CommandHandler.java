@@ -36,8 +36,6 @@ public class CommandHandler implements Listener {
     private static Map<Class<?>, ParamTransformer> parameterTransformers = new HashMap<Class<?>, ParamTransformer>();
     private static Map<Class<?>, ParamTabCompleter> parameterTabCompleters = new HashMap<Class<?>, ParamTabCompleter>();
 
-    private CustomTimingsHandler foxCommandProcess = new CustomTimingsHandler("Foxtrot - CH Command Process");
-
     //***********************//
 
     public static void init() {
@@ -136,12 +134,12 @@ public class CommandHandler implements Listener {
 
         });
 
-        registerTransformer(Player.class, new ParamTransformer() {
+        registerTransformer(Player.class, new ParamTransformer<Player>() {
 
             @Override
-            public Object transform(CommandSender sender, String source) {
+            public Player transform(CommandSender sender, String source) {
                 if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
-                    return (sender);
+                    return ((Player) sender);
                 }
 
                 Player player = FoxtrotPlugin.getInstance().getServer().getPlayer(source);
@@ -241,31 +239,7 @@ public class CommandHandler implements Listener {
     @Command(names={"ListCommands"}, permissionNode="foxtrot.listcommands")
     public static void listCommands(CommandSender sender) {
         for (CommandData command : commands) {
-            StringBuilder stringBuilder = new StringBuilder();
-
-            for (ParamData param : command.getParameters()) {
-                stringBuilder.append(param.getDefaultValue().equalsIgnoreCase("") ? "<" : "[").append(param.getName());
-
-                if (!param.getParameterClass().equals(String.class)) {
-                    stringBuilder.append(" (").append(param.getParameterClass().getSimpleName()).append(")");
-                }
-
-                if (param.isWildcard()) {
-                    stringBuilder.append("*");
-                }
-
-                stringBuilder.append(param.getDefaultValue().equalsIgnoreCase("") ? ">" : "]").append(" ");
-            }
-
-            sender.sendMessage(command.getPermissionNode() + ChatColor.YELLOW + " /" + command.getName() + " " + stringBuilder.toString());
-        }
-
-        for (Map.Entry<Class<?>, ParamTransformer> entry : parameterTransformers.entrySet()) {
-            if (parameterTabCompleters.containsKey(entry.getKey())) {
-                continue;
-            }
-
-            sender.sendMessage(ChatColor.RED + entry.getKey().getSimpleName() + " is an accepted parameter type, but doesn't have a tab completer registered.");
+            sender.sendMessage(command.getPermissionNode() + ChatColor.YELLOW + " " + command.getUsageString());
         }
     }
 
@@ -282,6 +256,11 @@ public class CommandHandler implements Listener {
     public static void registerClass(Class<?> registeredClass) {
         for (Method method : registeredClass.getMethods()) {
             if (method.getAnnotation(Command.class) != null) {
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    FoxtrotPlugin.getInstance().getLogger().warning("Method " + method.getName() + " has an @Command annotation. but isn't static.");
+                    continue;
+                }
+
                 registerMethod(method);
             }
         }
@@ -304,7 +283,7 @@ public class CommandHandler implements Listener {
             if (param != null) {
                 paramData.add(new ParamData(method.getParameterTypes()[i], param));
             } else {
-                FoxtrotPlugin.getInstance().getLogger().warning(method.getName() + " is (somewhere) missing a @Param annotation.");
+                FoxtrotPlugin.getInstance().getLogger().warning(method.getDeclaringClass().getSimpleName() + " -> " + method.getName() + " is missing a @Param annotation.");
                 return;
             }
         }
@@ -323,23 +302,29 @@ public class CommandHandler implements Listener {
 
     @EventHandler
     public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
-        foxCommandProcess.startTiming();
         String[] args = new String[] { };
         CommandData found = null;
 
         CommandLoop:
         for (CommandData commandData : commands) {
             for (String alias : commandData.getNames()) {
-                String messageString = event.getMessage().substring(1).toLowerCase() + " ";
-                String aliasString = alias.toLowerCase() + " ";
+                String messageString = event.getMessage().substring(1).toLowerCase() + " "; // Chop off the slash, add a space.
+                String aliasString = alias.toLowerCase() + " "; // Add a space.
+                // The space is added so '/pluginslol' doesn't match '/plugins'
 
                 if (messageString.startsWith(aliasString)) {
                     found = commandData;
 
+                    // If there's 'space' after the command, parse args.
+                    // The +2 is there to account for two things.
+                    // 1) The '/' in the message that's not in the alias
+                    // 2) A space after the comman if there's parameters
                     if (event.getMessage().length() > alias.length() + 2) {
+                        // See above as to... why this works.
                         args = (event.getMessage().substring(alias.length() + 2)).split(" ");
                     }
 
+                    // We break to the command loop as we have 2 for loops here.
                     break CommandLoop;
                 }
             }
@@ -351,66 +336,12 @@ public class CommandHandler implements Listener {
 
         event.setCancelled(true);
 
-        if (found.getPermissionNode().equals("op")) {
-            if (!event.getPlayer().isOp()) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
-                return;
-            }
-        } else if (!found.getPermissionNode().equals("")) {
-            if (!event.getPlayer().hasPermission(found.getPermissionNode())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
-                return;
-            }
+        if (!found.canAccess(event.getPlayer())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
+            return;
         }
 
-        ArrayList<Object> transformedParams = new ArrayList<Object>();
-
-        transformedParams.add(event.getPlayer()); // Add the sender
-
-        for (int paramIndex = 0; paramIndex < found.getParameters().size(); paramIndex++) {
-            ParamData param = found.getParameters().get(paramIndex);
-            String passedParam = (paramIndex < args.length ? args[paramIndex] : param.getDefaultValue()).trim();
-
-            if (paramIndex >= args.length && (param.getDefaultValue() == null || param.getDefaultValue().equals(""))) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (ParamData paramHelp : found.getParameters()) {
-                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? "<" : "[").append(paramHelp.getName());
-                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? ">" : "]").append(" ");
-                }
-
-                event.getPlayer().sendMessage(ChatColor.RED + "Usage: /" + found.getName() + " " + stringBuilder.toString());
-                return;
-            }
-
-            if (param.isWildcard() && !passedParam.trim().equals(param.getDefaultValue().trim())) {
-                passedParam = toString(args, paramIndex);
-            }
-
-            Object result = transformParameter(event.getPlayer(), passedParam, param.getParameterClass());
-
-            if (result == null) {
-                return;
-            }
-
-            transformedParams.add(result);
-
-            if (param.isWildcard()) {
-                break;
-            }
-        }
-
-        foxCommandProcess.stopTiming();
-        found.getTimingsHandler().startTiming();
-
-        try {
-            found.getMethod().invoke(null, transformedParams.toArray(new Object[transformedParams.size()]));
-        } catch (Exception e) {
-            event.getPlayer().sendMessage(ChatColor.RED + "It appears there was some issues processing your command...");
-            e.printStackTrace();
-        }
-
-        found.getTimingsHandler().stopTiming();
+        found.execute(event.getPlayer(), args);
     }
 
     @EventHandler
@@ -421,16 +352,21 @@ public class CommandHandler implements Listener {
         CommandLoop:
         for (CommandData commandData : commands) {
             for (String alias : commandData.getNames()) {
-                String messageString = event.getCommand().toLowerCase() + " ";
-                String aliasString = alias.toLowerCase() + " ";
+                String messageString = event.getCommand().toLowerCase() + " "; // Add a space.
+                String aliasString = alias.toLowerCase() + " "; // Add a space.
+                // The space is added so '/pluginslol' doesn't match '/plugins'
 
                 if (messageString.startsWith(aliasString)) {
                     found = commandData;
 
+                    // If there's 'space' after the command, parse args.
+                    // The +1 is there to account for a space after the command if there's parameters
                     if (event.getCommand().length() > alias.length() + 1) {
+                        // See above as to... why this works.
                         args = (event.getCommand().substring(alias.length() + 1)).split(" ");
                     }
 
+                    // We break to the command loop as we have 2 for loops here.
                     break CommandLoop;
                 }
             }
@@ -447,48 +383,7 @@ public class CommandHandler implements Listener {
             return;
         }
 
-        ArrayList<Object> transformedParams = new ArrayList<Object>();
-
-        transformedParams.add(event.getSender()); // Add the sender
-
-        for (int paramIndex = 0; paramIndex < found.getParameters().size(); paramIndex++) {
-            ParamData param = found.getParameters().get(paramIndex);
-            String passedParam = (paramIndex < args.length ? args[paramIndex] : param.getDefaultValue()).trim();
-
-            if (paramIndex >= args.length && (param.getDefaultValue() == null || param.getDefaultValue().equals(""))) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (ParamData paramHelp : found.getParameters()) {
-                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? "<" : "[").append(paramHelp.getName());
-                    stringBuilder.append(paramHelp.getDefaultValue().equalsIgnoreCase("") ? ">" : "]").append(" ");
-                }
-
-                event.getSender().sendMessage(ChatColor.RED + "Usage: /" + found.getName() + " " + stringBuilder.toString());
-                return;
-            }
-
-            if (param.isWildcard() && !passedParam.trim().equals(param.getDefaultValue().trim())) {
-                passedParam = toString(args, paramIndex);
-            }
-
-            Object result = transformParameter(event.getSender(), passedParam, param.getParameterClass());
-
-            if (result == null) {
-                return;
-            }
-
-            transformedParams.add(result);
-
-            if (param.isWildcard()) {
-                break;
-            }
-        }
-
-        try {
-            found.getMethod().invoke(null, transformedParams.toArray(new Object[transformedParams.size()]));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        found.execute(event.getSender(), args);
     }
 
     public static Object transformParameter(CommandSender sender, String parameter, Class<?> transformTo) {
@@ -510,28 +405,5 @@ public class CommandHandler implements Listener {
     public static List<CommandData> getCommands() {
         return (commands);
     }
-
-    public static CommandData getCommand(String name) {
-        for (CommandData commandData : commands) {
-            for (String alias : commandData.getNames()) {
-                if (alias.equalsIgnoreCase(name)) {
-                    return (commandData);
-                }
-            }
-        }
-
-        return (null);
-    }
-
-    public static String toString(String[] args, int start) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int arg = start; arg < args.length; arg++) {
-            stringBuilder.append(args[arg]).append(" ");
-        }
-
-        return (stringBuilder.toString().trim());
-    }
-
 
 }

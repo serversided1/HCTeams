@@ -30,7 +30,7 @@ public class TeamCommand {
         sender.sendMessage(ChatColor.GRAY + "/f withdraw <amount> - Withdraw money from team balance.");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_AQUA + "***Faction Leader Only***");
-        sender.sendMessage(ChatColor.GRAY + "/f promote -Promotes the targeted player to a captain.");
+        sender.sendMessage(ChatColor.GRAY + "/f promote - Promotes the targeted player to a captain.");
         sender.sendMessage(ChatColor.GRAY + "/f demote - Demotes the targeted player to a member.");
         sender.sendMessage(ChatColor.GRAY + "/f unclaim - Unclaim land.");
         sender.sendMessage(ChatColor.GRAY + "/f newleader [playerName] - Make a player an owner on your faction.");

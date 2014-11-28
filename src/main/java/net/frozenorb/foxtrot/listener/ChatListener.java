@@ -51,7 +51,7 @@ public class ChatListener implements Listener {
                     event.setCancelled(true);
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                        if (team != null && FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
                             player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "FM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                         }
                     }
@@ -121,7 +121,7 @@ public class ChatListener implements Listener {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (team.isMember(player)) {
                         player.sendMessage(ChatColor.DARK_AQUA + "(Team) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
-                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
                         player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "FC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }

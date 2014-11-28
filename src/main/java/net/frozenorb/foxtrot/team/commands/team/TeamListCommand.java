@@ -16,8 +16,8 @@ import java.util.Map;
  */
 public class TeamListCommand {
 
-    @Command(names={ "team hq", "t list", "f list", "faction list", "fac list" }, permissionNode="")
-    public static void teamForceLeave(Player sender, @Param(name="page", defaultValue="1") int page) {
+    @Command(names={ "team list", "t list", "f list", "faction list", "fac list" }, permissionNode="")
+    public static void teamList(Player sender, @Param(name="page", defaultValue="1") int page) {
         if (page < 1) {
             sender.sendMessage(ChatColor.RED + "You cannot view a page less than 1");
             return;

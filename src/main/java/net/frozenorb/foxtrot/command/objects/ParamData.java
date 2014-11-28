@@ -13,11 +13,11 @@ public class ParamData {
     @Getter private String defaultValue;
     @Getter private Class<?> parameterClass;
 
-    public ParamData(Class<?> paramaterClass, Param paramAnnotation) {
-        this.name =  paramAnnotation.name(); // We might use value so @Param("name") is possible.
+    public ParamData(Class<?> parameterClass, Param paramAnnotation) {
+        this.name =  paramAnnotation.name();
         this.wildcard = paramAnnotation.wildcard();
         this.defaultValue = paramAnnotation.defaultValue();
-        this.parameterClass = paramaterClass;
+        this.parameterClass = parameterClass;
     }
 
 }
