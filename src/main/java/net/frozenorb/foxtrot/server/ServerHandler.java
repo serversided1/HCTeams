@@ -354,7 +354,7 @@ public class ServerHandler {
         Team ownerTo = LandBoard.getInstance().getTeam(loc);
 
         if (ownerTo != null) {
-            if (ownerTo.getDTR() == 100D) {
+            if (ownerTo.hasDTRBitmask(DTRBitmaskType.HALF_DTR_LOSS)) {
                 return (0.5F);
             }
         }
