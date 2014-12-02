@@ -8,8 +8,8 @@ import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.command.CommandHandler;
+import net.frozenorb.foxtrot.tasks.HourlyScheduleTask;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
@@ -37,7 +37,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.Calendar;
 import java.util.Random;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
@@ -105,6 +108,14 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupPersistence();
         setupListeners();
 
+        Calendar date = Calendar.getInstance();
+
+        date.set(Calendar.MINUTE, 60);
+        date.set(Calendar.SECOND, 0);
+        date.set(Calendar.MILLISECOND, 0);
+
+        (new Timer("Hourly Scheduler")).schedule(new HourlyScheduleTask(), date.getTime(), TimeUnit.HOURS.toMillis(1));
+
         new PacketBorder.BorderThread().start();
 
         for (Player player : getServer().getOnlinePlayers()) {
@@ -170,6 +181,14 @@ public class FoxtrotPlugin extends JavaPlugin {
         return (result);
     }
 
+    public void sendOPMessage(String message) {
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (player.isOp()) {
+                player.sendMessage(message);
+            }
+        }
+    }
+
     private void setupHandlers() {
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
@@ -204,7 +223,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
         getServer().getPluginManager().registerEvents(new FoxListener(), this);
         getServer().getPluginManager().registerEvents(new GoldenAppleListener(), this);
-        getServer().getPluginManager().registerEvents(new KOTHListener(), this);
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);

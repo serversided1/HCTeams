@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.jedis;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.imagemessage.ImageMessage;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
@@ -58,17 +58,14 @@ public class RedisSaveTask extends BukkitRunnable {
             }
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (player.isOp()) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "Saved " + teamsSaved + " teams to Redis in " + time + " ms.");
-
-                if (errors.size() == 0) {
-                    player.sendMessage(ChatColor.DARK_PURPLE + "No errors found while checking player team cache.");
-                } else {
-                    player.sendMessage(ChatColor.DARK_PURPLE.toString() + errors.size() + " error(s) found while checking player team cache.");
-                }
-            }
-        }
+        new ImageMessage("redis-saved").appendText(
+                "",
+                "",
+                ChatColor.DARK_PURPLE + "Saved all teams to Redis.",
+                ChatColor.DARK_AQUA + "Teams: " + ChatColor.WHITE + teamsSaved,
+                ChatColor.DARK_AQUA + "Elapsed: " + ChatColor.WHITE + time + "ms",
+                ChatColor.DARK_AQUA + "Errors: " + ChatColor.WHITE + errors
+        ).sendOPs();
 
         return (teamsSaved);
     }
