@@ -55,7 +55,12 @@ public class TeamUnclaimCommand {
             team.setHQ(null);
             team.flagForSave();
 
-            sender.sendMessage(ChatColor.RED + "You have unclaimed all of your claims (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.RED + ")! Your team was refunded " + ChatColor.LIGHT_PURPLE + "$" + refund + ChatColor.RED + ".");
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed all of your team's claims. (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.YELLOW + ")");
+                }
+            }
+
             return;
         }
 
@@ -78,7 +83,12 @@ public class TeamUnclaimCommand {
             LandBoard.getInstance().setTeamAt(claim, null);
 
             FactionActionTracker.logAction(team, "actions", "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
-            sender.sendMessage(ChatColor.RED + "You have unclaimed the claim " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.RED + "! Your team was refunded " + ChatColor.LIGHT_PURPLE + "$" + refund + ChatColor.RED + "!");
+
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
+                }
+            }
 
             if (team.getHq() != null && claim.contains(team.getHq())) {
                 team.setHQ(null);

@@ -47,7 +47,11 @@ public class TeamInviteCommand {
                     targetPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/f join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
                 }
 
-                sender.sendMessage("§e" + target.getName() + " has been invited to the team!");
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (team.isMember(player)) {
+                        player.sendMessage(ChatColor.YELLOW + target.getName() + " has been invited to the team!");
+                    }
+                }
             } else {
                 sender.sendMessage(ChatColor.DARK_AQUA + "Player is already on your team.");
             }
