@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
-import net.frozenorb.foxtrot.koth.tasks.KOTHSchedulerTask;
+import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.minecraft.util.com.google.gson.Gson;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import net.minecraft.util.org.apache.commons.io.IOUtils;
@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 10/31/2014.
@@ -35,13 +34,7 @@ public class KOTHHandler {
         loadKOTHs();
         loadSchedules();
 
-        Calendar date = Calendar.getInstance();
-
-        date.set(Calendar.MINUTE, 60);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-
-        (new Timer("KOTH Scheduler")).schedule(new KOTHSchedulerTask(), date.getTime(), TimeUnit.HOURS.toMillis(1));
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new KOTHListener(), FoxtrotPlugin.getInstance());
 
         CommandHandler.registerTransformer(KOTH.class, new ParamTransformer() {
 
@@ -171,35 +164,6 @@ public class KOTHHandler {
         }
 
         return (null);
-    }
-
-    public static void onSchedulerTick() {
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (player.isOp()) {
-                player.sendMessage(ChatColor.DARK_AQUA + "Running KOTH scheduler task...");
-            }
-        }
-
-        // Don't start a KOTH if another one is active.
-        for (KOTH koth : KOTHHandler.getKOTHs()) {
-            if (koth.isActive()) {
-                return;
-            }
-        }
-
-        Calendar date = Calendar.getInstance();
-        int hour = date.get(Calendar.HOUR_OF_DAY);
-
-        if (kothSchedule.containsKey(hour)) {
-            KOTH koth = getKOTH(kothSchedule.get(hour));
-
-            if (koth == null) {
-                FoxtrotPlugin.getInstance().getLogger().warning("The KOTH Scheduler has a schedule for a KOTH named " + kothSchedule.get(hour) + ", but the KOTH does not exist.");
-                return;
-            }
-
-            koth.activate();
-        }
     }
 
 }
