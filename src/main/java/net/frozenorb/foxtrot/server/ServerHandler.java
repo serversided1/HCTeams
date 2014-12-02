@@ -439,10 +439,10 @@ public class ServerHandler {
         return ((x < radius && x > -radius) && (z < radius && z > -radius));
     }
 
-    public void handleShopSign(Sign sign, Player p) {
-        ItemStack it = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
+    public void handleShopSign(Sign sign, Player player) {
+        ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
-        if (it == null) {
+        if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
             return;
         }
@@ -458,68 +458,76 @@ public class ServerHandler {
                 return;
             }
 
-            if (Basic.get().getEconomyManager().getBalance(p.getName()) >= price) {
-                if (p.getInventory().firstEmpty() != -1) {
-                    Basic.get().getEconomyManager().withdrawPlayer(p.getName(), price);
+            if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
+                if (player.getInventory().firstEmpty() != -1) {
+                    Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
 
-                    it.setAmount(amount);
-                    p.getInventory().addItem(it);
-                    p.updateInventory();
+                    itemStack.setAmount(amount);
+                    player.getInventory().addItem(itemStack);
+                    player.updateInventory();
 
-                    String[] msgs = {
-                            "§cBOUGHT§r " + amount,
-                            "for §c$" + NumberFormat.getNumberInstance(Locale.US).format(price),
+                    showSignPacket(player, sign,
+                            "§aBOUGHT§r " + amount,
+                            "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
                             "New Balance:",
-                            "§c$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
-
-                    showSignPacket(p, sign, msgs);
+                            "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+                    );
                 } else {
-                    showSignPacket(p, sign, new String[] { "§c§lError!", "",
-                            "§cNo space", "§cin inventory!" });
+                    showSignPacket(player, sign,
+                            "§c§lError!",
+                            "",
+                            "§cNo space",
+                            "§cin inventory!"
+                    );
                 }
             } else {
-                showSignPacket(p, sign, new String[] { "§cInsufficient",
-                        "§cfunds for", sign.getLine(2), sign.getLine(3) });
+                showSignPacket(player, sign,
+                        "§cInsufficient",
+                        "§cfunds for",
+                        sign.getLine(2),
+                        sign.getLine(3)
+                );
             }
         } else if (sign.getLine(0).toLowerCase().contains("sell")) {
-            int price = 0;
+            double pricePerItem = 0D;
+            int amount = 0;
 
             try {
-                int totalStackPrice = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-                int amount = Integer.parseInt(sign.getLine(1));
+                int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+                amount = Integer.parseInt(sign.getLine(1));
 
-                price = (int) ((double) totalStackPrice / (double) amount);
-            }
-            catch (NumberFormatException e) {
-                e.printStackTrace();
-                System.out.println(sign.getLine(3).replace("$", "").replace(",", ""));
+                pricePerItem = price / amount;
+            } catch (NumberFormatException e) {
                 return;
             }
 
-            int amountInInventory = Math.min(64, countItems(p, it.getType(), (int) it.getDurability()));
+            int amountInInventory = Math.min(amount, countItems(player, itemStack.getType(), (int) itemStack.getDurability()));
 
             if (amountInInventory == 0) {
-                showSignPacket(p, sign, new String[] { "§cYou do not",
-                        "§chave any", sign.getLine(2), "§con you!" });
+                showSignPacket(player, sign,
+                        "§cYou do not",
+                        "§chave any",
+                        sign.getLine(2),
+                        "§con you!"
+                );
             } else {
-                int totalPrice = amountInInventory * price;
-                removeItem(p, it, amountInInventory);
-                p.updateInventory();
+                int totalPrice = (int) (amountInInventory * pricePerItem);
+                removeItem(player, itemStack, amountInInventory);
+                player.updateInventory();
 
-                Basic.get().getEconomyManager().depositPlayer(p.getName(), totalPrice);
+                Basic.get().getEconomyManager().depositPlayer(player.getName(), totalPrice);
 
-                String[] msgs = {
+                showSignPacket(player, sign,
                         "§aSOLD§r " + amountInInventory,
                         "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(totalPrice),
                         "New Balance:",
-                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(p.getName())) };
-
-                showSignPacket(p, sign, msgs);
+                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+                );
             }
         }
     }
 
-    public void handleKitSign(Sign sign, Player player){
+    public void handleKitSign(Sign sign, Player player) {
         String kit = ChatColor.stripColor(sign.getLine(1));
 
         if (kit.equalsIgnoreCase("Fishing")){
@@ -605,20 +613,21 @@ public class ServerHandler {
 
     private HashMap<Sign, BukkitRunnable> showSignTasks = new HashMap<>();
 
-    public void showSignPacket(Player p, final Sign sign, String[] lines) {
-        PacketPlayOutUpdateSign sgn = new PacketPlayOutUpdateSign(sign.getX(), sign.getY(), sign.getZ(), lines);
-        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(sgn);
+    public void showSignPacket(Player player, final Sign sign, String... lines) {
+        player.sendSignChange(sign.getLocation(), lines);
 
-        if(showSignTasks.containsKey(sign)){
+        if (showSignTasks.containsKey(sign)) {
             showSignTasks.remove(sign).cancel();
         }
 
-        BukkitRunnable br = new BukkitRunnable(){
+        BukkitRunnable br = new BukkitRunnable() {
+
             @Override
             public void run(){
                 sign.update();
                 showSignTasks.remove(sign);
             }
+
         };
 
         showSignTasks.put(sign, br);
