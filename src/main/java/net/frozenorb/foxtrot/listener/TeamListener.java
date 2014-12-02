@@ -287,6 +287,7 @@ public class TeamListener implements Listener {
             Player victim = (Player) event.getEntity();
 
             if (team != null && team.isMember(victim.getName()) && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+                damager.sendMessage(ChatColor.GREEN + "You cannot hurt " + ChatColor.YELLOW + victim.getName() + ChatColor.GREEN + ".");
                 event.setCancelled(true);
             }
         }
