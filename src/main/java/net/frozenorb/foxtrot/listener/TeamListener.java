@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -182,20 +183,26 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (event.isCancelled()) {
             return;
         }
 
-        Block targetBlock = event.getBlock().getRelative(event.getDirection(), event.getLength() + 1);
         Team pistonTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
-        Team targetTeam = LandBoard.getInstance().getTeam(targetBlock.getLocation());
+        int i = 0;
 
-        if (targetTeam == pistonTeam) {
-            return;
-        }
+        for (Block block : event.getBlocks()) {
+            i++;
 
-        if (targetBlock.isEmpty() || targetBlock.isLiquid()) {
-            event.setCancelled(true);
+            Block targetBlock = event.getBlock().getRelative(event.getDirection(), i + 1);
+            Team targetTeam = LandBoard.getInstance().getTeam(targetBlock.getLocation());
+
+            if (targetTeam == pistonTeam || targetTeam == null || targetTeam.isRaidable()) {
+                continue;
+            }
+
+            if (targetBlock.isEmpty() || targetBlock.isLiquid()) {
+                event.setCancelled(true);
+            }
         }
     }
 
