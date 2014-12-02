@@ -267,24 +267,22 @@ public class FoxListener implements Listener {
                     ItemStack i = event.getItem();
 
                     // We can't run Potion.fromItemStack on a water bottle.
-                    if (i.getDurability() == (short) 0) {
-                        return;
-                    }
+                    if (i.getDurability() != (short) 0) {
+                        Potion pot = Potion.fromItemStack(i);
 
-                    Potion pot = Potion.fromItemStack(i);
+                        if (pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(p.getName())) {
+                                p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
+                                p.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
+                                event.setCancelled(true);
+                                return;
+                            }
 
-                    if (pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
-                        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(p.getName())) {
-                            p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-                            p.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-                            event.setCancelled(true);
-                            return;
-                        }
-
-                        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(p.getLocation())) {
-                            event.setCancelled(true);
-                            event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
-                            event.getPlayer().updateInventory();
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(p.getLocation())) {
+                                event.setCancelled(true);
+                                event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
+                                event.getPlayer().updateInventory();
+                            }
                         }
                     }
                 } catch (Exception e) {
