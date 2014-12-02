@@ -31,11 +31,11 @@ public class CitadelHandler {
 
     public CitadelHandler() {
         loadCitadelInfo();
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
     }
 
     public void reloadCitadelInfo() {
         loadCitadelInfo();
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
     }
 
     private void loadCitadelInfo() {
