@@ -10,12 +10,16 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.regex.Pattern;
+
 public class TeamCreateCommand {
+
+    public static final Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Param(name="team") String name) {
         if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
-            if (!StringUtils.isAlphanumeric(name)) {
+            if (ALPHA_NUMERIC.matcher(name).find()) {
                 sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
                 return;
             }

@@ -34,7 +34,7 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (StringUtils.isAlphanumeric(name)) {
+        if (!TeamCreateCommand.ALPHA_NUMERIC.matcher(name).find()) {
             if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
                 team.rename(name);
                 sender.sendMessage(ChatColor.GREEN + "Team renamed to " + name);
