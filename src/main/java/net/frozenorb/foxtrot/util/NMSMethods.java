@@ -12,7 +12,6 @@ public class NMSMethods {
     }
 
     private static int getPotionResult(int origdata, ItemStack ingredient) {
-
         int newdata = getBrewResult(origdata, ingredient);
 
         if ((origdata <= 0 || origdata != newdata)) {
@@ -25,4 +24,5 @@ public class NMSMethods {
     private static int getBrewResult(int i, ItemStack itemstack) {
         return itemstack == null ? i : (itemstack.getItem().m(itemstack) ? PotionBrewer.a(i, itemstack.getItem().i(itemstack)) : i);
     }
+
 }

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class InvUtils {
+
     public static final SimpleDateFormat DEATH_TIME_FORMAT = new SimpleDateFormat("MM.dd.yy HH:mm");
 
     public static final ItemStack CROWBAR;
