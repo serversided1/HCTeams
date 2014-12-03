@@ -36,7 +36,7 @@ public class DTRHandler extends BukkitRunnable {
     }
 
     public static boolean isOnCooldown(Team team) {
-        return (team.getDeathCooldown() > System.currentTimeMillis() || team.getRaidableCooldown() > System.currentTimeMillis());
+        return (team.getDtrCooldown() > System.currentTimeMillis());
     }
 
     public static boolean isRegenerating(Team team) {

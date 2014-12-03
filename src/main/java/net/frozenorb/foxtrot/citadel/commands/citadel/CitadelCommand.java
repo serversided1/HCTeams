@@ -37,8 +37,8 @@ public class CitadelCommand {
         Date townLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getTownLootable();
         Date courtyardLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getCourtyardLootable();
 
-        sender.sendMessage(ChatColor.GOLD + "Citadel Town: " + ChatColor.WHITE + "Lootable " + (townLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(townLootable)) + ".");
-        sender.sendMessage(ChatColor.GOLD + "Citadel Courtyard: " + ChatColor.WHITE + "Lootable " + (courtyardLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(courtyardLootable)) + ".");
+        sender.sendMessage(ChatColor.GOLD + "Citadel Town: " + ChatColor.WHITE + "Lootable " + (townLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(townLootable) + (capper == null ? "." : ", and lootable now by " + capper.getName() + ".")));
+        sender.sendMessage(ChatColor.GOLD + "Citadel Courtyard: " + ChatColor.WHITE + "Lootable " + (courtyardLootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(courtyardLootable) + (capper == null ? "." : ", and lootable now by " + capper.getName() + ".")));
         sender.sendMessage(ChatColor.GOLD + "Citadel Lootable: " + ChatColor.WHITE + "Lootable by " + (capper == null ? "no one" : capper.getName()) + ".");
     }
 

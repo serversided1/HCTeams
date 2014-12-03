@@ -21,7 +21,7 @@ public class CitadelLoadLoottableCommand {
             sender.getInventory().addItem(itemStack);
         }
 
-        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Loaded Citadel loot.");
+        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Loaded Citadel loot into your inventory.");
     }
 
 }

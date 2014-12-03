@@ -41,25 +41,19 @@ public class Team {
 
     @Getter @Setter private ObjectId uniqueId;
     @Getter private String name;
-    @Getter private Location hq;
-
-    @Getter private String owner = null;
-    @Getter private Set<String> members = new HashSet<String>();
-    @Getter private Set<String> captains = new HashSet<String>();
 
     @Getter private boolean needsSave = false;
     @Getter private boolean loading = false;
 
+    @Getter private Location hq;
+    @Getter private String owner = null;
+    @Getter private Set<String> members = new HashSet<String>();
+    @Getter private Set<String> captains = new HashSet<String>();
     @Getter private Set<String> invitations = new HashSet<String>();
     @Getter private double DTR;
-
-    @Getter private List<Claim> claims = new ArrayList<Claim>();
-
-    @Getter private long raidableCooldown;
-    @Getter private long deathCooldown;
-
+    @Getter private long dtrCooldown;
     @Getter private double balance;
-
+    @Getter private List<Claim> claims = new ArrayList<Claim>();
     @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
 
     public Team(String name) {
@@ -150,13 +144,8 @@ public class Team {
         flagForSave();
     }
 
-    public void setRaidableCooldown(long raidableCooldown) {
-        this.raidableCooldown = raidableCooldown;
-        flagForSave();
-    }
-
-    public void setDeathCooldown(long deathCooldown) {
-        this.deathCooldown = deathCooldown;
+    public void setDTRCooldown(long dtrCooldown) {
+        this.dtrCooldown = dtrCooldown;
         flagForSave();
     }
 
@@ -456,11 +445,12 @@ public class Team {
 
         if (isRaidable()) {
             FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
-            raidableCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
+            dtrCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
+        } else {
+            dtrCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
         }
 
         DTRHandler.setCooldown(this);
-        deathCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
     }
 
     public BigDecimal getDTRIncrement() {
@@ -515,10 +505,8 @@ public class Team {
                 setDTR(Double.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("Balance")) {
                 setBalance(Double.valueOf(lineParts[0]));
-            } else if (identifier.equalsIgnoreCase("DeathCooldown")) {
-                setDeathCooldown(Long.valueOf(lineParts[0]));
-            } else if (identifier.equalsIgnoreCase("RaidableCooldown")) {
-                setRaidableCooldown(Long.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("DTRCooldown")) {
+                setDTRCooldown(Long.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
                 setName(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Claims")) {
@@ -633,8 +621,7 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
-        teamString.append("DeathCooldown:").append(getDeathCooldown()).append('\n');
-        teamString.append("RaidableCooldown:").append(getRaidableCooldown()).append('\n');
+        teamString.append("DTRCooldown:").append(getDtrCooldown()).append('\n');
         teamString.append("FriendlyName:").append(this.getName()).append('\n');
 
         if (homeLoc != null) {
@@ -807,8 +794,7 @@ public class Team {
         player.sendMessage(dtrMsg);
 
         if (showTimeUntilRegen) {
-            long till = Math.max(getRaidableCooldown(), getDeathCooldown());
-            int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+            int seconds = ((int) (getDtrCooldown() - System.currentTimeMillis())) / 1000;
             player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
         }
 

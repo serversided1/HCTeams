@@ -29,7 +29,7 @@ public class CitadelSaveLoottableCommand {
 
         FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().put(loottable, items);
         FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
-        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Saved Citadel loot.");
+        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Saved Citadel loot from your inventory.");
     }
 
 }
