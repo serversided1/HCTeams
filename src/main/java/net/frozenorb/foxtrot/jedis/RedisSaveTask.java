@@ -65,7 +65,7 @@ public class RedisSaveTask extends BukkitRunnable {
                     ChatColor.DARK_PURPLE + "Saved all teams to Redis.",
                     ChatColor.DARK_AQUA + "Teams: " + ChatColor.WHITE + teamsSaved,
                     ChatColor.DARK_AQUA + "Elapsed: " + ChatColor.WHITE + time + "ms",
-                    ChatColor.DARK_AQUA + "Errors: " + ChatColor.WHITE + errors
+                    ChatColor.DARK_AQUA + "Errors: " + ChatColor.WHITE + errors.size()
             ).sendOPs();
         } catch (Exception e) {
             e.printStackTrace();
