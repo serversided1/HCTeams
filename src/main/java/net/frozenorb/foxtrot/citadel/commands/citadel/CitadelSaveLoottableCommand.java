@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.citadel.commands.citadel;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import org.bukkit.ChatColor;
@@ -27,7 +28,7 @@ public class CitadelSaveLoottableCommand {
             }
         }
 
-        FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().put(loottable, items);
+        FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().put(CitadelLootType.valueOf(loottable), items);
         FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Saved Citadel loot from your inventory.");
     }

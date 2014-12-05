@@ -6,6 +6,8 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
+import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelLootTask;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
@@ -42,7 +44,7 @@ public class CitadelHandler {
     @Getter private Date townLootable;
     @Getter private Date courtyardLootable;
     @Getter private Map<Location, Long> citadelChests = new HashMap<Location, Long>();
-    @Getter private Map<String, List<ItemStack>> citadelLoot = new HashMap<String, List<ItemStack>>();
+    @Getter private Map<CitadelLootType, List<ItemStack>> citadelLoot = new HashMap<CitadelLootType, List<ItemStack>>();
 
     public CitadelHandler() {
         loadCitadelInfo();
@@ -89,8 +91,8 @@ public class CitadelHandler {
 
                 ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
 
-                for (String type : Arrays.asList("town1", "town2", "town3", "courtyard1", "courtyard2", "courtyard3", "keep1", "keep2", "keep3")) {
-                    BasicDBList list = (BasicDBList) dbo.get(type);
+                for (CitadelLootType type : CitadelLootType.values()) {
+                    BasicDBList list = (BasicDBList) dbo.get(type.name());
                     List<ItemStack> loot = new ArrayList<ItemStack>();
 
                     if (list != null) {
@@ -133,7 +135,7 @@ public class CitadelHandler {
             dbo.put("chests", chests);
             ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
 
-            for (String type : Arrays.asList("town1", "town2", "town3", "courtyard1", "courtyard2", "courtyard3", "keep1", "keep2", "keep3")) {
+            for (CitadelLootType type : CitadelLootType.values()) {
                 BasicDBList list = new BasicDBList();
 
                 if (citadelLoot.containsKey(type)) {
@@ -142,7 +144,7 @@ public class CitadelHandler {
                     }
                 }
 
-                dbo.put(type, list);
+                dbo.put(type.name(), list);
             }
 
             citadelInfo.delete();
@@ -158,6 +160,7 @@ public class CitadelHandler {
         this.townLootable = generateTownLootableDate();
         this.courtyardLootable = generateCourtyardLootableDate();
 
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper, level));
         saveCitadelInfo();
     }
 
@@ -264,40 +267,31 @@ public class CitadelHandler {
             // 2) To ensure there's never a way to get respawning chests in your base
             if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
                 chest.getBlockInventory().clear();
-                generateCitadelTownChest(chest);
+
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getTown(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                    chest.getBlockInventory().addItem(loot);
+                }
             } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
                 chest.getBlockInventory().clear();
-                generateCitadelCourtyardChest(chest);
+
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getCourtyard(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                    chest.getBlockInventory().addItem(loot);
+                }
             } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
                 chest.getBlockInventory().clear();
-                generateCitadelKeepChest(chest);
+
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getKeep(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                    chest.getBlockInventory().addItem(loot);
+                }
             }
         }
     }
 
-    private void generateCitadelTownChest(Chest chest) {
-        for (ItemStack loot : getRandomLoot("town" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
-            chest.getBlockInventory().addItem(loot);
-        }
-    }
-
-    private void generateCitadelCourtyardChest(Chest chest) {
-        for (ItemStack loot : getRandomLoot("courtyard" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
-            chest.getBlockInventory().addItem(loot);
-        }
-    }
-
-    private void generateCitadelKeepChest(Chest chest) {
-        for (ItemStack loot : getRandomLoot("keep" + level, FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
-            chest.getBlockInventory().addItem(loot);
-        }
-    }
-
-    private List<ItemStack> getRandomLoot(String  table, int items) {
+    private List<ItemStack> getRandomLoot(CitadelLootType type, int items) {
         List<ItemStack> loot = new ArrayList<ItemStack>();
 
-        if (citadelLoot.containsKey(table)) {
-            List<ItemStack> allowedLoot = citadelLoot.get(table);
+        if (citadelLoot.containsKey(type)) {
+            List<ItemStack> allowedLoot = citadelLoot.get(type);
 
             for (int i = 0; i < items; i++) {
                 ItemStack chosen = allowedLoot.get(FoxtrotPlugin.RANDOM.nextInt(allowedLoot.size()));

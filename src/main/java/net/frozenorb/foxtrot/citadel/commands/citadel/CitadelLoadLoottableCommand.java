@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.citadel.commands.citadel;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import org.bukkit.ChatColor;
@@ -17,7 +18,7 @@ public class CitadelLoadLoottableCommand {
     public static void citadelLoadLoottable(Player sender, @Param(name="loottable") String loottable) {
         sender.getInventory().clear();
 
-        for (ItemStack itemStack : FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().get(loottable)) {
+        for (ItemStack itemStack : FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().get(CitadelLootType.valueOf(loottable))) {
             sender.getInventory().addItem(itemStack);
         }
 

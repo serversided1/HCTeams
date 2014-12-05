@@ -47,14 +47,15 @@ public class Team {
 
     @Getter private Location hq;
     @Getter private String owner = null;
+    @Getter private double balance;
+    @Getter private double DTR;
+    @Getter private long dtrCooldown;
+    @Getter private List<Claim> claims = new ArrayList<Claim>();
+    @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
     @Getter private Set<String> members = new HashSet<String>();
     @Getter private Set<String> captains = new HashSet<String>();
     @Getter private Set<String> invitations = new HashSet<String>();
-    @Getter private double DTR;
-    @Getter private long dtrCooldown;
-    @Getter private double balance;
-    @Getter private List<Claim> claims = new ArrayList<Claim>();
-    @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
+    @Getter private Set<ObjectId> allies = new HashSet<ObjectId>();
 
     public Team(String name) {
         this.name = name;

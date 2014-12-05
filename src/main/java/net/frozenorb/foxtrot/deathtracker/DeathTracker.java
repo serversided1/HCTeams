@@ -103,8 +103,7 @@ public class DeathTracker {
                 killerData.put("Team", "N/A");
             } else {
                 BasicDBObject teamData = new BasicDBObject();
-                long till = Math.max(playerTeam.getRaidableCooldown(), playerTeam.getDeathCooldown());
-                int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+                int seconds = ((int) (playerTeam.getDtrCooldown() - System.currentTimeMillis())) / 1000;
 
                 teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
                 teamData.put("Name", playerTeam.getName());
@@ -171,9 +170,7 @@ public class DeathTracker {
             playerData.put("Team", "N/A");
         } else {
             BasicDBObject teamData = new BasicDBObject();
-
-            long till = Math.max(playerTeam.getRaidableCooldown(), playerTeam.getDeathCooldown());
-            int seconds = ((int) (till - System.currentTimeMillis())) / 1000;
+            int seconds = ((int) (playerTeam.getDtrCooldown() - System.currentTimeMillis())) / 1000;
 
             teamData.put("RegenTime", TimeUtils.getConvertedTime(seconds).trim());
             teamData.put("Name", playerTeam.getName());
