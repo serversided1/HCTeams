@@ -3,6 +3,8 @@ package net.frozenorb.foxtrot.listener;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -77,6 +79,18 @@ public class EnderpearlListener implements Listener {
             if (!DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");
+                return;
+            }
+        }
+
+        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
+
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null) {
+            if (ownerTo.isMember(event.getPlayer().getName())) {
+                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into claims while having a PvP Timer!");
                 return;
             }
         }
