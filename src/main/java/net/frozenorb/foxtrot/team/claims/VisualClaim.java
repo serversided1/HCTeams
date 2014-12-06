@@ -5,16 +5,15 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
+import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.mBasic.Utilities.ItemDb;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -314,8 +313,8 @@ public class VisualClaim implements Listener {
             int price = getPrice();
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-            if (!bypass && team.getClaims().size() >= team.getMaxClaimAmount()) {
-                player.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + team.getMaxClaimAmount() + ".");
+            if (!bypass && team.getClaims().size() >= Team.MAX_CLAIMS) {
+                player.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims, which is " + Team.MAX_CLAIMS + ".");
                 return;
             }
 

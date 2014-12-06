@@ -34,6 +34,7 @@ public class Team {
 
     public static final int MAX_TEAM_SIZE = 30;
     public static final int MAX_CLAIMS = 2;
+    public static final int MAX_ALLIES = 3;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
 
@@ -56,6 +57,7 @@ public class Team {
     @Getter private Set<String> captains = new HashSet<String>();
     @Getter private Set<String> invitations = new HashSet<String>();
     @Getter private Set<ObjectId> allies = new HashSet<ObjectId>();
+    @Getter private Set<ObjectId> requestedAllies = new HashSet<ObjectId>();
 
     public Team(String name) {
         this.name = name;
@@ -290,8 +292,19 @@ public class Team {
     }
 
     public boolean isAlly(String name) {
-        //TODO: Alliance system
+        for (ObjectId ally : getAllies()) {
+            Team allyTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(ally);
+
+            if (allyTeam != null && allyTeam.isMember(name)) {
+                return (true);
+            }
+        }
+
         return (false);
+    }
+
+    public boolean isAlly(Team team) {
+        return (getAllies().contains(team.getUniqueId()));
     }
 
     public boolean ownsLocation(Location location) {
@@ -414,10 +427,10 @@ public class Team {
         return (null);
     }
 
-    public Subclaim getSubclaim(Location loc) {
-        for (Subclaim sc : subclaims) {
-            if (new CuboidRegion(sc.getName(), sc.getLoc1(), sc.getLoc2()).contains(loc)) {
-                return (sc);
+    public Subclaim getSubclaim(Location location) {
+        for (Subclaim subclaim : subclaims) {
+            if (new CuboidRegion(subclaim.getName(), subclaim.getLoc1(), subclaim.getLoc2()).contains(location)) {
+                return (subclaim);
             }
         }
 
@@ -532,6 +545,22 @@ public class Team {
                         getClaims().add(claimObj);
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("Allies")) {
+                for (String ally : lineParts) {
+                    ally = ally.replace("[", "").replace("]", "");
+
+                    if (ally.length() != 0) {
+                        allies.add(new ObjectId(ally));
+                    }
+                }
+            } else if (identifier.equalsIgnoreCase("RequestedAllies")) {
+                for (String requestedAlly : lineParts) {
+                    requestedAlly = requestedAlly.replace("[", "").replace("]", "");
+
+                    if (requestedAlly.length() != 0) {
+                        requestedAllies.add(new ObjectId(requestedAlly));
+                    }
+                }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
@@ -620,6 +649,8 @@ public class Team {
         teamString.append("Invited:").append(invites.toString()).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
         teamString.append("Claims:").append(getClaims().toString()).append('\n');
+        teamString.append("Allies:").append(getAllies().toString()).append('\n');
+        teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDtrCooldown()).append('\n');
@@ -630,10 +661,6 @@ public class Team {
         }
 
         return (teamString.toString());
-    }
-
-    public int getMaxClaimAmount() {
-        return (MAX_CLAIMS);
     }
 
     private Location parseLocation(String[] args) {
