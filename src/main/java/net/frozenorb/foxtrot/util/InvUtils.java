@@ -62,18 +62,18 @@ public class InvUtils {
         return (fixed);
     }
 
-    public static ItemStack addToPart(ItemStack item, String title, String key, int max){
+    public static ItemStack addToPart(ItemStack item, String title, String key, int max) {
         ItemMeta meta = item.getItemMeta();
 
-        if(meta.hasLore() && meta.getLore().size() != 0){
+        if (meta.hasLore() && meta.getLore().size() != 0) {
             List<String> lore = meta.getLore();
 
-            if(lore.contains(title)){
+            if (lore.contains(title)) {
                 int titleIndex = lore.indexOf(title);
                 int keys = 0;
 
-                for(int i = titleIndex; i < lore.size(); i++){
-                    if(lore.get(i).equals("")){
+                for (int i = titleIndex; i < lore.size(); i++) {
+                    if (lore.get(i).equals("")) {
                         break;
                     }
 
@@ -82,7 +82,7 @@ public class InvUtils {
 
                 lore.add(titleIndex + 1, key);
 
-                if(keys > max){
+                if (keys > max) {
                     lore.remove(titleIndex + keys);
                 }
             } else {
@@ -98,14 +98,20 @@ public class InvUtils {
             lore.add("");
             lore.add(title);
             lore.add(key);
+
+            meta.setLore(lore);
         }
 
         item.setItemMeta(meta);
         return item;
     }
 
-    public static ItemStack addDeath(ItemStack item, String key){
-        return addToPart(item, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Deaths:", key, 10);
+    public static ItemStack addDeath(ItemStack item, String key) {
+        return (addToPart(item, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Deaths:", key, 10));
+    }
+
+    public static ItemStack addKill(ItemStack item, String key) {
+        return (addToPart(item, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills:", key, 3));
     }
 
     public static List<String> getCrowbarLore(int portals, int spawners) {

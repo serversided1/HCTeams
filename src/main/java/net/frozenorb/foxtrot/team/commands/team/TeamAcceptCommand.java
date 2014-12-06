@@ -19,6 +19,11 @@ public class TeamAcceptCommand {
                 return;
             }
 
+            if (target.getMembers().size() >= Team.MAX_TEAM_SIZE) {
+                sender.sendMessage(ChatColor.RED + "The max team size is " + Team.MAX_TEAM_SIZE + "!");
+                return;
+            }
+
             target.getInvitations().remove(sender.getName());
             target.addMember(sender.getName());
 
