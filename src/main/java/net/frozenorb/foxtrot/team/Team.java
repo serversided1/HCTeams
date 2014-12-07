@@ -503,7 +503,7 @@ public class Team {
                     setOwner(lineParts[0]);
                 }
             } else if (identifier.equalsIgnoreCase("UUID")) {
-                uniqueId = new ObjectId(lineParts[0]);
+                uniqueId = new ObjectId(lineParts[0].trim());
             } else if (identifier.equalsIgnoreCase("Members")) {
                 for (String name : lineParts) {
                     if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
@@ -559,7 +559,7 @@ public class Team {
                     ally = ally.replace("[", "").replace("]", "");
 
                     if (ally.length() != 0) {
-                        allies.add(new ObjectId(ally));
+                        allies.add(new ObjectId(ally.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("RequestedAllies")) {
@@ -567,7 +567,7 @@ public class Team {
                     requestedAlly = requestedAlly.replace("[", "").replace("]", "");
 
                     if (requestedAlly.length() != 0) {
-                        requestedAllies.add(new ObjectId(requestedAlly));
+                        requestedAllies.add(new ObjectId(requestedAlly.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
@@ -720,7 +720,7 @@ public class Team {
             Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
 
             if (ally != null) {
-                allies.append(ally.getName(player)).append(ChatColor.GRAY).append(", ");
+                allies.append(ally.getName(player)).append(ChatColor.YELLOW).append("[").append(ChatColor.GREEN).append(ally.getOnlineMemberAmount()).append("/").append(ally.getSize()).append(ChatColor.YELLOW).append("]").append(ChatColor.GRAY).append(", ");
             }
         }
 
