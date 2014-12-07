@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.Iterator;
 import java.util.Map;
 
-public class TeamUnMuteCommandTesting {
+public class TeamUnmuteCommand {
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnmute(Player sender, @Param(name="team") Team target) {
