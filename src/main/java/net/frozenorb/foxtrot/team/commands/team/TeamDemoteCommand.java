@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 
 public class TeamDemoteCommand {
 
-    @Command(names={ "team demote", "t demote", "f demote", "faction demote", "fac demote" }, permissionNode="")
-    public static void teamDemote(Player sender, @Param(name="player") OfflinePlayer name) {
+    @Command(names={ "team demote", "t demote", "f demote", "faction demote", "fac demote", "team delcaptain", "t delcaptain", "f delcaptain", "faction delcaptain", "fac delcaptain" }, permissionNode="")
+    public static void teamDemote(Player sender, @Param(name="player") OfflinePlayer target) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {
@@ -19,24 +19,26 @@ public class TeamDemoteCommand {
             return;
         }
 
-        if (team.isOwner(sender.getName()) || sender.isOp()) {
-            if (team.isMember(name.getName())) {
-                if (!team.isCaptain(name.getName())) {
-                    sender.sendMessage(ChatColor.RED + "You can only demote team Captains!");
-                    return;
-                }
-
-                for (Player player : team.getOnlineMembers()) {
-                    player.sendMessage(ChatColor.DARK_AQUA + team.getActualPlayerName(name.getName()) + " has been removed as an officer!");
-                }
-
-                team.removeCaptain(name.getName());
-            } else {
-                sender.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");
-            }
-        } else {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team leaders can do this.");
+        if (!team.isOwner(sender.getName())) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team owners can do this.");
+            return;
         }
+
+        if (!team.isMember(target.getName())) {
+            sender.sendMessage(ChatColor.DARK_AQUA + target.getName() + " is not on your team.");
+            return;
+        }
+
+        if (!team.isCaptain(target.getName())) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " isn't a captain!");
+            return;
+        }
+
+        for (Player player : team.getOnlineMembers()) {
+            player.sendMessage(ChatColor.DARK_AQUA + team.getActualPlayerName(target.getName()) + " has been demoted from Captain!");
+        }
+
+        team.removeCaptain(target.getName());
     }
 
 }
