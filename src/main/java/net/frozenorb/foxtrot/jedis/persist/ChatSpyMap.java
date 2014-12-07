@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
         List<ObjectId> results = new ArrayList<ObjectId>();
 
         for (String split : str.split(",")) {
-            results.add(new ObjectId(split));
+            results.add(new ObjectId(split.trim()));
         }
 
         return (results);

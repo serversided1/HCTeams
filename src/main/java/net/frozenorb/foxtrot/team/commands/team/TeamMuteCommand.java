@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
@@ -19,14 +20,14 @@ import java.util.Map;
  */
 public class TeamMuteCommand {
 
-    public static HashMap<String, String> factionMutes = new HashMap<String, String>();
+    @Getter private static Map<String, String> teamMutes = new HashMap<String, String>();
 
     @Command(names={ "team mute", "t mute", "f mute", "faction mute", "fac mute" }, permissionNode="foxtrot.mutefaction")
     public static void teamMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time, @Param(name="reason", wildcard=true) String reason) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {
-            factionMutes.put(player, target.getName());
+            teamMutes.put(player, target.getName());
 
             Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(player);
 
@@ -42,7 +43,7 @@ public class TeamMuteCommand {
             public void run() {
                 FactionActionTracker.logAction(target, "actions", "Mute: Faction mute expired.");
 
-                Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
+                Iterator<Map.Entry<String, String>> mutesIterator = teamMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
                     Map.Entry<String, String> mute = mutesIterator.next();
@@ -67,7 +68,7 @@ public class TeamMuteCommand {
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnmuteFaction(Player sender, @Param(name="team") final Team target) {
         FactionActionTracker.logAction(target, "actions", "Mute: Faction mute removed. [Unmuted by: " + sender.getName() + "]");
-        Iterator<Map.Entry<String, String>> mutesIterator = factionMutes.entrySet().iterator();
+        Iterator<Map.Entry<String, String>> mutesIterator = teamMutes.entrySet().iterator();
 
         while (mutesIterator.hasNext()) {
             Map.Entry<String, String> mute = mutesIterator.next();

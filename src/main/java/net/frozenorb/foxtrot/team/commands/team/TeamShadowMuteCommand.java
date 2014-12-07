@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
@@ -17,14 +18,14 @@ import java.util.*;
  */
 public class TeamShadowMuteCommand {
 
-    public static HashMap<String, String> factionShadowMutes = new HashMap<String, String>();
+    @Getter public static Map<String, String> teamShadowMutes = new HashMap<String, String>();
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time) {
         int timeSeconds = Integer.valueOf(time) * 60;
 
         for (String player : target.getMembers()) {
-            factionShadowMutes.put(player, target.getName());
+            teamShadowMutes.put(player, target.getName());
         }
 
         FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
@@ -34,7 +35,7 @@ public class TeamShadowMuteCommand {
             public void run() {
                 FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute expired.");
 
-                Iterator<java.util.Map.Entry<String, String>> mutesIterator = factionShadowMutes.entrySet().iterator();
+                Iterator<java.util.Map.Entry<String, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
                     java.util.Map.Entry<String, String> mute = mutesIterator.next();
@@ -53,7 +54,7 @@ public class TeamShadowMuteCommand {
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnShadowmuteFaction(Player sender, @Param(name="team") final Team target) {
         FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute removed. [Unmuted by: " + sender.getName() + "]");
-        Iterator<java.util.Map.Entry<String, String>> mutesIterator = factionShadowMutes.entrySet().iterator();
+        Iterator<java.util.Map.Entry<String, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
 
         while (mutesIterator.hasNext()) {
             java.util.Map.Entry<String, String> mute = mutesIterator.next();

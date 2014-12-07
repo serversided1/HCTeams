@@ -62,7 +62,7 @@ public class CitadelListener implements Listener {
         FoxtrotPlugin.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.RED + "CitadelCourtyard " + ChatColor.YELLOW + "is " + ChatColor.DARK_RED + "closed " + ChatColor.YELLOW + "until " + ChatColor.WHITE + (new SimpleDateFormat()).format(courtyardLootable) + ChatColor.YELLOW + ".");
     }
 
-    @EventHandler(priority=EventPriority.MONITOR) // The monitor is here so we get called 'after' most join events,
+    @EventHandler(priority=EventPriority.MONITOR) // The monitor is here so we get called 'after' most join events.
     public void onPlayerJoin(PlayerJoinEvent event) {
         Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         Object capper = FoxtrotPlugin.getInstance().getCitadelHandler().getCapper();

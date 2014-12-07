@@ -199,6 +199,14 @@ public class Team {
             FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(member.toLowerCase());
         }
 
+        for (ObjectId allyId : getAllies()) {
+            Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
+
+            if (ally != null) {
+                ally.getAllies().remove(getUniqueId());
+            }
+        }
+
         LandBoard.getInstance().clear(this);
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().remove(name.toLowerCase());
         FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().remove(uniqueId);

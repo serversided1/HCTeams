@@ -10,7 +10,8 @@ import org.bukkit.entity.Player;
 
 public class TeamAllyCommand {
 
-    @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="")
+    // TODO: Remove OP permission node to deploy
+    @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="op")
     public static void teamAlly(Player sender, @Param(name="team") Team targetTeam) {
         Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
@@ -40,7 +41,8 @@ public class TeamAllyCommand {
         }
 
         if (senderTeam.isAlly(targetTeam)) {
-            sender.sendMessage(ChatColor.RED + "You're already allied to " + targetTeam.getName() + ".");
+            sender.sendMessage(ChatColor.RED + "You're already allied to " + targetTeam.getName(sender) + ".");
+            return;
         }
 
         if (senderTeam.getRequestedAllies().contains(targetTeam.getUniqueId())) {
@@ -54,9 +56,9 @@ public class TeamAllyCommand {
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player)) {
-                    player.sendMessage(ChatColor.BLUE + senderTeam.getName() + ChatColor.YELLOW + " has accepted your request to ally. You have " + ChatColor.LIGHT_PURPLE + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + ChatColor.LIGHT_PURPLE + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 } else if (senderTeam.isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You have " + ChatColor.LIGHT_PURPLE + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You now have " + ChatColor.LIGHT_PURPLE + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 }
 
                 if (targetTeam.isMember(player) || senderTeam.isMember(player)) {
@@ -80,7 +82,6 @@ public class TeamAllyCommand {
                 }
             }
         }
-
     }
 
 }
