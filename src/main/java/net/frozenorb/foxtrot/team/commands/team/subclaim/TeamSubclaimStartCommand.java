@@ -10,13 +10,9 @@ import org.bukkit.entity.Player;
 
 public class TeamSubclaimStartCommand {
 
-    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim wand", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub wand", "faction sub start", "fac sub start" }, permissionNode="")
+    // TODO: Remove OP permission node to deploy
+    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim wand", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub wand", "faction sub start", "fac sub start" }, permissionNode="op")
     public static void teamSubclaimStart(Player sender) {
-        if (!sender.isOp()) {
-            sender.sendMessage(ChatColor.RED + "The subclaiming system is temporarily disabled.");
-            return;
-        }
-
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {
