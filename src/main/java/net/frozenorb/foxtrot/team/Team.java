@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class Team {
 
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
+    public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
     // Configurable values //
 
@@ -46,11 +47,11 @@ public class Team {
     @Getter private boolean needsSave = false;
     @Getter private boolean loading = false;
 
-    @Getter private Location hq;
+    @Getter private Location HQ;
     @Getter private String owner = null;
     @Getter private double balance;
     @Getter private double DTR;
-    @Getter private long dtrCooldown;
+    @Getter private long DTRCooldown;
     @Getter private List<Claim> claims = new ArrayList<Claim>();
     @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
     @Getter private Set<String> members = new HashSet<String>();
@@ -148,7 +149,7 @@ public class Team {
     }
 
     public void setDTRCooldown(long dtrCooldown) {
-        this.dtrCooldown = dtrCooldown;
+        this.DTRCooldown = dtrCooldown;
         flagForSave();
     }
 
@@ -178,9 +179,9 @@ public class Team {
     }
 
     public void setHQ(Location hq) {
-        String oldHQ = this.hq == null ? "None" : (this.hq.getBlockX() + ", " + this.hq.getBlockY() + ", " + this.hq.getBlockZ());
+        String oldHQ = this.HQ == null ? "None" : (getHQ().getBlockX() + ", " + getHQ().getBlockY() + ", " + getHQ().getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
-        this.hq = hq;
+        this.HQ = hq;
         FactionActionTracker.logAction(this, "actions", "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
         flagForSave();
     }
@@ -459,9 +460,9 @@ public class Team {
 
         if (isRaidable()) {
             FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
-            dtrCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
+            DTRCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
         } else {
-            dtrCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
+            DTRCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
         }
 
         DTRHandler.setCooldown(this);
@@ -595,7 +596,7 @@ public class Team {
 
         if (uniqueId == null) {
             uniqueId = new ObjectId();
-            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + this.getName() + "...");
+            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + getName() + "...");
         }
 
         loading = false;
@@ -616,26 +617,25 @@ public class Team {
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
-        Location homeLoc = getHq();
 
         for (String member : getMembers()) {
             members.append(member.trim()).append(", ");
-        }
-
-        if (members.length() > 2) {
-            members.setLength(members.length() - 2);
         }
 
         for (String captain : getCaptains()) {
             captains.append(captain.trim()).append(", ");
         }
 
-        if (captains.length() > 2) {
-            captains.setLength(captains.length() - 2);
-        }
-
         for (String invite : getInvitations()) {
             invites.append(invite.trim()).append(", ");
+        }
+
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+        }
+
+        if (captains.length() > 2) {
+            captains.setLength(captains.length() - 2);
         }
 
         if (invites.length() > 2) {
@@ -653,11 +653,11 @@ public class Team {
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
-        teamString.append("DTRCooldown:").append(getDtrCooldown()).append('\n');
-        teamString.append("FriendlyName:").append(this.getName()).append('\n');
+        teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
+        teamString.append("FriendlyName:").append(getName()).append('\n');
 
-        if (homeLoc != null) {
-            teamString.append("HQ:").append(homeLoc.getWorld().getName()).append(",").append(homeLoc.getX()).append(",").append(homeLoc.getY()).append(",").append(homeLoc.getZ()).append(",").append(homeLoc.getYaw()).append(",").append(homeLoc.getPitch()).append('\n');
+        if (getHQ() != null) {
+            teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
         }
 
         return (teamString.toString());
@@ -679,15 +679,13 @@ public class Team {
     }
 
     public void sendTeamInfo(Player player) {
-        String gray = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
-
-        player.sendMessage(gray);
-
-        if (owner == null || owner.equals("null")) {
-            String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
+        // Don't make our null teams have DTR....
+        // @HCFactions
+        if (getOwner() == null || getOwner().equals("null")) {
+            player.sendMessage(GRAY_LINE);
 
             if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
-                player.sendMessage(ChatColor.AQUA + this.getName() + ChatColor.GOLD + " KOTH");
+                player.sendMessage(ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
             } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Town");
             }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
@@ -695,138 +693,89 @@ public class Team {
             }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Keep");
             } else {
-                player.sendMessage(ChatColor.BLUE + this.getName());
+                player.sendMessage(ChatColor.BLUE + getName());
             }
 
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + hqString);
-            player.sendMessage(gray);
+            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+            player.sendMessage(GRAY_LINE);
             return;
         }
 
-        String hqString = (hq == null ? "None" : hq.getBlockX() + ", " + hq.getBlockZ());
+        KillsMap killsMap = FoxtrotPlugin.getInstance().getKillsMap();
+        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(getOwner());
+        StringBuilder allies = new StringBuilder();
+        StringBuilder members = new StringBuilder();
+        StringBuilder captains = new StringBuilder();
+        int onlineMembers = 0;
 
-        player.sendMessage(ChatColor.BLUE + getName() + ChatColor.GRAY + " [" + getOnlineMemberAmount() + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + hqString);
-        KillsMap km = FoxtrotPlugin.getInstance().getKillsMap();
-        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(this.owner);
+        for (ObjectId allyId : getAllies()) {
+            Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
 
-        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + this.owner + ChatColor.YELLOW + "[" + ChatColor.GREEN + km.getKills(this.owner) + ChatColor.YELLOW + "]");
+            if (ally != null) {
+                allies.append(ally.getName(player)).append(ChatColor.GRAY).append(", ");
+            }
+        }
 
-        boolean first = true;
-        boolean first2 = true;
+        for (Player onlineMember : getOnlineMembers()) {
+            onlineMembers++;
 
-        StringBuilder members = new StringBuilder("§eMembers: ");
-        StringBuilder captains = new StringBuilder("§eCaptains: ");
-
-        int captainAmount = 0;
-        int memberAmount = 0;
-
-        /*for (String m : getMembers()) {
-            if (m == null) {
+            if (isOwner(onlineMember.getName())) {
                 continue;
             }
 
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(m);
+            String memberString = ChatColor.GREEN + onlineMember.getName() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(onlineMember.getName()) + ChatColor.YELLOW + "]";
 
-            if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
-                players.add(m);
-            }
-        }*/
-
-        for (Player online : getOnlineMembers()) {
-            if (online.hasMetadata("invisible")) {
-                continue;
-            }
-
-            StringBuilder toAdd = members;
-            if (isOwner(online.getName())) {
-                continue;
-            }
-
-            if (isCaptain(online.getName())) {
-                toAdd = captains;
-                if (!first2) {
-                    toAdd.append("§7, ");
-                }
-                captainAmount++;
-
-                toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-                first2 = false;
+            if (isCaptain(onlineMember.getName())) {
+                captains.append(memberString).append(ChatColor.GRAY).append(", ");
             } else {
-                if (!first) {
-                    toAdd.append("§7, ");
-                }
-                memberAmount++;
-
-                toAdd.append("§a" + online.getName() + "§e[§a" + km.getKills(online.getName()) + "§e]");
-                first = false;
+                members.append(memberString).append(ChatColor.GRAY).append(", ");
             }
         }
-        for (String offline : getOfflineMembers()) {
-            StringBuilder toAdd = members;
 
-            if (isOwner(offline)) {
+        for (String offlineMember : getOfflineMembers()) {
+            if (isOwner(offlineMember)) {
                 continue;
             }
-            if (isCaptain(offline)) {
-                toAdd = captains;
-                if (!first2) {
-                    toAdd.append("§7, ");
-                } else {
-                    first2 = false;
-                }
 
-                captainAmount++;
-                toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+            String memberString = ChatColor.GRAY + offlineMember + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
+
+            if (isCaptain(offlineMember)) {
+                captains.append(memberString).append(ChatColor.GRAY).append(", ");
             } else {
-                if (!first) {
-                    toAdd.append("§7, ");
-                } else {
-                    first = false;
-                }
-
-                memberAmount++;
-                toAdd.append("§7" + offline + "§e[§a" + km.getKills(offline) + "§e]");
+                members.append(memberString).append(ChatColor.GRAY).append(", ");
             }
         }
 
-        if (captainAmount > 0) {
-            player.sendMessage(captains.toString());
+        // Now we can actually send all that info we just processed.
+        player.sendMessage(GRAY_LINE);
+        player.sendMessage(ChatColor.BLUE + getName() + ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+
+        if (allies.length() > 2) {
+            allies.setLength(allies.length() - 2);
+            player.sendMessage(ChatColor.YELLOW + "Allies: " + allies.toString());
         }
 
-        if (memberAmount > 0) {
-            player.sendMessage(members.toString());
+        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + getOwner() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
+
+        if (captains.length() > 2) {
+            captains.setLength(captains.length() - 2);
+            player.sendMessage(ChatColor.YELLOW + "Captains: " + captains.toString());
         }
 
-        player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(balance));
-        String dtrMsg = ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(DTR);
-        boolean showTimeUntilRegen = false;
-
-        if (getOnlineMemberAmount() == 0) {
-            // No players online.
-            dtrMsg += ChatColor.GRAY + "◀";
-        } else {
-            if (DTRHandler.isRegenerating(this)) {
-                // Regenerating
-                dtrMsg += ChatColor.GREEN + "▲";
-            } else {
-                if (DTRHandler.isOnCooldown(this)) {
-                    // On cooldown
-                    dtrMsg += ChatColor.RED + "■";
-                    showTimeUntilRegen = true;
-                } else {
-                    dtrMsg += ChatColor.GREEN + "◀";
-                }
-            }
+        if (members.length() > 2) {
+            members.setLength(members.length() - 2);
+            player.sendMessage(ChatColor.YELLOW + "Members: " + members.toString());
         }
 
-        player.sendMessage(dtrMsg);
+        player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(getBalance()));
+        player.sendMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
 
-        if (showTimeUntilRegen) {
-            int seconds = ((int) (getDtrCooldown() - System.currentTimeMillis())) / 1000;
-            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(seconds).trim());
+        if (DTRHandler.isOnCooldown(this)) {
+            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
         }
 
-        player.sendMessage(gray);
+        player.sendMessage(GRAY_LINE);
+        // .... and that is how we do a /f who.
     }
 
     @Override
@@ -850,6 +799,20 @@ public class Team {
         }
 
         return (dtrColor);
+    }
+
+    public String getDTRSuffix() {
+        if (DTRHandler.isRegenerating(this)) {
+            if (getOnlineMemberAmount() == 0) {
+                return (ChatColor.GRAY + "◀");
+            } else {
+                return (ChatColor.GREEN + "▲");
+            }
+        } else if (DTRHandler.isOnCooldown(this)) {
+            return (ChatColor.RED + "■");
+        } else {
+            return (ChatColor.GREEN + "◀");
+        }
     }
 
 }

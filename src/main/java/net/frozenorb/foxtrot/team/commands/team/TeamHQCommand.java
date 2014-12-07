@@ -18,7 +18,7 @@ public class TeamHQCommand {
 
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
-        if (team.getHq() == null) {
+        if (team.getHQ() == null) {
             sender.sendMessage(ChatColor.RED + "HQ not set.");
             return;
         }

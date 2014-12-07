@@ -18,14 +18,12 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
-import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
@@ -330,7 +328,7 @@ public class ServerHandler {
         tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
 
         FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
-        player.teleport(team.getHq());
+        player.teleport(team.getHQ());
     }
 
     public boolean isUnclaimed(Location loc) {

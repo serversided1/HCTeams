@@ -90,7 +90,7 @@ public class TeamUnclaimCommand {
                 }
             }
 
-            if (team.getHq() != null && claim.contains(team.getHq())) {
+            if (team.getHQ() != null && claim.contains(team.getHQ())) {
                 team.setHQ(null);
                 sender.sendMessage(ChatColor.RED + "Your HQ was in this claim, so it has been unset.");
             }

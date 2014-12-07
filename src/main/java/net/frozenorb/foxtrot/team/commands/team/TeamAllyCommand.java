@@ -43,9 +43,9 @@ public class TeamAllyCommand {
             sender.sendMessage(ChatColor.RED + "You're already allied to " + targetTeam.getName() + ".");
         }
 
-        if (targetTeam.getRequestedAllies().contains(senderTeam.getUniqueId())) {
+        if (senderTeam.getRequestedAllies().contains(targetTeam.getUniqueId())) {
+            senderTeam.getRequestedAllies().remove(targetTeam.getUniqueId());
 
-        } else {
             targetTeam.getAllies().add(senderTeam.getUniqueId());
             senderTeam.getAllies().add(targetTeam.getUniqueId());
 
@@ -54,17 +54,31 @@ public class TeamAllyCommand {
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player)) {
-                    player.sendMessage(ChatColor.BLUE + senderTeam.getName() + ChatColor.YELLOW + " has requested to be your ally. Type " + ChatColor.LIGHT_PURPLE + "/team ally " + senderTeam.getName() + ChatColor.YELLOW + " to accept.");
+                    player.sendMessage(ChatColor.BLUE + senderTeam.getName() + ChatColor.YELLOW + " has accepted your request to ally. You have " + ChatColor.LIGHT_PURPLE + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 } else if (senderTeam.isMember(player)) {
-
+                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You have " + ChatColor.LIGHT_PURPLE + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 }
 
                 if (targetTeam.isMember(player) || senderTeam.isMember(player)) {
                     NametagManager.reloadPlayer(player);
                 }
             }
+        } else {
+            if (targetTeam.getRequestedAllies().contains(senderTeam.getUniqueId())) {
+                sender.sendMessage(ChatColor.YELLOW + "You have already requested to ally " + ChatColor.BLUE + targetTeam.getName() + ChatColor.YELLOW + ".");
+                return;
+            }
 
-            sender.sendMessage(ChatColor.YELLOW + "You have allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You have " + ChatColor.LIGHT_PURPLE + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + " remaining.");
+            targetTeam.getRequestedAllies().add(senderTeam.getUniqueId());
+            targetTeam.flagForSave();
+
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (targetTeam.isMember(player)) {
+                    player.sendMessage(ChatColor.BLUE + senderTeam.getName() + ChatColor.YELLOW + " has requested to be your ally. Type " + ChatColor.LIGHT_PURPLE + "/team ally " + senderTeam.getName() + ChatColor.YELLOW + " to accept.");
+                } else if (senderTeam.isMember(player)) {
+                    player.sendMessage(ChatColor.YELLOW + "Your team has requested to ally " + ChatColor.BLUE + targetTeam.getName() + ChatColor.YELLOW + ".");
+                }
+            }
         }
 
     }
