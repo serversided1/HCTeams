@@ -20,7 +20,7 @@ public class TeamAcceptCommand {
             }
 
             if (target.getMembers().size() >= Team.MAX_TEAM_SIZE) {
-                sender.sendMessage(ChatColor.RED + "The max team size is " + Team.MAX_TEAM_SIZE + "!");
+                sender.sendMessage(ChatColor.RED + target.getName() + " is currently full!");
                 return;
             }
 
