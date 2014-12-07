@@ -14,7 +14,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;

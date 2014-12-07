@@ -28,12 +28,12 @@ public class TeamShadowMuteCommand {
             teamShadowMutes.put(player, target.getName());
         }
 
-        FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        FactionActionTracker.logAction(target, "actions", "Mute: Team shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
-                FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute expired.");
+                FactionActionTracker.logAction(target, "actions", "Mute: Team shadowmute expired.");
 
                 Iterator<java.util.Map.Entry<String, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
 
@@ -48,23 +48,7 @@ public class TeamShadowMuteCommand {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.GRAY + "Shadow muted the faction " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
-    }
-
-    @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamUnShadowmuteFaction(Player sender, @Param(name="team") final Team target) {
-        FactionActionTracker.logAction(target, "actions", "Mute: Faction shadowmute removed. [Unmuted by: " + sender.getName() + "]");
-        Iterator<java.util.Map.Entry<String, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
-
-        while (mutesIterator.hasNext()) {
-            java.util.Map.Entry<String, String> mute = mutesIterator.next();
-
-            if (mute.getValue().equalsIgnoreCase(target.getName())) {
-                mutesIterator.remove();
-            }
-        }
-
-        sender.sendMessage(ChatColor.GRAY + "Un-shadowmuted the faction " + target.getName() + ChatColor.GRAY  + ".");
+        sender.sendMessage(ChatColor.GRAY + "Shadow muted the tean " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
     }
 
 }

@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.util.ListUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -64,50 +65,24 @@ public class TeamClaimCommand implements Listener {
         }
     }
 
-    @Command(names={ "team opclaim", "t opclaim", "f opclaim", "faction opclaim", "fac opclaim" }, permissionNode="op")
-    public static void teamOpClaim(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (event.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
+            VisualClaim visualClaim = VisualClaim.getVisualClaim(event.getPlayer().getName());
 
-        if (team == null) {
-            sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
-            return;
-        }
-
-        sender.getInventory().remove(SELECTION_WAND);
-
-        new BukkitRunnable() {
-
-            public void run() {
-                sender.getInventory().addItem(SELECTION_WAND.clone());
+            if (visualClaim != null) {
+                event.setCancelled(true);
+                visualClaim.cancel(false);
             }
 
-        }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
-
-        new VisualClaim(sender, VisualClaimType.CREATE, true).draw(false);
-
-        if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
-            new VisualClaim(sender, VisualClaimType.MAP, true).draw(true);
+            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> event.getItemDrop().remove(), 1L);
         }
     }
 
     @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent e) {
-        if (e.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
-            VisualClaim vc = VisualClaim.getVisualClaim(e.getPlayer().getName());
-
-            if (vc != null) {
-                e.setCancelled(true);
-                vc.cancel(false);
-            }
-
-            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> e.getItemDrop().remove(), 1L);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent e) {
-        e.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-        e.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
     }
 
 }

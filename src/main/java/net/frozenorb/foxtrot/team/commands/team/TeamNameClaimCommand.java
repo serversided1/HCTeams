@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,7 +24,6 @@ public class TeamNameClaimCommand {
             name = name.split(" ")[0];
         }
 
-
         if (!name.matches("^[a-zA-Z0-9]*$")) {
             sender.sendMessage(ChatColor.RED + "Land names must be alphanumeric!");
             return;
@@ -31,9 +31,11 @@ public class TeamNameClaimCommand {
 
         if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
             if (LandBoard.getInstance().getTeam(sender.getLocation()) != null && team.ownsLocation(sender.getLocation())) {
-                net.frozenorb.foxtrot.team.claims.Claim cc = LandBoard.getInstance().getClaim(sender.getLocation());
+                Claim claim = LandBoard.getInstance().getClaim(sender.getLocation());
 
-                cc.setName(name);
+                claim.setName(name);
+                team.flagForSave();
+
                 sender.sendMessage(ChatColor.YELLOW + "You have renamed this claim to: " + ChatColor.WHITE + name);
                 return;
             }

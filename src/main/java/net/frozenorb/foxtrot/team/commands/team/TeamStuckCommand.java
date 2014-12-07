@@ -72,7 +72,6 @@ public class TeamStuckCommand implements Listener {
             private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5: 300;
 
             private Location loc = sender.getLocation();
-            private Location prevLoc;
 
             private int xStart = (int) loc.getX();
             private int yStart = (int) loc.getY();
@@ -96,7 +95,7 @@ public class TeamStuckCommand implements Listener {
                     return;
                 }
 
-                //Begin asynchronously searching for an available location prior to the actual teleport
+                // Begin asynchronously searching for an available location prior to the actual teleport
                 if (seconds == 5) {
                     new BukkitRunnable() {
 
@@ -123,7 +122,7 @@ public class TeamStuckCommand implements Listener {
 
                 Location loc = sender.getLocation();
 
-                //More than 5 blocks away
+                // More than 5 blocks away
                 if ((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)) {
                     sender.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
                     warping.remove(sender.getName());

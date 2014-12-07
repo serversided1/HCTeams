@@ -29,7 +29,7 @@ public class TeamHQCommand {
         }
 
         if (sender.getWorld().getEnvironment() == Environment.NETHER) {
-            sender.sendMessage(ChatColor.RED + "You may not go to faction headquarters from the Nether!");
+            sender.sendMessage(ChatColor.RED + "You may not go to your team's HQ from the Nether!");
             return;
         }
 

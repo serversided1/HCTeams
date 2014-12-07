@@ -11,7 +11,7 @@ import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.tasks.HourlyScheduleTask;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;

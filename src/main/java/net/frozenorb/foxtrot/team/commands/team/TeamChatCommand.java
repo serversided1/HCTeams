@@ -49,6 +49,7 @@ public class TeamChatCommand {
 
             switch (chatMode) {
                 case PUBLIC:
+                    // TODO: When deploying alliances
                     //setChat(player, ChatMode.ALLIANCE);
                     setChat(player, ChatMode.TEAM);
                     break;

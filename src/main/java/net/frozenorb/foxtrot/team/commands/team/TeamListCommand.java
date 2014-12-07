@@ -23,6 +23,7 @@ public class TeamListCommand {
 
         Map<Team, Integer> teamPlayerCount = new HashMap<Team, Integer>();
 
+        // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (player.hasMetadata("invisible")) {
                 continue;

@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
 public class TeamLeaderCommand {
 
     @Command(names={ "team newleader", "t newleader", "f newleader", "faction newleader", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" }, permissionNode="")
-    public static void teamLeader(Player sender, @Param(name="player") String leader) {
-        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(leader);
+    public static void teamLeader(Player sender, @Param(name="player") String target) {
+        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null) {
-            leader = bukkitPlayer.getName();
+            target = bukkitPlayer.getName();
         }
 
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
@@ -25,24 +25,26 @@ public class TeamLeaderCommand {
             return;
         }
 
-        if (team.isOwner(sender.getName())) {
-            if (team.isMember(leader)) {
-                leader = team.getActualPlayerName(leader);
-
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player)) {
-                        player.sendMessage(ChatColor.DARK_AQUA + leader + " is now the new leader!");
-                    }
-                }
-
-                team.setOwner(leader);
-                team.addCaptain(sender.getName());
-            } else {
-                sender.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");
-            }
-        } else {
+        if (!team.isOwner(sender.getName())) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only the team leader can do this.");
+            return;
         }
+
+        if (!team.isMember(target)) {
+            sender.sendMessage(ChatColor.RED + target + " is not on your team.");
+            return;
+        }
+
+        target = team.getActualPlayerName(target);
+
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (team.isMember(player)) {
+                player.sendMessage(ChatColor.DARK_AQUA + target + " has been given ownership of " + team.getName() + ".");
+            }
+        }
+
+        team.setOwner(target);
+        team.addCaptain(sender.getName());
     }
 
 }
