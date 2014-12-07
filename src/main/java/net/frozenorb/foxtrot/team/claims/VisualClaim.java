@@ -96,10 +96,10 @@ public class VisualClaim implements Listener {
 
         switch (type) {
             case CREATE:
-                player.sendMessage(ChatColor.YELLOW + "Faction land claim started.");
+                player.sendMessage(ChatColor.YELLOW + "Team land claim started.");
                 break;
             case RESIZE:
-                player.sendMessage(ChatColor.RED + "Faction land resizing isn't yet supported.");
+                player.sendMessage(ChatColor.RED + "Team land resizing isn't yet supported.");
                 break;
             case MAP:
                 int claimIteration = 0;

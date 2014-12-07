@@ -70,7 +70,7 @@ public class Team {
         }
 
         if (DTR <= 0 && newDTR > 0) {
-            FactionActionTracker.logAction(this, "actions", "Faction no longer raidable.");
+            FactionActionTracker.logAction(this, "actions", "Team no longer raidable.");
         }
 
         if (Math.abs(newDTR - DTR) > 0.4) {
@@ -467,7 +467,7 @@ public class Team {
         setDTR(newDTR);
 
         if (isRaidable()) {
-            FactionActionTracker.logAction(this, "actions", "Faction now raidable.");
+            FactionActionTracker.logAction(this, "actions", "Team now raidable.");
             DTRCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
         } else {
             DTRCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;

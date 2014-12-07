@@ -308,12 +308,12 @@ public class ServerHandler {
 
             if (inClaim != null) {
                 if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from an enemy's claim!");
+                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim!");
                     return;
                 }
 
                 if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from inside of events!");
+                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
                     return;
                 }
             }
