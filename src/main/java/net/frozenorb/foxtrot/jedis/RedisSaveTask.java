@@ -62,7 +62,7 @@ public class RedisSaveTask extends BukkitRunnable {
             new ImageMessage("redis-saved").appendText(
                     "",
                     "",
-                    ChatColor.DARK_PURPLE + "Saved all teams to Redis.",
+                    ChatColor.DARK_AQUA + "Saved all teams to Redis.",
                     ChatColor.DARK_AQUA + "Teams: " + ChatColor.WHITE + teamsSaved,
                     ChatColor.DARK_AQUA + "Elapsed: " + ChatColor.WHITE + time + "ms",
                     ChatColor.DARK_AQUA + "Errors: " + ChatColor.WHITE + errors.size()
