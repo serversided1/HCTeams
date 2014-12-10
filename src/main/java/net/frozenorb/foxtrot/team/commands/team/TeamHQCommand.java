@@ -33,7 +33,7 @@ public class TeamHQCommand {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 75);
+        FoxtrotPlugin.getInstance().getServerHandler().beginWarp(sender, team, 25);
     }
 
 }
