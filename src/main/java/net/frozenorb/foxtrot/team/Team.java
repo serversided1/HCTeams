@@ -33,7 +33,7 @@ public class Team {
 
     // Configurable values //
 
-    public static final int MAX_TEAM_SIZE = 30;
+    public static final int MAX_TEAM_SIZE = 25;
     public static final int MAX_CLAIMS = 2;
     public static final int MAX_ALLIES = 3;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
