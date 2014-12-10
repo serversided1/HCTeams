@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class TeamSubclaimStartCommand {
 
     // TODO: Remove OP permission node to deploy
-    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim wand", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub wand", "faction sub start", "fac sub start" }, permissionNode="op")
+    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim start", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub start", "faction sub start", "fac sub start" }, permissionNode="op")
     public static void teamSubclaimStart(Player sender) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
