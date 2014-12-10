@@ -185,6 +185,15 @@ public class Claim implements Iterable<Coordinate> {
         return (outset(CuboidDirection.Both, radius).contains(x, z, world));
     }
 
+    public void setLocations(Location loc1, Location loc2) {
+        this.x1 = Math.min(loc1.getBlockX(), loc2.getBlockX());
+        this.x2 = Math.max(loc1.getBlockX(), loc2.getBlockX());
+        this.y1 = Math.min(loc1.getBlockY(), loc2.getBlockY());
+        this.y2 = Math.max(loc1.getBlockY(), loc2.getBlockY());
+        this.z1 = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
+        this.z2 = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
+    }
+
     public Location[] getCornerLocations() {
         World world = FoxtrotPlugin.getInstance().getServer().getWorld(this.world);
 
