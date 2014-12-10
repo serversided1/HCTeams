@@ -45,7 +45,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.spigotmc.CustomTimingsHandler;
 
 import java.util.ArrayList;
@@ -203,22 +202,6 @@ public class FoxListener implements Listener {
         }
 
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
-
-        new BukkitRunnable() {
-
-            public void run() {
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "The HCTeams kit has changed to Protection I, Sharpness I! See reddit.com/r/HCTeams for more information about this change.");
-                player.sendMessage("");
-                player.sendMessage("");
-            }
-
-        }.runTaskLater(FoxtrotPlugin.getInstance(), 5L);
     }
 
     @EventHandler(priority=EventPriority.HIGH)
