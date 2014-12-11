@@ -59,6 +59,7 @@ public class Team {
     @Getter private Set<String> invitations = new HashSet<String>();
     @Getter private Set<ObjectId> allies = new HashSet<ObjectId>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<ObjectId>();
+    @Getter @Setter private float dtrRegenMultiplier = 1F; // We're safe to use a @Setter here as this value isn't persisted.
 
     public Team(String name) {
         this.name = name;
@@ -75,6 +76,11 @@ public class Team {
 
         if (Math.abs(newDTR - DTR) > 0.4) {
             FactionActionTracker.logAction(this, "actions", "DTR Change: More than 0.4 [Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+        }
+
+        if (dtrRegenMultiplier != 1F && newDTR == getMaxDTR()) {
+            FactionActionTracker.logAction(this, "actions", "DTR Regen Multiplier: Deactivated as team is max DTR. [DTR Regen Multiplier: " + dtrRegenMultiplier + ", DTR: " + newDTR + "]");
+            dtrRegenMultiplier = 1F;
         }
 
         if (!isLoading()) {
@@ -461,6 +467,11 @@ public class Team {
         for (Player player : getOnlineMembers()) {
             player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
             player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+        }
+
+        if (dtrRegenMultiplier != 1F) {
+            FactionActionTracker.logAction(this, "actions", "DTR Regen Multiplier: Deactivated as " + p + " died. [DTR Regen Multiplier: " + dtrRegenMultiplier + "]");
+            dtrRegenMultiplier = 1F;
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
