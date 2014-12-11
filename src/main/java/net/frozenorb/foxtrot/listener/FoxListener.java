@@ -519,11 +519,11 @@ public class FoxListener implements Listener {
 
         if (event.getEntity().getKiller() != null) {
             Player killer = event.getEntity().getKiller();
-            ItemStack sword = killer.getItemInHand();
+            ItemStack hand = killer.getItemInHand();
 
             // Add kills to sword lore
-            if (sword.getType().name().contains("SWORD")) {
-                InvUtils.addKill(sword, killer.getDisplayName() + ChatColor.YELLOW + " slayed " + event.getEntity().getDisplayName());
+            if (hand.getType().name().contains("SWORD") || hand.getType() == Material.BOW) {
+                InvUtils.addKill(hand, killer.getDisplayName() + ChatColor.YELLOW + " " + (hand.getType() == Material.BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
             }
 
             // Add player head to item drops
