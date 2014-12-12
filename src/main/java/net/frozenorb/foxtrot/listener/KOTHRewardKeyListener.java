@@ -71,12 +71,27 @@ public class KOTHRewardKeyListener implements Listener {
                 continue;
             }
 
+            // This is a dirty hack so we can run 'continue' on the while loop instead of the for loop.
+            // There's no better way to do this :/
+            boolean runContinue = false;
+
+            for (ItemStack givenLoot : loot) {
+                if (givenLoot.getType() == chosenItem.getType()) {
+                    runContinue = true;
+                }
+            }
+
+            if (runContinue) {
+                continue;
+            }
+
             given++;
 
             if (chosenItem.getAmount() > 1) {
                 ItemStack targetClone = chosenItem.clone();
+                int half = targetClone.getAmount() / 2;
 
-                targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosenItem.getAmount()));
+                targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosenItem.getAmount() - half) + half);
                 loot.add(targetClone);
             } else {
                 loot.add(chosenItem);
