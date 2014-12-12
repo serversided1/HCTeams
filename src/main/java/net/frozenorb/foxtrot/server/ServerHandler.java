@@ -525,6 +525,78 @@ public class ServerHandler {
         }
     }
 
+    public void handleDTRRegenSign(Sign sign, Player player) {
+        float mult = Float.valueOf(sign.getLine(1).toLowerCase().replace("x", ""));
+        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+
+        if (playerTeam == null) {
+            showSignPacket(player, sign,
+                    "§c§lError",
+                    "",
+                    "Not on",
+                    "a team"
+            );
+
+            return;
+        }
+
+        if (playerTeam.getBalance() >= price) {
+            if (playerTeam.isRaidable()) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team is",
+                        "raidable"
+                );
+
+                return;
+            }
+
+            if (playerTeam.getDTR() == playerTeam.getMaxDTR()) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team is",
+                        "at max DTR"
+                );
+
+                return;
+            }
+
+            if (playerTeam.getDtrRegenMultiplier() != 1F) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team already",
+                        "has multiplier"
+                );
+
+                return;
+            }
+
+            playerTeam.setBalance(playerTeam.getBalance() - price);
+            playerTeam.setDtrRegenMultiplier(mult);
+            playerTeam.setDTRCooldown(System.currentTimeMillis());
+
+            showSignPacket(player, sign,
+                    "§aStarted DTR",
+                    "regen (" + mult + "x)",
+                    "New Balance:",
+                    "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+            );
+
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLUE + playerTeam.getName() + ChatColor.YELLOW + " has spent " + ChatColor.GOLD + "$" + price + ChatColor.YELLOW + " and started DTR regeneration at a rate of " + ChatColor.GOLD + mult + "x" + ChatColor.YELLOW + "!");
+        } else {
+            showSignPacket(player, sign,
+                    "§cInsufficient",
+                    "§cfunds for",
+                    sign.getLine(1) + " DTR",
+                    "regen mult."
+            );
+        }
+    }
+
     public void handleKitSign(Sign sign, Player player) {
         String kit = ChatColor.stripColor(sign.getLine(1));
 

@@ -7,21 +7,21 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -81,6 +81,12 @@ public class Team {
         if (dtrRegenMultiplier != 1F && newDTR == getMaxDTR()) {
             FactionActionTracker.logAction(this, "actions", "DTR Regen Multiplier: Deactivated as team is max DTR. [DTR Regen Multiplier: " + dtrRegenMultiplier + ", DTR: " + newDTR + "]");
             dtrRegenMultiplier = 1F;
+
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (isMember(player)) {
+                    player.sendMessage(ChatColor.YELLOW + "Your team's DTR regen multiplier has been deactivated as your team has reached max DTR.");
+                }
+            }
         }
 
         if (!isLoading()) {
@@ -472,6 +478,12 @@ public class Team {
         if (dtrRegenMultiplier != 1F) {
             FactionActionTracker.logAction(this, "actions", "DTR Regen Multiplier: Deactivated as " + p + " died. [DTR Regen Multiplier: " + dtrRegenMultiplier + "]");
             dtrRegenMultiplier = 1F;
+
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (isMember(player)) {
+                    player.sendMessage(ChatColor.YELLOW + "Your team's DTR regen multiplier has been deactivated as a member has died.");
+                }
+            }
         }
 
         FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
@@ -487,14 +499,14 @@ public class Team {
         DTRHandler.setCooldown(this);
     }
 
-    public BigDecimal getDTRIncrement() {
+    public double getDTRIncrement() {
         return (getDTRIncrement(getOnlineMemberAmount()));
     }
 
-    // I'm not quite sure why we're using BigDecimals here.
-    public BigDecimal getDTRIncrement(int playersOnline) {
-        BigDecimal dtrPerHour = new BigDecimal(DTRHandler.getBaseDTRIncrement(getSize())).multiply(new BigDecimal(playersOnline));
-        return (dtrPerHour.divide(new BigDecimal(60 + ""), 5, RoundingMode.HALF_DOWN));
+    public double getDTRIncrement(int playersOnline) {
+        double dtrPerHour = DTRHandler.getBaseDTRIncrement(getSize()) * playersOnline;
+        dtrPerHour *= dtrRegenMultiplier;
+        return (dtrPerHour / 60);
     }
 
     public double getMaxDTR() {
@@ -772,6 +784,10 @@ public class Team {
         if (allies.length() > 2) {
             allies.setLength(allies.length() - 2);
             player.sendMessage(ChatColor.YELLOW + "Allies: " + allies.toString());
+        }
+
+        if (dtrRegenMultiplier != 1F) {
+            player.sendMessage(ChatColor.YELLOW + "DTR Regen Multiplier: " + ChatColor.GRAY + dtrRegenMultiplier + "x");
         }
 
         player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + getOwner() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
