@@ -23,7 +23,7 @@ public class PlaytimeCommand {
             playtimeTime += playtime.getCurrentSession(target.getName()) / 1000L;
         }
 
-        sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW + "'s total playtime is " + ChatColor.GREEN + TimeUtils.getDurationBreakdown(playtimeTime * 1000L) + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW + "'s total playtime is " + ChatColor.GOLD + TimeUtils.getDurationBreakdown(playtimeTime * 1000L) + ChatColor.YELLOW + ".");
     }
 
 }

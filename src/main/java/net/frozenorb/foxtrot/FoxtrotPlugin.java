@@ -9,6 +9,7 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -19,6 +20,8 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.raffle.RaffleHandler;
+import net.frozenorb.foxtrot.relic.RelicHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -63,6 +66,9 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private MapHandler mapHandler;
     @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
+    @Getter private RaffleHandler raffleHandler;
+    @Getter private RelicHandler relicHandler;
+    @Getter private CTFHandler CTFHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -218,6 +224,9 @@ public class FoxtrotPlugin extends JavaPlugin {
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
+        raffleHandler = new RaffleHandler();
+        relicHandler = new RelicHandler();
+        CTFHandler = new CTFHandler();
 
         KOTHHandler.init();
         CommandHandler.init();

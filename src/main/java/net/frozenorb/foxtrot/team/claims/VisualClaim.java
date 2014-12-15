@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
@@ -355,6 +356,9 @@ public class VisualClaim implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) team.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + price + ")");
             }
 
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(player, RaffleAchievement.BROKER);
+
             FactionActionTracker.logAction(team, "actions", "Land Claim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
             cancel(true);
         } else {
@@ -598,6 +602,8 @@ public class VisualClaim implements Listener {
 
                         break;
                 }
+
+                event.setCancelled(true);
             } else if (player.getItemInHand().getType() == Material.WOOD_AXE && type == VisualClaimType.RESIZE) {
                 switch (event.getAction()) {
                     case RIGHT_CLICK_BLOCK:
@@ -634,9 +640,9 @@ public class VisualClaim implements Listener {
 
                         break;
                 }
-            }
 
-            event.setCancelled(true);
+                event.setCancelled(true);
+            }
         }
     }
 

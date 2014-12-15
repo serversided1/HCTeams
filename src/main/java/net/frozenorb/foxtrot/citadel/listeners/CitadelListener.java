@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.citadel.events.CitadelActivatedEvent;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -40,6 +41,9 @@ public class CitadelListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onKOTHCaptured(KOTHCapturedEvent event) {
         if (event.getKoth().getName().equalsIgnoreCase("Citadel")) {
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getPlayer(), RaffleAchievement.CITADEL, 1);
+
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
             if (playerTeam != null) {

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.mShared.Utilities.Utilities;
 import org.bukkit.Material;
@@ -105,7 +106,7 @@ public class WebsiteListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().getMongoPool().getDB("hcteams").getCollection("deaths").insert(playerDeath);
+                FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
             }
 
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
@@ -135,6 +136,9 @@ public class WebsiteListener implements Listener {
 
         switch (event.getBlock().getType()) {
             case DIAMOND_ORE:
+                // Raffle
+                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getPlayer(), RaffleAchievement.DIAMOND_HUNTER, 1);
+
                 FoxtrotPlugin.getInstance().getDiamondMinedMap().setMined(event.getPlayer().getName(), FoxtrotPlugin.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getName()) + 1);
                 break;
             case GOLD_ORE:

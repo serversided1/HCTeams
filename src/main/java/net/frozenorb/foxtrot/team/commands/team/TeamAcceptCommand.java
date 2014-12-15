@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -34,6 +35,9 @@ public class TeamAcceptCommand {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has joined the team!");
                 }
             }
+
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(sender, RaffleAchievement.MAKING_FRIENDS);
 
             NametagManager.reloadPlayer(sender);
             NametagManager.sendTeamsToPlayer(sender);

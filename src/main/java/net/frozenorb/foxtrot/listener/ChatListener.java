@@ -40,16 +40,16 @@ public class ChatListener implements Listener {
             chatMode = ChatMode.ALLIANCE;
         }
 
+        if (event.isCancelled()) {
+            return;
+        }
+
         // Any route we go down will cancel the event eventually.
         // Let's just save space and do it here.
         event.setCancelled(true);
 
         switch (chatMode) {
             case PUBLIC:
-                if (event.isCancelled()) {
-                    return;
-                }
-
                 if (TeamMuteCommand.getTeamMutes().containsKey(event.getPlayer().getName())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team is muted!");
 
@@ -90,7 +90,7 @@ public class ChatListener implements Listener {
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE));
                         } else {
                             if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getName())) {
-                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getName().toLowerCase())) {
+                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
                                     player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "SM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
                                 }
 

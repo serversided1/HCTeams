@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
@@ -13,9 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -47,6 +46,9 @@ public class EndListener implements Listener {
             for (int i = 0; i < 6; i++) {
                 Bukkit.broadcastMessage("");
             }
+
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getEntity().getKiller(), RaffleAchievement.DRAGON_SLAYER, 1);
 
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
@@ -108,6 +110,31 @@ public class EndListener implements Listener {
     // Disallow block breaking/placing
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+
+    // Disallow bucket usage
+    @EventHandler
+    public void onPlayerBukkitEmpty(PlayerBucketEmptyEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    // Disallow bucket usage
+    @EventHandler
+    public void onPlayerBucketFill(PlayerBucketFillEvent event) {
         if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
             if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
                 return;
