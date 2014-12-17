@@ -51,11 +51,6 @@ public class RogueClass extends PvPClass {
     }
 
     @Override
-    public void remove(Player player) {
-        removeInfiniteEffects(player);
-    }
-
-    @Override
     public boolean itemConsumed(Player player, Material material) {
         if (material == Material.SUGAR) {
             if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {

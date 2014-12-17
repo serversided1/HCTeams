@@ -10,8 +10,8 @@ import org.bukkit.Material;
 @RequiredArgsConstructor
 public enum Relic {
 
-    LIFESTEAL("Lifesteal", "Heals 0.5 hearts", Material.SLIME_BALL, 3),
-    KNOCKBACK_TWO("Knockback 2", "Knockback 2 on hit", Material.ANVIL, 3);
+    LIFESTEAL("Lifesteal", "Gives a chance of healing 0.5 hearts when hitting another player", Material.SLIME_BALL, 3),
+    LIFESTEAL("Lifesteal", "Gives a chance of healing 0.5 hearts when hitting another player", Material.SLIME_BALL, 3),
 
     @Getter @NonNull private String name;
     @Getter @NonNull private String description;

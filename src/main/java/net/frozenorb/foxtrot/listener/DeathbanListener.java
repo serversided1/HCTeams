@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -88,7 +87,7 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        int seconds = FoxtrotPlugin.getInstance().getServerHandler().getDeathBanAt(event.getEntity().getName(), event.getEntity().getLocation());
+        int seconds = FoxtrotPlugin.getInstance().getServerHandler().getDeathban(event.getEntity());
         FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getName(), seconds);
 
         final String time = TimeUtils.getDurationBreakdown(seconds * 1000);

@@ -47,12 +47,12 @@ public class CombatLoggerListener implements Listener {
             FoxtrotPlugin.getInstance().getLogger().info(playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
 
             // Deathban the player
-            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDeathBanAt(playerName, event.getEntity().getLocation()));
+            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDeathban(playerName, event.getEntity().getLocation()));
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
 
             // Take away DTR.
             if (team != null) {
-                team.playerDeath(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDTRLossAt(event.getEntity().getLocation()));
+                team.playerDeath(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity().getLocation()));
             }
 
             if (event.getEntity().getKiller() != null) {

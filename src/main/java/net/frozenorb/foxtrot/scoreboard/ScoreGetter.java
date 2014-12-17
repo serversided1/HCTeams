@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -142,8 +141,8 @@ public interface ScoreGetter {
 
         @Override
         public int getSeconds(Player player) {
-            if (BardClass.getLastPositiveEffectUsage().containsKey(player.getName()) && BardClass.getLastPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = BardClass.getLastPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
+            if (PvPClassHandler.getLastBardPositiveEffectUsage().containsKey(player.getName()) && PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                long diff = PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);
@@ -164,8 +163,8 @@ public interface ScoreGetter {
 
         @Override
         public int getSeconds(Player player) {
-            if (BardClass.getLastNegativeEffectUsage().containsKey(player.getName()) && BardClass.getLastNegativeEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = BardClass.getLastNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis();
+            if (PvPClassHandler.getLastBardPositiveEffectUsage().containsKey(player.getName()) && PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                long diff = PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);

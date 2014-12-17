@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -110,24 +111,28 @@ public class CTFFlag {
 
         game.getCapturedFlags().get(team.getUniqueId()).add(getColor());
 
-        if (!silent) {
-            int teamCaptures = game.getCapturedFlags().get(team.getUniqueId()).size();
-            int neededCaptures = CTFFlagColor.values().length;
-            String teamString = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
+        int teamCaptures = game.getCapturedFlags().get(team.getUniqueId()).size();
+        int neededCaptures = CTFFlagColor.values().length;
+        String teamString = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
 
-            if (teamCaptures != neededCaptures) {
+        if (teamCaptures != neededCaptures) {
+            if (!silent) {
                 FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been captured by " + teamString + ChatColor.AQUA + getFlagHolder().getName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + teamCaptures + "/" + neededCaptures + ")");
-            } else {
-                game.endGame(team);
             }
+
+            dropFlag(false);
+        } else {
+            game.endGame(team);
         }
 
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new PlayerCaptureFlagEvent(getFlagHolder(), this));
-        dropFlag(false);
     }
 
     public Item spawnAnchorItem() {
         Item anchorItem = getSpawnLocation().getWorld().dropItem(getSpawnLocation(), new ItemStack(POLE_MATERIAL));
+
+        anchorItem.setPickupDelay(60);
+
         return (anchorItem);
     }
 
@@ -149,12 +154,20 @@ public class CTFFlag {
     }
 
     public void updateVisual() {
+        removeVisual();
+
         if (getState() == CTFFlagState.CAP_POINT) {
             updatePoleVisual();
             updateFlagVisual();
         } else {
-            removeVisual();
-            getFlagHolder().getInventory().setHelmet(new ItemStack(FLAG_MATERIAL, 1, getColor().getDyeColor().getWoolData()));
+            ItemStack helmet = new ItemStack(FLAG_MATERIAL, 1, getColor().getDyeColor().getWoolData());
+            ItemMeta itemMeta = helmet.getItemMeta();
+
+            itemMeta.setDisplayName(getColor().getChatColor() + getColor().getName() + " Flag");
+            itemMeta.setLore(Arrays.asList("", ChatColor.YELLOW + "To drop the flag, use /drop", ChatColor.YELLOW + "or drop this item."));
+
+            helmet.setItemMeta(itemMeta);
+            getFlagHolder().getInventory().setHelmet(helmet);
         }
     }
 

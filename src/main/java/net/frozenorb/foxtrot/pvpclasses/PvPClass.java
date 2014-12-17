@@ -12,12 +12,14 @@ import java.util.List;
 public abstract class PvPClass implements Listener {
 
     @Getter String name;
+    @Getter String siteLink;
     @Getter int warmup;
     @Getter String armorContains;
     @Getter List<Material> consumables;
 
     public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
         this.name = name;
+        this.siteLink = name.toLowerCase() + ".hct.io";
         this.warmup = warmup;
         this.armorContains = armorContains;
         this.consumables = consumables;

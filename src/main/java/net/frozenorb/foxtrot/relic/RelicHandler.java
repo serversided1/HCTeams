@@ -61,11 +61,7 @@ public class RelicHandler implements Listener {
 
             int tier = InvUtils.getRelicTier(itemStack);
 
-            if (relicTierMap.containsKey(actualRelic) && tier > relicTierMap.get(actualRelic)) {
-                relicTierMap.put(actualRelic, tier);
-            } else {
-                relicTierMap.put(actualRelic, tier);
-            }
+            relicTierMap.put(actualRelic, tier);
         }
 
         return (relicTierMap);

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
@@ -15,8 +16,8 @@ import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -352,8 +353,20 @@ public class ServerHandler {
         return (owner == null || owner.isRaidable());
     }
 
-    public float getDTRLossAt(Location loc) {
-        Team ownerTo = LandBoard.getInstance().getTeam(loc);
+    public float getDTRLoss(Player player) {
+        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
+                    return (0F);
+                }
+            }
+        }
+
+        return (getDTRLoss(player.getLocation()));
+    }
+
+    public float getDTRLoss(Location location) {
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.HALF_DTR_LOSS)) {
@@ -364,12 +377,24 @@ public class ServerHandler {
         return (1F);
     }
 
-    public int getDeathBanAt(String playerName, Location loc) {
+    public int getDeathban(Player player) {
+        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
+                    return ((int) TimeUnit.SECONDS.toSeconds(10));
+                }
+            }
+        }
+
+        return (getDeathban(player.getName(), player.getLocation()));
+    }
+
+    public int getDeathban(String playerName, Location location) {
         if (isPreEOTW()) {
             return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
-        Team ownerTo = LandBoard.getInstance().getTeam(loc);
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {

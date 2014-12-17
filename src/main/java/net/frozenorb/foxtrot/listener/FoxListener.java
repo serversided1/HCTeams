@@ -490,7 +490,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerDeath(final PlayerDeathEvent event) {
         Player player = event.getEntity();
         Date now = new Date();
@@ -508,7 +508,7 @@ public class FoxListener implements Listener {
         }
 
         if (t != null) {
-            t.playerDeath(event.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLossAt(event.getEntity().getLocation()));
+            t.playerDeath(event.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity()));
         }
 
         // Add deaths to armor

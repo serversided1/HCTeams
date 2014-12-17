@@ -3,9 +3,8 @@ package net.frozenorb.foxtrot.pvpclasses;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.DefensiveBardClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.OffensiveBardClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -31,16 +30,19 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
     @Getter private static Map<String, KitTask> warmupTasks = new HashMap<String, KitTask>();
     @Getter private static Map<String, PvPClass> equippedKits = new HashMap<String, PvPClass>();
 
+    @Getter private static Map<String, Long> lastBardPositiveEffectUsage = new HashMap<>();
+    @Getter private static Map<String, Long> lastBardNegativeEffectUsage = new HashMap<>();
+
     @Getter List<PvPClass> pvpClasses = new ArrayList<PvPClass>();
 
     public PvPClassHandler() {
         pvpClasses.add(new ArcherClass());
-        pvpClasses.add(new BardClass());
-        pvpClasses.add(new MinerClass());
         //pvpClasses.add(new RogueClass());
+        pvpClasses.add(new OffensiveBardClass());
+        pvpClasses.add(new DefensiveBardClass());
 
-        for (PvPClass pvPClass : pvpClasses) {
-            FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvPClass, FoxtrotPlugin.getInstance());
+        for (PvPClass pvpClass : pvpClasses) {
+            FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvpClass, FoxtrotPlugin.getInstance());
         }
 
         FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskTimer(FoxtrotPlugin.getInstance(), this, 2L, 2L);
@@ -68,6 +70,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                     equippedKits.remove(player.getName());
                     player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.RED + "Disabled!");
                     equippedPvPClass.remove(player);
+                    equippedPvPClass.removeInfiniteEffects(player);
                 } else {
                     equippedPvPClass.tick(player);
                 }
@@ -178,6 +181,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 PvPClassHandler.getWarmupTasks().remove(player.getName());
 
                 player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
+                player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.BOLD + pvpClass.getSiteLink());
                 cancel();
             }
         }

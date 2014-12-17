@@ -1,76 +1,37 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.ParticleEffects;
-import net.minecraft.util.com.google.common.collect.Lists;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-/**
- * @author Connor Hollasch
- * @since 10/10/14
- */
-public class BardClass extends PvPClass implements Listener {
+public class BardClass extends PvPClass {
 
-    public static final HashMap<Material, PotionEffect> BARD_CLICK_EFFECTS = new HashMap<Material, PotionEffect>();
-    public static final HashMap<Material, PotionEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, PotionEffect>();
-
-    @Getter private static Map<String, Long> lastPositiveEffectUsage = new HashMap<>();
-    @Getter private static Map<String, Long> lastNegativeEffectUsage = new HashMap<>();
+    public final HashMap<Material, PotionEffect> BARD_CLICK_EFFECTS = new HashMap<Material, PotionEffect>();
+    public final HashMap<Material, PotionEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, PotionEffect>();
 
     public static final int BARD_RANGE = 20;
 
-    static {
-        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20 * 5, 7));
-        BARD_CLICK_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(20 * 3, 0));
-        BARD_CLICK_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20 * 10, 5));
-        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20 * 2, 0));
-        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20 * 10, 0));
-        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20 * 10, 0));
-        BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20 * 45, 0));
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(140, 0));
-        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20 * 10, 3));
-        BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 45, 0));
-        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20 * 5, 1));
-
-        BARD_CLICK_EFFECTS.put(Material.SPECKLED_MELON, null);
-        //BARD_CLICK_EFFECTS.put(Material.EYE_OF_ENDER, null);
-        BARD_CLICK_EFFECTS.put(Material.WHEAT, null);
-
-        BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
-        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20*6, 1));
-
-        // Custom code
-        // Glistering Melon - Heals 6 Hearts Instantly
-        // Eye Of Ender - Reveals Invisible Rouge Players within 80 blocks. (Forces a 30 second cool-down on the Rouge Player before they can go Invisible again)
-        // Wheat - Heals 6 hunger points
-    }
-
-    public BardClass() {
-        super("Bard", 15, "GOLD_", null);
+    public BardClass(String name, String armorContains) {
+        super(name, 15, armorContains, null);
     }
 
     @Override
@@ -104,12 +65,7 @@ public class BardClass extends PvPClass implements Listener {
         }
     }
 
-    @Override
-    public void remove(Player player) {
-        removeInfiniteEffects(player);
-    }
-
-    @EventHandler
+    // This purposely has no @EventHandler (called by subclasses)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getAction().name().contains("RIGHT_") || !event.hasItem() || !BARD_CLICK_EFFECTS.containsKey(event.getItem().getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
             return;
@@ -123,8 +79,8 @@ public class BardClass extends PvPClass implements Listener {
         boolean negative = BARD_CLICK_EFFECTS.get(event.getItem().getType()) != null && Arrays.asList(FoxListener.DEBUFFS).contains(BARD_CLICK_EFFECTS.get(event.getItem().getType()).getType());
 
         if (negative) {
-            if (lastNegativeEffectUsage.containsKey(event.getPlayer().getName()) && lastNegativeEffectUsage.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = lastNegativeEffectUsage.get(event.getPlayer().getName()) - System.currentTimeMillis();
+            if (PvPClassHandler.getLastBardNegativeEffectUsage().containsKey(event.getPlayer().getName()) && PvPClassHandler.getLastBardNegativeEffectUsage().get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = PvPClassHandler.getLastBardNegativeEffectUsage().get(event.getPlayer().getName()) - System.currentTimeMillis();
 
                 double value = (millisLeft / 1000D);
                 double sec = Math.round(10.0 * value) / 10.0;
@@ -133,11 +89,11 @@ public class BardClass extends PvPClass implements Listener {
                 return;
             }
 
-            lastNegativeEffectUsage.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
+            PvPClassHandler.getLastBardPositiveEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         } else {
-            if (lastPositiveEffectUsage.containsKey(event.getPlayer().getName()) && lastPositiveEffectUsage.get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = lastPositiveEffectUsage.get(event.getPlayer().getName()) - System.currentTimeMillis();
+            if (PvPClassHandler.getLastBardPositiveEffectUsage().containsKey(event.getPlayer().getName()) && PvPClassHandler.getLastBardPositiveEffectUsage().get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                long millisLeft = PvPClassHandler.getLastBardPositiveEffectUsage().get(event.getPlayer().getName()) - System.currentTimeMillis();
 
                 double value = (millisLeft / 1000D);
                 double sec = Math.round(10.0 * value) / 10.0;
@@ -146,10 +102,11 @@ public class BardClass extends PvPClass implements Listener {
                 return;
             }
 
-            lastPositiveEffectUsage.put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
+            PvPClassHandler.getLastBardPositiveEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         }
 
+        SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 60 : 30);
         giveBardEffect(event.getPlayer(), BARD_CLICK_EFFECTS.get(event.getItem().getType()), !negative);
 
         if (event.getItem().getType() != Material.FEATHER) {
@@ -162,7 +119,7 @@ public class BardClass extends PvPClass implements Listener {
         }
     }
 
-    public static void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
+    public void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
         for (Player player : getNearbyPlayers(source, friendly)) {
             if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
@@ -172,25 +129,17 @@ public class BardClass extends PvPClass implements Listener {
                 smartAddPotion(player, potionEffect);
             } else {
                 Material material = source.getItemInHand().getType();
-
-                if (material == Material.SPECKLED_MELON) {
-                    double add = 6.0;
-
-                    if ((player.getHealth() + add) > player.getMaxHealth()) {
-                        player.setHealth(player.getMaxHealth());
-                    } else {
-                        player.setHealth(player.getHealth() + add);
-                    }
-                } else if (material == Material.WHEAT) {
-                    player.setFoodLevel(20);
-                    player.setSaturation(player.getSaturation() + 14.4F);
-                }
+                giveCustomBardEffect(player, material);
             }
         }
     }
 
-    public static List<Player> getNearbyPlayers(Player player, boolean friendly) {
-        List<Player> valid = Lists.newArrayList();
+    public void giveCustomBardEffect(Player player, Material material) {
+
+    }
+
+    public List<Player> getNearbyPlayers(Player player, boolean friendly) {
+        List<Player> valid = new ArrayList<Player>();
         Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE, BARD_RANGE)) {
@@ -205,11 +154,12 @@ public class BardClass extends PvPClass implements Listener {
                     continue;
                 }
 
-                boolean isTeammate = sourceTeam.isMember(nearbyPlayer.getName());
+                boolean isFriendly = sourceTeam.isMember(nearbyPlayer.getName());
+                boolean isAlly = sourceTeam.isAlly(nearbyPlayer.getName());
 
-                if (friendly && isTeammate) {
+                if (friendly && isFriendly) {
                     valid.add(nearbyPlayer);
-                } else if (!friendly && !isTeammate) {
+                } else if (!friendly && !isFriendly && !isAlly) { // the isAlly is here so you can't give your allies negative effects, but so you also can't give them positive effects.
                     valid.add(nearbyPlayer);
                 }
             }
