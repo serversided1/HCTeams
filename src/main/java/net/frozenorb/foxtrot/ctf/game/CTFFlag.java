@@ -21,6 +21,8 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -42,7 +44,7 @@ public class CTFFlag {
     @Getter @Setter private CTFFlagColor color;
     @Getter @Setter private CTFFlagState state;
     @Getter @Setter private Item anchorItem;
-    @Getter @Setter private Player flagHolder;
+    @Getter private Player flagHolder; // Setter is manually implemented down below
 
     private Set<Entity> flagItems = new HashSet<Entity>();
 
@@ -55,6 +57,17 @@ public class CTFFlag {
         this.flagHolder = null;
 
         dropFlag(true);
+    }
+
+    public void setFlagHolder(Player player) {
+        if (flagHolder != null && player == null) {
+            flagHolder.removePotionEffect(PotionEffectType.SLOW);
+        } else if (flagHolder == null && player != null) {
+            player.removePotionEffect(PotionEffectType.SLOW);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 1));
+        }
+
+        this.flagHolder = player;
     }
 
     public void pickupFlag(Player player, boolean silent) {

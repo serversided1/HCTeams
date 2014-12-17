@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
+import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -22,14 +24,14 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/5/2014.
  */
 public class EnderpearlListener implements Listener {
 
-    @Getter
-    private static Map<String, Long> enderpearlCooldown = new HashMap<String, Long>();
+    @Getter private static Map<String, Long> enderpearlCooldown = new HashMap<String, Long>();
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
@@ -40,10 +42,26 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
+            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == shooter) {
+                        enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2));
+                        return;
+                    }
+                }
+            }
+
             if (DTRBitmaskType.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 30000L);
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + 16000L);
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(16));
+            }
+
+            // Relic pearl cooldown reduction
+            int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(shooter, Relic.PEARL_CDR);
+
+            if (tier != -1) {
+                enderpearlCooldown.put(shooter.getName(), enderpearlCooldown.get(shooter.getName()) - (tier * 1000));
             }
         }
     }

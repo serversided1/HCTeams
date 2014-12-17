@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 
 public class TeamUnallyCommand {
 
-    // TODO: Remove OP permission node to deploy
-    @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="op")
+    @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="")
     public static void teamUnally(Player sender, @Param(name="team") Team targetTeam) {
         Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 

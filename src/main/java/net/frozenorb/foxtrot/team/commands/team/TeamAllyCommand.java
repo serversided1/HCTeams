@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 
 public class TeamAllyCommand {
 
-    // TODO: Remove OP permission node to deploy
-    @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="op")
+    @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="")
     public static void teamAlly(Player sender, @Param(name="team") Team targetTeam) {
         Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 

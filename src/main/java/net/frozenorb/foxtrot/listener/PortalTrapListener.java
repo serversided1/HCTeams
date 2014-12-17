@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -73,6 +75,16 @@ public class PortalTrapListener implements Listener {
 
             }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);*/
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
+            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
+                        event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot go to the nether while carrying the flag.");
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+
             // Going to the nether.
             /*new BukkitRunnable() {
 
