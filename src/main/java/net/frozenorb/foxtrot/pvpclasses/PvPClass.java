@@ -19,7 +19,7 @@ public abstract class PvPClass implements Listener {
 
     public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
         this.name = name;
-        this.siteLink = name.toLowerCase() + ".hct.io";
+        this.siteLink = name.toLowerCase().replaceAll(" ", "-") + ".hct.io";
         this.warmup = warmup;
         this.armorContains = armorContains;
         this.consumables = consumables;
@@ -37,7 +37,7 @@ public abstract class PvPClass implements Listener {
 
     }
 
-    public void removeInfiniteEffects(Player player) {
+    public static void removeInfiniteEffects(Player player) {
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             if (potionEffect.getDuration() > 1_000_000) {
                 player.removePotionEffect(potionEffect.getType());
@@ -56,21 +56,32 @@ public abstract class PvPClass implements Listener {
 
     public static void smartAddPotion(Player player, PotionEffect potionEffect) {
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
-            if (activePotionEffect.getType().equals(potionEffect.getType())) {
-                 if (potionEffect.getAmplifier() < activePotionEffect.getAmplifier()) {
-                    return;
-                }
-
-                if (potionEffect.getAmplifier() == activePotionEffect.getAmplifier() && potionEffect.getDuration() < activePotionEffect.getDuration()) {
-                    return;
-                }
-
-                break;
+            if (!activePotionEffect.getType().equals(potionEffect.getType())) {
+                continue;
             }
+
+            // We're not going to apply anything if they already have a higher tiered potion effect
+            if (activePotionEffect.getAmplifier() > potionEffect.getAmplifier()) {
+                return;
+            }
+
+            // If we have the exact same potion except for the durations...
+            if (potionEffect.getAmplifier() == activePotionEffect.getAmplifier()) {
+                // If their potion effect is 'better', don't apply ours.
+                if (activePotionEffect.getDuration() > potionEffect.getDuration()) {
+                    return;
+                }
+
+                // If the durations are pretty much the same we return (to avoid spamming them with potion effects)
+                if (Math.abs(activePotionEffect.getDuration() - potionEffect.getDuration()) < 20) {
+                    return;
+                }
+            }
+
+            break;
         }
 
-        player.removePotionEffect(potionEffect.getType());
-        player.addPotionEffect(potionEffect);
+        player.addPotionEffect(potionEffect, true);
     }
 
 }

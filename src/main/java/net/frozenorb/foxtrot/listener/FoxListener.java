@@ -152,6 +152,12 @@ public class FoxListener implements Listener {
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
             pmeRegionNotifyBM.stopTiming();
 
+            // Don't display non-deathbans during EOTW.
+            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                fromReduceDeathban = false;
+                toReduceDeathban = false;
+            }
+
             String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
             String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
 

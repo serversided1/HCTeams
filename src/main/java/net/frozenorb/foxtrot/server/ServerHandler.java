@@ -593,6 +593,7 @@ public class ServerHandler {
                         "§cNo space",
                         "§cin inventory!"
                 );
+            }
         } else {
             showSignPacket(player, sign,
                     "§cInsufficient",

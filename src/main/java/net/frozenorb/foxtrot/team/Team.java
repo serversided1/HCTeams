@@ -35,7 +35,7 @@ public class Team {
 
     public static final int MAX_TEAM_SIZE = 25;
     public static final int MAX_CLAIMS = 2;
-    public static final int MAX_ALLIES = 3;
+    public static final int MAX_ALLIES = 2;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(90);
 

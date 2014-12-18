@@ -80,8 +80,8 @@ public class ArcherClass extends PvPClass {
                 event.setDamage(0D);
             }
 
-            // The 'ShotFrom' metadata is applied in the deathmessage module.
-            Location shotFrom = (Location) arrow.getMetadata("ShotFrom").get(0);
+            // The 'ShotFromDistance' metadata is applied in the deathmessage module.
+            Location shotFrom = (Location) arrow.getMetadata("ShotFromDistance").get(0).value();
             double distance = shotFrom.distance(player.getLocation());
 
             DeathMessageHandler.addDamage(player, new ArrowTracker.ArrowDamageByPlayer(player.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));

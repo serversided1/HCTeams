@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.relic;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.relic.enums.Relic;
+import net.frozenorb.foxtrot.relic.listeners.RelicListener;
 import net.frozenorb.foxtrot.relic.tasks.RelicTask;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class RelicHandler implements Listener {
     public RelicHandler() {
         (new RelicTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 10 * 20);
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new RelicListener(), FoxtrotPlugin.getInstance());
     }
 
     public void updatePlayer(Player player) {
@@ -93,12 +96,24 @@ public class RelicHandler implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        updatePlayer(event.getPlayer());
+        new BukkitRunnable() {
+
+            public void run() {
+                updatePlayer(event.getPlayer());
+            }
+
+        }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
     }
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        updatePlayer(event.getPlayer());
+        new BukkitRunnable() {
+
+            public void run() {
+                updatePlayer(event.getPlayer());
+            }
+
+        }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
     }
 
     @EventHandler

@@ -1,47 +1,56 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class OffensiveBardClass extends BardClass implements Listener {
+public class OffensiveBardClass extends BaseBardClass implements Listener {
 
     public OffensiveBardClass() {
-        super("Offensive Bard", "GOLD_");
+        super("Bard", "GOLD_");
 
-        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20 * 5, 7));
-        BARD_CLICK_EFFECTS.put(Material.BLAZE_ROD, PotionEffectType.INCREASE_DAMAGE.createEffect(20 * 3, 0));
-        BARD_CLICK_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20 * 10, 5));
-        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, PotionEffectType.POISON.createEffect(20 * 2, 0));
-        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, PotionEffectType.WEAKNESS.createEffect(20 * 10, 0));
-        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, PotionEffectType.SLOW.createEffect(20 * 10, 0));
-        BARD_CLICK_EFFECTS.put(Material.RAW_FISH, PotionEffectType.WATER_BREATHING.createEffect(20 * 45, 0));
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, PotionEffectType.WITHER.createEffect(140, 0));
-        BARD_CLICK_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20 * 10, 3));
-        BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 45, 0));
-        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20 * 5, 1));
+        BARD_CLICK_EFFECTS.put(Material.RED_MUSHROOM, new PotionEffect(PotionEffectType.POISON, 20 * 2, 0));
+        BARD_CLICK_EFFECTS.put(Material.BROWN_MUSHROOM, new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 0));
+        BARD_CLICK_EFFECTS.put(Material.SLIME_BALL, new PotionEffect(PotionEffectType.SLOW, 20 * 10, 0));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new PotionEffect(PotionEffectType.WITHER, 140, 0));
+        BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1));
+        BARD_CLICK_EFFECTS.put(Material.SUGAR, new PotionEffect(PotionEffectType.SPEED, 20 * 6, 2));
+        BARD_CLICK_EFFECTS.put(Material.FEATHER, new PotionEffect(PotionEffectType.JUMP, 20 * 10, 5));
 
-        BARD_CLICK_EFFECTS.put(Material.SPECKLED_MELON, null);
-        BARD_CLICK_EFFECTS.put(Material.WHEAT, null);
-
-        BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, PotionEffectType.REGENERATION.createEffect(20*6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, PotionEffectType.FIRE_RESISTANCE.createEffect(20 * 6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, PotionEffectType.SPEED.createEffect(20*6, 1));
-        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, PotionEffectType.DAMAGE_RESISTANCE.createEffect(20*6, 0));
-        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, PotionEffectType.JUMP.createEffect(20*6, 1));
+        BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0));
+        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, new PotionEffect(PotionEffectType.SPEED, 20 * 6, 1));
+        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, new PotionEffect(PotionEffectType.JUMP, 20 * 6, 1));
     }
 
     @Override
-    public void giveCustomBardEffect(Player player, Material material) {
-        if (material == Material.SPECKLED_MELON) {
-            double add = 6.0;
-            player.setHealth(Math.min(player.getHealth() + add, player.getMaxHealth()));
-        } else if (material == Material.WHEAT) {
-            player.setFoodLevel(20);
-            player.setSaturation(player.getSaturation() + 14.4F);
+    public void apply(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
+    }
+
+    @Override
+    public void tick(Player player) {
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()))) {
+            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true);
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
         }
     }
 

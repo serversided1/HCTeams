@@ -170,6 +170,10 @@ public class CTFFlag {
         removeVisual();
 
         if (getState() == CTFFlagState.CAP_POINT) {
+            if (getAnchorItem() == null) {
+                setAnchorItem(spawnAnchorItem());
+            }
+
             updatePoleVisual();
             updateFlagVisual();
         } else {
@@ -202,12 +206,11 @@ public class CTFFlag {
             ItemStack itemStack = new ItemStack(POLE_MATERIAL, 1);
             ItemMeta itemMeta = itemStack.getItemMeta();
 
-            itemMeta.setDisplayName(FoxtrotPlugin.RANDOM.nextInt(100000) + "");
+            itemMeta.setDisplayName(ChatColor.RED + "no-pickup " + FoxtrotPlugin.RANDOM.nextInt(100000));
 
             itemStack.setItemMeta(itemMeta);
 
             pole[y] = anchorLocation.getWorld().dropItem(itemLoc, itemStack);
-            pole[y].setPickupDelay(Integer.MAX_VALUE);
 
             WorldServer nmsWorld = ((CraftWorld) itemLoc.getWorld()).getHandle();
             EntityWitherSkull witherSkull = new EntityWitherSkull(nmsWorld);
@@ -233,7 +236,7 @@ public class CTFFlag {
                 ItemStack itemStack = new ItemStack(FLAG_MATERIAL, 1, getColor().getDyeColor().getWoolData());
                 ItemMeta itemMeta = itemStack.getItemMeta();
 
-                itemMeta.setDisplayName(FoxtrotPlugin.RANDOM.nextInt(100000) + "");
+                itemMeta.setDisplayName(ChatColor.RED + "no-pickup " + FoxtrotPlugin.RANDOM.nextInt(100000));
 
                 itemStack.setItemMeta(itemMeta);
 

@@ -24,16 +24,19 @@ public class CTFAdminTPCommand {
             if (flag.getColor().getName().equalsIgnoreCase(location)) {
                 sender.teleport(flag.getLocation());
                 sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Teleported to the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + ".");
+                return;
             }
 
-            if (flag.getColor().getName().equalsIgnoreCase(location + "_cap")) {
+            if ((flag.getColor().getName() + "_cap").equalsIgnoreCase(location)) {
                 sender.teleport(flag.getCaptureLocation());
                 sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Teleported to the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + " capture location.");
+                return;
             }
 
-            if (flag.getColor().getName().equalsIgnoreCase(location + "_spawn")) {
+            if ((flag.getColor().getName() + "_spawn").equalsIgnoreCase(location)) {
                 sender.teleport(flag.getSpawnLocation());
                 sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Teleported to the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + " spawn location.");
+                return;
             }
         }
 

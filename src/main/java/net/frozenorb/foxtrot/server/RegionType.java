@@ -13,6 +13,10 @@ import org.bukkit.GameMode;
 public enum RegionType {
 
     SPAWN((event) -> {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return (true);
+        }
+
         if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             event.setTo(event.getFrom());

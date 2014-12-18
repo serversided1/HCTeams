@@ -62,7 +62,6 @@ public class CTFGame implements Listener {
 
         for (CTFFlag flag : getFlags().values()) {
             if (tick % 20 == 0) {
-                flag.removeVisual();
                 flag.updateVisual();
             }
 
@@ -88,6 +87,11 @@ public class CTFGame implements Listener {
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (event.getItem().getItemStack().hasItemMeta() && event.getItem().getItemStack().getItemMeta().hasDisplayName() && event.getItem().getItemStack().getItemMeta().getDisplayName().startsWith(ChatColor.RED + "no-pickup")) {
+            event.setCancelled(true);
+            return;
+        }
+
         for (CTFFlag flag : getFlags().values()) {
             if (flag.getAnchorItem() != null && flag.getAnchorItem().equals(event.getItem())) {
                 // Pickup the flag

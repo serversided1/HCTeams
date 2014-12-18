@@ -163,8 +163,8 @@ public interface ScoreGetter {
 
         @Override
         public int getSeconds(Player player) {
-            if (PvPClassHandler.getLastBardPositiveEffectUsage().containsKey(player.getName()) && PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = PvPClassHandler.getLastBardPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
+            if (PvPClassHandler.getLastBardNegativeEffectUsage().containsKey(player.getName()) && PvPClassHandler.getLastBardNegativeEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                long diff = PvPClassHandler.getLastBardNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);

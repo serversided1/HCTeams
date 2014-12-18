@@ -25,6 +25,8 @@ public class TeamCommand {
         sender.sendMessage(ChatColor.GRAY + "/t invite <player> - Invite a player to the team.");
         sender.sendMessage(ChatColor.GRAY + "/t sethq - Set the team HQ location.");
         sender.sendMessage(ChatColor.GRAY + "/t withdraw <amount> - Withdraw money from team balance.");
+        sender.sendMessage(ChatColor.GRAY + "/t ally [team] - sends a request to ally another team");
+        sender.sendMessage(ChatColor.GRAY + "/t unally [team] - unallies another team");
         sender.sendMessage("");
         sender.sendMessage(ChatColor.DARK_AQUA + "***Team Owner Only***");
         sender.sendMessage(ChatColor.GRAY + "/t promote - Promotes the targeted player to a captain.");

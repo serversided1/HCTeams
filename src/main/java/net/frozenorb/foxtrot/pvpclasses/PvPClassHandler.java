@@ -149,7 +149,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
     }
 
     public void startWarmup(Player player, PvPClass pvpClass) {
-        player.sendMessage("§aClass: §b" + pvpClass.getName() + "§a Enabled. Warm-up: §e" + pvpClass.getWarmup() + "s");
+        player.sendMessage("§aClass: §b" + pvpClass.getName() + "§a Equipped. Warm-up: §e" + pvpClass.getWarmup() + "s");
 
        PvPClassHandler.getWarmupTasks().put(player.getName(), new KitTask(player, pvpClass));
         PvPClassHandler.getWarmupTasks().get(player.getName()).runTaskTimer(FoxtrotPlugin.getInstance(), 20, 20);
@@ -181,7 +181,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 PvPClassHandler.getWarmupTasks().remove(player.getName());
 
                 player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
-                player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.BOLD + pvpClass.getSiteLink());
+                player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
                 cancel();
             }
         }
