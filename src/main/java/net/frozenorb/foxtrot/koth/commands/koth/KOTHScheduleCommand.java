@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class KOTHScheduleCommand {
 
-    @Command(names={ "KOTH Schedule" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH Schedule" }, permissionNode="")
     public static void kothSchedule(Player sender) {
         int sent = 0;
 

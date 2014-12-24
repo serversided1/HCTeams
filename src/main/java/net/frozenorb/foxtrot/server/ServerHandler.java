@@ -528,7 +528,7 @@ public class ServerHandler {
                 int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
                 amount = Integer.parseInt(sign.getLine(1));
 
-                pricePerItem = price / amount;
+                pricePerItem = (float) price / (float) amount;
             } catch (NumberFormatException e) {
                 return;
             }

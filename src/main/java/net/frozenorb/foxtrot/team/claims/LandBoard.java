@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team.claims;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
@@ -18,7 +19,7 @@ public class LandBoard {
 
     public LandBoard() {
         for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
-            buckets.put(world.getName(), HashMultimap.create());
+            buckets.put(world.getName(), Multimaps.synchronizedMultimap(HashMultimap.create()));
         }
     }
 
@@ -99,7 +100,7 @@ public class LandBoard {
                         Entry<Claim, Team> entry = claimIterator.next();
 
                         if (entry.getKey().equals(regionData.getKey())) {
-                            worldMap.remove(coordinateSet, entry);
+                            claimIterator.remove();
                         }
                     }
                 } else {

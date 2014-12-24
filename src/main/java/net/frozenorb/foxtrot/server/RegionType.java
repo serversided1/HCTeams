@@ -79,15 +79,6 @@ public enum RegionType {
     }),
 
     CLAIMED_LAND((event) -> {
-        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
-
-        if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
-            if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-                event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-            }
-        }
-
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
             event.setTo(event.getFrom());
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");

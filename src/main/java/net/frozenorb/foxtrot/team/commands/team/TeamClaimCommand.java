@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -67,7 +68,7 @@ public class TeamClaimCommand implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.getItemDrop().getItemStack().equals(SELECTION_WAND)) {
+        if (event.getItemDrop().getItemStack().equals(TeamClaimCommand.SELECTION_WAND) || event.getItemDrop().getItemStack().equals(TeamResizeCommand.SELECTION_WAND)) {
             VisualClaim visualClaim = VisualClaim.getVisualClaim(event.getPlayer().getName());
 
             if (visualClaim != null) {
@@ -75,14 +76,24 @@ public class TeamClaimCommand implements Listener {
                 visualClaim.cancel(false);
             }
 
-            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> event.getItemDrop().remove(), 1L);
+            event.getItemDrop().remove();
+        } else if (event.getItemDrop().getItemStack().equals(TeamSubclaimCommand.SELECTION_WAND)) {
+            event.getItemDrop().remove();
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamResizeCommand.SELECTION_WAND);
     }
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
         event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
         event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamResizeCommand.SELECTION_WAND);
     }
 
 }

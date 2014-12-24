@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.mBasic.Utilities.ItemDb;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -135,7 +136,13 @@ public class VisualClaim implements Listener {
 
                 if (!silent) {
                     for (Map.Entry<Map.Entry<Claim, Team>, Material> claim : sendMaps.entrySet()) {
-                        player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + claim.getKey().getKey().getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + claim.getKey().getValue().getName());
+                        Team team = claim.getKey().getValue();
+
+                        if (team.getOwner() == null) {
+                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + team.getName(player) + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName(player));
+                        } else {
+                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + claim.getKey().getKey().getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(claim.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName());
+                        }
                     }
                 }
 
@@ -232,8 +239,15 @@ public class VisualClaim implements Listener {
         Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         if (playerTeam == null) {
-            player.sendMessage(ChatColor.RED + "You have to be on a team to " + (type == VisualClaimType.CREATE ? "claim" : "resize") + " land!");
+            player.sendMessage(ChatColor.RED + "You have to be on a team to " + type.name().toLowerCase() + " land!");
             cancel(true);
+            return;
+        }
+
+        Map.Entry<Claim, Team> teamAtLocation = LandBoard.getInstance().getRegionData(clicked);
+
+        if (type == VisualClaimType.RESIZE && (teamAtLocation == null || !teamAtLocation.getValue().isMember(player)) && locationId == 1) {
+            player.sendMessage(ChatColor.RED + "To start the land resizing process, left click on the claim you'd like to resize.");
             return;
         }
 
@@ -253,7 +267,12 @@ public class VisualClaim implements Listener {
             this.corner2 = clicked;
         }
 
-        player.sendMessage(ChatColor.YELLOW + "Set claim's location " +ChatColor.LIGHT_PURPLE + locationId + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + clicked.getBlockX() + ", " + clicked.getBlockY() + ", " + clicked.getBlockZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
+        if (type == VisualClaimType.RESIZE && locationId == 1) {
+            player.sendMessage(ChatColor.YELLOW + "Selected claim " + ChatColor.LIGHT_PURPLE + teamAtLocation.getKey().getName() + ChatColor.YELLOW + " to resize.");
+        } else {
+            player.sendMessage(ChatColor.YELLOW + "Set claim's location " + ChatColor.LIGHT_PURPLE + locationId + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + clicked.getBlockX() + ", " + clicked.getBlockY() + ", " + clicked.getBlockZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
+        }
+
         FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> erectPillar(clicked, Material.EMERALD_BLOCK), 1L);
 
         int price = getPrice();
@@ -290,6 +309,7 @@ public class VisualClaim implements Listener {
 
         if (type == VisualClaimType.CREATE || type == VisualClaimType.RESIZE) {
             player.getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+            player.getInventory().remove(TeamResizeCommand.SELECTION_WAND);
         }
 
         HandlerList.unregisterAll(this);

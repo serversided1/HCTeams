@@ -8,20 +8,20 @@ import org.bukkit.potion.PotionEffect;
 public class BardEffect {
 
     @Getter private PotionEffect potionEffect;
-    @Getter private int mana;
+    @Getter private int energy;
     @Getter private String description;
 
     public BardEffect(PotionEffect potionEffect) {
         this(potionEffect, -1);
     }
 
-    public BardEffect(PotionEffect potionEffect, int mana) {
-        this(potionEffect, mana, WordUtils.capitalize(potionEffect.getType().getName().toLowerCase().replace("_", " ")) + " " + (potionEffect.getAmplifier() + 1) + ChatColor.WHITE + " (" + (potionEffect.getDuration() / 20) + "s)");
+    public BardEffect(PotionEffect potionEffect, int energy) {
+        this(potionEffect, energy, WordUtils.capitalize(potionEffect.getType().getName().toLowerCase().replace("_", " ")) + " " + (potionEffect.getAmplifier() + 1) + ChatColor.WHITE + " (" + (potionEffect.getDuration() / 20) + "s)");
     }
 
-    public BardEffect(PotionEffect potionEffect, int mana, String description) {
+    public BardEffect(PotionEffect potionEffect, int energy, String description) {
         this.potionEffect = potionEffect;
-        this.mana = mana;
+        this.energy = energy;
         this.description = ChatColor.YELLOW + description;
     }
 

@@ -155,17 +155,17 @@ public abstract class ScoreGetter {
 
     };
 
-    public static final ScoreGetter MANA = new ScoreGetter() {
+    public static final ScoreGetter ENERGY = new ScoreGetter() {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Mana");
+            return (ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Energy");
         }
 
         @Override
         public int getSeconds(Player player) {
-            if (BaseBardClass.getMana().containsKey(player.getName()) && BaseBardClass.getMana().get(player.getName()) > 0) {
-                return (BaseBardClass.getMana().get(player.getName()).intValue());
+            if (BaseBardClass.getEnergy().containsKey(player.getName()) && BaseBardClass.getEnergy().get(player.getName()) > 0) {
+                return (BaseBardClass.getEnergy().get(player.getName()).intValue());
             }
 
             return (NO_SCORE);
@@ -184,7 +184,7 @@ public abstract class ScoreGetter {
             SPAWN_TAG,
             ENDERPEARL,
             PVP_TIMER,
-            MANA,
+            ENERGY,
             ARCHER_MARK,
             BARD_BUFF
 

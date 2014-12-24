@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class KOTHCommand {
 
-    @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
     public static void kothSchedule(Player sender) {
         for (KOTH koth : KOTHHandler.getKOTHs()) {
             if (koth.isActive()) {

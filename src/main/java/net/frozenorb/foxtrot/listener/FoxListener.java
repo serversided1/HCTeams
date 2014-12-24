@@ -14,8 +14,6 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
@@ -169,9 +167,6 @@ public class FoxListener implements Listener {
     @SuppressWarnings("unchecked")
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
-
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName(), true);
 

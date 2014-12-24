@@ -28,12 +28,12 @@ public class BaseBardClass extends PvPClass {
     public final HashMap<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, BardEffect>();
 
     @Getter private static Map<String, Long> lastEffectUsage = new HashMap<>();
-    @Getter private static Map<String, Float> mana = new HashMap<>();
+    @Getter private static Map<String, Float> energy = new HashMap<>();
 
     public static final int BARD_RANGE = 20;
     public static final int EFFECT_COOLDOWN = 10 * 1000;
-    public static final float MAX_MANA = 100;
-    public static final float MANA_REGEN_PER_SECOND = 1;
+    public static final float MAX_ENERGY = 100;
+    public static final float ENERGY_REGEN_PER_SECOND = 1;
 
     public BaseBardClass(String name, String armorContains) {
         super(name, 15, armorContains, null);
@@ -46,20 +46,20 @@ public class BaseBardClass extends PvPClass {
                         continue;
                     }
 
-                    if (getMana().containsKey(player.getName())) {
-                        if (getMana().get(player.getName()) == MAX_MANA) {
+                    if (BaseBardClass.getEnergy().containsKey(player.getName())) {
+                        if (BaseBardClass.getEnergy().get(player.getName()) == MAX_ENERGY) {
                             continue;
                         }
 
-                        getMana().put(player.getName(), Math.min(MAX_MANA, getMana().get(player.getName()) + MANA_REGEN_PER_SECOND));
+                        BaseBardClass.getEnergy().put(player.getName(), Math.min(MAX_ENERGY, BaseBardClass.getEnergy().get(player.getName()) + ENERGY_REGEN_PER_SECOND));
                     } else {
-                        getMana().put(player.getName(), 0F);
+                        BaseBardClass.getEnergy().put(player.getName(), 0F);
                     }
 
-                    int manaInt = getMana().get(player.getName()).intValue();
+                    int manaInt = BaseBardClass.getEnergy().get(player.getName()).intValue();
 
                     if (manaInt % 10 == 0) {
-                        player.sendMessage(ChatColor.AQUA + getName() + " Mana: " + ChatColor.GREEN + manaInt);
+                        player.sendMessage(ChatColor.AQUA + getName() + " Energy: " + ChatColor.GREEN + manaInt);
                     }
                 }
             }
@@ -69,7 +69,7 @@ public class BaseBardClass extends PvPClass {
 
     @Override
     public void remove(Player player) {
-        getMana().remove(player.getName());
+        BaseBardClass.getEnergy().remove(player.getName());
     }
 
     // This purposely has no @EventHandler (called by subclasses)
@@ -95,12 +95,12 @@ public class BaseBardClass extends PvPClass {
 
         BardEffect bardEffect = BARD_CLICK_EFFECTS.get(event.getItem().getType());
 
-        if (bardEffect.getMana() > getMana().get(event.getPlayer().getName())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You do not have enough mana for this! You need " + bardEffect.getMana() + " mana, but you only have " + getMana().get(event.getPlayer().getName()).intValue());
+        if (bardEffect.getEnergy() > BaseBardClass.getEnergy().get(event.getPlayer().getName())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You do not have enough energy for this! You need " + bardEffect.getEnergy() + " energy, but you only have " + BaseBardClass.getEnergy().get(event.getPlayer().getName()).intValue());
             return;
         }
 
-        getMana().put(event.getPlayer().getName(), getMana().get(event.getPlayer().getName()) - bardEffect.getMana());
+        BaseBardClass.getEnergy().put(event.getPlayer().getName(), BaseBardClass.getEnergy().get(event.getPlayer().getName()) - bardEffect.getEnergy());
 
         boolean negative = bardEffect.getPotionEffect() != null && Arrays.asList(FoxListener.DEBUFFS).contains(bardEffect.getPotionEffect().getType());
 
@@ -137,14 +137,14 @@ public class BaseBardClass extends PvPClass {
         FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), new ItemMessage.ItemMessageGetter() {
 
             public String getMessage(Player player) {
-                if (!getMana().containsKey(player.getName())) {
+                if (!getEnergy().containsKey(player.getName())) {
                     return (ChatColor.RED + "Processing...");
                 }
 
-                if (getMana().get(player.getName()) >= bardEffect.getMana()) {
-                    return (ChatColor.GREEN.toString() + bardEffect.getMana() + " Mana " + ChatColor.WHITE + "| " + bardEffect.getDescription());
+                if (getEnergy().get(player.getName()) >= bardEffect.getEnergy()) {
+                    return (ChatColor.GREEN.toString() + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
                 } else {
-                    return (ChatColor.RED.toString() + getMana().get(player.getName()).intValue() + "/" + bardEffect.getMana() + " Mana " + ChatColor.WHITE + "| " + bardEffect.getDescription());
+                    return (ChatColor.RED.toString() + getEnergy().get(player.getName()).intValue() + "/" + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
                 }
             }
 
