@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.relic.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.relic.tasks.MinerRelicTask;
 import org.bukkit.ChatColor;
@@ -14,7 +13,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RelicListener implements Listener {
+
+    private Map<String, Long> lastLifesteal = new HashMap<String, Long>();
 
     public RelicListener() {
         (new MinerRelicTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
@@ -27,17 +31,23 @@ public class RelicListener implements Listener {
         }
 
         if (FoxtrotPlugin.getInstance().getRelicHandler().getTier((Player) event.getEntity(), Relic.FOOD_LOCK) != -1) {
-            event.setFoodLevel(20);
+            if (event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
+                event.setFoodLevel(20);
+            }
         }
     }
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player damager = (Player) event.getDamager();
             int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(damager, Relic.LIFESTEAL);
 
             if (tier != -1) {
+                if (lastLifesteal.containsKey(damager.getName()) && lastLifesteal.get(damager.getName()) + 1000 > System.currentTimeMillis()) {
+                    return;
+                }
+
                 float chance = 0F;
 
                 switch (tier) {
@@ -48,13 +58,15 @@ public class RelicListener implements Listener {
                         chance = 0.10F;
                         break;
                     case 3:
-                        chance = 0.20F;
+                        chance = 0.15F;
                         break;
                 }
 
                 if (FoxtrotPlugin.RANDOM.nextFloat() < chance) {
                     damager.setHealth(Math.min(damager.getHealth() + 1, damager.getMaxHealth()));
+                    ((Player) event.getEntity()).sendMessage(ChatColor.AQUA + damager.getName() + "'s life steal relic has healed them!");
                     damager.sendMessage(ChatColor.AQUA + "Your lifesteal relic has healed you!");
+                    lastLifesteal.put(damager.getName(), System.currentTimeMillis());
                 }
             }
         }

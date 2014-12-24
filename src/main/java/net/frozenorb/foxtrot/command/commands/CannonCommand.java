@@ -91,7 +91,6 @@ public class CannonCommand {
                     if (timer % 2 == 0) {
                         player.setVelocity(new Vector(0F, 1F, 0F));
                         player.playSound(player.getLocation(), Sound.EXPLODE, 1F, 1F);
-                        player.getWorld().createExplosion(player.getLocation(), 0F);
                     }
                 } else if (timer == 40) {
                     Block block = player.getWorld().getBlockAt(x, 200, z);
@@ -104,7 +103,7 @@ public class CannonCommand {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 4, 1));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 1000));
                 } else if (timer > 40) {
-                    if (player.isOnGround() || timer > 240) {
+                    if (player.isOnGround() || timer > 600) {
                         player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
                         cancel();
                     }

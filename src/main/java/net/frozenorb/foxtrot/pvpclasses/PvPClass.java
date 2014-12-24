@@ -1,11 +1,14 @@
 package net.frozenorb.foxtrot.pvpclasses;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
@@ -23,6 +26,11 @@ public abstract class PvPClass implements Listener {
         this.warmup = warmup;
         this.armorContains = armorContains;
         this.consumables = consumables;
+
+        // Reduce warmup on kit maps
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            this.warmup = 5;
+        }
     }
 
     public void apply(Player player) {
@@ -35,6 +43,10 @@ public abstract class PvPClass implements Listener {
 
     public void remove(Player player) {
 
+    }
+
+    public boolean canApply(Player player) {
+        return (true);
     }
 
     public static void removeInfiniteEffects(Player player) {
@@ -54,7 +66,7 @@ public abstract class PvPClass implements Listener {
                        armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
     }
 
-    public static void smartAddPotion(Player player, PotionEffect potionEffect) {
+    public static void smartAddPotion(Player player, PotionEffect potionEffect, boolean persistOldValues) {
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
             if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                 continue;
@@ -79,6 +91,22 @@ public abstract class PvPClass implements Listener {
             }
 
             break;
+        }
+
+        if (potionEffect.getType().equals(PotionEffectType.SPEED) && persistOldValues) {
+            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+                if (!activePotionEffect.getType().equals(potionEffect.getType())) {
+                    continue;
+                }
+
+                new BukkitRunnable() {
+
+                    public void run() {
+                        player.addPotionEffect(activePotionEffect);
+                    }
+
+                }.runTaskLater(FoxtrotPlugin.getInstance(), potionEffect.getDuration() + 1);
+            }
         }
 
         player.addPotionEffect(potionEffect, true);

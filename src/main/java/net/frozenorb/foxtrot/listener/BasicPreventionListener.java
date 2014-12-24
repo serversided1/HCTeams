@@ -76,10 +76,12 @@ public class BasicPreventionListener implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
             event.setCancelled(true);
+            return;
         }
 
         if (event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
-            if (FoxtrotPlugin.RANDOM.nextInt(100) > 30) {
+            // Make food drop 1/2 as fast if you have PvP protection
+            if (FoxtrotPlugin.RANDOM.nextInt(100) > (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getName()) ? 15 : 30)) {
                 event.setCancelled(true);
             }
         }

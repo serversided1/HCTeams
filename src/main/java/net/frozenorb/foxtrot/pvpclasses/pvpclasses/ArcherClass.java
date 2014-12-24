@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -31,7 +32,7 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
 
-    public static final int MARK_SECONDS = 6;
+    public static final int MARK_SECONDS = 10;
 
     private static Map<String, Long> lastSpeedUsage = new HashMap<String, Long>();
     @Getter private static Map<String, Long> markedPlayers = new HashMap<String, Long>();
@@ -43,12 +44,17 @@ public class ArcherClass extends PvPClass {
     @Override
     public void apply(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
     }
 
     @Override
     public void tick(Player player) {
         if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+        }
+
+        if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
         }
     }
 
@@ -67,12 +73,22 @@ public class ArcherClass extends PvPClass {
             }
 
             Player shooter = (Player) arrow.getShooter();
+            float pullback = arrow.getMetadata("Pullback").get(0).asFloat();
 
             if (!PvPClassHandler.hasKitOn(shooter, this)) {
                 return;
             }
 
-            int damage = 4; // 2 hearts
+            int damage = isMarked(player) ? 6 : 4; // Ternary for getting damage!
+
+            // Only do 2 hearts to other archers
+            if (PvPClassHandler.hasKitOn(player, this)) {
+                damage = 4; // 2 hearts
+            }
+
+            if (pullback < 0.5F) {
+                damage = 2; // 1 heart
+            }
 
             if (player.getHealth() - damage <= 0D) {
                 event.setCancelled(true);
@@ -87,18 +103,30 @@ public class ArcherClass extends PvPClass {
             DeathMessageHandler.addDamage(player, new ArrowTracker.ArrowDamageByPlayer(player.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));
             player.setHealth(Math.max(0D, player.getHealth() - damage));
 
-            shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.BLUE + "Marked player for " + MARK_SECONDS + " seconds.");
-            getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
+            if (PvPClassHandler.hasKitOn(player, this)) {
+                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Cannot mark other Archers. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + (damage == 2 ? "" : "s") + ")");
+            } else if (pullback >= 0.5F) {
+                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Marked player for " + MARK_SECONDS + " seconds. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + (damage == 2 ? "" : "s") + ")");
 
-            NametagManager.reloadPlayer(player);
-
-            new BukkitRunnable() {
-
-                public void run() {
-                    NametagManager.reloadPlayer(player);
+                // Only send the message if they're not already marked.
+                if (!isMarked(player)) {
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
                 }
 
-            }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 1);
+                getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
+
+                NametagManager.reloadPlayer(player);
+
+                new BukkitRunnable() {
+
+                    public void run() {
+                        NametagManager.reloadPlayer(player);
+                    }
+
+                }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 1);
+            } else {
+                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + (damage == 2 ? "" : "s") + ")");
+            }
         }
     }
 
@@ -107,11 +135,16 @@ public class ArcherClass extends PvPClass {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (ArcherClass.getMarkedPlayers().containsKey(player.getName()) && ArcherClass.getMarkedPlayers().get(player.getName()) > System.currentTimeMillis()) {
-                // Apply 150% damage if they're 'marked'
-                event.setDamage(event.getDamage() * 1.5D);
+            if (isMarked(player)) {
+                // Apply 125% damage if they're 'marked'
+                event.setDamage(event.getDamage() * 1.25D);
             }
         }
+    }
+
+    @EventHandler
+    public void onEntityShootBow(EntityShootBowEvent event) {
+        event.getProjectile().setMetadata("Pullback", new FixedMetadataValue(FoxtrotPlugin.getInstance(), event.getForce()));
     }
 
     @Override
@@ -127,6 +160,10 @@ public class ArcherClass extends PvPClass {
         lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
         return (true);
+    }
+
+    public static boolean isMarked(Player player) {
+        return (getMarkedPlayers().containsKey(player.getName()) && getMarkedPlayers().get(player.getName()) > System.currentTimeMillis());
     }
 
 }

@@ -51,7 +51,7 @@ public class FoxtrotBoard {
             } else {
                 displayedScores.add(title);
                 obj.getScore(title).setScore(nextVal);
-                getTeam(title, seconds).addEntry(title);
+                getTeam(title, seconds, getter.isRaw()).addEntry(title);
                 nextVal -= 1;
             }
         }
@@ -63,7 +63,7 @@ public class FoxtrotBoard {
         }
     }
 
-    private Team getTeam(String title, int seconds) {
+    private Team getTeam(String title, int seconds, boolean raw) {
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
@@ -71,7 +71,7 @@ public class FoxtrotBoard {
             team = obj.getScoreboard().registerNewTeam(name);
         }
 
-        String time = TimeUtils.getMMSS(seconds);
+        String time = raw ? String.valueOf(seconds) : TimeUtils.getMMSS(seconds);
 
         team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
 

@@ -56,6 +56,11 @@ public class RaffleHandler implements Listener {
     }
 
     public boolean giveRaffleAchievement(Player player, RaffleAchievement achievement) {
+        // The raffle system will never be active during kit maps
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return (false);
+        }
+
         // We don't have their data (we're likely async loading it at the moment)
         if (!getRaffleData().containsKey(player.getName())) {
             return (false);
@@ -138,6 +143,11 @@ public class RaffleHandler implements Listener {
     }
 
     public boolean giveRaffleAchievementProgress(Player player, RaffleAchievement achievement, int amount) {
+        // The raffle system will never be active during kit maps
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return (false);
+        }
+
         // We don't have their data (we're likely async loading it at the moment)
         if (!getRaffleData().containsKey(player.getName())) {
             return (false);

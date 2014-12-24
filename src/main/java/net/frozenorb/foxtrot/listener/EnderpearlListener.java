@@ -61,7 +61,21 @@ public class EnderpearlListener implements Listener {
             int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(shooter, Relic.PEARL_CDR);
 
             if (tier != -1) {
-                enderpearlCooldown.put(shooter.getName(), enderpearlCooldown.get(shooter.getName()) - (tier * 1000));
+                long reduction = 0;
+
+                switch (tier) {
+                    case 1:
+                        reduction = 500;
+                        break;
+                    case 2:
+                        reduction = 1000;
+                        break;
+                    case 3:
+                        reduction = 2000;
+                        break;
+                }
+
+                enderpearlCooldown.put(shooter.getName(), enderpearlCooldown.get(shooter.getName()) - reduction);
             }
         }
     }

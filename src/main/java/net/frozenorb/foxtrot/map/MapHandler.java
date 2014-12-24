@@ -21,6 +21,7 @@ import java.util.Map;
  */
 public class MapHandler {
 
+    @Getter private boolean kitMap;
     @Getter private String scoreboardTitle;
     @Getter private Map<Enchantment, Integer> maxEnchantments = new HashMap<Enchantment, Integer>();
     @Getter private double baseLootingMultiplier;
@@ -39,6 +40,7 @@ public class MapHandler {
                 BasicDBObject enchants = new BasicDBObject();
                 BasicDBObject looting = new BasicDBObject();
 
+                dbo.put("kitMap", false);
                 dbo.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
                 dbo.put("warzone", 1000);
                 dbo.put("border", 3000);
@@ -69,6 +71,7 @@ public class MapHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
 
             if (dbo != null) {
+                this.kitMap = dbo.getBoolean("kitMap", false);
                 this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbo.getString("scoreboardTitle"));
                 ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbo.getInt("border", 3000);

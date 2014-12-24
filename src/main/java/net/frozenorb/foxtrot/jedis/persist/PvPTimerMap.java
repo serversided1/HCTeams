@@ -55,7 +55,7 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     @Override
     public Long getValue(String player) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() || FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
             return (-1L);
         }
 

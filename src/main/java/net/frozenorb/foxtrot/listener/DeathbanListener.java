@@ -36,8 +36,6 @@ public class DeathbanListener implements Listener {
             long left = unbannedOn - System.currentTimeMillis();
 
             if (event.getPlayer().isOp()) {
-                // This is so staff (mostly Stimpay) can know when their 'natural' deathban will expire.
-                event.getPlayer().sendMessage(ChatColor.RED + "You would be deathbanned for another " + TimeUtils.getDurationBreakdown(left) + ".");
                 return;
             }
 
@@ -50,6 +48,11 @@ public class DeathbanListener implements Listener {
             int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getName());
             int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getName());
             int totalLives = soulboundLives + friendLives + transferableLives;
+
+            if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". Lives cannot be used on kit maps.");
+                return;
+            }
 
             if (lastJoinedRevive.containsKey(event.getPlayer().getName()) && (System.currentTimeMillis() - lastJoinedRevive.get(event.getPlayer().getName())) < 1000 * 20) {
                 if (totalLives > 0) {

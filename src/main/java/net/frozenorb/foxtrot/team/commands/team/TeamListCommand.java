@@ -54,7 +54,7 @@ public class TeamListCommand {
         int index = 0;
 
         sender.sendMessage(Team.GRAY_LINE);
-        sender.sendMessage(ChatColor.BLUE + "Faction List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
+        sender.sendMessage(ChatColor.BLUE + "Team List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
 
         for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
             index++;
@@ -71,7 +71,7 @@ public class TeamListCommand {
         }
 
         sender.sendMessage(ChatColor.GRAY + "You are currently on " + ChatColor.WHITE + "Page " + page + "/" + maxPages + ChatColor.GRAY + ".");
-        sender.sendMessage(ChatColor.GRAY + "To view other pages, use " + ChatColor.YELLOW + "/f list <page#>" + ChatColor.GRAY + ".");
+        sender.sendMessage(ChatColor.GRAY + "To view other pages, use " + ChatColor.YELLOW + "/t list <page#>" + ChatColor.GRAY + ".");
         sender.sendMessage(Team.GRAY_LINE);
     }
 

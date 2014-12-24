@@ -7,13 +7,15 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
 
 @SuppressWarnings({ "deprecation", "unchecked" })
 public class PacketBorder {
@@ -108,7 +110,7 @@ public class PacketBorder {
                     if (claimTeamEntry.getValue().getOwner() == null) {
                         if (claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.DENY_REENTRY) && !claimTeamEntry.getKey().contains(player)) {
                             border.addClaim(claimTeamEntry.getKey().clone());
-                        } else if (claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                        } else if (!claimTeamEntry.getKey().contains(player) && claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
                             border.addClaim(claimTeamEntry.getKey().clone());
                         } else if ((claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.KOTH) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || claimTeamEntry.getValue().hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                             border.addClaim(claimTeamEntry.getKey().clone());
@@ -138,10 +140,6 @@ public class PacketBorder {
         public void run() {
             while (true) {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (!player.isOp()) {
-                        continue;
-                    }
-
                     checkPlayer(player);
                 }
 

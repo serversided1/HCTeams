@@ -143,7 +143,11 @@ public class InvUtils {
 
         lore.add(ChatColor.BLUE + "Relic");
         lore.add("");
-        lore.add(ChatColor.WHITE + relic.getDescription());
+
+        for (String description : relic.getDescription()) {
+            lore.add(ChatColor.WHITE + description);
+        }
+
         lore.add("");
         lore.add(ChatColor.AQUA + "Tier: " + ChatColor.GRAY + "[" + tier + "]");
         lore.add(ChatColor.AQUA + "Source: " + ChatColor.GRAY + "[" + obtainedFrom + "]");
@@ -186,7 +190,7 @@ public class InvUtils {
     }
 
     public static int getRelicTier(ItemStack item) {
-        return (Integer.valueOf(getLoreDataAlternate(item, 4)));
+        return (Integer.valueOf(getLoreDataAlternate(item, -2)));
     }
 
     public static Relic getRelicType(ItemStack item) {
@@ -218,6 +222,10 @@ public class InvUtils {
 
     public static String getLoreDataAlternate(ItemStack item, int index) {
         List<String> lore = item.getItemMeta().getLore();
+
+        if (index < 0) {
+            index = lore.size() + index;
+        }
 
         if (index < lore.size()) {
             String str = ChatColor.stripColor(lore.get(index));

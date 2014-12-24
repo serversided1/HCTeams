@@ -61,8 +61,8 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
-        // Cut buying price in half
-        curPrice /= 2;
+        // Multiple price by 0.8 (requested by @itsjhalt)
+        curPrice *= 0.8F;
 
         if (buying && team != null) {
             curPrice += 500 * team.getClaims().size();

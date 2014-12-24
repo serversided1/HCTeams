@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -14,23 +16,60 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class BaseBardClass extends PvPClass {
 
-    public final HashMap<Material, PotionEffect> BARD_CLICK_EFFECTS = new HashMap<Material, PotionEffect>();
-    public final HashMap<Material, PotionEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, PotionEffect>();
+    public final HashMap<Material, BardEffect> BARD_CLICK_EFFECTS = new HashMap<Material, BardEffect>();
+    public final HashMap<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, BardEffect>();
+
+    @Getter private static Map<String, Long> lastEffectUsage = new HashMap<>();
+    @Getter private static Map<String, Float> mana = new HashMap<>();
 
     public static final int BARD_RANGE = 20;
+    public static final int EFFECT_COOLDOWN = 10 * 1000;
+    public static final float MAX_MANA = 100;
+    public static final float MANA_REGEN_PER_SECOND = 1;
 
     public BaseBardClass(String name, String armorContains) {
         super(name, 15, armorContains, null);
+
+        new BukkitRunnable() {
+
+            public void run() {
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this)) {
+                        continue;
+                    }
+
+                    if (getMana().containsKey(player.getName())) {
+                        if (getMana().get(player.getName()) == MAX_MANA) {
+                            continue;
+                        }
+
+                        getMana().put(player.getName(), Math.min(MAX_MANA, getMana().get(player.getName()) + MANA_REGEN_PER_SECOND));
+                    } else {
+                        getMana().put(player.getName(), 0F);
+                    }
+
+                    int manaInt = getMana().get(player.getName()).intValue();
+
+                    if (manaInt % 10 == 0) {
+                        player.sendMessage(ChatColor.AQUA + getName() + " Mana: " + ChatColor.GREEN + manaInt);
+                    }
+                }
+            }
+
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 15L, 20L);
+    }
+
+    @Override
+    public void remove(Player player) {
+        getMana().remove(player.getName());
     }
 
     // This purposely has no @EventHandler (called by subclasses)
@@ -40,42 +79,40 @@ public class BaseBardClass extends PvPClass {
         }
 
         if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Bard effects cannot be used while in spawn.");
+            event.getPlayer().sendMessage(ChatColor.RED + getName() + " effects cannot be used while in spawn.");
             return;
         }
 
-        boolean negative = BARD_CLICK_EFFECTS.get(event.getItem().getType()) != null && Arrays.asList(FoxListener.DEBUFFS).contains(BARD_CLICK_EFFECTS.get(event.getItem().getType()).getType());
+        if (getLastEffectUsage().containsKey(event.getPlayer().getName()) && getLastEffectUsage().get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            long millisLeft = getLastEffectUsage().get(event.getPlayer().getName()) - System.currentTimeMillis();
+
+            double value = (millisLeft / 1000D);
+            double sec = Math.round(10.0 * value) / 10.0;
+
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
+            return;
+        }
+
+        BardEffect bardEffect = BARD_CLICK_EFFECTS.get(event.getItem().getType());
+
+        if (bardEffect.getMana() > getMana().get(event.getPlayer().getName())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You do not have enough mana for this! You need " + bardEffect.getMana() + " mana, but you only have " + getMana().get(event.getPlayer().getName()).intValue());
+            return;
+        }
+
+        getMana().put(event.getPlayer().getName(), getMana().get(event.getPlayer().getName()) - bardEffect.getMana());
+
+        boolean negative = bardEffect.getPotionEffect() != null && Arrays.asList(FoxListener.DEBUFFS).contains(bardEffect.getPotionEffect().getType());
 
         if (negative) {
-            if (PvPClassHandler.getLastBardNegativeEffectUsage().containsKey(event.getPlayer().getName()) && PvPClassHandler.getLastBardNegativeEffectUsage().get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = PvPClassHandler.getLastBardNegativeEffectUsage().get(event.getPlayer().getName()) - System.currentTimeMillis();
-
-                double value = (millisLeft / 1000D);
-                double sec = Math.round(10.0 * value) / 10.0;
-
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
-                return;
-            }
-
-            PvPClassHandler.getLastBardPositiveEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         } else {
-            if (PvPClassHandler.getLastBardPositiveEffectUsage().containsKey(event.getPlayer().getName()) && PvPClassHandler.getLastBardPositiveEffectUsage().get(event.getPlayer().getName()) > System.currentTimeMillis() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-                long millisLeft = PvPClassHandler.getLastBardPositiveEffectUsage().get(event.getPlayer().getName()) - System.currentTimeMillis();
-
-                double value = (millisLeft / 1000D);
-                double sec = Math.round(10.0 * value) / 10.0;
-
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
-                return;
-            }
-
-            PvPClassHandler.getLastBardPositiveEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + (1000L * 60));
             ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
         }
 
+        getLastEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + EFFECT_COOLDOWN);
         SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 60 : 30);
-        giveBardEffect(event.getPlayer(), BARD_CLICK_EFFECTS.get(event.getItem().getType()), !negative);
+        giveBardEffect(event.getPlayer(), bardEffect, !negative, true);
 
         if (event.getItem().getType() != Material.FEATHER) {
             if (event.getPlayer().getItemInHand().getAmount() == 1) {
@@ -87,14 +124,41 @@ public class BaseBardClass extends PvPClass {
         }
     }
 
-    public void giveBardEffect(Player source, PotionEffect potionEffect, boolean friendly) {
+    // This purposely has no @EventHandler (called by subclasses)
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        /*ItemStack held = event.getPlayer().getInventory().getItem(event.getNewSlot());
+
+        if (held == null || !BARD_CLICK_EFFECTS.containsKey(held.getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
+            return;
+        }
+
+        BardEffect bardEffect = BARD_CLICK_EFFECTS.get(held.getType());
+
+        FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), new ItemMessage.ItemMessageGetter() {
+
+            public String getMessage(Player player) {
+                if (!getMana().containsKey(player.getName())) {
+                    return (ChatColor.RED + "Processing...");
+                }
+
+                if (getMana().get(player.getName()) >= bardEffect.getMana()) {
+                    return (ChatColor.GREEN.toString() + bardEffect.getMana() + " Mana " + ChatColor.WHITE + "| " + bardEffect.getDescription());
+                } else {
+                    return (ChatColor.RED.toString() + getMana().get(player.getName()).intValue() + "/" + bardEffect.getMana() + " Mana " + ChatColor.WHITE + "| " + bardEffect.getDescription());
+                }
+            }
+
+        }, event.getNewSlot());*/
+    }
+
+    public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
             if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
             }
 
-            if (potionEffect != null) {
-                smartAddPotion(player, potionEffect);
+            if (bardEffect.getPotionEffect() != null) {
+                smartAddPotion(player, bardEffect.getPotionEffect(), persistOldValues);
             } else {
                 Material material = source.getItemInHand().getType();
                 giveCustomBardEffect(player, material);
@@ -110,7 +174,8 @@ public class BaseBardClass extends PvPClass {
         List<Player> valid = new ArrayList<Player>();
         Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
-        for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE, BARD_RANGE)) {
+        // We divide by 2 so that the range isn't as much on the Y level (and can't be abused by standing on top of / under events)
+        for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE / 2, BARD_RANGE)) {
             if (entity instanceof Player) {
                 Player nearbyPlayer = (Player) entity;
 

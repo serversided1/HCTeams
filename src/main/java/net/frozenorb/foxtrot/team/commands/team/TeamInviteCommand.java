@@ -40,10 +40,10 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (team.isRaidable()) {
+        /*if (team.isRaidable()) {
             sender.sendMessage(ChatColor.RED + "You may not invite players while your team is raidable!");
             return;
-        }
+        }*/
 
         FactionActionTracker.logAction(team, "actions", "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(target.getName());

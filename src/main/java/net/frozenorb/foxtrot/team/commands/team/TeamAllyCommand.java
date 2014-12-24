@@ -25,22 +25,22 @@ public class TeamAllyCommand {
         }
 
         if (senderTeam.equals(targetTeam)) {
-            sender.sendMessage(ChatColor.RED + "You cannot ally your own team!");
+            sender.sendMessage(ChatColor.YELLOW + "You cannot ally your own team!");
             return;
         }
 
         if (senderTeam.getAllies().size() >= Team.MAX_ALLIES) {
-            sender.sendMessage(ChatColor.RED + "Your team already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
+            sender.sendMessage(ChatColor.YELLOW + "Your team already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
             return;
         }
 
         if (targetTeam.getAllies().size() >= Team.MAX_ALLIES) {
-            sender.sendMessage(ChatColor.RED + "The team you're trying to ally already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
+            sender.sendMessage(ChatColor.YELLOW + "The team you're trying to ally already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
             return;
         }
 
         if (senderTeam.isAlly(targetTeam)) {
-            sender.sendMessage(ChatColor.RED + "You're already allied to " + targetTeam.getName(sender) + ".");
+            sender.sendMessage(ChatColor.YELLOW + "You're already allied to " + targetTeam.getName(sender) + ChatColor.YELLOW + ".");
             return;
         }
 

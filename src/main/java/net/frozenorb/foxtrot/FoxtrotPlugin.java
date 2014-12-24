@@ -31,6 +31,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -57,7 +58,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     public static final Random RANDOM = new Random();
 
-    private JedisPool jedisPool;
+    @Getter private ItemMessage itemMessage;
+
+    @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
 
     @Getter private PvPClassHandler pvpClassHandler;
@@ -118,6 +121,8 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupHandlers();
         setupPersistence();
         setupListeners();
+
+        itemMessage = new ItemMessage();
 
         Calendar date = Calendar.getInstance();
 

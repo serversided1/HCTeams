@@ -6,15 +6,15 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LandBoard {
 
     private static LandBoard instance;
-    private final Map<String, Multimap<CoordinateSet, Entry<Claim, Team>>> buckets = new HashMap<String, Multimap<CoordinateSet, Entry<Claim, Team>>>();
+    private final Map<String, Multimap<CoordinateSet, Entry<Claim, Team>>> buckets = new ConcurrentHashMap<String, Multimap<CoordinateSet, Entry<Claim, Team>>>();
 
     public LandBoard() {
         for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {

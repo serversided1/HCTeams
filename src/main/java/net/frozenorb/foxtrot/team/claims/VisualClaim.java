@@ -92,6 +92,16 @@ public class VisualClaim implements Listener {
 
         switch (type) {
             case CREATE:
+                // Don't allow claiming during a kit map
+                if (!bypass && FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+                    if (!silent) {
+                        player.sendMessage(ChatColor.RED + "Land claiming is disabled during kit maps");
+                    }
+
+                    cancel(true);
+                    return;
+                }
+
                 player.sendMessage(ChatColor.GOLD + "Team land claim started.");
                 player.sendMessage(ChatColor.YELLOW + "Left click at a corner of the land you'd like to claim.");
                 player.sendMessage(ChatColor.YELLOW + "Right click on the second corner of the land you'd like to claim.");

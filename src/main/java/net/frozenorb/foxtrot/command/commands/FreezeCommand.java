@@ -129,6 +129,11 @@ public class FreezeCommand {
             double radius = Double.parseDouble(args[0]);
             Set<Player> freeze = new HashSet<>();
 
+            if (radius > 256) {
+                sender.sendMessage(ChatColor.RED + "Too big of a radius! Use /freezeserver for large freeze operations.");
+                return;
+            }
+
             for (Entity nearby : ((Player) sender).getNearbyEntities(radius, 256, radius)) {
                 if (nearby instanceof Player) {
                     Player p = (Player) nearby;

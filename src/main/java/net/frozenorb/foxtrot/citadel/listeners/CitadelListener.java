@@ -91,7 +91,7 @@ public class CitadelListener implements Listener {
         Chest chest = (Chest) blockState;
         Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
-        if (team.getOwner() != null) {
+        if (team == null || team.getOwner() != null) {
             return;
         }
 

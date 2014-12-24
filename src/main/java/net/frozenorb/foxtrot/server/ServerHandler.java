@@ -405,6 +405,10 @@ public class ServerHandler {
             }
         }
 
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return ((int) TimeUnit.SECONDS.toSeconds(10));
+        }
+
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
         long max = TimeUnit.HOURS.toSeconds(24);
         long ban;
@@ -460,7 +464,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 150;
+        int radius = 75;
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
@@ -579,9 +583,10 @@ public class ServerHandler {
 
                 player.getInventory().addItem(InvUtils.generateRelic(relic, tier, "Spawn Shop"));
                 player.updateInventory();
+                FoxtrotPlugin.getInstance().getRelicHandler().updatePlayer(player);
 
                 showSignPacket(player, sign,
-                        "§aBOUGHT§r relic",
+                        "§aBOUGHT",
                         "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
                         "New Balance:",
                         "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
