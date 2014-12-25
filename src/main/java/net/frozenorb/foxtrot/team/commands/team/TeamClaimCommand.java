@@ -73,7 +73,7 @@ public class TeamClaimCommand implements Listener {
 
             if (visualClaim != null) {
                 event.setCancelled(true);
-                visualClaim.cancel(false);
+                visualClaim.cancel();
             }
 
             event.getItemDrop().remove();

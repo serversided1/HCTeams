@@ -24,7 +24,7 @@ public class TeamUnclaimCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getName()) || team.isCaptain(team.getName()))) {
+        if (!(team.isOwner(sender.getName()) || team.isCaptain(sender.getName()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }

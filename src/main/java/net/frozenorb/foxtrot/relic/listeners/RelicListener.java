@@ -58,12 +58,12 @@ public class RelicListener implements Listener {
                         chance = 0.10F;
                         break;
                     case 3:
-                        chance = 0.15F;
+                        chance = 0.10F;
                         break;
                 }
 
                 if (FoxtrotPlugin.RANDOM.nextFloat() < chance) {
-                    damager.setHealth(Math.min(damager.getHealth() + 1, damager.getMaxHealth()));
+                    damager.setHealth(Math.min(damager.getHealth() + (tier == 3 ? 2 : 1), damager.getMaxHealth()));
                     ((Player) event.getEntity()).sendMessage(ChatColor.AQUA + damager.getName() + "'s life steal relic has healed them!");
                     damager.sendMessage(ChatColor.AQUA + "Your lifesteal relic has healed you!");
                     lastLifesteal.put(damager.getName(), System.currentTimeMillis());

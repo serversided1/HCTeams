@@ -56,7 +56,7 @@ public class TeamCreateCommand {
                 // Raffle
                 FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(sender, RaffleAchievement.MAKING_FRIENDS);
 
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§Team §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eTeam §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {
                 sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             }

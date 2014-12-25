@@ -21,9 +21,13 @@ public class TeamSetHQCommand {
         }
 
         if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
-            if (LandBoard.getInstance().getTeam(sender.getLocation()) != team && !sender.isOp()) {
-                sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
-                return;
+            if (LandBoard.getInstance().getTeam(sender.getLocation()) != team) {
+                if (!sender.isOp()) {
+                    sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
+                    return;
+                } else {
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check  is being bypassed due to your rank.");
+                }
             }
 
             team.setHQ(sender.getLocation());
