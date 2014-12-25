@@ -49,8 +49,7 @@ public class TeamChatCommand {
 
             switch (chatMode) {
                 case PUBLIC:
-                    //setChat(player, ChatMode.ALLIANCE);
-                    setChat(player, ChatMode.TEAM);
+                    setChat(player, ChatMode.ALLIANCE);
                     break;
                 case ALLIANCE:
                     setChat(player, ChatMode.TEAM);

@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.nametag;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
@@ -58,9 +59,14 @@ public class NametagManager {
                 teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
             } else if (team.isAlly(refreshFor.getName())) {
                 teamInfo = getOrCreate(ChatColor.LIGHT_PURPLE.toString(), "");
+            } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+                teamInfo = getOrCreate(ChatColor.RED.toString(), "");
             }
+        } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+            teamInfo = getOrCreate(ChatColor.RED.toString(), "");
         }
 
+        // You always see yourself as green, even if you're not on a team.
         if (refreshFor == toRefresh) {
             teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
         }

@@ -82,11 +82,15 @@ public class CommandRegistrar {
 
     public void register() {
         loadCommandsFromPackage("net.frozenorb.foxtrot.command");
+        loadCommandsFromPackage("net.frozenorb.foxtrot.deathmessage");
         loadCommandsFromPackage("net.frozenorb.foxtrot.koth");
         loadCommandsFromPackage("net.frozenorb.foxtrot.server");
         loadCommandsFromPackage("net.frozenorb.foxtrot.team");
         loadCommandsFromPackage("net.frozenorb.foxtrot.citadel");
         loadCommandsFromPackage("net.frozenorb.foxtrot.imagemessage");
+        loadCommandsFromPackage("net.frozenorb.foxtrot.raffle");
+        loadCommandsFromPackage("net.frozenorb.foxtrot.relic");
+        loadCommandsFromPackage("net.frozenorb.foxtrot.ctf");
     }
 
 }

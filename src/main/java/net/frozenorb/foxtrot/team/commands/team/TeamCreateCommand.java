@@ -4,8 +4,8 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
-import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -53,7 +53,10 @@ public class TeamCreateCommand {
                 FoxtrotPlugin.getInstance().getTeamHandler().addTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);
 
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eFaction §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
+                // Raffle
+                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(sender, RaffleAchievement.MAKING_FRIENDS);
+
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eTeam §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {
                 sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             }

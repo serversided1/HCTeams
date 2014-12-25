@@ -19,29 +19,26 @@ public class TeamPromoteCommand {
             return;
         }
 
-        if (team.isOwner(sender.getName()) || sender.isOp()) {
-            if (team.isMember(target.getName())) {
-                if (team.isCaptain(target.getName())) {
-                    sender.sendMessage(ChatColor.RED + "That player is already a Captain!");
-                    return;
-                }
-
-                if (team.isOwner(target.getName())) {
-                    sender.sendMessage(ChatColor.RED + "You can only promote team members!");
-                    return;
-                }
-
-                for (Player player : team.getOnlineMembers()) {
-                    player.sendMessage(ChatColor.DARK_AQUA + target.getName() + " has been made a Captain!");
-                }
-
-                team.addCaptain(target.getName());
-            } else {
-                sender.sendMessage(ChatColor.DARK_AQUA + "Player is not on your team.");
-            }
-        } else {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team leaders can do this.");
+        if (!team.isOwner(sender.getName())) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team owners can do this.");
+            return;
         }
+
+        if (!team.isMember(target.getName())) {
+            sender.sendMessage(ChatColor.DARK_AQUA + target.getName() + " is not on your team.");
+            return;
+        }
+
+        if (team.isCaptain(target.getName())) {
+            sender.sendMessage(ChatColor.RED + target.getName() + " is already a captain!");
+            return;
+        }
+
+        for (Player player : team.getOnlineMembers()) {
+            player.sendMessage(ChatColor.DARK_AQUA + team.getActualPlayerName(target.getName()) + " has been promoted to Captain!");
+        }
+
+        team.addCaptain(target.getName());
     }
 
 }

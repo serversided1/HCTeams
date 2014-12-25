@@ -2,24 +2,24 @@ package net.frozenorb.foxtrot.team.claims;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LandBoard {
 
     private static LandBoard instance;
-    private Map<Claim, Team> boardMap = new HashMap<Claim, Team>();
-    //private final Map<String, Multimap<CoordinateSet, Entry<Claim, Team>>> buckets = new HashMap<String, Multimap<CoordinateSet, Entry<Claim, Team>>>();
+    private final Map<String, Multimap<CoordinateSet, Entry<Claim, Team>>> buckets = new ConcurrentHashMap<String, Multimap<CoordinateSet, Entry<Claim, Team>>>();
 
     public LandBoard() {
         for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
-            //buckets.put(world.getName(), HashMultimap.create());
+            buckets.put(world.getName(), Multimaps.synchronizedMultimap(HashMultimap.create()));
         }
     }
 
@@ -40,7 +40,7 @@ public class LandBoard {
 
     public Set<Entry<Claim, Team>> getRegionData(Location min, Location max) {
         Set<Entry<Claim, Team>> regions = new HashSet<Entry<Claim, Team>>();
-        /*int step = 1 << CoordinateSet.BITS;
+        int step = 1 << CoordinateSet.BITS;
 
         for (int x = min.getBlockX(); x < max.getBlockX() + step; x += step) {
             for (int z = min.getBlockZ(); z < max.getBlockZ() + step; z += step) {
@@ -59,35 +59,15 @@ public class LandBoard {
                     }
                 }
             }
-        }*/
-
-        for (Entry<Claim, Team> regionEntry : boardMap.entrySet()) {
-            if (!regions.contains(regionEntry)) {
-                if (max.getWorld().getName().equals(regionEntry.getKey().getWorld())
-                        && (max.getBlockX() >= regionEntry.getKey().getX1())
-                        && (min.getBlockX() <= regionEntry.getKey().getX2())
-                        && (max.getBlockZ() >= regionEntry.getKey().getZ1())
-                        && (min.getBlockZ() <= regionEntry.getKey().getZ2())
-                        && (max.getBlockY() >= regionEntry.getKey().getY1())
-                        && (min.getBlockY() <= regionEntry.getKey().getY2())) {
-                    regions.add(regionEntry);
-                }
-            }
         }
 
         return (regions);
     }
 
     public Entry<Claim, Team> getRegionData(Location location) {
-        /*for (Entry<Claim, Team> data : buckets.get(location.getWorld().getName()).get(new CoordinateSet(location.getBlockX(), location.getBlockZ()))) {
+        for (Entry<Claim, Team> data : buckets.get(location.getWorld().getName()).get(new CoordinateSet(location.getBlockX(), location.getBlockZ()))) {
             if (data.getKey().contains(location)) {
                 return (data);
-            }
-        }*/
-
-        for (Entry<Claim, Team> entry : boardMap.entrySet()) {
-            if (entry.getKey().contains(location)) {
-                return (entry);
             }
         }
 
@@ -105,7 +85,7 @@ public class LandBoard {
     }
 
     public void setTeamAt(Claim claim, Team team) {
-        /*Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<Claim, Team>(claim, team);
+        Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<Claim, Team>(claim, team);
         int step = 1 << CoordinateSet.BITS;
 
         for (int x = regionData.getKey().getX1(); x < regionData.getKey().getX2() + step; x += step) {
@@ -120,19 +100,13 @@ public class LandBoard {
                         Entry<Claim, Team> entry = claimIterator.next();
 
                         if (entry.getKey().equals(regionData.getKey())) {
-                            worldMap.remove(coordinateSet, entry);
+                            claimIterator.remove();
                         }
                     }
                 } else {
                     worldMap.put(new CoordinateSet(x, z), regionData);
                 }
             }
-        }*/
-
-        if (team == null) {
-            boardMap.remove(claim);
-        } else {
-            boardMap.put(claim, team);
         }
 
         updateClaim(claim);

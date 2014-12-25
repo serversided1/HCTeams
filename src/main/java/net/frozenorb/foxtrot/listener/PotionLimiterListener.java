@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -73,7 +74,7 @@ public class PotionLimiterListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
-        /*if (event.isCancelled()) {
+        if (event.isCancelled()) {
             return;
         }
 
@@ -104,17 +105,12 @@ public class PotionLimiterListener implements Listener {
                         continue;
                     }
 
-                    if (FoxtrotPlugin.getInstance().getServerHandler().isBannedPotion(result)) {
-                        player.getInventory().addItem(itemStack);
-                        brewerInventory.setIngredient(new ItemStack(Material.AIR));
-
-                        player.sendMessage(ChatColor.RED + "You cannot brew this potion!");
-                        return;
-                    }
+                    // Raffle
+                    FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(player, RaffleAchievement.BREAKING_BAD);
                 }
 
             }
-        }, 1);*/
+        }, 1);
     }
 
 }

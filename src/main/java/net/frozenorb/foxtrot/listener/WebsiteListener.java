@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.mShared.Utilities.Utilities;
 import org.bukkit.Material;
@@ -12,8 +13,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -103,20 +106,39 @@ public class WebsiteListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().getMongoPool().getDB("hcteams").getCollection("deaths").insert(playerDeath);
+                FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
             }
 
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        switch (event.getBlock().getType()) {
+            case DIAMOND_ORE:
+            case GOLD_ORE:
+            case IRON_ORE:
+            case COAL_ORE:
+            case REDSTONE_ORE:
+            case GLOWING_REDSTONE_ORE:
+            case LAPIS_ORE:
+            case EMERALD_ORE:
+                event.getBlock().setMetadata("PlacedByPlayer", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                break;
+        }
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH))) {
+        if ((event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH)) || event.getBlock().hasMetadata("PlacedByPlayer")) {
             return;
         }
 
         switch (event.getBlock().getType()) {
             case DIAMOND_ORE:
+                // Raffle
+                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getPlayer(), RaffleAchievement.DIAMOND_HUNTER, 1);
+
                 FoxtrotPlugin.getInstance().getDiamondMinedMap().setMined(event.getPlayer().getName(), FoxtrotPlugin.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getName()) + 1);
                 break;
             case GOLD_ORE:

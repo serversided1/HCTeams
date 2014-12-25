@@ -61,8 +61,8 @@ public class Claim implements Iterable<Coordinate> {
             }
         }
 
-        // Cut buying price in half
-        curPrice /= 2;
+        // Multiple price by 0.8 (requested by @itsjhalt)
+        curPrice *= 0.8F;
 
         if (buying && team != null) {
             curPrice += 500 * team.getClaims().size();
@@ -183,6 +183,15 @@ public class Claim implements Iterable<Coordinate> {
 
     public boolean isWithin(int x, int z, int radius, String world) {
         return (outset(CuboidDirection.Both, radius).contains(x, z, world));
+    }
+
+    public void setLocations(Location loc1, Location loc2) {
+        this.x1 = Math.min(loc1.getBlockX(), loc2.getBlockX());
+        this.x2 = Math.max(loc1.getBlockX(), loc2.getBlockX());
+        this.y1 = Math.min(loc1.getBlockY(), loc2.getBlockY());
+        this.y2 = Math.max(loc1.getBlockY(), loc2.getBlockY());
+        this.z1 = Math.min(loc1.getBlockZ(), loc2.getBlockZ());
+        this.z2 = Math.max(loc1.getBlockZ(), loc2.getBlockZ());
     }
 
     public Location[] getCornerLocations() {

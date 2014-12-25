@@ -3,8 +3,8 @@ package net.frozenorb.foxtrot.pvpclasses;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.HealerClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,19 +28,17 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class PvPClassHandler extends BukkitRunnable implements Listener {
 
-    @Getter private static Map<String, KitTask> warmupTasks = new HashMap<String, KitTask>();
     @Getter private static Map<String, PvPClass> equippedKits = new HashMap<String, PvPClass>();
-
     @Getter List<PvPClass> pvpClasses = new ArrayList<PvPClass>();
 
     public PvPClassHandler() {
         pvpClasses.add(new ArcherClass());
+        pvpClasses.add(new RogueClass());
         pvpClasses.add(new BardClass());
-        pvpClasses.add(new MinerClass());
-        //pvpClasses.add(new RogueClass());
+        pvpClasses.add(new HealerClass());
 
-        for (PvPClass pvPClass : pvpClasses) {
-            FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvPClass, FoxtrotPlugin.getInstance());
+        for (PvPClass pvpClass : pvpClasses) {
+            FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvpClass, FoxtrotPlugin.getInstance());
         }
 
         FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskTimer(FoxtrotPlugin.getInstance(), this, 2L, 2L);
@@ -50,16 +48,6 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
     @Override
     public void run() {
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            // Cancel kit warmup if the player took off armor
-            if (warmupTasks.containsKey(player.getName())) {
-                PvPClass trying = warmupTasks.get(player.getName()).getPvpClass();
-
-                if (!trying.qualifies(player.getInventory())) {
-                    warmupTasks.get(player.getName()).cancel();
-                    warmupTasks.remove(player.getName());
-                }
-            }
-
             // Remove kit if player took off armor, otherwise .tick();
             if (equippedKits.containsKey(player.getName())) {
                 PvPClass equippedPvPClass = equippedKits.get(player.getName());
@@ -68,25 +56,22 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                     equippedKits.remove(player.getName());
                     player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.RED + "Disabled!");
                     equippedPvPClass.remove(player);
+                    PvPClass.removeInfiniteEffects(player);
                 } else {
                     equippedPvPClass.tick(player);
                 }
-            }
+            } else {
+                // Start kit warmup
+                for (PvPClass pvpClass : pvpClasses) {
+                    if (pvpClass.qualifies(player.getInventory())) {
+                        if (pvpClass.canApply(player)) {
+                            pvpClass.apply(player);
+                            PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
 
-            // Start kit warmup
-            for (PvPClass pvPClass : pvpClasses) {
-                if (pvPClass.qualifies(player.getInventory())) {
-                    // If they're already warming up
-                    if (warmupTasks.containsKey(player.getName()) && warmupTasks.get(player.getName()).getPvpClass() == pvPClass) {
-                        continue;
+                            player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
+                            player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
+                        }
                     }
-
-                    // If they have the kit equipped
-                    if (equippedKits.containsKey(player.getName()) && equippedKits.get(player.getName()) == pvPClass) {
-                        continue;
-                    }
-
-                    startWarmup(player, pvPClass);
                 }
             }
         }
@@ -143,45 +128,6 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 event.getPlayer().removePotionEffect(potionEffect.getType());
             }
         }
-    }
-
-    public void startWarmup(Player player, PvPClass pvpClass) {
-        player.sendMessage("§aClass: §b" + pvpClass.getName() + "§a Enabled. Warm-up: §e" + pvpClass.getWarmup() + "s");
-
-       PvPClassHandler.getWarmupTasks().put(player.getName(), new KitTask(player, pvpClass));
-        PvPClassHandler.getWarmupTasks().get(player.getName()).runTaskTimer(FoxtrotPlugin.getInstance(), 20, 20);
-    }
-
-    public static class KitTask extends BukkitRunnable {
-
-        Player player;
-        @Getter PvPClass pvpClass;
-        @Getter long time;
-
-        public KitTask(Player player, PvPClass pvpClass) {
-            this.player = player;
-            this.pvpClass = pvpClass;
-            this.time = System.currentTimeMillis() + (pvpClass.getWarmup() * 1000L);
-        }
-
-        @Override
-        public void run() {
-            if (!player.isOnline()) {
-                cancel();
-                PvPClassHandler.getWarmupTasks().remove(player.getName());
-            }
-
-            if (System.currentTimeMillis() >= time) {
-                pvpClass.apply(player);
-
-                PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
-                PvPClassHandler.getWarmupTasks().remove(player.getName());
-
-                player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
-                cancel();
-            }
-        }
-
     }
 
 }

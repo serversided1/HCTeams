@@ -27,12 +27,11 @@ public class RegenCommand {
         }
 
         sender.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of §d" + target.getMaxDTR() + "§e.");
-        sender.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + Team.DTR_FORMAT.format(target.getDTRIncrement().doubleValue() * 60) + "/hr§e.");
+        sender.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + Team.DTR_FORMAT.format(target.getDTRIncrement() * 60) + "/hr§e.");
         sender.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + (hrsToRegain(target) == -1 ? "Infinity" : hrsToRegain(target)) + "§eh to fully gain all DTR.");
 
-        if (target.getRaidableCooldown() > System.currentTimeMillis() || target.getDeathCooldown() > System.currentTimeMillis()) {
-            long till = Math.max(target.getRaidableCooldown(), target.getDeathCooldown());
-            sender.sendMessage(ChatColor.YELLOW + "Your team is on DTR cooldown for §d" + TimeUtils.getDurationBreakdown(till - System.currentTimeMillis()) + "§e.");
+        if (target.getDTRCooldown() > System.currentTimeMillis()) {
+            sender.sendMessage(ChatColor.YELLOW + "Your team is on DTR cooldown for §d" + TimeUtils.getDurationBreakdown(target.getDTRCooldown() - System.currentTimeMillis()) + "§e.");
         }
     }
 
@@ -40,12 +39,13 @@ public class RegenCommand {
         double cur = team.getDTR();
         double max = team.getMaxDTR();
         double diff = max - cur;
+        double dtrIncrement = team.getDTRIncrement();
 
-        if (team.getDTRIncrement().doubleValue() == 0) {
+        if (dtrIncrement == 0D) {
             return (-1);
         }
 
-        double required = diff / team.getDTRIncrement().doubleValue();
+        double required = diff / dtrIncrement;
         double h = required / 60D;
 
         return (Math.round(10.0 * h) / 10.0);

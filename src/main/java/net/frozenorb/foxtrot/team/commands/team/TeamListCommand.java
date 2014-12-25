@@ -4,12 +4,10 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.Map;
 
 /**
  * Created by macguy8 on 11/2/2014.
@@ -23,8 +21,9 @@ public class TeamListCommand {
             return;
         }
 
-        HashMap<Team, Integer> teamPlayerCount = new HashMap<Team, Integer>();
+        Map<Team, Integer> teamPlayerCount = new HashMap<Team, Integer>();
 
+        // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (player.hasMetadata("invisible")) {
                 continue;
@@ -51,12 +50,11 @@ public class TeamListCommand {
 
         LinkedHashMap<Team, Integer> sortedTeamPlayerCount = sortByValues(teamPlayerCount);
 
-        String gray = "§7§m" + StringUtils.repeat("-", 53);
         int start = (page - 1) * 10;
         int index = 0;
 
-        sender.sendMessage(gray);
-        sender.sendMessage(ChatColor.BLUE + "Faction List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
+        sender.sendMessage(Team.GRAY_LINE);
+        sender.sendMessage(ChatColor.BLUE + "Team List " +  ChatColor.GRAY + "(Page " + page + "/" + maxPages + ")");
 
         for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
             index++;
@@ -73,11 +71,11 @@ public class TeamListCommand {
         }
 
         sender.sendMessage(ChatColor.GRAY + "You are currently on " + ChatColor.WHITE + "Page " + page + "/" + maxPages + ChatColor.GRAY + ".");
-        sender.sendMessage(ChatColor.GRAY + "To view other pages, use " + ChatColor.YELLOW + "/f list <page#>" + ChatColor.GRAY + ".");
-        sender.sendMessage(gray);
+        sender.sendMessage(ChatColor.GRAY + "To view other pages, use " + ChatColor.YELLOW + "/t list <page#>" + ChatColor.GRAY + ".");
+        sender.sendMessage(Team.GRAY_LINE);
     }
 
-    private static LinkedHashMap<Team, Integer> sortByValues(HashMap<Team, Integer> map) {
+    private static LinkedHashMap<Team, Integer> sortByValues(Map<Team, Integer> map) {
         LinkedList<java.util.Map.Entry<Team, Integer>> list = new LinkedList<>(map.entrySet());
 
         Collections.sort(list, new Comparator<Map.Entry<Team, Integer>>() {

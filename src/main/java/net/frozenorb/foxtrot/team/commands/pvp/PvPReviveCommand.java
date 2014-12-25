@@ -3,12 +3,10 @@ package net.frozenorb.foxtrot.team.commands.pvp;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/6/2014.
@@ -45,6 +43,8 @@ public class PvPReviveCommand {
             sender.sendMessage(ChatColor.YELLOW + "You have revived " + ChatColor.GREEN + target.getName() + ChatColor.YELLOW + " with a friend life!");
         }
 
+        // Raffle
+        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(sender, RaffleAchievement.GUARDIAN_ANGEL);
         FoxtrotPlugin.getInstance().getDeathbanMap().revive(target.getName());
     }
 

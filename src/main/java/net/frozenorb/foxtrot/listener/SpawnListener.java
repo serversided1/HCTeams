@@ -113,7 +113,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
+        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
             event.setCancelled(true);
         }
     }
@@ -137,7 +137,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
+        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
             event.setCancelled(true);
         }
     }

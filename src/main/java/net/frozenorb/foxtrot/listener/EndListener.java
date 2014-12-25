@@ -1,6 +1,9 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
@@ -13,9 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -47,6 +48,9 @@ public class EndListener implements Listener {
             for (int i = 0; i < 6; i++) {
                 Bukkit.broadcastMessage("");
             }
+
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getEntity().getKiller(), RaffleAchievement.DRAGON_SLAYER, 1);
 
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
@@ -117,6 +121,31 @@ public class EndListener implements Listener {
         }
     }
 
+
+    // Disallow bucket usage
+    @EventHandler
+    public void onPlayerBukkitEmpty(PlayerBucketEmptyEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    // Disallow bucket usage
+    @EventHandler
+    public void onPlayerBucketFill(PlayerBucketFillEvent event) {
+        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (event.getPlayer().isOp() && event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
     // Fix end spawning (for some reason it doesn't use the world's spawn location)
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
@@ -163,6 +192,19 @@ public class EndListener implements Listener {
                 }
             }
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
+            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
+                        event.setCancelled(true);
+
+                        if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                            event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot go to the end while carrying the flag.");
+                            msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                        }
+                    }
+                }
+            }
+
             // Don't let players enter the end while combat tagged
             if (SpawnTagHandler.isTagged(event.getPlayer())) {
                 event.setCancelled(true);

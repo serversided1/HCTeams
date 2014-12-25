@@ -9,9 +9,7 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
-import net.frozenorb.foxtrot.tasks.HourlyScheduleTask;
-import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
@@ -22,15 +20,25 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.raffle.RaffleHandler;
+import net.frozenorb.foxtrot.relic.RelicHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.tasks.HourlyScheduleTask;
 import net.frozenorb.foxtrot.team.TeamHandler;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
@@ -38,6 +46,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +58,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     public static final Random RANDOM = new Random();
 
-    private JedisPool jedisPool;
+    @Getter private ItemMessage itemMessage;
+
+    @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
 
     @Getter private PvPClassHandler pvpClassHandler;
@@ -58,6 +69,9 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private MapHandler mapHandler;
     @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
+    @Getter private RaffleHandler raffleHandler;
+    @Getter private RelicHandler relicHandler;
+    @Getter private CTFHandler CTFHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -108,6 +122,8 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupPersistence();
         setupListeners();
 
+        itemMessage = new ItemMessage();
+
         Calendar date = Calendar.getInstance();
 
         date.set(Calendar.MINUTE, 60);
@@ -139,6 +155,21 @@ public class FoxtrotPlugin extends JavaPlugin {
             }
 
         });
+
+        // NEXT MAP
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+
+        // Clear old recipe
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+
+            if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
+                recipeIterator.remove();
+            }
+        }
+
+        // and add ours in.
+        getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
     }
 
     @Override
@@ -198,6 +229,9 @@ public class FoxtrotPlugin extends JavaPlugin {
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
+        raffleHandler = new RaffleHandler();
+        relicHandler = new RelicHandler();
+        CTFHandler = new CTFHandler();
 
         KOTHHandler.init();
         CommandHandler.init();

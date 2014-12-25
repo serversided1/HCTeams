@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
@@ -13,6 +13,10 @@ import org.bukkit.GameMode;
 public enum RegionType {
 
     SPAWN((event) -> {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+            return (true);
+        }
+
         if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
             event.setTo(event.getFrom());
@@ -75,15 +79,6 @@ public enum RegionType {
     }),
 
     CLAIMED_LAND((event) -> {
-        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
-
-        if (ownerTo == null || !ownerTo.isMember(event.getPlayer())) {
-            if (event.getPlayer().getInventory().contains(TeamSubclaimCommand.SELECTION_WAND)) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot have the subclaim wand in other teams' claims!");
-                event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-            }
-        }
-
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
             event.setTo(event.getFrom());
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");

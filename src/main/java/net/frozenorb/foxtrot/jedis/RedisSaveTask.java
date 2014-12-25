@@ -2,15 +2,9 @@ package net.frozenorb.foxtrot.jedis;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.imagemessage.ImageMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 public class RedisSaveTask extends BukkitRunnable {
 
@@ -19,7 +13,8 @@ public class RedisSaveTask extends BukkitRunnable {
     }
 
     public static int save(boolean forceAll) {
-        System.out.println("Saving teams to Jedis...");
+        System.out.println("Saving teams to Redis...");
+        FoxtrotPlugin.getInstance().sendOPMessage(ChatColor.DARK_PURPLE + "Saving teams to Redis...");
 
         JedisCommand<Integer> jdc = new JedisCommand<Integer>() {
 
@@ -44,32 +39,7 @@ public class RedisSaveTask extends BukkitRunnable {
         int time = (int) (System.currentTimeMillis() - startMs);
 
         System.out.println("Saved " + teamsSaved + " teams to Redis in " + time + "ms.");
-        Map<String, String> dealtWith = new HashMap<String, String>();
-        Set<String> errors = new HashSet<String>();
-
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            for (String member : team.getMembers()) {
-                if (dealtWith.containsKey(member) && !errors.contains(member)) {
-                    errors.add(member);
-                    continue;
-                }
-
-                dealtWith.put(member, team.getName());
-            }
-        }
-
-        try {
-            new ImageMessage("redis-saved").appendText(
-                    "",
-                    "",
-                    ChatColor.DARK_PURPLE + "Saved all teams to Redis.",
-                    ChatColor.DARK_AQUA + "Teams: " + ChatColor.WHITE + teamsSaved,
-                    ChatColor.DARK_AQUA + "Elapsed: " + ChatColor.WHITE + time + "ms",
-                    ChatColor.DARK_AQUA + "Errors: " + ChatColor.WHITE + errors.size()
-            ).sendOPs();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        FoxtrotPlugin.getInstance().sendOPMessage(ChatColor.DARK_PURPLE + "Saved " + teamsSaved + " teams to Redis in " + time + "ms.");
 
         return (teamsSaved);
     }

@@ -8,24 +8,25 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
+import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
-import net.minecraft.server.v1_7_R3.PacketPlayOutUpdateSign;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Cow;
 import org.bukkit.entity.Entity;
@@ -310,12 +311,12 @@ public class ServerHandler {
 
             if (inClaim != null) {
                 if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from an enemy's claim!");
+                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim!");
                     return;
                 }
 
                 if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your faction headquarters from inside of events!");
+                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
                     return;
                 }
             }
@@ -329,8 +330,11 @@ public class ServerHandler {
         player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");
         tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
 
+        // Raffle
+        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.BIG_SPENDER, 1);
+
         FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
-        player.teleport(team.getHq());
+        player.teleport(team.getHQ());
     }
 
     public boolean isUnclaimed(Location loc) {
@@ -350,8 +354,20 @@ public class ServerHandler {
         return (owner == null || owner.isRaidable());
     }
 
-    public float getDTRLossAt(Location loc) {
-        Team ownerTo = LandBoard.getInstance().getTeam(loc);
+    public float getDTRLoss(Player player) {
+        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
+                    return (0F);
+                }
+            }
+        }
+
+        return (getDTRLoss(player.getLocation()));
+    }
+
+    public float getDTRLoss(Location location) {
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.HALF_DTR_LOSS)) {
@@ -362,12 +378,24 @@ public class ServerHandler {
         return (1F);
     }
 
-    public int getDeathBanAt(String playerName, Location loc) {
+    public int getDeathban(Player player) {
+        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
+                    return ((int) TimeUnit.SECONDS.toSeconds(10));
+                }
+            }
+        }
+
+        return (getDeathban(player.getName(), player.getLocation()));
+    }
+
+    public int getDeathban(String playerName, Location location) {
         if (isPreEOTW()) {
             return ((int) TimeUnit.DAYS.toSeconds(1000));
         }
 
-        Team ownerTo = LandBoard.getInstance().getTeam(loc);
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {
@@ -375,6 +403,10 @@ public class ServerHandler {
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN)) {
                 return ((int) TimeUnit.MINUTES.toSeconds(15));
             }
+        }
+
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return ((int) TimeUnit.SECONDS.toSeconds(10));
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
@@ -432,7 +464,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 150;
+        int radius = 75;
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
@@ -496,7 +528,7 @@ public class ServerHandler {
                 int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
                 amount = Integer.parseInt(sign.getLine(1));
 
-                pricePerItem = price / amount;
+                pricePerItem = (float) price / (float) amount;
             } catch (NumberFormatException e) {
                 return;
             }
@@ -515,6 +547,8 @@ public class ServerHandler {
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 
+                // Raffle
+                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.TRUMP, totalPrice);
                 Basic.get().getEconomyManager().depositPlayer(player.getName(), totalPrice);
 
                 showSignPacket(player, sign,
@@ -524,6 +558,126 @@ public class ServerHandler {
                         "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
                 );
             }
+        }
+    }
+
+    public void handleRelicSign(Sign sign, Player player) {
+        Relic relic = Relic.parse(sign.getLine(1));
+        int tier  = Integer.parseInt(sign.getLine(2).replace("Tier ", ""));
+        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+
+        if (relic == null) {
+            showSignPacket(player, sign,
+                    "§c§lError",
+                    "",
+                    "Unknown",
+                    "relic"
+            );
+
+            return;
+        }
+
+        if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
+            if (player.getInventory().firstEmpty() != -1) {
+                Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
+
+                player.getInventory().addItem(InvUtils.generateRelic(relic, tier, "Spawn Shop"));
+                player.updateInventory();
+                FoxtrotPlugin.getInstance().getRelicHandler().updatePlayer(player);
+
+                showSignPacket(player, sign,
+                        "§aBOUGHT",
+                        "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
+                        "New Balance:",
+                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+                );
+            } else {
+                showSignPacket(player, sign,
+                        "§c§lError!",
+                        "",
+                        "§cNo space",
+                        "§cin inventory!"
+                );
+            }
+        } else {
+            showSignPacket(player, sign,
+                    "§cInsufficient",
+                    "§cfunds for",
+                    sign.getLine(1) + " DTR",
+                    "regen mult."
+            );
+        }
+    }
+
+    public void handleDTRRegenSign(Sign sign, Player player) {
+        float mult = Float.valueOf(sign.getLine(1).toLowerCase().replace("x", ""));
+        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+
+        if (playerTeam == null) {
+            showSignPacket(player, sign,
+                    "§c§lError",
+                    "",
+                    "Not on",
+                    "a team"
+            );
+
+            return;
+        }
+
+        if (playerTeam.getBalance() >= price) {
+            if (playerTeam.isRaidable()) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team is",
+                        "raidable"
+                );
+
+                return;
+            }
+
+            if (playerTeam.getDTR() == playerTeam.getMaxDTR()) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team is",
+                        "at max DTR"
+                );
+
+                return;
+            }
+
+            if (playerTeam.getDtrRegenMultiplier() != 1F) {
+                showSignPacket(player, sign,
+                        "§c§lError",
+                        "",
+                        "Team already",
+                        "has multiplier"
+                );
+
+                return;
+            }
+
+            playerTeam.setBalance(playerTeam.getBalance() - price);
+            playerTeam.setDtrRegenMultiplier(mult);
+            playerTeam.setDTRCooldown(System.currentTimeMillis());
+
+            showSignPacket(player, sign,
+                    "§aStarted DTR",
+                    "regen (" + mult + "x)",
+                    "New Balance:",
+                    "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+            );
+
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLUE + playerTeam.getName() + ChatColor.YELLOW + " has spent " + ChatColor.GOLD + "$" + price + ChatColor.YELLOW + " and started DTR regeneration at a rate of " + ChatColor.GOLD + mult + "x" + ChatColor.YELLOW + "!");
+        } else {
+            showSignPacket(player, sign,
+                    "§cInsufficient",
+                    "§cfunds for",
+                    sign.getLine(1) + " DTR",
+                    "regen mult."
+            );
         }
     }
 

@@ -42,7 +42,7 @@ public class ArrowTracker implements Listener {
                 if (a.getShooter() instanceof Player) {
                     Player shooter = (Player) a.getShooter();
 
-                    for (MetadataValue value : a.getMetadata("ShotFrom")) {
+                    for (MetadataValue value : a.getMetadata("ShotFromDistance")) {
                         Location shotFrom = (Location) value.value();
                         double distance = shotFrom.distance(event.getPlayer().getLocation());
                         event.setTrackerDamage(new ArrowDamageByPlayer(event.getPlayer().getName(), event.getDamage(), shooter.getName(), shotFrom, distance));

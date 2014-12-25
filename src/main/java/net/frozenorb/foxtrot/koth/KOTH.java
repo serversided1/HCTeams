@@ -20,11 +20,7 @@ import java.util.List;
  */
 public class KOTH {
 
-    //***************************//
-
     public static String LAST_ACTIVE_KOTH = "";
-
-    //***************************//
 
     @SerializedName("Name")
     @Getter private String name;
@@ -42,8 +38,6 @@ public class KOTH {
     @Getter private transient int remainingCapTime;
     @Getter @Setter private transient int level;
 
-    //***************************//
-
     public KOTH(String name, Location location) {
         this.name = name;
         this.capLocation = location.toVector().toBlockVector();
@@ -55,8 +49,6 @@ public class KOTH {
         KOTHHandler.getKOTHs().add(this);
         KOTHHandler.saveKOTHs();
     }
-
-    //***************************//
 
     public void setLocation(Location location) {
         this.capLocation = location.toVector().toBlockVector();
@@ -71,6 +63,11 @@ public class KOTH {
 
     public void setCapTime(int capTime) {
         this.capTime = capTime;
+
+        if (this.remainingCapTime > this.capTime) {
+            this.capTime = capTime;
+        }
+
         KOTHHandler.saveKOTHs();
     }
 
@@ -125,6 +122,7 @@ public class KOTH {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
+            resetCapTime();
             return (false);
         }
 
@@ -163,7 +161,7 @@ public class KOTH {
             List<Player> onCap = new ArrayList<Player>();
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (onCap(player) && !player.isDead() && player.getGameMode() != GameMode.CREATIVE) {
+                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
                     onCap.add(player);
                 }
             }

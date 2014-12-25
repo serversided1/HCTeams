@@ -1,14 +1,11 @@
 package net.frozenorb.foxtrot.command.objects;
 
 import net.frozenorb.foxtrot.command.CommandHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import org.spigotmc.CustomTimingsHandler;
 
 import java.util.*;
 
@@ -17,26 +14,17 @@ import java.util.*;
  */
 public class TwixCommandMap extends SimpleCommandMap {
 
-    private CustomTimingsHandler foxTabComplete = new CustomTimingsHandler("Foxtrot - CH Command Tab Complete");
-
     public TwixCommandMap(Server server) {
         super(server);
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine) {
-        foxTabComplete.startTiming();
+        if (!(sender instanceof Player)) {
+            return (null);
+        }
 
         try {
-            if (cmdLine.equals("/") || cmdLine.equals("/ ")) {
-                return (null);
-            }
-
-            if (!(sender instanceof Player)) {
-                sender.sendMessage(ChatColor.RED + "Tab completion only works from in-game. Sorry!");
-                return (null);
-            }
-
             Player player = (Player) sender;
             int spaceIndex = cmdLine.indexOf(' ');
             Set<String> completions = new HashSet<String>();
@@ -54,11 +42,11 @@ public class TwixCommandMap extends SimpleCommandMap {
                         split = alias;
                     }
 
-                    if (split.toLowerCase().startsWith(cmdLine) || (split + " ").toLowerCase().startsWith(cmdLine)) {
+                    if (StringUtil.startsWithIgnoreCase(split.trim(), cmdLine.trim()) || StringUtil.startsWithIgnoreCase(cmdLine.trim(), split.trim())) {
                         if (spaceIndex == -1 && cmdLine.length() < alias.length()) {
                             // Complete the command
                             completions.add("/" + split.toLowerCase());
-                        } else if (cmdLine.toLowerCase().startsWith(split.toLowerCase()) && cmdLine.endsWith(" ") && command.getParameters().size() != 0) {
+                        } else if (cmdLine.toLowerCase().startsWith(alias.toLowerCase() + " ") && command.getParameters().size() > 0) {
                             // Complete the params
                             int paramIndex = (cmdLine.split(" ").length - alias.split(" ").length);
 
@@ -80,7 +68,8 @@ public class TwixCommandMap extends SimpleCommandMap {
 
                             break CommandLoop;
                         } else {
-                            String[] splitString = split.toLowerCase().split(" ");
+                            String halfSplitString = split.toLowerCase().replaceFirst(alias.split(" ")[0].toLowerCase(), "").trim();
+                            String[] splitString = halfSplitString.split(" ");
                             completions.add(splitString[splitString.length - 1].trim());
                         }
                     }
@@ -90,18 +79,27 @@ public class TwixCommandMap extends SimpleCommandMap {
             List<String> completionList = new ArrayList<String>(completions);
             List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine);
 
-            if (vanillaCompletionList != null) {
-                for (String vanillaCompletion : vanillaCompletionList) {
-                    completionList.add(vanillaCompletion);
-                }
+            if (vanillaCompletionList == null) {
+                vanillaCompletionList = new ArrayList<String>();
             }
+
+            for (String vanillaCompletion : vanillaCompletionList) {
+                completionList.add(vanillaCompletion);
+            }
+
+            completionList.sort(new Comparator<String>() {
+
+                @Override
+                public int compare(String o1, String o2) {
+                    return (o2.length() - o1.length());
+                }
+
+            });
 
             return (completionList);
         } catch (Exception e) {
             e.printStackTrace();
             return (new ArrayList<String>());
-        } finally {
-            foxTabComplete.stopTiming();
         }
     }
 

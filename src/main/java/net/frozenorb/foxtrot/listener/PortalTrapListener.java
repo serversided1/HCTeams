@@ -1,14 +1,21 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -32,21 +39,24 @@ public class PortalTrapListener implements Listener {
                 return;
             }
 
+            // Going to the overworld
             /*new BukkitRunnable() {
 
                 public void run() {
                     Block portalBlock = event.getPlayer().getLocation().getBlock();
                     boolean northSouth;
 
-                    if (portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL) {
-                        northSouth = true;
-                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
+                    if (portalBlock.getData() == (byte) 1 || portalBlock.getData() == (byte) 2) {
                         northSouth = false;
+                    } else if (portalBlock.getData() == (byte) 0) {
+                        northSouth = true;
                     } else {
                         return;
                     }
 
-                    if (!northSouth) {
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.DARK_AQUA + "North/South: " + ChatColor.WHITE + northSouth);
+
+                    if (northSouth) {
                         for (int y = 0; y < 3; y++) {
                             portalBlock.getRelative(BlockFace.NORTH).getLocation().clone().add(0, y, 0).getBlock().setType(Material.AIR);
                             portalBlock.getRelative(BlockFace.NORTH).getLocation().clone().add(-1, y, 0).getBlock().setType(Material.AIR);
@@ -61,25 +71,36 @@ public class PortalTrapListener implements Listener {
                             portalBlock.getRelative(BlockFace.EAST).getLocation().clone().add(0, y, -1).getBlock().setType(Material.AIR);
                         }
                     }
-
-                    Bukkit.broadcastMessage(event.getPlayer().getName() + ChatColor.DARK_AQUA + " That portal is facing north/south? " + northSouth);
                 }
 
             }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);*/
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
+            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
+                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
+                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
+                        event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot go to the nether while carrying the flag.");
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+
+            // Going to the nether.
             /*new BukkitRunnable() {
 
                 public void run() {
                     Block portalBlock = event.getPlayer().getLocation().getBlock();
                     boolean northSouth;
 
-                    if (portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.NORTH).getType() == Material.PORTAL) {
-                        northSouth = true;
-                    } else if (portalBlock.getRelative(BlockFace.WEST).getType() == Material.PORTAL || portalBlock.getRelative(BlockFace.EAST).getType() == Material.PORTAL) {
+                    if (portalBlock.getData() == (byte) 1 || portalBlock.getData() == (byte) 2) {
                         northSouth = false;
+                    } else if (portalBlock.getData() == (byte) 0) {
+                        northSouth = true;
                     } else {
                         return;
                     }
+
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.DARK_AQUA + "North/South: " + ChatColor.WHITE + northSouth);
 
                     portalBlock = portalBlock.getRelative(BlockFace.DOWN);
 
@@ -90,7 +111,7 @@ public class PortalTrapListener implements Listener {
                                     continue;
                                 }
 
-                                for (int y = 0; y < 4; y++) {
+                                for (int y = 0; y < 5; y++) {
                                     portalBlock.getLocation().clone().add(x, y, z).getBlock().setType(y == 0 ? Material.OBSIDIAN : Material.AIR);
                                 }
                             }
@@ -108,8 +129,6 @@ public class PortalTrapListener implements Listener {
                             }
                         }
                     }
-
-                    Bukkit.broadcastMessage(event.getPlayer().getName() + ChatColor.DARK_AQUA + " That portal is facing north/south? " + northSouth);
                 }
 
             }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);*/

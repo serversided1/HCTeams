@@ -3,19 +3,18 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.EntityLightning;
@@ -45,13 +44,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.spigotmc.CustomTimingsHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -153,6 +150,12 @@ public class FoxListener implements Listener {
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
             pmeRegionNotifyBM.stopTiming();
 
+            // Don't display non-deathbans during EOTW.
+            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                fromReduceDeathban = false;
+                toReduceDeathban = false;
+            }
+
             String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
             String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
 
@@ -164,9 +167,6 @@ public class FoxListener implements Listener {
     @SuppressWarnings("unchecked")
     @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
-        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
-
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName(), true);
 
@@ -204,22 +204,6 @@ public class FoxListener implements Listener {
         }
 
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
-
-        new BukkitRunnable() {
-
-            public void run() {
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage("");
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "The HCTeams kit has changed to Protection I, Sharpness I! See reddit.com/r/HCTeams for more information about this change.");
-                player.sendMessage("");
-                player.sendMessage("");
-            }
-
-        }.runTaskLater(FoxtrotPlugin.getInstance(), 5L);
     }
 
     @EventHandler(priority=EventPriority.HIGH)
@@ -397,6 +381,10 @@ public class FoxListener implements Listener {
                         FoxtrotPlugin.getInstance().getServerHandler().handleKitSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleShopSign(s, event.getPlayer());
+                    } else if (s.getLine(0).contains("DTR Regen")) {
+                        FoxtrotPlugin.getInstance().getServerHandler().handleDTRRegenSign(s, event.getPlayer());
+                    } else if (s.getLine(0).contains("Relic")) {
+                        FoxtrotPlugin.getInstance().getServerHandler().handleRelicSign(s, event.getPlayer());
                     }
 
                     event.setCancelled(true);
@@ -505,29 +493,29 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onPlayerDeath(final PlayerDeathEvent e) {
-        Player player = e.getEntity();
+    @EventHandler(priority=EventPriority.HIGHEST)
+    public void onPlayerDeath(final PlayerDeathEvent event) {
+        Player player = event.getEntity();
         Date now = new Date();
 
-        SpawnTagHandler.removeTag(e.getEntity());
+        SpawnTagHandler.removeTag(event.getEntity());
 
-        Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(e.getEntity().getName());
+        Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getName());
 
-        if (e.getEntity().getKiller() != null) {
-            Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(e.getEntity().getKiller().getName());
+        if (event.getEntity().getKiller() != null) {
+            Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
 
             if (killerTeam != null) {
-                FactionActionTracker.logAction(killerTeam, "actions", "Member Kill: " + e.getEntity().getName() + " slain by " + e.getEntity().getKiller().getName());
+                FactionActionTracker.logAction(killerTeam, "actions", "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName());
             }
         }
 
         if (t != null) {
-            t.playerDeath(e.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLossAt(e.getEntity().getLocation()));
+            t.playerDeath(event.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity()));
         }
 
         // Add deaths to armor
-        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + InvUtils.DEATH_TIME_FORMAT.format(now);
+        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + ChatColor.GOLD + InvUtils.DEATH_TIME_FORMAT.format(now);
 
         for (ItemStack armor : player.getInventory().getArmorContents()) {
             if (armor != null && armor.getType() != Material.AIR) {
@@ -535,77 +523,17 @@ public class FoxListener implements Listener {
             }
         }
 
-        if (e.getEntity().getKiller() != null) {
-            Player killer = e.getEntity().getKiller();
-            ItemStack sword = killer.getItemInHand();
+        if (event.getEntity().getKiller() != null) {
+            Player killer = event.getEntity().getKiller();
+            ItemStack hand = killer.getItemInHand();
+
+            // Raffle
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.FIRST_BLOOD);
+            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.EXECUTIONER);
 
             // Add kills to sword lore
-            if (sword.getType().name().contains("SWORD")) {
-                int killsIndex = 1;
-                int[] lastKills = { 3, 4, 5 };
-
-                int currentKills = 1;
-
-                ItemMeta meta = sword.getItemMeta();
-                List<String> lore = new ArrayList<String>();
-
-                if (meta.hasLore()) {
-                    lore = meta.getLore();
-
-                    boolean hasForgedMeta = false;
-                    for (String s : meta.getLore()) {
-                        if (s.toLowerCase().contains("forged"))
-                            hasForgedMeta = true;
-                    }
-
-                    if (hasForgedMeta) {
-                        killsIndex++;
-
-                        for (int i = 0; i < lastKills.length; i++) {
-                            lastKills[i] = lastKills[i] + 1;
-                        }
-                    }
-
-                    if (meta.getLore().size() > killsIndex) {
-                        String killStr = lore.get(killsIndex);
-
-                        currentKills += Integer.parseInt(ChatColor.stripColor(killStr.split(":")[1]).trim());
-                    }
-
-                    for (int j : lastKills) {
-                        if (j == lastKills[lastKills.length - 1]) {
-                            continue;
-                        }
-                        if (lore.size() > j) {
-                            String atJ = meta.getLore().get(j);
-
-                            if (lore.size() <= j + 1) {
-                                lore.add(null);
-                            }
-
-                            lore.set(j + 1, atJ);
-                        }
-
-                    }
-                }
-
-                if (lore.size() <= killsIndex) {
-                    for (int i = lore.size(); i <= killsIndex + 1; i++) {
-                        lore.add("");
-                    }
-                }
-                lore.set(killsIndex, "§6§lKills:§f " + currentKills);
-
-                int firsKill = lastKills[0];
-
-                if (lore.size() <= firsKill) {
-                    for (int i = lore.size(); i <= firsKill + 1; i++) {
-                        lore.add("");
-                    }
-                }
-                lore.set(firsKill, killer.getDisplayName() + "§e slayed " + e.getEntity().getDisplayName());
-                meta.setLore(lore);
-                sword.setItemMeta(meta);
+            if (hand.getType().name().contains("SWORD") || hand.getType() == Material.BOW) {
+                InvUtils.addKill(hand, killer.getDisplayName() + ChatColor.YELLOW + " " + (hand.getType() == Material.BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
             }
 
             // Add player head to item drops
@@ -617,11 +545,11 @@ public class FoxListener implements Listener {
                 meta.setDisplayName(ChatColor.YELLOW + "Head of " + player.getName());
                 meta.setLore(Arrays.asList("", deathMsg));
                 skull.setItemMeta(meta);
-                e.getDrops().add(skull);
+                event.getDrops().add(skull);
             }
 
-            for (ItemStack it : e.getEntity().getKiller().getInventory().addItem(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(e.getEntity().getName(), e.getEntity().getKiller().getName())).values()) {
-                e.getDrops().add(it);
+            for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
+                event.getDrops().add(it);
             }
         }
 

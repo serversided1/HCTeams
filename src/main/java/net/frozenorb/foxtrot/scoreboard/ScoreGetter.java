@@ -4,8 +4,8 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BaseBardClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by chasechocolate.
  */
-public interface ScoreGetter {
+public abstract class ScoreGetter {
 
     public static final int NO_SCORE = -1;
 
@@ -83,28 +83,6 @@ public interface ScoreGetter {
 
     };
 
-    public static final ScoreGetter CLASS_WARMUP = new ScoreGetter() {
-
-        @Override
-        public String getTitle(Player player){
-            return (ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Class Warmup");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
-            if (PvPClassHandler.getWarmupTasks().containsKey(player.getName())) {
-                long diff = PvPClassHandler.getWarmupTasks().get(player.getName()).getTime() - System.currentTimeMillis();
-
-                if (diff > 0) {
-                    return ((int) diff / 1000);
-                }
-            }
-
-            return (NO_SCORE);
-        }
-
-    };
-
     public static final ScoreGetter KOTH_TIMER = new ScoreGetter() {
 
         @Override
@@ -142,8 +120,8 @@ public interface ScoreGetter {
 
         @Override
         public int getSeconds(Player player) {
-            if (BardClass.getLastPositiveEffectUsage().containsKey(player.getName()) && BardClass.getLastPositiveEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = BardClass.getLastPositiveEffectUsage().get(player.getName()) - System.currentTimeMillis();
+            if (BaseBardClass.getLastEffectUsage().containsKey(player.getName()) && BaseBardClass.getLastEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                long diff = BaseBardClass.getLastEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);
@@ -155,17 +133,17 @@ public interface ScoreGetter {
 
     };
 
-    public static final ScoreGetter BARD_DEBUFF = new ScoreGetter() {
+    public static final ScoreGetter ARCHER_MARK = new ScoreGetter() {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.RED.toString() + ChatColor.BOLD + "Bard Debuff");
+            return (ChatColor.GOLD.toString() + ChatColor.BOLD + "Archer Mark");
         }
 
         @Override
         public int getSeconds(Player player) {
-            if (BardClass.getLastNegativeEffectUsage().containsKey(player.getName()) && BardClass.getLastNegativeEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = BardClass.getLastNegativeEffectUsage().get(player.getName()) - System.currentTimeMillis();
+            if (ArcherClass.isMarked(player)) {
+                long diff = ArcherClass.getMarkedPlayers().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
                     return ((int) diff / 1000);
@@ -173,6 +151,29 @@ public interface ScoreGetter {
             }
 
             return (NO_SCORE);
+        }
+
+    };
+
+    public static final ScoreGetter ENERGY = new ScoreGetter() {
+
+        @Override
+        public String getTitle(Player player) {
+            return (ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Energy");
+        }
+
+        @Override
+        public int getSeconds(Player player) {
+            if (BaseBardClass.getEnergy().containsKey(player.getName()) && BaseBardClass.getEnergy().get(player.getName()) > 0) {
+                return (BaseBardClass.getEnergy().get(player.getName()).intValue());
+            }
+
+            return (NO_SCORE);
+        }
+
+        @Override
+        public boolean isRaw() {
+            return (true);
         }
 
     };
@@ -183,14 +184,18 @@ public interface ScoreGetter {
             SPAWN_TAG,
             ENDERPEARL,
             PVP_TIMER,
-            CLASS_WARMUP,
-            BARD_BUFF,
-            BARD_DEBUFF,
+            ENERGY,
+            ARCHER_MARK,
+            BARD_BUFF
 
     };
 
-    public String getTitle(Player player);
+    public abstract String getTitle(Player player);
 
-    public int getSeconds(Player player);
+    public abstract int getSeconds(Player player);
+
+    public boolean isRaw() {
+        return (false);
+    }
 
 }

@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -293,9 +292,13 @@ public class TeamListener implements Listener {
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(damager.getName());
             Player victim = (Player) event.getEntity();
 
-            if (team != null && team.isMember(victim.getName()) && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-                damager.sendMessage(ChatColor.GREEN + "You cannot hurt " + ChatColor.YELLOW + victim.getName() + ChatColor.GREEN + ".");
-                event.setCancelled(true);
+            if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+                if (team.isMember(victim.getName())) {
+                    damager.sendMessage(ChatColor.GREEN + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.GREEN + ".");
+                    event.setCancelled(true);
+                } else if (team.isAlly(victim.getName())) {
+                    damager.sendMessage(ChatColor.GREEN + "Be careful, that's your ally " + ChatColor.LIGHT_PURPLE + victim.getName() + ChatColor.GREEN + ".");
+                }
             }
         }
     }
