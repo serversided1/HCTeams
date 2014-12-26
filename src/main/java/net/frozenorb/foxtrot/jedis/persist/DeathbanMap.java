@@ -44,4 +44,8 @@ public class DeathbanMap extends RedisPersistMap<Long> {
         return (contains(player) ? getValue(player) : 0L);
     }
 
+    public void wipeDeathbans() {
+        wipeValues();
+    }
+
 }

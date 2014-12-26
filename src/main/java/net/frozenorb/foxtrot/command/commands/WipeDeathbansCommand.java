@@ -7,31 +7,33 @@ import org.bukkit.Location;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 
-public class SetSpawnCommand {
+/**
+ * Created by Colin on 12/25/2014.
+ */
+public class WipeDeathbansCommand {
 
-    @Command(names={ "SetSpawn" }, permissionNode="op")
-    public static void setSpawn(Player sender) {
+    @Command(names={ "WipeDeathbans" }, permissionNode="op")
+    public static void wipeDeathbans(Player sender) {
         ConversationFactory factory = new ConversationFactory(FoxtrotPlugin.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
             public String getPromptText(ConversationContext context) {
-                return "§aAre you sure you want to set spawn here? Type §byes§a to confirm or §cno§a to quit.";
+                return "§aAre you sure you want to wipe all deathbans? This action CANNOT be reversed. Type §byes§a to confirm or §cno§a to quit.";
             }
 
             @Override
             public Prompt acceptInput(ConversationContext cc, String s) {
                 if (s.equalsIgnoreCase("yes")) {
-                    Location l = ((Player) cc.getForWhom()).getLocation();
-                    cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Spawn set!");
-                    ((Player) cc.getForWhom()).getWorld().setSpawnLocation(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+                    FoxtrotPlugin.getInstance().getDeathbanMap().wipeDeathbans();
+                    cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Deathbans have been wiped.");
                     return Prompt.END_OF_CONVERSATION;
                 }
 
                 if (s.equalsIgnoreCase("no")) {
-                    cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Spawn setting cancelled.");
+                    cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Deathban wipe aborted.");
                     return Prompt.END_OF_CONVERSATION;
                 }
 
-                cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Unrecognized response. Type §b/yes§a to confirm or §c/no§a to quit.");
+                cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Unrecognized response. Type §byes§a to confirm or §cno§a to quit.");
                 return Prompt.END_OF_CONVERSATION;
             }
 

@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.jedis;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -36,6 +37,19 @@ public abstract class RedisPersistMap<T> {
         };
 
         FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+    }
+
+    protected void wipeValues() {
+        wrappedMap.clear();
+
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+            public Object execute(Jedis jedis) {
+                jedis.del(keyPrefix);
+                return (null);
+            }
+
+        });
     }
 
     public void reloadValue(String key) {

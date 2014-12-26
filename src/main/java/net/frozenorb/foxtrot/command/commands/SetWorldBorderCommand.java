@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by macguy8 on 11/5/2014.
  */
-public class SetWorldBorder {
+public class SetWorldBorderCommand {
 
     @Command(names={ "SetWorldBorder" }, permissionNode="op")
     public static void setWorldBorder(Player sender, @Param(name="Distance") int value) {

@@ -16,7 +16,7 @@ public class CTFAdminTPCommand {
         CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
 
         if (game == null) {
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There isn't an active CTF game!");
+            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "There isn't an active CTF game!");
             return;
         }
 
@@ -40,7 +40,7 @@ public class CTFAdminTPCommand {
             }
         }
 
-        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + location + " is not a valid location.");
+        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.LIGHT_PURPLE + location + ChatColor.YELLOW + " is not a valid location.");
     }
 
 }

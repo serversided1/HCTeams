@@ -16,7 +16,7 @@ public class CTFAdminFlagsCommand {
         CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
 
         if (game == null) {
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There isn't an active CTF game!");
+            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "There isn't an active CTF game!");
             return;
         }
 

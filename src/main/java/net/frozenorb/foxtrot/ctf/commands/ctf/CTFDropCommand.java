@@ -15,7 +15,7 @@ public class CTFDropCommand {
         CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
 
         if (game == null) {
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There isn't an active CTF game!");
+            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "There isn't an active CTF game!");
             return;
         }
 
@@ -27,7 +27,7 @@ public class CTFDropCommand {
             }
         }
 
-        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You don't have a flag you can drop!");
+        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "You don't have a flag you can drop!");
     }
 
 }
