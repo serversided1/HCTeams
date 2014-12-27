@@ -55,9 +55,9 @@ import java.util.Date;
 public class FoxListener implements Listener {
 
     private CustomTimingsHandler pmeSafeLogout = new CustomTimingsHandler("Foxtrot - PME Safe Logout");
-    private CustomTimingsHandler pmePvPTimer = new CustomTimingsHandler("Foxtrot - PME PvP Time ");
+    private CustomTimingsHandler pmePvPTimer = new CustomTimingsHandler("Foxtrot - PME PvP Time");
     private CustomTimingsHandler pmeTeamGrab = new CustomTimingsHandler("Foxtrot - PME Team Grab");
-    private CustomTimingsHandler pmeRegionGrab = new CustomTimingsHandler("Foxtrot - PME Region Gra");
+    private CustomTimingsHandler pmeRegionGrab = new CustomTimingsHandler("Foxtrot - PME Region Grab");
     private CustomTimingsHandler pmeRegionNotify = new CustomTimingsHandler("Foxtrot - PME Region Notify");
     private CustomTimingsHandler pmeRegionNotifyHM = new CustomTimingsHandler("Foxtrot - PME Region Notify HM");
     private CustomTimingsHandler pmeRegionNotifySpawn = new CustomTimingsHandler("Foxtrot - PME Region Notify Spawn");
