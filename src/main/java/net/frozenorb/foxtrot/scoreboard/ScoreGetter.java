@@ -159,7 +159,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "Energy");
+            return (ChatColor.AQUA.toString() + ChatColor.BOLD + "Energy");
         }
 
         @Override

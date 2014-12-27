@@ -14,8 +14,10 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.mBasic.Utilities.ItemDb;
-import org.bukkit.*;
-import org.bukkit.entity.EntityType;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -239,7 +241,7 @@ public class VisualClaim implements Listener {
 
             if (claimAtLocation != null) {
                 if (claimAtLocation.getValue().hasDTRBitmask(DTRBitmaskType.ROAD)) {
-                    //continue;
+                    continue;
                 }
 
                 touchingClaims.add(claimAtLocation.getKey());
@@ -504,10 +506,6 @@ public class VisualClaim implements Listener {
             }
 
             applyResize(resizing, corner2);
-
-            for (Location c : resizing.getCornerLocations()) {
-                c.getWorld().spawnEntity(c, EntityType.ENDER_CRYSTAL);
-            }
 
             LandBoard.getInstance().setTeamAt(resizing, null);
             LandBoard.getInstance().setTeamAt(resizing, playerTeam);

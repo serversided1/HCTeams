@@ -19,7 +19,8 @@ public class BardClass extends BaseBardClass implements Listener {
 
         BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1), 45));
         BARD_CLICK_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 2), 25));
-        BARD_CLICK_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 10, 6), 25));
+        BARD_CLICK_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 6), 25));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new BardEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 25));
 
         BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0)));
         BARD_PASSIVE_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 1)));

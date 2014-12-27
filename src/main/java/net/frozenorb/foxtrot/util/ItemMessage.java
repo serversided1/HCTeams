@@ -23,7 +23,7 @@ public class ItemMessage {
     private String[] FORMATS = new String[] { "%s", " %s " };
 
     public void sendMessage(Player player, ItemMessageGetter message, int slot) {
-        (new NamerTask(player, message, slot)).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 1L);
+        (new NamerTask(player, message, slot)).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
     }
 
     public class NamerTask extends BukkitRunnable implements Listener {

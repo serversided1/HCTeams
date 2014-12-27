@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.foxtrot.util.ParticleEffects;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -126,7 +127,7 @@ public class BaseBardClass extends PvPClass {
 
     // This purposely has no @EventHandler (called by subclasses)
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        /*ItemStack held = event.getPlayer().getInventory().getItem(event.getNewSlot());
+        ItemStack held = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
         if (held == null || !BARD_CLICK_EFFECTS.containsKey(held.getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
             return;
@@ -148,7 +149,7 @@ public class BaseBardClass extends PvPClass {
                 }
             }
 
-        }, event.getNewSlot());*/
+        }, event.getNewSlot());
     }
 
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {

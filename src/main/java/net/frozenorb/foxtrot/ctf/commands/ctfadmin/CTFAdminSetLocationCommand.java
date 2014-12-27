@@ -7,19 +7,15 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.ctf.enums.CTFFlagColor;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Colin on 12/25/2014.
@@ -50,6 +46,11 @@ public class CTFAdminSetLocationCommand {
             LocationSerializer locationSerializer = new LocationSerializer();
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(configFile));
 
+            // If we just created the file this is possible.
+            if (dbo == null) {
+                dbo = new BasicDBObject();
+            }
+
             for (CTFFlagColor flagColor : CTFFlagColor.values()) {
                 if (location.toLowerCase().startsWith(flagColor.getName().toLowerCase())) {
                     BasicDBObject flagDBObject = new BasicDBObject();
@@ -63,15 +64,17 @@ public class CTFAdminSetLocationCommand {
                     } else if (location.toLowerCase().endsWith("_spawn")) {
                         flagDBObject.put("SpawnLocation", locationSerializer.serialize(sender.getLocation()));
                     } else {
-                        continue; // If we continue past our one match, we'll end up sending the user the 'not a valid location' message.
+                        continue; // If we 'continue' past our one match, we'll end up sending the user the 'not a valid location' message.
                     }
 
+                    dbo.put(flagColor.getName(), flagDBObject);
                     FileUtils.write(configFile, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
                     sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Updated CTF location.");
+                    return;
                 }
             }
 
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + location + " isn't a valid location to set.");
+            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.LIGHT_PURPLE + location + ChatColor.YELLOW + " isn't a valid location to set.");
         } catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "An error occurred while reading/writing the config file to disk.");

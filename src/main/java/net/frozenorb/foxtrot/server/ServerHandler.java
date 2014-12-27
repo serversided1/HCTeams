@@ -12,6 +12,8 @@ import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.relic.enums.Relic;
@@ -375,6 +377,13 @@ public class ServerHandler {
             }
         }
 
+        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+
+        // 0.75 DTR loss while Citadel is active.
+        if (citadel != null && citadel.isActive()) {
+            return (0.75F);
+        }
+
         return (1F);
     }
 
@@ -412,6 +421,13 @@ public class ServerHandler {
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
         long max = TimeUnit.HOURS.toSeconds(24);
         long ban;
+
+        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+
+        // Max deathban of 2 hours during Citadel
+        if (citadel != null && citadel.isActive()) {
+            max = TimeUnit.HOURS.toSeconds(2);
+        }
 
         if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
             ban = playtime.getPlaytime(playerName) + (playtime.getCurrentSession(playerName) / 1000L);

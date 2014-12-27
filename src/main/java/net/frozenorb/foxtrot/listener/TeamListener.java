@@ -37,9 +37,11 @@ public class TeamListener implements Listener {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
         if (team != null) {
-            for (Player online : team.getOnlineMembers()) {
-                if (online != event.getPlayer()) {
-                    online.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
+                } else if (team.isAlly(player)) {
+                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Ally Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
 
@@ -55,8 +57,12 @@ public class TeamListener implements Listener {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
         if (team != null) {
-            for (Player online : team.getOnlineMembers()) {
-                online.sendMessage(ChatColor.RED + "Member Offline: " + ChatColor.WHITE + event.getPlayer().getName());
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.RED + "Member Offline: " + ChatColor.WHITE + event.getPlayer().getName());
+                } else if (team.isAlly(player)) {
+                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Ally Offline: " + ChatColor.WHITE + event.getPlayer().getName());
+                }
             }
 
             FactionActionTracker.logAction(team, "actions", "Member Offline: " + event.getPlayer().getName());

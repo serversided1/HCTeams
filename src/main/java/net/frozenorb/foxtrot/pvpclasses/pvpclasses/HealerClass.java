@@ -18,10 +18,10 @@ public class HealerClass extends BaseBardClass implements Listener {
         super("Healer", "IRON_");
 
         BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 6, 1), 40));
-        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, new BardEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 10, 1), 40));
+        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, new BardEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 6, 1), 40));
         BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, new BardEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 45, 0), 40));
 
-        BARD_CLICK_EFFECTS.put(Material.SPECKLED_MELON, new BardEffect(null, 40, "Heals 5 hearts"));
+        BARD_CLICK_EFFECTS.put(Material.SPECKLED_MELON, new BardEffect(null, 40, "Heals 3 hearts"));
 
         BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 6, 0)));
         BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, new BardEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 6, 0)));
@@ -57,7 +57,7 @@ public class HealerClass extends BaseBardClass implements Listener {
     @Override
     public void giveCustomBardEffect(Player player, Material material) {
         if (material == Material.SPECKLED_MELON) {
-            double add = 10.0;
+            double add = 6.0;
             player.setHealth(Math.min(player.getHealth() + add, player.getMaxHealth()));
         }
     }

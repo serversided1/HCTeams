@@ -56,7 +56,7 @@ public class ChatListener implements Listener {
                     // Notify those with chatspy on the team.
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                         if (team != null && FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
-                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "M: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "M: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
                         }
                     }
 
@@ -91,7 +91,7 @@ public class ChatListener implements Listener {
                         } else {
                             if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getName())) {
                                 if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
-                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "SM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "SM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
                                 }
 
                                 continue;
@@ -117,7 +117,7 @@ public class ChatListener implements Listener {
                         // It might be best to make it so spying on ONE team lets you see the chat of the alliance,
                         // but then we get teams where A is allied to B, B is allied to C, and A isn't allied to C.
                         // @itsjhalt
-                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.LIGHT_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
@@ -139,7 +139,7 @@ public class ChatListener implements Listener {
                     if (team.isMember(player)) { // If they're going to receive this message, send it!
                         player.sendMessage(ChatColor.DARK_AQUA + "(Team) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
                     } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) { // Otherwise, if they're going to chat spy it...
-                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_AQUA + "TC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage());
+                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_AQUA + "TC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_AQUA + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
