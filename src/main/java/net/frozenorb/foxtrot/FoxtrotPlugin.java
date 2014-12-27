@@ -4,6 +4,7 @@ import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.google.common.base.Joiner;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
@@ -33,8 +34,12 @@ import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mShared.Shared;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -299,6 +304,17 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     public static FoxtrotPlugin getInstance() {
         return (instance);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (sender instanceof ConsoleCommandSender) {
+            CommandHandler.evalCommand(sender, Joiner.on(" ").join(args));
+        } else {
+            sender.sendMessage(ChatColor.RED + "This is a console-only utility command. It cannot be used from game.");
+        }
+
+        return (true);
     }
 
 }

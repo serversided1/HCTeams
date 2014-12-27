@@ -17,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.spigotmc.CustomTimingsHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -346,13 +345,17 @@ public class CommandHandler implements Listener {
 
     @EventHandler
     public void onConsoleCommand(ServerCommandEvent event) {
+        evalCommand(event.getSender(), event.getCommand());
+    }
+
+    public static void evalCommand(CommandSender console, String command) {
         String[] args = new String[] { };
         CommandData found = null;
 
         CommandLoop:
         for (CommandData commandData : commands) {
             for (String alias : commandData.getNames()) {
-                String messageString = event.getCommand().toLowerCase() + " "; // Add a space.
+                String messageString = command.toLowerCase() + " "; // Add a space.
                 String aliasString = alias.toLowerCase() + " "; // Add a space.
                 // The space is added so '/pluginslol' doesn't match '/plugins'
 
@@ -361,9 +364,9 @@ public class CommandHandler implements Listener {
 
                     // If there's 'space' after the command, parse args.
                     // The +1 is there to account for a space after the command if there's parameters
-                    if (event.getCommand().length() > alias.length() + 1) {
+                    if (command.length() > alias.length() + 1) {
                         // See above as to... why this works.
-                        args = (event.getCommand().substring(alias.length() + 1)).split(" ");
+                        args = (command.substring(alias.length() + 1)).split(" ");
                     }
 
                     // We break to the command loop as we have 2 for loops here.
@@ -376,14 +379,12 @@ public class CommandHandler implements Listener {
             return;
         }
 
-        event.setCommand("");
-
         if (!found.isConsole()) {
-            event.getSender().sendMessage(ChatColor.RED + "This command does not support execution from the console.");
+            console.sendMessage(ChatColor.RED + "This command does not support execution from the console.");
             return;
         }
 
-        found.execute(event.getSender(), args);
+        found.execute(console, args);
     }
 
     public static Object transformParameter(CommandSender sender, String parameter, Class<?> transformTo) {
