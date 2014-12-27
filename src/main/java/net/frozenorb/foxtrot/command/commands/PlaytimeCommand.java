@@ -6,7 +6,6 @@ import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -15,15 +14,16 @@ import org.bukkit.entity.Player;
 public class PlaytimeCommand {
 
     @Command(names={ "Playtime", "PTime" }, permissionNode="")
-    public static void playtime(Player sender, @Param(name="Target", defaultValue="self") OfflinePlayer target) {
+    public static void playtime(Player sender, @Param(name="Target", defaultValue="self") String target) {
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        long playtimeTime = playtime.getPlaytime(target.getName());
+        long playtimeTime = playtime.getPlaytime(target);
+        Player targetPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(target);
 
-        if (target.isOnline() && sender.canSee(target.getPlayer())) {
-            playtimeTime += playtime.getCurrentSession(target.getName()) / 1000L;
+        if (targetPlayer != null && sender.canSee(targetPlayer)) {
+            playtimeTime += playtime.getCurrentSession(targetPlayer.getName()) / 1000L;
         }
 
-        sender.sendMessage(ChatColor.GREEN + target.getName() + ChatColor.YELLOW + "'s total playtime is " + ChatColor.GOLD + TimeUtils.getDurationBreakdown(playtimeTime * 1000L) + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + target + ChatColor.YELLOW + "'s total playtime is " + ChatColor.LIGHT_PURPLE + TimeUtils.getDurationBreakdown(playtimeTime * 1000L) + ChatColor.YELLOW + ".");
     }
 
 }
