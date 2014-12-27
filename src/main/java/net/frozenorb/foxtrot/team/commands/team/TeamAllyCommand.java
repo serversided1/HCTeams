@@ -55,9 +55,9 @@ public class TeamAllyCommand {
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player)) {
-                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + ChatColor.LIGHT_PURPLE + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + Team.ALLY_COLOR + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 } else if (senderTeam.isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You now have " + ChatColor.LIGHT_PURPLE + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + targetTeam.getName(sender) + ChatColor.YELLOW + ". You now have " + Team.ALLY_COLOR + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 }
 
                 if (targetTeam.isMember(player) || senderTeam.isMember(player)) {
@@ -75,7 +75,7 @@ public class TeamAllyCommand {
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player)) {
-                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has requested to be your ally. Type " + ChatColor.LIGHT_PURPLE + "/team ally " + senderTeam.getName() + ChatColor.YELLOW + " to accept.");
+                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has requested to be your ally. Type " + Team.ALLY_COLOR + "/team ally " + senderTeam.getName() + ChatColor.YELLOW + " to accept.");
                 } else if (senderTeam.isMember(player)) {
                     player.sendMessage(ChatColor.YELLOW + "Your team has requested to ally " + targetTeam.getName(player) + ChatColor.YELLOW + ".");
                 }

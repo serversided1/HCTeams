@@ -31,6 +31,8 @@ public class Team {
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
     public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
+    public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
+
     // Configurable values //
 
     public static final int MAX_TEAM_SIZE = 25;
@@ -135,7 +137,7 @@ public class Team {
         if (isMember(player)) {
             return (ChatColor.GREEN + getName());
         } else if (isAlly(player)) {
-            return (ChatColor.LIGHT_PURPLE + getName());
+            return (Team.ALLY_COLOR + getName());
         } else {
             return (ChatColor.RED + getName());
         }

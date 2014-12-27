@@ -41,7 +41,7 @@ public class TeamListener implements Listener {
                 if (team.isMember(player)) {
                     player.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 } else if (team.isAlly(player)) {
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Ally Online: " + ChatColor.WHITE + event.getPlayer().getName());
+                    player.sendMessage(Team.ALLY_COLOR + "Ally Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
 
@@ -61,7 +61,7 @@ public class TeamListener implements Listener {
                 if (team.isMember(player)) {
                     player.sendMessage(ChatColor.RED + "Member Offline: " + ChatColor.WHITE + event.getPlayer().getName());
                 } else if (team.isAlly(player)) {
-                    player.sendMessage(ChatColor.LIGHT_PURPLE + "Ally Offline: " + ChatColor.WHITE + event.getPlayer().getName());
+                    player.sendMessage(Team.ALLY_COLOR + "Ally Offline: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
 
@@ -303,7 +303,7 @@ public class TeamListener implements Listener {
                     damager.sendMessage(ChatColor.GREEN + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.GREEN + ".");
                     event.setCancelled(true);
                 } else if (team.isAlly(victim.getName())) {
-                    damager.sendMessage(ChatColor.GREEN + "Be careful, that's your ally " + ChatColor.LIGHT_PURPLE + victim.getName() + ChatColor.GREEN + ".");
+                    damager.sendMessage(ChatColor.GREEN + "Be careful, that's your ally " + Team.ALLY_COLOR + victim.getName() + ChatColor.GREEN + ".");
                 }
             }
         }

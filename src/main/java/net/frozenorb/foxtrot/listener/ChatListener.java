@@ -87,7 +87,7 @@ public class ChatListener implements Listener {
                         if (team.isMember(player)) {
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
                         } else if (team.isAlly(player)) {
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE));
+                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
                         } else {
                             if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getName())) {
                                 if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
@@ -110,14 +110,13 @@ public class ChatListener implements Listener {
             case ALLIANCE:
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (team.isMember(player) || team.isAlly(player)) { // If they're going to receive this message, send it!
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "(Ally) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
+                        player.sendMessage(Team.ALLY_COLOR + "(Ally) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
                     } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
                         // Chat spying for allies are weird.
                         // You'll only see the message if you're spying on the team SENDING it.
                         // It might be best to make it so spying on ONE team lets you see the chat of the alliance,
                         // but then we get teams where A is allied to B, B is allied to C, and A isn't allied to C.
-                        // @itsjhalt
-                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.LIGHT_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
+                        player.sendMessage(ChatColor.GOLD + "[" + Team.ALLY_COLOR + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + Team.ALLY_COLOR + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
