@@ -6,13 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim.CuboidDirection;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Utilities.ItemDb;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -447,7 +448,7 @@ public class VisualClaim implements Listener {
             // Raffle
             FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(player, RaffleAchievement.BROKER);
 
-            FactionActionTracker.logAction(playerTeam, "actions", "Land Claim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
+            TeamActionTracker.logAction(playerTeam, TeamActionType.GENERAL, "Land Claim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
             cancel();
 
             new BukkitRunnable() {
@@ -518,7 +519,7 @@ public class VisualClaim implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) playerTeam.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + cost + ")");
             }
 
-            FactionActionTracker.logAction(playerTeam, "actions", "Land Resize: [" + resizing.getMinimumPoint().getBlockX() + ", " + resizing.getMinimumPoint().getBlockY() + ", " + resizing.getMinimumPoint().getBlockZ() + "] -> [" + resizing.getMaximumPoint().getBlockX() + ", " + resizing.getMaximumPoint().getBlockY() + ", " + resizing.getMaximumPoint().getBlockZ() + "] [Resized by: " + player.getName() + ", Cost: " + cost + "]");
+            TeamActionTracker.logAction(playerTeam, TeamActionType.GENERAL, "Land Resize: [" + resizing.getMinimumPoint().getBlockX() + ", " + resizing.getMinimumPoint().getBlockY() + ", " + resizing.getMinimumPoint().getBlockZ() + "] -> [" + resizing.getMaximumPoint().getBlockX() + ", " + resizing.getMaximumPoint().getBlockY() + ", " + resizing.getMaximumPoint().getBlockZ() + "] [Resized by: " + player.getName() + ", Cost: " + cost + "]");
             cancel();
 
             new BukkitRunnable() {

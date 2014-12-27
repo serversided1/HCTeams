@@ -3,8 +3,9 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        FactionActionTracker.logAction(team, "actions", "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
+        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(target.getName());
         team.flagForSave();
 

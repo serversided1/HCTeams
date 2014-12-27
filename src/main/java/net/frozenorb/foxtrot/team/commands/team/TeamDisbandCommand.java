@@ -2,8 +2,9 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -35,7 +36,7 @@ public class TeamDisbandCommand {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + " has disbanded the team.");
         }
 
-        FactionActionTracker.logAction(team, "actions", "Faction disbanded. [Disbanded by: " + player.getName() + "]");
+        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Team disbanded. [Disbanded by: " + player.getName() + "]");
         team.disband();
     }
 

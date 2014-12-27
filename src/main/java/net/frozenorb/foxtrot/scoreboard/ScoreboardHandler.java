@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.scoreboard.tasks.ScoreboardUpdateTask;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,18 +16,7 @@ public class ScoreboardHandler {
     public static boolean scoreboardTimerEnabled = true;
 
     public ScoreboardHandler() {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if (scoreboardTimerEnabled) {
-                    for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                        update(online);
-                    }
-                }
-            }
-
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+        (new ScoreboardUpdateTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     public void update(Player player) {

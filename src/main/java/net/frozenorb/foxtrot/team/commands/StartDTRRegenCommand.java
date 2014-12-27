@@ -14,7 +14,7 @@ public class StartDTRRegenCommand {
     @Command(names={ "startdtrregen" }, permissionNode="foxtrot.startdtrregen")
     public static void startDTRRegen(Player sender, @Param(name="Target") Team target) {
         target.setDTRCooldown(System.currentTimeMillis());
-        sender.sendMessage(ChatColor.GRAY + target.getName() + ChatColor.GRAY + " is now regenerating DTR.");
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " is now regenerating DTR.");
     }
 
 }

@@ -3,9 +3,10 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -43,14 +44,14 @@ public class TeamCreateCommand {
 
                 Team team = new Team(name);
 
-                FactionActionTracker.logAction(team, "actions", "Faction created. [Created by: " + sender.getName() + "]");
+                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Faction created. [Created by: " + sender.getName() + "]");
 
                 team.setOwner(sender.getName());
                 team.setName(name);
                 team.setDTR(1);
                 team.setUniqueId(new ObjectId());
 
-                FoxtrotPlugin.getInstance().getTeamHandler().addTeam(team);
+                FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);
 
                 // Raffle

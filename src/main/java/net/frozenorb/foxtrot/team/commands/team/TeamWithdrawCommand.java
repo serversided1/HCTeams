@@ -3,8 +3,9 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Basic;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class TeamWithdrawCommand {
             Basic.get().getEconomyManager().depositPlayer(sender.getName(), amount);
             sender.sendMessage(ChatColor.YELLOW + "You have withdrawn §d" + amount + "§e from the team balance!");
 
-            FactionActionTracker.logAction(team, "actions", "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
+            TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
             team.setBalance(team.getBalance() - amount);
             team.getOnlineMembers().forEach(pe -> pe.sendMessage("§e" + sender.getName() + " withdrew §d" + amount + " §efrom the team balance."));
         } else {

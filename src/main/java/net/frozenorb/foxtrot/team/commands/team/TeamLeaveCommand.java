@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,13 +32,13 @@ public class TeamLeaveCommand {
 
         if (team.removeMember(sender.getName())) {
             team.disband();
+            FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), null);
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
-            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName().toLowerCase());
         } else {
-            FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(sender.getName().toLowerCase());
+            FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), null);
             team.flagForSave();
 
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player)) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
                 }

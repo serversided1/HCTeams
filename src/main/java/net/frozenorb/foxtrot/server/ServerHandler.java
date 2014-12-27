@@ -9,7 +9,7 @@ import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -335,7 +335,6 @@ public class ServerHandler {
         // Raffle
         FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.BIG_SPENDER, 1);
 
-        FactionActionTracker.logAction(team, "actions", "HQ Teleport: " + player.getName());
         player.teleport(team.getHQ());
     }
 
@@ -664,7 +663,7 @@ public class ServerHandler {
                 return;
             }
 
-            if (playerTeam.getDtrRegenMultiplier() != 1F) {
+            if (playerTeam.getDTRRegenMultiplier() != 1F) {
                 showSignPacket(player, sign,
                         "§c§lError",
                         "",
@@ -676,7 +675,7 @@ public class ServerHandler {
             }
 
             playerTeam.setBalance(playerTeam.getBalance() - price);
-            playerTeam.setDtrRegenMultiplier(mult);
+            playerTeam.setDTRRegenMultiplier(mult);
             playerTeam.setDTRCooldown(System.currentTimeMillis());
 
             showSignPacket(player, sign,

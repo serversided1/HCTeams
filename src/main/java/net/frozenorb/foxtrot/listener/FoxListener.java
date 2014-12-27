@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
@@ -15,6 +14,8 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R3.EntityLightning;
@@ -449,6 +450,55 @@ public class FoxListener implements Listener {
         }
     }
 
+    /*@EventHandler
+    public void onCreatureSpawn(final CreatureSpawnEvent event) {
+        Entity entity = event.getEntity();
+
+        if (!(entity instanceof Chicken || entity instanceof MushroomCow || entity instanceof Villager)) {
+            if (LandBoard.getInstance().getTeam(entity.getLocation()) != null) {
+                if (((CraftEntity) entity).getHandle() instanceof EntityInsentient) {
+                    EntityInsentient ie = (EntityInsentient) ((CraftEntity) entity).getHandle();
+                    ie.fromMobSpawner = true;
+                }
+            }
+        }
+
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.SPAWNER) {
+            return;
+        }
+
+        Location loc = event.getLocation();
+        Chunk c = loc.getChunk();
+        if (c.getEntities().length > 55) {
+            event.setCancelled(true);
+            return;
+        }
+        int shouldSpawn = 0;
+        if (mobSpawns.containsKey(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ())) {
+            mobSpawns.put(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ(), mobSpawns.get(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ()) + 1);
+        } else {
+            mobSpawns.put(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ(), 0);
+        }
+        shouldSpawn = mobSpawns.get(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ());
+        if (shouldSpawn % 4 != 0) {
+            event.setCancelled(true);
+        } else
+            event.getEntity().setMetadata("Spawner", new FixedMetadataValue(plugin, true));
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                Entity entity = event.getEntity();
+                Location loc = entity.getLocation();
+                Chunk c = loc.getChunk();
+                if (c.getEntities().length > 55) {
+                    entity.remove();
+                    return;
+                }
+            }
+        }, 200L);
+    }*/
+
     @EventHandler
     public void onSignChange(SignChangeEvent e) {
         if (e.getBlock().getState().hasMetadata("deathSign") || ((Sign) e.getBlock().getState()).getLine(1).contains("§e")) {
@@ -506,7 +556,7 @@ public class FoxListener implements Listener {
             Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
 
             if (killerTeam != null) {
-                FactionActionTracker.logAction(killerTeam, "actions", "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName());
+                TeamActionTracker.logAction(killerTeam, TeamActionType.KILLS, "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName() + " [X: " + event.getEntity().getLocation().getBlockX() + ", Y: " + event.getEntity().getLocation().getBlockY() + ", Z: " + event.getEntity().getLocation().getBlockZ() + "]");
             }
         }
 

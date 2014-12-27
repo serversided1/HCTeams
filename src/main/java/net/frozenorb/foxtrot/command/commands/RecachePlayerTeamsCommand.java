@@ -19,15 +19,7 @@ public class RecachePlayerTeamsCommand {
     @Command(names={ "playerteamcache rebuild" }, permissionNode="op")
     public static void recachePlayerTeamsRebuild(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Rebuilding player team cache...");
-
-        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().clear();
-
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            for (String member : team.getMembers()) {
-                FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().put(member.toLowerCase(), team);
-            }
-        }
-
+        FoxtrotPlugin.getInstance().getTeamHandler().recachePlayerTeams();
         sender.sendMessage(ChatColor.DARK_PURPLE + "The player death cache has been rebuilt.");
     }
 

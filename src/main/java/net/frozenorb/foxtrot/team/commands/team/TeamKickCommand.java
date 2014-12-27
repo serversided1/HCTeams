@@ -3,9 +3,10 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -55,7 +56,7 @@ public class TeamKickCommand {
             }
         }
 
-        FactionActionTracker.logAction(team, "actions", "Member Kicked: " + target + " [Kicked by: " + sender.getName() + "]");
+        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Member Kicked: " + target + " [Kicked by: " + sender.getName() + "]");
 
         if (team.removeMember(target)) {
             team.disband();
@@ -63,7 +64,7 @@ public class TeamKickCommand {
             team.flagForSave();
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().remove(target.toLowerCase());
+        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, null);
 
         if (bukkitPlayer != null) {
             NametagManager.reloadPlayer(bukkitPlayer);

@@ -3,8 +3,9 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -37,7 +38,7 @@ public class TeamUninviteCommand {
                 }
 
                 if (remove != null) {
-                    FactionActionTracker.logAction(team, "actions", "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
+                    TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
                     team.getInvitations().remove(remove);
                     team.flagForSave();
                     sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");

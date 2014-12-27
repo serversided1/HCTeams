@@ -23,10 +23,10 @@ public class ForceJoinCommand {
 
         team.addMember(target.getName());
         FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target.getName(), team);
-        target.sendMessage(ChatColor.GREEN + "You are now a member of §b" + team.getName() + "§a!");
+        target.sendMessage(ChatColor.YELLOW + "You are now a member of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
 
         if (target != sender) {
-            sender.sendMessage("§aPlayer added to team!");
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " added to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
         }
     }
 

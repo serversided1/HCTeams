@@ -20,7 +20,7 @@ public class ForceDisbandAllCommand {
         ConversationFactory factory = new ConversationFactory(FoxtrotPlugin.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
             public String getPromptText(ConversationContext context) {
-                return "§aAre you sure you want to disband all factions? Type §byes§a to confirm or §cno§a to quit.";
+                return (ChatColor.GREEN  + "Are you sure you want to disband all teams? Type §byes§a to confirm or §cno§a to quit.");
             }
 
             @Override
@@ -36,24 +36,20 @@ public class ForceDisbandAllCommand {
                         team.disband();
                     }
 
-                    FoxtrotPlugin.getInstance().getTeamHandler().getTeamNameMap().clear();
-                    FoxtrotPlugin.getInstance().getTeamHandler().getTeamUniqueIdMap().clear();
-                    FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeamMap().clear();
-
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All factions have been forcibly disbanded!");
-                    return Prompt.END_OF_CONVERSATION;
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All teams have been forcibly disbanded!");
+                    return (Prompt.END_OF_CONVERSATION);
                 }
 
                 if (s.equalsIgnoreCase("no")) {
                     cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Disbanding cancelled.");
-                    return Prompt.END_OF_CONVERSATION;
-
+                    return (Prompt.END_OF_CONVERSATION);
                 }
+
                 cc.getForWhom().sendRawMessage(ChatColor.GREEN + "Unrecognized response. Type §b/yes§a to confirm or §c/no§a to quit.");
-                return Prompt.END_OF_CONVERSATION;
+                return (Prompt.END_OF_CONVERSATION);
             }
 
-        }).withEscapeSequence("/no").withTimeout(10).thatExcludesNonPlayersWithMessage("Go away evil console!");
+        }).withEscapeSequence("/no").withLocalEcho(false).withTimeout(10).thatExcludesNonPlayersWithMessage("Go away evil console!");
         Conversation con = factory.buildConversation(sender);
         sender.beginConversation(con);
     }

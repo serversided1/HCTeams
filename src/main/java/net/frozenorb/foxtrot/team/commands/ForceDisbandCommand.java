@@ -14,11 +14,11 @@ public class ForceDisbandCommand {
     @Command(names={ "forcedisband" }, permissionNode="op")
     public static void forceDisband(Player sender, @Param(name="team") Team target) {
         for (Player online : target.getOnlineMembers()) {
-            online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force-disbanded the team.");
+            online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");
         }
 
         target.disband();
-        sender.sendMessage(ChatColor.GRAY + "Force-disbanded the team " + target.getName() + ".");
+        sender.sendMessage(ChatColor.YELLOW + "Force disbanded the team " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + ".");
     }
 
 }

@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.chat.ChatMode;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -125,12 +126,12 @@ public class ChatListener implements Listener {
                     Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
 
                     if (ally != null) {
-                        FactionActionTracker.logAction(ally, "allychat", "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                        TeamActionTracker.logAction(ally, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
                 // Log to our own allychat log.
-                FactionActionTracker.logAction(team, "allychat", "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logAction(team, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 FoxtrotPlugin.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case TEAM:
@@ -143,7 +144,7 @@ public class ChatListener implements Listener {
                 }
 
                 // Log to our teamchat log.
-                FactionActionTracker.logAction(team, "teamchat", event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logAction(team, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
                 FoxtrotPlugin.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
         }

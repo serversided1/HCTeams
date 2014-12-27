@@ -4,8 +4,9 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -28,12 +29,12 @@ public class TeamShadowMuteCommand {
             teamShadowMutes.put(player, target.getName());
         }
 
-        FactionActionTracker.logAction(target, "actions", "Mute: Team shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        TeamActionTracker.logAction(target, TeamActionType.GENERAL, "Mute: Team shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
-                FactionActionTracker.logAction(target, "actions", "Mute: Team shadowmute expired.");
+                TeamActionTracker.logAction(target, TeamActionType.GENERAL, "Mute: Team shadowmute expired.");
 
                 Iterator<java.util.Map.Entry<String, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
 

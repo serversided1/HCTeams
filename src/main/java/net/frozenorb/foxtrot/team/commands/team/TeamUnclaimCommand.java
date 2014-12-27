@@ -3,11 +3,12 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.factionactiontracker.FactionActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -45,7 +46,7 @@ public class TeamUnclaimCommand {
 
             for (Claim claim : team.getClaims()) {
                 refund += Claim.getPrice(claim, team, false);
-                FactionActionTracker.logAction(team, "actions", "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
+                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
             }
 
             team.setBalance(team.getBalance() + refund);
@@ -87,7 +88,7 @@ public class TeamUnclaimCommand {
 
             LandBoard.getInstance().setTeamAt(claim, null);
 
-            FactionActionTracker.logAction(team, "actions", "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
+            TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player)) {

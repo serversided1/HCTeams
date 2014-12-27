@@ -26,7 +26,7 @@ public class ForceLeaderCommand {
             }
 
             team.setOwner(target);
-            sender.sendMessage(ChatColor.GREEN + target + " is now the owner of §b" + team.getName());
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + target + ChatColor.YELLOW + " is now the owner of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
         }
     }
 
