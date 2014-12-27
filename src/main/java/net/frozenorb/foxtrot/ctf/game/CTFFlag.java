@@ -87,6 +87,8 @@ public class CTFFlag {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been picked up by " + teamString + ChatColor.AQUA + player.getName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ() + ")");
         }
 
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "You've picked up a flag! Take the flag to " + getCaptureLocation().getBlockX() + ", " + getCaptureLocation().getBlockY() + ", " + getCaptureLocation().getBlockZ() + " within 30 minutes to capture it!");
+
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new PlayerPickupFlagEvent(player, this));
         updateVisual();
     }
