@@ -262,8 +262,8 @@ public class ServerHandler {
             return;
         }
 
-        TeamHandler tm = FoxtrotPlugin.getInstance().getTeamHandler();
-        double bal = tm.getPlayerTeam(player.getName()).getBalance();
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        double bal = playerTeam.getBalance();
 
         if (bal < price) {
             player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
@@ -272,7 +272,7 @@ public class ServerHandler {
 
         if (!enemyCheckBypass) {
             // Disallow warping while on enderpearl cooldown.
-            if (!enemyCheckBypass && EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
+            if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
                 player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
                 return;
             }
@@ -287,7 +287,7 @@ public class ServerHandler {
                         continue;
                     }
 
-                    if (tm.getPlayerTeam(other.getName()) != tm.getPlayerTeam(player.getName())) {
+                    if (!playerTeam.isMember(other.getName()) && !playerTeam.isAlly(other.getName())) {
                         enemyWithinRange = true;
                         break;
                     }
@@ -329,8 +329,8 @@ public class ServerHandler {
             FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
         }
 
-        player.sendMessage(ChatColor.YELLOW + "§d$" + price + " §ehas been deducted from your team balance.");
-        tm.getPlayerTeam(player.getName()).setBalance(tm.getPlayerTeam(player.getName()).getBalance() - price);
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "$" + price + ChatColor.YELLOW + " has been deducted from your team balance.");
+        playerTeam.setBalance(playerTeam.getBalance() - price);
 
         // Raffle
         FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.BIG_SPENDER, 1);
