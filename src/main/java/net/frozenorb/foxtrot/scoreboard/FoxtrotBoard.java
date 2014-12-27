@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,11 +20,16 @@ import java.util.Set;
  */
 public class FoxtrotBoard {
 
+    private CustomTimingsHandler creation = new CustomTimingsHandler("Foxtrot - FB Creation");
+    private CustomTimingsHandler valueGrab = new CustomTimingsHandler("Foxtrot - FB Value Grab");
+    private CustomTimingsHandler teamUpdate = new CustomTimingsHandler("Foxtrot - FB Team Update");
+
     @Getter private Player player;
     @Getter private Objective obj;
     @Getter private Set<String> displayedScores = new HashSet<String>();
 
     public FoxtrotBoard(Player player) {
+        creation.startTiming();
         this.player = player;
 
         Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -32,6 +38,7 @@ public class FoxtrotBoard {
         obj.setDisplayName(FoxtrotPlugin.getInstance().getMapHandler().getScoreboardTitle());
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
+        creation.stopTiming();
         update();
         player.setScoreboard(board);
     }
@@ -40,8 +47,10 @@ public class FoxtrotBoard {
         int nextVal = 14;
 
         for (ScoreGetter getter : ScoreGetter.SCORES) {
+            valueGrab.startTiming();
             int seconds = getter.getSeconds(player);
             String title = getter.getTitle(player);
+            valueGrab.stopTiming();
 
             if (seconds == ScoreGetter.NO_SCORE) {
                 if (displayedScores.contains(title)) {
@@ -64,6 +73,7 @@ public class FoxtrotBoard {
     }
 
     private Team getTeam(String title, int seconds, boolean raw) {
+        teamUpdate.startTiming();
         String name = ChatColor.stripColor(title);
         Team team = obj.getScoreboard().getTeam(name);
 
@@ -74,6 +84,7 @@ public class FoxtrotBoard {
         String time = raw ? String.valueOf(seconds) : TimeUtils.getMMSS(seconds);
 
         team.setSuffix(ChatColor.GRAY + ": " + ChatColor.RED + time);
+        teamUpdate.stopTiming();
 
         return (team);
     }
