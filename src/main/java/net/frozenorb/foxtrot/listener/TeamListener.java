@@ -300,10 +300,10 @@ public class TeamListener implements Listener {
 
             if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
                 if (team.isMember(victim.getName())) {
-                    damager.sendMessage(ChatColor.GREEN + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.GREEN + ".");
+                    damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.YELLOW + ".");
                     event.setCancelled(true);
                 } else if (team.isAlly(victim.getName())) {
-                    damager.sendMessage(ChatColor.GREEN + "Be careful, that's your ally " + Team.ALLY_COLOR + victim.getName() + ChatColor.GREEN + ".");
+                    damager.sendMessage(ChatColor.YELLOW + "Be careful, that's your ally " + Team.ALLY_COLOR + victim.getName() + ChatColor.YELLOW + ".");
                 }
             }
         }
