@@ -295,15 +295,7 @@ public class CitadelHandler {
 
             for (int i = 0; i < items; i++) {
                 ItemStack chosen = allowedLoot.get(FoxtrotPlugin.RANDOM.nextInt(allowedLoot.size()));
-
-                if (chosen.getAmount() > 1) {
-                    ItemStack targetClone = chosen.clone();
-
-                    targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosen.getAmount()));
-                    loot.add(targetClone);
-                } else {
-                    loot.add(chosen);
-                }
+                loot.add(chosen);
             }
         }
 

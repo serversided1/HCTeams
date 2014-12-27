@@ -86,16 +86,7 @@ public class KOTHRewardKeyListener implements Listener {
             }
 
             given++;
-
-            if (chosenItem.getAmount() > 1) {
-                ItemStack targetClone = chosenItem.clone();
-                int half = targetClone.getAmount() / 2;
-
-                targetClone.setAmount(FoxtrotPlugin.RANDOM.nextInt(chosenItem.getAmount() - half) + half);
-                loot.add(targetClone);
-            } else {
-                loot.add(chosenItem);
-            }
+            loot.add(chosenItem);
         }
 
         StringBuilder builder = new StringBuilder();
