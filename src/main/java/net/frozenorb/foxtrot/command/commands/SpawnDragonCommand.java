@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  */
 public class SpawnDragonCommand {
 
-    @Command(names = {"SpawnDragon"}, permissionNode="")
+    @Command(names = {"SpawnDragon"}, permissionNode="op")
     public static void spawnDragon(Player sender) {
         if (sender.getWorld().getEnvironment() != World.Environment.THE_END) {
             sender.sendMessage(ChatColor.RED + "You must be in the end.");
