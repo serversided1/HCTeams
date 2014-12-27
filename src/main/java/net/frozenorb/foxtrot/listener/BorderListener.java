@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -67,6 +68,10 @@ public class BorderListener implements Listener {
                 newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
             }
 
+           while (newLocation.getBlock().getType() != Material.AIR) {
+               newLocation.setY(newLocation.getBlockY() + 1);
+           }
+
             event.setTo(newLocation);
             event.getPlayer().sendMessage(ChatColor.RED + "That location is past the border.");
         }
@@ -91,6 +96,10 @@ public class BorderListener implements Listener {
 
                 while (Math.abs(newLocation.getZ()) > BORDER_SIZE) {
                     newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
+                }
+
+                while (newLocation.getBlock().getType() != Material.AIR) {
+                    newLocation.setY(newLocation.getBlockY() + 1);
                 }
 
                 event.setTo(newLocation);
