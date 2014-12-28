@@ -200,7 +200,7 @@ public class CitadelHandler {
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
     private Date generateCourtyardLootableDate() {
         Calendar date = Calendar.getInstance();
-        int diff = Calendar.THURSDAY  - date.get(Calendar.DAY_OF_WEEK);
+        int diff = Calendar.TUESDAY  - date.get(Calendar.DAY_OF_WEEK);
 
         if (diff <= 0) {
             diff += 7;
@@ -268,19 +268,19 @@ public class CitadelHandler {
             if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
                 chest.getBlockInventory().clear();
 
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getTown(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getTown(level), 1)) {
                     chest.getBlockInventory().addItem(loot);
                 }
             } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
                 chest.getBlockInventory().clear();
 
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getCourtyard(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getCourtyard(level), 1)) {
                     chest.getBlockInventory().addItem(loot);
                 }
             } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
                 chest.getBlockInventory().clear();
 
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getKeep(level), FoxtrotPlugin.RANDOM.nextInt(3) + 2)) {
+                for (ItemStack loot : getRandomLoot(CitadelLootType.getKeep(level), 1)) {
                     chest.getBlockInventory().addItem(loot);
                 }
             }
