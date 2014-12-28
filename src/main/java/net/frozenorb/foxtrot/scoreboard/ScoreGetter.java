@@ -21,7 +21,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.RED.toString() + ChatColor.BOLD + "Spawn Tag");
+            return (ChatColor.RED + "Spawn Tag");
         }
 
         @Override
@@ -43,7 +43,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.YELLOW.toString() + ChatColor.BOLD + "Enderpearl");
+            return (ChatColor.YELLOW + "Enderpearl");
         }
 
         @Override
@@ -65,7 +65,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.GREEN.toString() + ChatColor.BOLD + "PVP Timer");
+            return (ChatColor.GREEN + "PVP Timer");
         }
 
         @Override
@@ -95,11 +95,11 @@ public abstract class ScoreGetter {
             for (KOTH koth : KOTHHandler.getKOTHs()) {
                 if (koth.isActive()) {
                     if (koth.getName().equals("Citadel")) {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE + "Citadel";
                     } else if (koth.getName().equals("EOTW")) {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_RED + "EOTW";
                     } else {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
+                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE + koth.getName();
                     }
 
                     return (koth.getRemainingCapTime());
@@ -115,7 +115,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.GREEN.toString() + ChatColor.BOLD + "Bard Buff");
+            return (ChatColor.GREEN + "Bard Buff");
         }
 
         @Override
@@ -137,7 +137,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.GOLD.toString() + ChatColor.BOLD + "Archer Mark");
+            return (ChatColor.GOLD + "Archer Mark");
         }
 
         @Override
@@ -159,7 +159,7 @@ public abstract class ScoreGetter {
 
         @Override
         public String getTitle(Player player) {
-            return (ChatColor.AQUA.toString() + ChatColor.BOLD + "Energy");
+            return (ChatColor.AQUA + "Energy");
         }
 
         @Override
@@ -169,11 +169,6 @@ public abstract class ScoreGetter {
             }
 
             return (NO_SCORE);
-        }
-
-        @Override
-        public boolean isRaw() {
-            return (true);
         }
 
     };
@@ -193,9 +188,5 @@ public abstract class ScoreGetter {
     public abstract String getTitle(Player player);
 
     public abstract int getSeconds(Player player);
-
-    public boolean isRaw() {
-        return (false);
-    }
 
 }
