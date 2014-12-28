@@ -31,7 +31,7 @@ public class CommandData {
         this.parameters = parameters;
         this.method = method;
         this.console = console;
-        this.timingsHandler = new CustomTimingsHandler("Foxtrot - CH '/" + getName() + "' Process");
+        this.timingsHandler = new CustomTimingsHandler("Foxtrot - CH /" + getName() + " Process");
     }
 
     public String getName() {
