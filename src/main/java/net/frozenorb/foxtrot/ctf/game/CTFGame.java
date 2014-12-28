@@ -8,7 +8,6 @@ import net.frozenorb.foxtrot.ctf.enums.CTFFlagState;
 import net.frozenorb.foxtrot.team.Team;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,18 +18,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class CTFGame implements Listener {
 
     @Getter private Map<CTFFlagColor, CTFFlag> flags = new HashMap<CTFFlagColor, CTFFlag>();
     @Getter private Map<ObjectId, Set<CTFFlagColor>> capturedFlags = new HashMap<ObjectId, Set<CTFFlagColor>>();
     private int tick = 0;
-    private Map<String, Long> messageCooldown = new HashMap<>();
 
     public CTFGame(CTFFlag... flags) {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
@@ -61,87 +66,14 @@ public class CTFGame implements Listener {
     public void tick() {
         tick++;
 
+        // 2 minute update message
         if (tick % 120 == 0) {
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.GOLD + "CTF flag update:");
-
-            for (CTFFlag flag : getFlags().values()) {
-                Location flagLocation = flag.getLocation();
-                String locationString;
-
-                if (flag.getState() == CTFFlagState.CAP_POINT) {
-                    locationString = ChatColor.AQUA + "At cap point";
-                } else {
-                    locationString = ChatColor.AQUA + "Held by " + flag.getFlagHolder().getName();
-                }
-
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.DARK_AQUA + "=> " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag: " + ChatColor.WHITE + locationString + ChatColor.DARK_AQUA + " (" + flagLocation.getBlockX() + ", " + flagLocation.getBlockY() + ", " + flagLocation.getBlockZ() + ")");
-            }
+            sendUpdateMessage();
         }
 
+        // Tick all our individual flags
         for (CTFFlag flag : getFlags().values()) {
-            if (tick % 5 == 0) {
-                flag.updateVisual();
-            }
-
-            if (flag.getFlagHolder() != null) {
-                // Capture the flag
-                if (flag.getFlagHolder().getLocation().distanceSquared(flag.getCaptureLocation()) > 4) { // 2 blocks
-                    continue;
-                }
-
-                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(flag.getFlagHolder().getName());
-
-                if (team == null) {
-                    flag.getFlagHolder().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You must be on a team in order to capture the flag.");
-                    continue;
-                }
-
-                if (capturedFlags.containsKey(team.getUniqueId()) && capturedFlags.get(team.getUniqueId()).contains(flag.getColor())) {
-                    flag.getFlagHolder().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "Your team has already captured this flag! It has been returned to its spawn location.");
-                    flag.dropFlag(true);
-                    continue;
-                }
-
-                flag.captureFlag(false);
-            } else {
-                List<Player> onCap = new ArrayList<Player>();
-
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (flag.getSpawnLocation().distanceSquared(player.getLocation()) < 4 && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
-                        onCap.add(player);
-                    }
-                }
-
-                // We shuffle as other having 'relog' will give you priority in starting to cap.
-                Collections.shuffle(onCap);
-
-                if (onCap.size() != 0) {
-                    Player capper = onCap.get(0);
-                    Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(capper.getName());
-
-                    if (team == null) {
-                        if (!(messageCooldown.containsKey(capper.getName())) || messageCooldown.get(capper.getName()) < System.currentTimeMillis()) {
-                            capper.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You must be on a team in order to pickup the flag.");
-                            messageCooldown.put(capper.getName(), System.currentTimeMillis() + 3000L);
-                        }
-
-                        return;
-                    }
-
-                    for (CTFFlag possibleFlag : getFlags().values()) {
-                        if (possibleFlag.getFlagHolder() != null && possibleFlag.getFlagHolder() == capper) {
-                            if (!(messageCooldown.containsKey(capper.getName())) || messageCooldown.get(capper.getName()) < System.currentTimeMillis()) {
-                                capper.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot carry multiple flags at the same time!");
-                                messageCooldown.put(capper.getName(), System.currentTimeMillis() + 3000L);
-                            }
-
-                            return;
-                        }
-                    }
-
-                    flag.pickupFlag(capper, false);
-                }
-            }
+            flag.tick(tick);
         }
     }
 
@@ -217,6 +149,49 @@ public class CTFGame implements Listener {
                 flag.dropFlag(false);
                 FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + " has disconnected and dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
             }
+        }
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+        if (event.getItem().getType() != Material.POTION) {
+            return;
+        }
+
+        for (CTFFlag flag : getFlags().values()) {
+            if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
+                try {
+                    Potion potion = Potion.fromItemStack(event.getItem());
+
+                    for (PotionEffect effect : potion.getEffects()) {
+                        if (effect.getType().equals(PotionEffectType.SPEED)) {
+                            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot drink speed potions while holding the flag! Use beacons or Bards to get speed!");
+                            event.setCancelled(true);
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+
+                return;
+            }
+        }
+    }
+
+    private void sendUpdateMessage() {
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.GOLD + "CTF flag update:");
+
+        for (CTFFlag flag : getFlags().values()) {
+            Location flagLocation = flag.getLocation();
+            String locationString;
+
+            if (flag.getState() == CTFFlagState.CAP_POINT) {
+                locationString = ChatColor.AQUA + "At cap point";
+            } else {
+                locationString = ChatColor.AQUA + "Held by " + flag.getFlagHolder().getName();
+            }
+
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.DARK_AQUA + "=> " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag: " + ChatColor.WHITE + locationString + ChatColor.DARK_AQUA + " (" + flagLocation.getBlockX() + ", " + flagLocation.getBlockY() + ", " + flagLocation.getBlockZ() + ")");
         }
     }
 
