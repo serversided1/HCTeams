@@ -117,6 +117,7 @@ public class BasicPreventionListener implements Listener {
             event.setCancelled(true);
         }
     }
+
     @EventHandler
     public void onFireBurn(BlockBurnEvent event) {
         if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {

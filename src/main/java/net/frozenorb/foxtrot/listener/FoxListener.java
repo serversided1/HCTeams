@@ -27,7 +27,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -36,6 +38,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
@@ -450,54 +453,31 @@ public class FoxListener implements Listener {
         }
     }
 
-    /*@EventHandler
-    public void onCreatureSpawn(final CreatureSpawnEvent event) {
-        Entity entity = event.getEntity();
-
-        if (!(entity instanceof Chicken || entity instanceof MushroomCow || entity instanceof Villager)) {
-            if (LandBoard.getInstance().getTeam(entity.getLocation()) != null) {
-                if (((CraftEntity) entity).getHandle() instanceof EntityInsentient) {
-                    EntityInsentient ie = (EntityInsentient) ((CraftEntity) entity).getHandle();
-                    ie.fromMobSpawner = true;
-                }
-            }
-        }
-
-        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.SPAWNER) {
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof Monster) {
             return;
         }
 
-        Location loc = event.getLocation();
-        Chunk c = loc.getChunk();
-        if (c.getEntities().length > 55) {
-            event.setCancelled(true);
-            return;
-        }
-        int shouldSpawn = 0;
-        if (mobSpawns.containsKey(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ())) {
-            mobSpawns.put(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ(), mobSpawns.get(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ()) + 1);
-        } else {
-            mobSpawns.put(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ(), 0);
-        }
-        shouldSpawn = mobSpawns.get(event.getLocation().getChunk().getX() + ":" + event.getLocation().getChunk().getZ());
-        if (shouldSpawn % 4 != 0) {
-            event.setCancelled(true);
-        } else
-            event.getEntity().setMetadata("Spawner", new FixedMetadataValue(plugin, true));
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+        Location location = event.getLocation();
+        Chunk chunk = location.getChunk();
 
-            @Override
-            public void run() {
-                Entity entity = event.getEntity();
-                Location loc = entity.getLocation();
-                Chunk c = loc.getChunk();
-                if (c.getEntities().length > 55) {
-                    entity.remove();
-                    return;
-                }
+        int entInChunk = 0;
+        int maxEntInChunk = 30;
+
+        for (Entity entity : chunk.getEntities()) {
+            if (entity instanceof Monster) {
+                continue;
             }
-        }, 200L);
-    }*/
+
+            entInChunk++;
+
+            if (entInChunk > maxEntInChunk) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+    }
 
     @EventHandler
     public void onSignChange(SignChangeEvent e) {
