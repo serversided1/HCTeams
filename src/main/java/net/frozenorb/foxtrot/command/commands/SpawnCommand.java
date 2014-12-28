@@ -9,7 +9,7 @@ public class SpawnCommand {
 
     @Command(names={ "spawn" }, permissionNode="")
     public static void spawn(Player sender) {
-        if (sender.isOp()) {
+        if (sender.hasPermission("foxtrot.spawn")) {
             sender.teleport(FoxtrotPlugin.getInstance().getServerHandler().getSpawnLocation());
         } else {
             sender.sendMessage(ChatColor.RED + "HCTeams does not have a spawn command! You must walk there!");
