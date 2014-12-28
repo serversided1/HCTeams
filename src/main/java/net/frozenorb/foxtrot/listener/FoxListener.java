@@ -307,7 +307,7 @@ public class FoxListener implements Listener {
 
             if (team != null && !team.isMember(event.getPlayer())) {
                 if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                    if (event.getClickedBlock().getType() == Material.CHEST) {
+                    if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
                         CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
 
                         if (DTRBitmaskType.CITADEL_TOWN.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelTown(event.getPlayer())) {
