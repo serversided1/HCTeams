@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -74,9 +73,10 @@ public class RemoveExcessMobsCommand {
                             int removed = 0;
 
                             for (Entity entity : chunk.getEntities()) {
-                                if (entity instanceof Monster) {
+                                //TODO
+                                /*if (entity instanceof Monster) {
                                     continue;
-                                }
+                                }*/
 
                                 entInChunk++;
 
