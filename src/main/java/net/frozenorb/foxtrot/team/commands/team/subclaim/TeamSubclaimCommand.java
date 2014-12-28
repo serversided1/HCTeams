@@ -38,14 +38,14 @@ public class TeamSubclaimCommand implements Listener {
 
     @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim", "team sub", "t sub", "f sub", "faction sub", "fac sub" }, permissionNode="")
     public static void teamSubclaim(Player sender) {
-        sender.sendMessage(ChatColor.RED + "/f subclaim start - starts the subclaiming process");
-        sender.sendMessage(ChatColor.RED + "/f subclaim map - toggles a visual subclaim map");
-        sender.sendMessage(ChatColor.RED + "/f subclaim create <subclaim> - creates a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim addplayer <subclaim> <player> - adds a player to a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim removeplayer <subclaim> <player> - removes a player from a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim list - views all subclaims");
-        sender.sendMessage(ChatColor.RED + "/f subclaim info <subclaim> - views info about a subclaim");
-        sender.sendMessage(ChatColor.RED + "/f subclaim unclaim <subclaim> <player> - unclaims a subclaim");
+        sender.sendMessage(ChatColor.RED + "/t subclaim start - starts the subclaiming process");
+        sender.sendMessage(ChatColor.RED + "/t subclaim map - toggles a visual subclaim map");
+        sender.sendMessage(ChatColor.RED + "/t subclaim create <subclaim> - creates a subclaim");
+        sender.sendMessage(ChatColor.RED + "/t subclaim addplayer <subclaim> <player> - adds a player to a subclaim");
+        sender.sendMessage(ChatColor.RED + "/t subclaim removeplayer <subclaim> <player> - removes a player from a subclaim");
+        sender.sendMessage(ChatColor.RED + "/t subclaim list - views all subclaims");
+        sender.sendMessage(ChatColor.RED + "/t subclaim info <subclaim> - views info about a subclaim");
+        sender.sendMessage(ChatColor.RED + "/t subclaim unclaim <subclaim> <player> - unclaims a subclaim");
     }
 
     @EventHandler
