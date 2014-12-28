@@ -115,6 +115,12 @@ public class EnderpearlListener implements Listener {
             }
         }
 
+        if (DTRBitmaskType.NO_ENDERPEARL.appliesAt(target)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into this region!");
+            return;
+        }
+
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null) {

@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.team.dtr.bitmask;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.Location;
@@ -44,7 +43,9 @@ public enum DTRBitmaskType {
     // Used in KOTHs
     KOTH(1024, "KOTH", "Determines if a region is a KOTH"),
 
-    HALF_DTR_LOSS(2048, "Half-DTR-Loss", "Determines if a region only takes away 0.5 DTR upon death");
+    HALF_DTR_LOSS(2048, "Half-DTR-Loss", "Determines if a region only takes away 0.5 DTR upon death"),
+
+    NO_ENDERPEARL(4096, "No-Enderpearl", "Determines if a region cannot be pearled into");
 
     @Getter private int bitmask;
     @Getter private String name;
