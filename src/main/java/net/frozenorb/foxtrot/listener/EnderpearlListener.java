@@ -120,7 +120,7 @@ public class EnderpearlListener implements Listener {
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null) {
             if (ownerTo.isMember(event.getPlayer().getName())) {
                 FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
-            } else {
+            } else if (ownerTo.getOwner() != null) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into claims while having a PvP Timer!");
                 return;
