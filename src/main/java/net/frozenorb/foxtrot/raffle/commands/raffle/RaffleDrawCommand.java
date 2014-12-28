@@ -17,7 +17,7 @@ import java.util.List;
 public class RaffleDrawCommand {
 
     @Command(names={ "raffle draw" }, permissionNode="op")
-    public static void raffleDraw(Player sender, @Param(name="scope") String scope, @Param(name="prize", wildcard=true) String prize) {
+    public static void raffleDraw(Player sender, @Param(name="scope") String scope, @Param(name="week index mod") int weekIndexMod, @Param(name="prize", wildcard=true) String prize) {
         if (!(scope.equalsIgnoreCase("week") || scope.equalsIgnoreCase("total"))) {
             sender.sendMessage(ChatColor.RED + "Invalid scope. Options: week, total");
             return;
@@ -39,7 +39,7 @@ public class RaffleDrawCommand {
                     DBCursor cursor = null;
 
                     if (scope.equalsIgnoreCase("week")) {
-                        cursor = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("RaffleEntries_Week" + Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)).find();
+                        cursor = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("RaffleEntries_Week" + (Calendar.getInstance().get(Calendar.WEEK_OF_YEAR) + weekIndexMod)).find();
                     } else {
                         cursor = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("RaffleEntries").find();
                     }
