@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +15,16 @@ public class ReviveCommand {
 
     @Command(names={ "Revive" }, permissionNode="op")
     public static void playSound(CommandSender sender, @Param(name="Target") String target, @Param(name="Reason", wildcard=true) String reason) {
+        if (reason.equals(".")) {
+            sender.sendMessage(ChatColor.RED + ". is not a good reason...");
+            return;
+        }
+
+        if (reason.length() <= 3 && sender.getName().equals("itsjhalt")) {
+            sender.sendMessage(ChatColor.RED + "Jon use an actual fucking reason ok?");
+            return;
+        }
+
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(target)) {
             File logTo = new File("adminrevives.log");
 
