@@ -12,6 +12,7 @@ import net.frozenorb.foxtrot.ctf.events.PlayerPickupFlagEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.minecraft.server.v1_7_R3.EntityWitherSkull;
 import net.minecraft.server.v1_7_R3.WorldServer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -195,6 +196,7 @@ public class CTFFlag {
             entity.remove();
         }
 
+        System.out.println("Removed " + flagItems.size() + " entities");
         flagItems.clear();
     }
 
@@ -226,6 +228,8 @@ public class CTFFlag {
             flagItems.add(pole[y]);
             flagItems.add(witherSkull.getBukkitEntity());
         }
+
+        System.out.println("Added " + flagItems.size() + " entities (pole)");
     }
 
     public void updateFlagVisual() {
@@ -258,6 +262,8 @@ public class CTFFlag {
                 flagItems.add(witherSkull.getBukkitEntity());
             }
         }
+
+        System.out.println("Added " + flagItems.size() + " entities (flag)");
     }
 
 }
