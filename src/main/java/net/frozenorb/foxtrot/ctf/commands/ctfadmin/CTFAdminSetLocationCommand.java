@@ -26,8 +26,8 @@ public class CTFAdminSetLocationCommand {
     public static void ctfAdminSetLocation(Player sender, @Param(name="config") String config, @Param(name="location") String location) {
         CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
 
-        if (game != null) {
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There is already an active CTF game!");
+        if (game == null) {
+            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There isn't an active CTF game!");
             return;
         }
 

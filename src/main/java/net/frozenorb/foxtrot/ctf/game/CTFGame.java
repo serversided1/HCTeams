@@ -8,11 +8,13 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -97,10 +99,6 @@ public class CTFGame implements Listener {
                 // Pickup the flag
                 event.setCancelled(true);
 
-                if (event.getPlayer().hasMetadata("invisible")) {
-                    return;
-                }
-
                 Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
                 if (team == null) {
@@ -129,6 +127,26 @@ public class CTFGame implements Listener {
     }
 
     @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() != Material.WOOL) {
+            return;
+        }
+
+        ItemMeta itemMeta = event.getCurrentItem().getItemMeta();
+
+        if (!itemMeta.hasDisplayName() || !itemMeta.getDisplayName().startsWith(String.valueOf(ChatColor.COLOR_CHAR))) {
+            return;
+        }
+
+        for (CTFFlag flag : getFlags().values()) {
+            if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getWhoClicked()) {
+                flag.dropFlag(false);
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ((Player) event.getWhoClicked()).getDisplayName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (event.getItemDrop().getItemStack().getType() != Material.WOOL) {
             return;
@@ -144,7 +162,7 @@ public class CTFGame implements Listener {
             if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
                 event.getItemDrop().remove();
                 flag.dropFlag(false);
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
             }
         }
     }
@@ -165,7 +183,7 @@ public class CTFGame implements Listener {
                 }
 
                 flag.dropFlag(false);
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.AQUA + event.getEntity().getName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + event.getEntity().getDisplayName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
             }
         }
     }
@@ -178,7 +196,7 @@ public class CTFGame implements Listener {
                 event.getPlayer().getInventory().remove(Material.WOOL);
 
                 flag.dropFlag(false);
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.YELLOW + " has disconnected and dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + " has disconnected and dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
             }
         }
     }

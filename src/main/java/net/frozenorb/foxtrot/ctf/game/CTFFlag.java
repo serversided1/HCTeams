@@ -12,7 +12,6 @@ import net.frozenorb.foxtrot.ctf.events.PlayerPickupFlagEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.minecraft.server.v1_7_R3.EntityWitherSkull;
 import net.minecraft.server.v1_7_R3.WorldServer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -85,7 +84,7 @@ public class CTFFlag {
 
         if (!silent) {
             String teamString = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been picked up by " + teamString + ChatColor.AQUA + player.getName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ() + ")");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been picked up by " + teamString + player.getDisplayName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ() + ")");
         }
 
         player.sendMessage(ChatColor.LIGHT_PURPLE + "You've picked up a flag! Take the flag to " + getCaptureLocation().getBlockX() + ", " + getCaptureLocation().getBlockY() + ", " + getCaptureLocation().getBlockZ() + " within 30 minutes to capture it!");
@@ -133,7 +132,7 @@ public class CTFFlag {
 
         if (teamCaptures != neededCaptures) {
             if (!silent) {
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been captured by " + teamString + ChatColor.AQUA + getFlagHolder().getName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + teamCaptures + "/" + neededCaptures + ")");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "The " + getColor().getChatColor() + getColor().getName() + " Flag " + ChatColor.YELLOW + "has been captured by " + teamString + getFlagHolder().getDisplayName() + ChatColor.YELLOW + ". " + ChatColor.DARK_AQUA + "(" + teamCaptures + "/" + neededCaptures + ")");
             }
 
             dropFlag(false);
@@ -146,9 +145,6 @@ public class CTFFlag {
 
     public Item spawnAnchorItem() {
         Item anchorItem = getSpawnLocation().getWorld().dropItem(getSpawnLocation(), new ItemStack(POLE_MATERIAL));
-
-        anchorItem.setPickupDelay(60);
-
         return (anchorItem);
     }
 
@@ -192,6 +188,10 @@ public class CTFFlag {
     }
 
     public void removeVisual() {
+        if (anchorItem != null) {
+            anchorItem.getLocation().getChunk().load(true);
+        }
+
         for (Entity entity : flagItems) {
             entity.remove();
         }
@@ -203,6 +203,8 @@ public class CTFFlag {
     public void updatePoleVisual() {
         Item[] pole = new Item[POLE_HEIGHT - 4];
         Location anchorLocation = getAnchorItem().getLocation();
+
+        anchorLocation.getChunk().load(true);
 
         //Create the pole items
         for (int y = 0; y < POLE_HEIGHT - 4; y++) {
@@ -235,6 +237,8 @@ public class CTFFlag {
     public void updateFlagVisual() {
         Item[][] flag = new Item[FLAG_WIDTH][FLAG_HEIGHT];
         Location anchorLocation = getAnchorItem().getLocation();
+
+        anchorLocation.getChunk().load(true);
 
         for (int x = 0; x < FLAG_WIDTH; x++) {
             for (int y = 0; y < FLAG_HEIGHT; y++) {
