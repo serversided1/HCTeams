@@ -44,7 +44,7 @@ public class TeamCreateCommand {
 
                 Team team = new Team(name);
 
-                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Faction created. [Created by: " + sender.getName() + "]");
+                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Team created. [Created by: " + sender.getName() + "]");
 
                 team.setOwner(sender.getName());
                 team.setName(name);
