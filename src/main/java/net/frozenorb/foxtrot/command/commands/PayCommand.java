@@ -28,7 +28,7 @@ public class PayCommand {
         //Format online players name
         Player pTarget = Bukkit.getPlayer(target);
 
-        if (pTarget != null){
+        if (pTarget != null) {
             target = pTarget.getName();
         }
 
@@ -50,6 +50,11 @@ public class PayCommand {
         Basic.get().getEconomyManager().depositPlayer(target, value);
         Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), value);
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&eYou sent &d" + NumberFormat.getCurrencyInstance().format(value) + "&e to &d" + target + "&e!"));
+        sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + target + ChatColor.YELLOW + ".");
+
+        if (pTarget != null) {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + ".");
+        }
     }
+
 }
