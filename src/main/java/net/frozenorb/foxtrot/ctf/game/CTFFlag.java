@@ -10,50 +10,36 @@ import net.frozenorb.foxtrot.ctf.events.PlayerCaptureFlagEvent;
 import net.frozenorb.foxtrot.ctf.events.PlayerDropFlagEvent;
 import net.frozenorb.foxtrot.ctf.events.PlayerPickupFlagEvent;
 import net.frozenorb.foxtrot.team.Team;
-import net.minecraft.server.v1_7_R3.EntityWitherSkull;
-import net.minecraft.server.v1_7_R3.WorldServer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 public class CTFFlag {
 
-    public static final int POLE_HEIGHT = 10;
-    public static final int FLAG_WIDTH = 12;
-    public static final int FLAG_HEIGHT = 5;
-    public static final float FLAG_PROPORTION = 0.4F;
-
-    public static final Material POLE_MATERIAL = Material.WOOL;
+    public static final Material POLE_MATERIAL = Material.FENCE;
     public static final Material FLAG_MATERIAL = Material.WOOL;
 
     @Getter @Setter private Location spawnLocation;
     @Getter @Setter private Location captureLocation;
     @Getter @Setter private CTFFlagColor color;
     @Getter @Setter private CTFFlagState state;
-    @Getter @Setter private Item anchorItem;
     @Getter private Player flagHolder; // Setter is manually implemented down below
-
-    private Set<Entity> flagItems = new HashSet<Entity>();
 
     public CTFFlag(Location spawnLocation, Location captureLocation, CTFFlagColor color) {
         this.spawnLocation = spawnLocation;
         this.captureLocation = captureLocation;
         this.color = color;
         this.state = CTFFlagState.CAP_POINT;
-        this.anchorItem = null;
         this.flagHolder = null;
 
         dropFlag(true);
@@ -78,8 +64,6 @@ public class CTFFlag {
         }
 
         setState(CTFFlagState.HELD_BY_PLAYER);
-        getAnchorItem().remove();
-        setAnchorItem(null);
         setFlagHolder(player);
 
         if (!silent) {
@@ -99,8 +83,6 @@ public class CTFFlag {
         if (getFlagHolder() != null) {
             getFlagHolder().getInventory().setHelmet(null);
         }
-
-        setAnchorItem(spawnAnchorItem());
 
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new PlayerDropFlagEvent(getFlagHolder(), this));
         setFlagHolder(null);
@@ -143,18 +125,9 @@ public class CTFFlag {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new PlayerCaptureFlagEvent(getFlagHolder(), this));
     }
 
-    public Item spawnAnchorItem() {
-        Item anchorItem = getSpawnLocation().getWorld().dropItem(getSpawnLocation(), new ItemStack(POLE_MATERIAL));
-        return (anchorItem);
-    }
-
     public Location getLocation() {
         if (getState() == CTFFlagState.CAP_POINT) {
-            if (getAnchorItem() == null || getAnchorItem().isDead()) {
-                setAnchorItem(spawnAnchorItem());
-            }
-
-            return (getAnchorItem().getLocation());
+            return (getSpawnLocation());
         } else {
             if (getFlagHolder() == null) {
                 dropFlag(true);
@@ -165,17 +138,18 @@ public class CTFFlag {
         }
     }
 
+    public void removeVisual() {
+        // Remove the beacon (if it's still there)
+        Block relativeNorth = getSpawnLocation().getBlock().getRelative(BlockFace.NORTH);
+        getSpawnLocation().getBlock().setTypeIdAndData(relativeNorth.getTypeId(), relativeNorth.getData(), true);
+    }
+
     public void updateVisual() {
-        removeVisual();
-
         if (getState() == CTFFlagState.CAP_POINT) {
-            if (getAnchorItem() == null) {
-                setAnchorItem(spawnAnchorItem());
-            }
-
-            updatePoleVisual();
-            updateFlagVisual();
+            getSpawnLocation().getBlock().setType(Material.BEACON);
         } else {
+            removeVisual();
+
             ItemStack helmet = new ItemStack(FLAG_MATERIAL, 1, getColor().getDyeColor().getWoolData());
             ItemMeta itemMeta = helmet.getItemMeta();
 
@@ -185,89 +159,6 @@ public class CTFFlag {
             helmet.setItemMeta(itemMeta);
             getFlagHolder().getInventory().setHelmet(helmet);
         }
-    }
-
-    public void removeVisual() {
-        if (anchorItem != null) {
-            anchorItem.getLocation().getChunk().load(true);
-        }
-
-        for (Entity entity : flagItems) {
-            entity.remove();
-        }
-
-        System.out.println("Removed " + flagItems.size() + " entities");
-        flagItems.clear();
-    }
-
-    public void updatePoleVisual() {
-        Item[] pole = new Item[POLE_HEIGHT - 4];
-        Location anchorLocation = getAnchorItem().getLocation();
-
-        anchorLocation.getChunk().load(true);
-
-        //Create the pole items
-        for (int y = 0; y < POLE_HEIGHT - 4; y++) {
-            Location itemLoc = anchorLocation.clone().add(new Vector(0, y * FLAG_PROPORTION, 0));
-            ItemStack itemStack = new ItemStack(POLE_MATERIAL, 1);
-            ItemMeta itemMeta = itemStack.getItemMeta();
-
-            itemMeta.setDisplayName(ChatColor.RED + "no-pickup " + FoxtrotPlugin.RANDOM.nextInt(100000));
-
-            itemStack.setItemMeta(itemMeta);
-
-            pole[y] = anchorLocation.getWorld().dropItem(itemLoc, itemStack);
-
-            WorldServer nmsWorld = ((CraftWorld) itemLoc.getWorld()).getHandle();
-            EntityWitherSkull witherSkull = new EntityWitherSkull(nmsWorld);
-
-            witherSkull.setLocation(itemLoc.getX(), itemLoc.getY(), itemLoc.getZ(), 0, 0);
-
-            nmsWorld.addEntity(witherSkull);
-
-            witherSkull.getBukkitEntity().setPassenger(pole[y]);
-
-            flagItems.add(pole[y]);
-            flagItems.add(witherSkull.getBukkitEntity());
-        }
-
-        System.out.println("Added " + flagItems.size() + " entities (pole)");
-    }
-
-    public void updateFlagVisual() {
-        Item[][] flag = new Item[FLAG_WIDTH][FLAG_HEIGHT];
-        Location anchorLocation = getAnchorItem().getLocation();
-
-        anchorLocation.getChunk().load(true);
-
-        for (int x = 0; x < FLAG_WIDTH; x++) {
-            for (int y = 0; y < FLAG_HEIGHT; y++) {
-                Location itemLoc = anchorLocation.clone().add(new Vector(0, (POLE_HEIGHT * FLAG_PROPORTION) - y * FLAG_PROPORTION, x * FLAG_PROPORTION));
-                ItemStack itemStack = new ItemStack(FLAG_MATERIAL, 1, getColor().getDyeColor().getWoolData());
-                ItemMeta itemMeta = itemStack.getItemMeta();
-
-                itemMeta.setDisplayName(ChatColor.RED + "no-pickup " + FoxtrotPlugin.RANDOM.nextInt(100000));
-
-                itemStack.setItemMeta(itemMeta);
-
-                flag[x][y] = anchorLocation.getWorld().dropItem(itemLoc, itemStack);
-                flag[x][y].setPickupDelay(Integer.MAX_VALUE);
-
-                WorldServer nmsWorld = ((CraftWorld) itemLoc.getWorld()).getHandle();
-                EntityWitherSkull witherSkull = new EntityWitherSkull(nmsWorld);
-
-                witherSkull.setLocation(itemLoc.getX(), itemLoc.getY(), itemLoc.getZ(), 0, 0);
-
-                nmsWorld.addEntity(witherSkull);
-
-                witherSkull.getBukkitEntity().setPassenger(flag[x][y]);
-
-                flagItems.add(flag[x][y]);
-                flagItems.add(witherSkull.getBukkitEntity());
-            }
-        }
-
-        System.out.println("Added " + flagItems.size() + " entities (flag)");
     }
 
 }

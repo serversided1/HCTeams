@@ -4,9 +4,12 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.ctf.enums.CTFFlagColor;
+import net.frozenorb.foxtrot.ctf.enums.CTFFlagState;
 import net.frozenorb.foxtrot.team.Team;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,15 +19,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CTFGame implements Listener {
 
@@ -62,13 +61,34 @@ public class CTFGame implements Listener {
     public void tick() {
         tick++;
 
+        if (tick % 120 == 0) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.GOLD + "CTF flag update:");
+
+            for (CTFFlag flag : getFlags().values()) {
+                Location flagLocation = flag.getLocation();
+                String locationString;
+
+                if (flag.getState() == CTFFlagState.CAP_POINT) {
+                    locationString = ChatColor.AQUA + "At cap point";
+                } else {
+                    locationString = ChatColor.AQUA + "Held by " + flag.getFlagHolder().getName();
+                }
+
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.DARK_AQUA + "=> " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag: " + ChatColor.WHITE + locationString + ChatColor.DARK_AQUA + " (" + flagLocation.getBlockX() + ", " + flagLocation.getBlockY() + ", " + flagLocation.getBlockZ() + ")");
+            }
+        }
+
         for (CTFFlag flag : getFlags().values()) {
-            if (tick % 20 == 0) {
+            if (tick % 5 == 0) {
                 flag.updateVisual();
             }
 
-            if (flag.getFlagHolder() != null && flag.getFlagHolder().getLocation().distance(flag.getCaptureLocation()) < 5) {
+            if (flag.getFlagHolder() != null) {
                 // Capture the flag
+                if (flag.getFlagHolder().getLocation().distanceSquared(flag.getCaptureLocation()) > 4) { // 2 blocks
+                    continue;
+                }
+
                 Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(flag.getFlagHolder().getName());
 
                 if (team == null) {
@@ -83,45 +103,44 @@ public class CTFGame implements Listener {
                 }
 
                 flag.captureFlag(false);
-            }
-        }
-    }
+            } else {
+                List<Player> onCap = new ArrayList<Player>();
 
-    @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (event.getItem().getItemStack().hasItemMeta() && event.getItem().getItemStack().getItemMeta().hasDisplayName() && event.getItem().getItemStack().getItemMeta().getDisplayName().startsWith(ChatColor.RED + "no-pickup")) {
-            event.setCancelled(true);
-            return;
-        }
-
-        for (CTFFlag flag : getFlags().values()) {
-            if (flag.getAnchorItem() != null && flag.getAnchorItem().equals(event.getItem())) {
-                // Pickup the flag
-                event.setCancelled(true);
-
-                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
-
-                if (team == null) {
-                    if (!(messageCooldown.containsKey(event.getPlayer().getName())) || messageCooldown.get(event.getPlayer().getName()) < System.currentTimeMillis()) {
-                        event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You must be on a team in order to pickup the flag.");
-                        messageCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + 3000L);
+                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    if (flag.getSpawnLocation().distanceSquared(player.getLocation()) < 4 && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
+                        onCap.add(player);
                     }
-
-                    return;
                 }
 
-                for (CTFFlag possibleFlag : getFlags().values()) {
-                    if (possibleFlag.getFlagHolder() != null && possibleFlag.getFlagHolder() == event.getPlayer()) {
-                        if (!(messageCooldown.containsKey(event.getPlayer().getName())) || messageCooldown.get(event.getPlayer().getName()) < System.currentTimeMillis()) {
-                            event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot carry multiple flags at the same time!");
-                            messageCooldown.put(event.getPlayer().getName(), System.currentTimeMillis() + 3000L);
+                // We shuffle as other having 'relog' will give you priority in starting to cap.
+                Collections.shuffle(onCap);
+
+                if (onCap.size() != 0) {
+                    Player capper = onCap.get(0);
+                    Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(capper.getName());
+
+                    if (team == null) {
+                        if (!(messageCooldown.containsKey(capper.getName())) || messageCooldown.get(capper.getName()) < System.currentTimeMillis()) {
+                            capper.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You must be on a team in order to pickup the flag.");
+                            messageCooldown.put(capper.getName(), System.currentTimeMillis() + 3000L);
                         }
 
                         return;
                     }
-                }
 
-                flag.pickupFlag(event.getPlayer(), false);
+                    for (CTFFlag possibleFlag : getFlags().values()) {
+                        if (possibleFlag.getFlagHolder() != null && possibleFlag.getFlagHolder() == capper) {
+                            if (!(messageCooldown.containsKey(capper.getName())) || messageCooldown.get(capper.getName()) < System.currentTimeMillis()) {
+                                capper.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot carry multiple flags at the same time!");
+                                messageCooldown.put(capper.getName(), System.currentTimeMillis() + 3000L);
+                            }
+
+                            return;
+                        }
+                    }
+
+                    flag.pickupFlag(capper, false);
+                }
             }
         }
     }

@@ -15,7 +15,7 @@ import java.util.*;
 
 public class CTFScoreCommand {
 
-    @Command(names={ "ctf score" }, permissionNode="")
+    @Command(names={ "ctf score", "ctf scores" }, permissionNode="")
     public static void ctfScore(Player sender, @Param(name="page", defaultValue="1") int page) {
         if (page < 1) {
             sender.sendMessage(ChatColor.RED + "You cannot view a page less than 1");
@@ -80,7 +80,7 @@ public class CTFScoreCommand {
                 missingBuilder.setLength(missingBuilder.length() - 2);
             }
 
-            sender.sendMessage(ChatColor.GRAY.toString() + (index) + ". " + ChatColor.YELLOW + teamEntry.getKey().getName() + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + CTFFlagColor.values().length + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + " Missing " + missingBuilder.toString() + ChatColor.GREEN + ")");
+            sender.sendMessage(ChatColor.GRAY.toString() + (index) + ". " + ChatColor.YELLOW + teamEntry.getKey().getName() + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + CTFFlagColor.values().length + ")" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "Missing " + missingBuilder.toString());
         }
 
         sender.sendMessage(ChatColor.GRAY + "You are currently on " + ChatColor.WHITE + "Page " + page + "/" + maxPages + ChatColor.GRAY + ".");

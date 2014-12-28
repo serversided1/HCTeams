@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.ctf.CTFHandler;
+import net.frozenorb.foxtrot.ctf.game.CTFFlag;
+import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
@@ -358,6 +361,17 @@ public class Team {
 
             if (subclaim.isMember(name)) {
                 subclaim.removeMember(name);
+            }
+        }
+
+        CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
+
+        if (game != null) {
+            for (CTFFlag flag : game.getFlags().values()) {
+                if (flag.getFlagHolder() != null && flag.getFlagHolder().getName().equalsIgnoreCase(name)) {
+                    flag.dropFlag(false);
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.WHITE + name + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+                }
             }
         }
 

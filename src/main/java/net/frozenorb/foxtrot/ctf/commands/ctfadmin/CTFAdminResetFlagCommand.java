@@ -9,10 +9,10 @@ import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class CTFAdminResetFlagsCommand {
+public class CTFAdminResetFlagCommand {
 
-    @Command(names={ "ctfadmin resetflags" }, permissionNode="op")
-    public static void ctfAdminResetFlags(Player sender, @Param(name="flag", defaultValue="all") String flagString) {
+    @Command(names={ "ctfadmin resetflag" }, permissionNode="op")
+    public static void ctfAdminResetFlag(Player sender, @Param(name="flag") String flagString) {
         CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
 
         if (game == null) {
@@ -26,7 +26,7 @@ public class CTFAdminResetFlagsCommand {
             }
         }
 
-        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Reset CTF flags.");
+        sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.YELLOW + "Reset the specified flag(s).");
     }
 
 }

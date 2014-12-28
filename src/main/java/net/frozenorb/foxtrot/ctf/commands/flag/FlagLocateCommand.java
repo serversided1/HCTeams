@@ -33,10 +33,10 @@ public class FlagLocateCommand {
                     locationString = "Held by " + flag.getFlagHolder().getName();
                 }
 
-                sender.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + locationString);
-                sender.sendMessage(ChatColor.YELLOW + "Return location: " + ChatColor.WHITE + flag.getCaptureLocation().getBlockX() + ", " + flag.getCaptureLocation().getBlockY() + ", " + flag.getCaptureLocation().getBlockZ());
-                sender.sendMessage(ChatColor.YELLOW + "Spawn location: " + ChatColor.WHITE + flag.getSpawnLocation().getBlockX() + ", " + flag.getSpawnLocation().getBlockY() + ", " + flag.getSpawnLocation().getBlockZ());
-                sender.sendMessage(ChatColor.YELLOW + "Current location: " + ChatColor.WHITE + flag.getLocation().getBlockX() + ", " + flag.getLocation().getBlockY() + ", " + flag.getLocation().getBlockZ());
+                sender.sendMessage(ChatColor.DARK_AQUA + "Location: " + ChatColor.WHITE + locationString);
+                sender.sendMessage(ChatColor.DARK_AQUA + "Return location: " + ChatColor.WHITE + flag.getCaptureLocation().getBlockX() + ", " + flag.getCaptureLocation().getBlockY() + ", " + flag.getCaptureLocation().getBlockZ());
+                sender.sendMessage(ChatColor.DARK_AQUA + "Spawn location: " + ChatColor.WHITE + flag.getSpawnLocation().getBlockX() + ", " + flag.getSpawnLocation().getBlockY() + ", " + flag.getSpawnLocation().getBlockZ());
+                sender.sendMessage(ChatColor.DARK_AQUA + "Current location: " + ChatColor.WHITE + flag.getLocation().getBlockX() + ", " + flag.getLocation().getBlockY() + ", " + flag.getLocation().getBlockZ());
 
                 return;
             }

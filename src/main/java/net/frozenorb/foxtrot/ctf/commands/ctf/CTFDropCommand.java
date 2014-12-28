@@ -22,7 +22,7 @@ public class CTFDropCommand {
         for (CTFFlag flag : game.getFlags().values()) {
             if (flag.getFlagHolder() != null && flag.getFlagHolder() == sender) {
                 flag.dropFlag(false);
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + ChatColor.AQUA + sender.getName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(CTFHandler.PREFIX + " " + sender.getDisplayName() + ChatColor.YELLOW + " has dropped the " + flag.getColor().getChatColor() + flag.getColor().getName() + " Flag" + ChatColor.YELLOW + "!");
                 return;
             }
         }
