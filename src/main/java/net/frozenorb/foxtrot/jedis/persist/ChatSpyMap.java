@@ -23,8 +23,8 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
             stringBuilder.append(team).append(",");
         }
 
-        if (stringBuilder.length() > 2) {
-            stringBuilder.setLength(stringBuilder.length() - 2);
+        if (stringBuilder.length() > 1) {
+            stringBuilder.setLength(stringBuilder.length() - 1);
         }
 
         return (stringBuilder.toString());
@@ -35,7 +35,11 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
         List<ObjectId> results = new ArrayList<ObjectId>();
 
         for (String split : str.split(",")) {
-            results.add(new ObjectId(split.trim()));
+            if (split.equals("")) {
+                continue;
+            }
+
+            results.add(new ObjectId(split));
         }
 
         return (results);
