@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -19,7 +20,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class ChatListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? ChatColor.DARK_PURPLE + "[HighRoller]" : "";
