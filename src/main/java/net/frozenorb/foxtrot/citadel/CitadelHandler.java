@@ -74,7 +74,7 @@ public class CitadelHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));
 
             if (dbo != null) {
-                this.capper = dbo.getObjectId("capper");
+                this.capper = new ObjectId(dbo.getString("capper"));
                 this.level = dbo.getInt("level");
                 this.townLootable = dbo.getDate("townLootable");
                 this.courtyardLootable = dbo.getDate("courtyardLootable");
