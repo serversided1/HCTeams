@@ -105,7 +105,7 @@ public class CTFFlag {
             List<Player> onCap = new ArrayList<Player>();
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (getSpawnLocation().distanceSquared(player.getLocation()) < 4 && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
+                if (player.getWorld().equals(getSpawnLocation().getWorld()) && getSpawnLocation().distanceSquared(player.getLocation()) < 4 && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
                     onCap.add(player);
                 }
             }

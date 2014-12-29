@@ -2,12 +2,10 @@ package net.frozenorb.foxtrot.ctf.commands.ctfadmin;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.ctf.enums.CTFFlagColor;
-import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
@@ -24,13 +22,6 @@ public class CTFAdminSetLocationCommand {
 
     @Command(names={ "ctfadmin setlocation" }, permissionNode="op")
     public static void ctfAdminSetLocation(Player sender, @Param(name="config") String config, @Param(name="location") String location) {
-        CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
-
-        if (game == null) {
-            sender.sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "There isn't an active CTF game!");
-            return;
-        }
-
         File configFile = new File(config);
 
         if (!configFile.exists()) {
