@@ -618,8 +618,8 @@ public class ServerHandler {
             showSignPacket(player, sign,
                     "§cInsufficient",
                     "§cfunds for",
-                    sign.getLine(1) + " DTR",
-                    "regen mult."
+                    sign.getLine(1),
+                    "relic."
             );
         }
     }
