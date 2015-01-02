@@ -463,7 +463,7 @@ public class FoxListener implements Listener {
         Chunk chunk = location.getChunk();
 
         int entInChunk = 0;
-        int maxEntInChunk = 30;
+        int maxEntInChunk = 10;
 
         for (Entity entity : chunk.getEntities()) {
             if (entity instanceof Monster) {

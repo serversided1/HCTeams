@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -69,14 +70,13 @@ public class RemoveExcessMobsCommand {
                             chunksDone++;
                             Chunk chunk = FoxtrotPlugin.getInstance().getServer().getWorlds().get(0).getChunkAt(x, z);
                             int entInChunk = 0;
-                            int maxEntInChunk = 30;
+                            int maxEntInChunk = 10;
                             int removed = 0;
 
                             for (Entity entity : chunk.getEntities()) {
-                                //TODO
-                                /*if (entity instanceof Monster) {
+                                if (entity instanceof Monster) {
                                     continue;
-                                }*/
+                                }
 
                                 entInChunk++;
 
