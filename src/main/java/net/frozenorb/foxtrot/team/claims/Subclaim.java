@@ -54,8 +54,8 @@ public class Subclaim extends ReflectionSerializer {
             members.append(member).append(",");
         }
 
-        if (members.length() > 2) {
-            members.setLength(members.length() - 2);
+        if (members.length() > 1) {
+            members.setLength(members.length() - 1);
         }
 
         return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + members.toString());
