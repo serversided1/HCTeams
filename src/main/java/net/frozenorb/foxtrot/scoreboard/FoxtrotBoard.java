@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.spigotmc.CustomTimingsHandler;
 
@@ -16,8 +17,8 @@ import java.util.Set;
  */
 public class FoxtrotBoard {
 
-    private CustomTimingsHandler creation = new CustomTimingsHandler("Foxtrot - FB Creation");
-    private CustomTimingsHandler valueGrab = new CustomTimingsHandler("Foxtrot - FB Value Grab");
+    private static CustomTimingsHandler creation = new CustomTimingsHandler("Foxtrot - FB Creation");
+    private static CustomTimingsHandler valueGrab = new CustomTimingsHandler("Foxtrot - FB Value Grab");
 
     @Getter private Player player;
     @Getter private Objective objective;
@@ -52,7 +53,12 @@ public class FoxtrotBoard {
                 }
             } else {
                 displayedScores.add(title);
-                objective.getScore(title).setScore(seconds);
+
+                Score score = objective.getScore(title);
+
+                if (score.getScore() != seconds) {
+                    score.setScore(seconds);
+                }
             }
         }
     }
