@@ -19,7 +19,7 @@ public class DTRHandler extends BukkitRunnable {
             .142, .142, .142, .142, .142, .142 };
     private static final double[] MAX_DTR = { 1.01, 1.8, 2.5, 2.75, 3.25,
             3.75, 4.25, 4.75, 4.85, 4.95, 5.35, 5.45, 5.55, 5.65, 5.75, 5.85, 5.95, 6,
-            6.25, 6.35, 6.45, 6.75, 7, 7.5, 8, 8, 8, 8, 8, 8 };
+            6.25, 6.35, 6.45, 6.75, 7, 7.5, 8, 8, 8, 8.5, 8.5, 8.5, /* Padding */ 8.5, 8.5, 8.5, 8.5, 8.5, 8.5, 8.5, 8.5 };
     // TODO: Update this when we have the proper DTR values.
 
     private static Set<String> wasOnCooldown = new HashSet<String>();

@@ -1,19 +1,17 @@
 package net.frozenorb.foxtrot.serialization.serializers;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map.Entry;
-
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import net.frozenorb.Utilities.Core;
+import net.frozenorb.foxtrot.serialization.JSONSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-
-import net.frozenorb.Utilities.Core;
-import net.frozenorb.foxtrot.serialization.JSONSerializer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map.Entry;
 
 public class ItemStackSerializer implements JSONSerializer<ItemStack> {
 
@@ -21,7 +19,7 @@ public class ItemStackSerializer implements JSONSerializer<ItemStack> {
     public BasicDBObject serialize(ItemStack o) {
         if (o == null)
             return new BasicDBObject("type", "AIR").append("amount", 1).append("data", 0);
-        BasicDBObject item = new BasicDBObject("type", o.getType().toString()).append("amount", Math.max(o.getAmount(), o.getMaxStackSize())).append("data", o.getDurability());
+        BasicDBObject item = new BasicDBObject("type", o.getType().toString()).append("amount", o.getAmount()).append("data", o.getDurability());
         BasicDBList enchants = new BasicDBList();
         for (Entry<Enchantment, Integer> entry : o.getEnchantments().entrySet()) {
             enchants.add(new BasicDBObject("enchantment", entry.getKey().getName()).append("level", entry.getValue()));

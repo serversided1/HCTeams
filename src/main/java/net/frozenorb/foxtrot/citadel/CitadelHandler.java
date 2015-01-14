@@ -115,7 +115,7 @@ public class CitadelHandler {
             File citadelInfo = new File("citadelInfo.json");
             BasicDBObject dbo = new BasicDBObject();
 
-            dbo.put("capper", capper);
+            dbo.put("capper", capper.toString());
             dbo.put("level", level);
             dbo.put("townLootable", townLootable);
             dbo.put("courtyardLootable", courtyardLootable);
