@@ -37,14 +37,10 @@ import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
@@ -52,7 +48,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -163,21 +158,6 @@ public class FoxtrotPlugin extends JavaPlugin {
             }
 
         });
-
-        // NEXT MAP
-        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-
-        // Clear old recipe
-        while (recipeIterator.hasNext()) {
-            Recipe recipe = recipeIterator.next();
-
-            if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
-                recipeIterator.remove();
-            }
-        }
-
-        // and add ours in.
-        getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
     }
 
     @Override
