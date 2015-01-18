@@ -390,7 +390,7 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        long max = TimeUnit.HOURS.toSeconds(4);
+        long max = TimeUnit.HOURS.toSeconds(3);
         long ban;
 
         KOTH citadel = KOTHHandler.getKOTH("Citadel");
@@ -399,9 +399,9 @@ public class ServerHandler {
 
         if (profile != null) {
             if (profile.getPermissions().contains("pro")) {
-                max = TimeUnit.HOURS.toSeconds(2);
+                max = TimeUnit.HOURS.toSeconds(1);
             } else if (profile.getPermissions().contains("vip")) {
-                max = TimeUnit.HOURS.toSeconds(3);
+                max = TimeUnit.HOURS.toSeconds(2);
             }
         } else {
             FoxtrotPlugin.getInstance().getLogger().warning("We don't have a mShared PlayerProfile for " + playerName + "!");
