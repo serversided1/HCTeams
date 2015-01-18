@@ -36,6 +36,7 @@ public class Team {
     public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
     public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
+    public static final ChatColor TRADING_COLOR = ChatColor.LIGHT_PURPLE;
 
     // Configurable values //
 

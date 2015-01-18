@@ -35,6 +35,8 @@ public class NametagManager {
                 teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
             } else if (team.isAlly(refreshFor.getName())) {
                 teamInfo = getOrCreate(Team.ALLY_COLOR.toString(), "");
+            } else if (team.isTrading()) {
+                teamInfo = getOrCreate(Team.TRADING_COLOR.toString(), "");
             } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
                 teamInfo = getOrCreate(ChatColor.RED.toString(), "");
             }
