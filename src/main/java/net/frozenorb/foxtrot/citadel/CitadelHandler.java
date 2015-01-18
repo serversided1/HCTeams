@@ -239,6 +239,8 @@ public class CitadelHandler {
     }
 
     public void respawnCitadelChests() {
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
+        
         for (Location citadelChest : citadelChests) {
             respawnCitadelChest(citadelChest);
         }
