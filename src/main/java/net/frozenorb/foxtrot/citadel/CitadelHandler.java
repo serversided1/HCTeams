@@ -9,7 +9,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
-import net.frozenorb.foxtrot.citadel.tasks.CitadelLootTask;
+import net.frozenorb.foxtrot.citadel.tasks.CitadelRespawnTask;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
 import net.frozenorb.foxtrot.serialization.serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
@@ -31,19 +31,21 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/14/2014.
  */
 public class CitadelHandler {
 
+    public static final long LOOT_RESPAWN_TIME = TimeUnit.HOURS.toSeconds(2);
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
 
     @Getter private ObjectId capper;
     @Getter private int level;
     @Getter private Date townLootable;
     @Getter private Date courtyardLootable;
-    @Getter private Map<Location, Long> citadelChests = new HashMap<Location, Long>();
+    @Getter private Set<Location> citadelChests = new HashSet<Location>();
     @Getter private Map<CitadelLootType, List<ItemStack>> citadelLoot = new HashMap<CitadelLootType, List<ItemStack>>();
 
     public CitadelHandler() {
@@ -51,7 +53,7 @@ public class CitadelHandler {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
 
         (new CitadelSaveTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
-        (new CitadelLootTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
+        (new CitadelRespawnTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * LOOT_RESPAWN_TIME);
     }
 
     public void loadCitadelInfo() {
@@ -74,7 +76,7 @@ public class CitadelHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));
 
             if (dbo != null) {
-                this.capper = new ObjectId(dbo.getString("capper"));
+                this.capper = dbo.getString("capper") == null ? null : new ObjectId(dbo.getString("capper"));
                 this.level = dbo.getInt("level");
                 this.townLootable = dbo.getDate("townLootable");
                 this.courtyardLootable = dbo.getDate("courtyardLootable");
@@ -85,7 +87,7 @@ public class CitadelHandler {
                 if (chests != null) {
                     for (Object chestObj : chests) {
                         BasicDBObject chest = (BasicDBObject) chestObj;
-                        citadelChests.put(locationSerializer.deserialize((BasicDBObject) chest.get("location")), chest.getLong("time"));
+                        citadelChests.add(locationSerializer.deserialize((BasicDBObject) chest.get("location")));
                     }
                 }
 
@@ -123,11 +125,10 @@ public class CitadelHandler {
             BasicDBList chests = new BasicDBList();
             LocationSerializer locationSerializer = new LocationSerializer();
 
-            for (Map.Entry<Location, Long> citadelChestEntry : citadelChests.entrySet()) {
+            for (Location citadelChest : citadelChests) {
                 BasicDBObject chest = new BasicDBObject();
 
-                chest.put("location", locationSerializer.serialize(citadelChestEntry.getKey()));
-                chest.put("time", citadelChestEntry.getValue());
+                chest.put("location", locationSerializer.serialize(citadelChest));
 
                 chests.add(chest);
             }
@@ -216,6 +217,8 @@ public class CitadelHandler {
     }
 
     public void scanLoot() {
+        citadelChests.clear();
+
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             if (team.getOwner() != null) {
                 continue;
@@ -228,30 +231,20 @@ public class CitadelHandler {
                             continue;
                         }
 
-                        citadelChests.put(location, System.currentTimeMillis());
+                        citadelChests.add(location);
                     }
                 }
             }
         }
     }
 
-    public void tickCitadelChests() {
-        for (Map.Entry<Location, Long> citadelChestEntry : citadelChests.entrySet()) {
-            if (citadelChestEntry.getValue() > System.currentTimeMillis()) {
-                continue;
-            }
-
-            generateCitadelChest(citadelChestEntry.getKey());
+    public void respawnCitadelChests() {
+        for (Location citadelChest : citadelChests) {
+            respawnCitadelChest(citadelChest);
         }
     }
 
-    public void generateAllCitadelChests() {
-        for (Location citadelChest : citadelChests.keySet()) {
-            generateCitadelChest(citadelChest);
-        }
-    }
-
-    public void generateCitadelChest(Location location) {
+    public void respawnCitadelChest(Location location) {
         BlockState blockState = location.getBlock().getState();
 
         if (blockState instanceof Chest) {
@@ -284,6 +277,8 @@ public class CitadelHandler {
                     chest.getBlockInventory().addItem(loot);
                 }
             }
+        } else {
+            FoxtrotPlugin.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
         }
     }
 

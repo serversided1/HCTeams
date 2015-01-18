@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
 /**
  * Created by macguy8 on 11/25/2014.
  */
-public class CitadelRescanLootCommand {
+public class CitadelRescanChestsCommand {
 
-    @Command(names={"citadel rescanloot"}, permissionNode="op")
-    public static void citadelRespawnLoot(Player sender) {
+    @Command(names={"citadel rescanchests"}, permissionNode="op")
+    public static void citadelRescanChests(Player sender) {
         FoxtrotPlugin.getInstance().getCitadelHandler().scanLoot();
         FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
-        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Rescanned all Citadel loot.");
+        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Rescanned all Citadel chests.");
     }
 
 }

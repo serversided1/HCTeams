@@ -17,9 +17,11 @@ public class CitadelLoadLoottableCommand {
     @Command(names={"citadel loadloottable"}, permissionNode="op")
     public static void citadelLoadLoottable(Player sender, @Param(name="loottable") String loottable) {
         sender.getInventory().clear();
+        int itemIndex = 0;
 
         for (ItemStack itemStack : FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot().get(CitadelLootType.valueOf(loottable))) {
-            sender.getInventory().addItem(itemStack);
+            sender.getInventory().setItem(itemIndex, itemStack);
+            itemIndex++;
         }
 
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Loaded Citadel loot into your inventory.");

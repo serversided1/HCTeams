@@ -8,23 +8,14 @@ import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/15/2014.
@@ -73,40 +64,6 @@ public class CitadelListener implements Listener {
 
         if (playerTeam != null && capper == playerTeam.getUniqueId()) {
             event.getPlayer().sendMessage(CitadelHandler.PREFIX + " " + ChatColor.DARK_GREEN + "Your team currently controls Citadel.");
-        }
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
-
-        BlockState blockState = event.getClickedBlock().getState();
-
-        if (!(blockState instanceof Chest)) {
-            return;
-        }
-
-        Chest chest = (Chest) blockState;
-        Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
-
-        if (team == null || team.getOwner() != null) {
-            return;
-        }
-
-        if (team.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-            int items = 0;
-
-            for (ItemStack itemStack : chest.getBlockInventory().getContents()) {
-                if (itemStack != null && itemStack.getType() != Material.AIR) {
-                    items++;
-                }
-            }
-
-            if (items != 0) {
-                FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelChests().put(event.getClickedBlock().getLocation(), System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1)); // 1 hour
-            }
         }
     }
 
