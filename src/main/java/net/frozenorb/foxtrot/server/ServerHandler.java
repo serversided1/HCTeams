@@ -17,6 +17,8 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mShared.API.Profile.PlayerProfile;
+import net.frozenorb.mShared.Shared;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -388,12 +390,24 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        long max = TimeUnit.HOURS.toSeconds(24);
+        long max = TimeUnit.HOURS.toSeconds(4);
         long ban;
 
         KOTH citadel = KOTHHandler.getKOTH("Citadel");
 
-        // Max deathban of 2 hours during Citadel
+        PlayerProfile profile = Shared.get().getProfileManager().getProfile(playerName);
+
+        if (profile != null) {
+            if (profile.getPermissions().contains("pro")) {
+                max = TimeUnit.HOURS.toSeconds(2);
+            } else if (profile.getPermissions().contains("vip")) {
+                max = TimeUnit.HOURS.toSeconds(3);
+            }
+        } else {
+            FoxtrotPlugin.getInstance().getLogger().warning("We don't have a mShared PlayerProfile for " + playerName + "!");
+        }
+
+        // Max deathban of 1 hour during Citadel
         if (citadel != null && citadel.isActive()) {
             max = TimeUnit.HOURS.toSeconds(1);
         }
