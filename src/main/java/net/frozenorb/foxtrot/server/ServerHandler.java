@@ -13,7 +13,6 @@ import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -323,9 +322,6 @@ public class ServerHandler {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "$" + price + ChatColor.YELLOW + " has been deducted from your team balance.");
         playerTeam.setBalance(playerTeam.getBalance() - price);
 
-        // Raffle
-        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.BIG_SPENDER, 1);
-
         player.teleport(team.getHQ());
     }
 
@@ -553,8 +549,6 @@ public class ServerHandler {
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 
-                // Raffle
-                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.TRUMP, totalPrice);
                 Basic.get().getEconomyManager().depositPlayer(player.getName(), totalPrice);
 
                 showSignPacket(player, sign,

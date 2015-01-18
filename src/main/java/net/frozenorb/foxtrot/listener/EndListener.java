@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
@@ -48,9 +47,6 @@ public class EndListener implements Listener {
             for (int i = 0; i < 6; i++) {
                 Bukkit.broadcastMessage("");
             }
-
-            // Raffle
-            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(event.getEntity().getKiller(), RaffleAchievement.DRAGON_SLAYER, 1);
 
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
             Bukkit.broadcastMessage(ChatColor.BLACK + "████████");

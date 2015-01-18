@@ -88,8 +88,6 @@ public class CommandRegistrar {
         loadCommandsFromPackage("net.frozenorb.foxtrot.team");
         loadCommandsFromPackage("net.frozenorb.foxtrot.citadel");
         loadCommandsFromPackage("net.frozenorb.foxtrot.imagemessage");
-        loadCommandsFromPackage("net.frozenorb.foxtrot.raffle");
-        loadCommandsFromPackage("net.frozenorb.foxtrot.relic");
         loadCommandsFromPackage("net.frozenorb.foxtrot.ctf");
     }
 

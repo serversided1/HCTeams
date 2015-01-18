@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -519,10 +518,6 @@ public class FoxListener implements Listener {
         if (event.getEntity().getKiller() != null) {
             Player killer = event.getEntity().getKiller();
             ItemStack hand = killer.getItemInHand();
-
-            // Raffle
-            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.FIRST_BLOOD);
-            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.EXECUTIONER);
 
             // Add kills to sword lore
             if (hand.getType().name().contains("SWORD") || hand.getType() == Material.BOW) {

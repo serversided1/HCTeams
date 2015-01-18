@@ -8,7 +8,6 @@ import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.TimeUtils;
@@ -65,10 +64,6 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHCap(KOTHCapturedEvent event) {
-        // Raffle
-        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(event.getPlayer(), RaffleAchievement.CAPTURER);
-        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(event.getPlayer(), RaffleAchievement.VICTORY);
-
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
