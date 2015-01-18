@@ -41,6 +41,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.Jedis;
@@ -48,6 +49,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
@@ -158,6 +160,18 @@ public class FoxtrotPlugin extends JavaPlugin {
             }
 
         });
+
+        // NEXT MAP
+        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
+
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+
+            // Disallow the crafting of gopples.
+            if (recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
+                recipeIterator.remove();
+            }
+        }
     }
 
     @Override
