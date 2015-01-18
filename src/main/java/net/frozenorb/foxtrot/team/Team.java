@@ -37,6 +37,7 @@ public class Team {
 
     public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
     public static final ChatColor TRADING_COLOR = ChatColor.LIGHT_PURPLE;
+    public static final int TRADING_MIN_CLAIM_DISTANCE = 1250;
 
     // Configurable values //
 

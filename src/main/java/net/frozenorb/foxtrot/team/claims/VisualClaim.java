@@ -674,6 +674,13 @@ public class VisualClaim implements Listener {
             return (true);
         }
 
+        if (playerTeam.isTrading()) {
+            if ((claim.getX1() < Team.TRADING_MIN_CLAIM_DISTANCE && claim.getZ1() < Team.TRADING_MIN_CLAIM_DISTANCE) || (claim.getX2() < Team.TRADING_MIN_CLAIM_DISTANCE && claim.getZ2() < Team.TRADING_MIN_CLAIM_DISTANCE)) {
+                player.sendMessage(ChatColor.RED + "Trading teams cannot claim within " + Team.TRADING_MIN_CLAIM_DISTANCE + " of spawn!");
+                return (true);
+            }
+        }
+
         return (false);
     }
 
