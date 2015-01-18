@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 /**
  * Created by macguy8 on 11/9/2014.
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class TeamSaveStringCommand {
 
     @Command(names={ "team savestring", "t savestring", "f savestring", "faction savestring", "fac savestring" }, permissionNode="op")
-    public static void teamSaveString(Player sender, @Param(name="team", defaultValue="self") Team target) {
+    public static void teamSaveString(CommandSender sender, @Param(name="team", defaultValue="self") Team target) {
         String saveString = target.saveString(false);
 
         sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + "Save String (" + target.getName() + ")");

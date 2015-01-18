@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -39,6 +41,19 @@ public class Claim implements Iterable<Coordinate> {
         this.y2 = Math.max(y1, y2);
         this.z1 = Math.min(z1, z2);
         this.z2 = Math.max(z1, z2);
+    }
+
+    public BasicDBObject json() {
+        BasicDBObject dbObject = new BasicDBObject();
+        LocationSerializer locationSerializer = new LocationSerializer();
+
+        dbObject.put("Name", name);
+
+        World world = FoxtrotPlugin.getInstance().getServer().getWorld(getWorld());
+        dbObject.put("Location1", locationSerializer.serialize(new Location(world, x1, y1, z1)));
+        dbObject.put("Location2", locationSerializer.serialize(new Location(world, x2, y2, z2)));
+
+        return (dbObject);
     }
 
     public static int getPrice(Claim claim, Team team, boolean buying) {

@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
@@ -7,6 +9,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.ctf.CTFHandler;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.ctf.game.CTFGame;
+import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
@@ -697,6 +700,40 @@ public class Team {
         }
 
         return (teamString.toString());
+    }
+
+    public BasicDBObject json() {
+        BasicDBObject dbObject = new BasicDBObject();
+        LocationSerializer locationSerializer = new LocationSerializer();
+
+        dbObject.put("_id", getUniqueId());
+        dbObject.put("Owner", getOwner());
+        dbObject.put("Captains", getCaptains());
+        dbObject.put("Members", getMembers());
+        dbObject.put("Invitations", getInvitations());
+        dbObject.put("Allies", getAllies());
+        dbObject.put("RequestedAllies", getRequestedAllies());
+        dbObject.put("DTR", getDTR());
+        dbObject.put("DTRCooldown", getDTRCooldown());
+        dbObject.put("Balance", getBalance());
+        dbObject.put("Name", getName());
+        dbObject.put("HQ", locationSerializer.serialize(getHQ()));
+
+        BasicDBList claims = new BasicDBList();
+        BasicDBList subclaims = new BasicDBList();
+
+        for (Claim claim : getClaims()) {
+            claims.add(claim.json());
+        }
+
+        for (Subclaim subclaim : getSubclaims()) {
+            subclaims.add(subclaim.json());
+        }
+
+        dbObject.put("Claims", claims);
+        dbObject.put("Subclaims", subclaims);
+
+        return (dbObject);
     }
 
     private Location parseLocation(String[] args) {

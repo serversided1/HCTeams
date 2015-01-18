@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.frozenorb.foxtrot.serialization.ReflectionSerializer;
 import net.frozenorb.foxtrot.serialization.SerializableClass;
+import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -44,6 +46,18 @@ public class Subclaim extends ReflectionSerializer {
                 iterator.remove();
             }
         }
+    }
+
+    public BasicDBObject json() {
+        BasicDBObject dbObject = new BasicDBObject();
+        LocationSerializer locationSerializer = new LocationSerializer();
+
+        dbObject.put("Name", name);
+        dbObject.put("Members", members);
+        dbObject.put("Location1", locationSerializer.serialize(loc1));
+        dbObject.put("Location2", locationSerializer.serialize(loc2));
+
+        return (dbObject);
     }
 
     @Override
