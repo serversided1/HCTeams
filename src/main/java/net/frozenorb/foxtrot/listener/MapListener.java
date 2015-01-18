@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -8,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -32,8 +35,19 @@ public class MapListener implements Listener {
     }
 
     @EventHandler
-    public void onFurnaceBurn(FurnaceBurnEvent event){
+    public void onFurnaceBurn(FurnaceBurnEvent event) {
         startUpdate((Furnace) event.getBlock().getState(), FoxtrotPlugin.RANDOM.nextBoolean() ? 1 : 2); // Averages to 1.5
+    }
+
+    @EventHandler
+    public void onFurnace(FurnaceSmeltEvent event) {
+        if (event.getResult().getType() == Material.GOLD_INGOT || event.getResult().getType() == Material.IRON_INGOT) {
+            ItemStack result = event.getResult();
+
+            result.setAmount(result.getAmount() * 3);
+
+            event.setResult(result);
+        }
     }
 
     @EventHandler
