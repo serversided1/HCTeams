@@ -543,6 +543,10 @@ public class ServerHandler {
                 );
             } else {
                 int totalPrice = (int) (amountInInventory * pricePerItem);
+
+                // Trading factions get more money for their items at spawn.
+                totalPrice *= FoxtrotPlugin.getInstance().getMapHandler().getTradingSpawnShopMultiplier();
+
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 

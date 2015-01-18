@@ -29,6 +29,7 @@ public class MapHandler {
     @Getter private double level2LootingMultiplier;
     @Getter private double level3LootingMultiplier;
     @Getter private double tradingLootingMultiplier;
+    @Getter private double tradingSpawnShopMultiplier;
 
     public MapHandler() {
         try {
@@ -46,6 +47,7 @@ public class MapHandler {
                 dbo.put("warzone", 1000);
                 dbo.put("border", 3000);
                 dbo.put("scoreboardTimersEnabled", true);
+                dbo.put("tradingSpawnShopMod", 1.2D);
 
                 enchants.put("PROTECTION_FALL", 4);
                 enchants.put("ARROW_DAMAGE", 2);
@@ -78,6 +80,7 @@ public class MapHandler {
                 ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbo.getInt("border", 3000);
                 ScoreboardHandler.scoreboardTimerEnabled = dbo.getBoolean("scoreboardTimersEnabled", true);
+                this.tradingSpawnShopMultiplier = dbo.getDouble("tradingSpawnShopMod");
 
                 BasicDBObject enchants = (BasicDBObject) dbo.get("enchants");
                 BasicDBObject looting = (BasicDBObject) dbo.get("looting");
