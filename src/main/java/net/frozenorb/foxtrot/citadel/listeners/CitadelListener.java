@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.citadel.events.CitadelActivatedEvent;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
+import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
@@ -64,6 +65,15 @@ public class CitadelListener implements Listener {
 
         if (playerTeam != null && capper == playerTeam.getUniqueId()) {
             event.getPlayer().sendMessage(CitadelHandler.PREFIX + " " + ChatColor.DARK_GREEN + "Your team currently controls Citadel.");
+        }
+    }
+
+
+    @EventHandler
+    public void onHour(HourEvent event) {
+        // Every other hour
+        if (event.getHour() % 2 == 0) {
+            FoxtrotPlugin.getInstance().getCitadelHandler().respawnCitadelChests();
         }
     }
 

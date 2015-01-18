@@ -43,7 +43,7 @@ public enum DTRBitmaskType {
     // Used in KOTHs
     KOTH(1024, "KOTH", "Determines if a region is a KOTH"),
 
-    HALF_DTR_LOSS(2048, "Half-DTR-Loss", "Determines if a region only takes away 0.5 DTR upon death"),
+    REDUCED_DTR_LOSS(2048, "Reduced-DTR-Loss", "Determines if a region takes away reduced DTR upon death"),
 
     NO_ENDERPEARL(4096, "No-Enderpearl", "Determines if a region cannot be pearled into");
 

@@ -33,6 +33,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
+import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -104,6 +105,8 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        Basic.get();
 
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");

@@ -9,7 +9,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
-import net.frozenorb.foxtrot.citadel.tasks.CitadelRespawnTask;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
 import net.frozenorb.foxtrot.serialization.serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
@@ -31,14 +30,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by macguy8 on 11/14/2014.
  */
 public class CitadelHandler {
 
-    public static final long LOOT_RESPAWN_TIME = TimeUnit.HOURS.toSeconds(2);
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
 
     @Getter private ObjectId capper;
@@ -53,7 +50,6 @@ public class CitadelHandler {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
 
         (new CitadelSaveTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
-        (new CitadelRespawnTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * LOOT_RESPAWN_TIME);
     }
 
     public void loadCitadelInfo() {
@@ -167,23 +163,23 @@ public class CitadelHandler {
 
     public boolean canLootCitadelTown(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return ((team != null && team.getUniqueId() == capper) || System.currentTimeMillis() > townLootable.getTime());
+        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > townLootable.getTime());
     }
 
     public boolean canLootCitadelCourtyard(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return ((team != null && team.getUniqueId() == capper) || System.currentTimeMillis() > courtyardLootable.getTime());
+        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > courtyardLootable.getTime());
     }
 
     public boolean canLootCitadelKeep(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return (team != null && team.getUniqueId() == capper);
+        return (team != null && capper.equals(team.getUniqueId()));
     }
 
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
     private Date generateTownLootableDate() {
         Calendar date = Calendar.getInstance();
-        int diff = Calendar.TUESDAY  - date.get(Calendar.DAY_OF_WEEK);
+        int diff = Calendar.MONDAY  - date.get(Calendar.DAY_OF_WEEK);
 
         if (diff <= 0) {
             diff += 7;
@@ -201,7 +197,7 @@ public class CitadelHandler {
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
     private Date generateCourtyardLootableDate() {
         Calendar date = Calendar.getInstance();
-        int diff = Calendar.TUESDAY  - date.get(Calendar.DAY_OF_WEEK);
+        int diff = Calendar.MONDAY  - date.get(Calendar.DAY_OF_WEEK);
 
         if (diff <= 0) {
             diff += 7;
@@ -240,7 +236,7 @@ public class CitadelHandler {
 
     public void respawnCitadelChests() {
         FoxtrotPlugin.getInstance().getServer().broadcastMessage(PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
-        
+
         for (Location citadelChest : citadelChests) {
             respawnCitadelChest(citadelChest);
         }

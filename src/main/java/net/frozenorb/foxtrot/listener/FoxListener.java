@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.command.commands.ToggleDonorOnlyCommand;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
@@ -27,9 +26,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,10 +35,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -189,6 +188,11 @@ public class FoxListener implements Listener {
 
         event.setJoinMessage(null);
 
+        // "Pad" the player's chat
+        for (int i = 0; i < 6; i++) {
+            player.sendMessage("");
+        }
+
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
 
@@ -224,20 +228,6 @@ public class FoxListener implements Listener {
                 ServerHandler.getTasks().remove(p.getName());
                 p.sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
             }
-        }
-    }
-
-    @EventHandler(priority=EventPriority.NORMAL)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        if (ToggleDonorOnlyCommand.donorOnly && !event.getPlayer().hasPermission("foxtrot.donator")) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "The server is full.");
-        }
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onPlayerLogin2(PlayerLoginEvent event) {
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && event.getPlayer().hasPermission("foxtrot.joinfull")) {
-            event.setResult(PlayerLoginEvent.Result.ALLOWED);
         }
     }
 
@@ -359,6 +349,7 @@ public class FoxListener implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == 333) {
             Block target = event.getClickedBlock();
+
             if (target.getTypeId() != 8 && target.getTypeId() != 9) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You can only place a boat on water!");
                 event.setCancelled(true);
@@ -449,32 +440,6 @@ public class FoxListener implements Listener {
                     spawner.update();
                     e.getPlayer().sendMessage(ChatColor.AQUA + "You placed a " + entName + " spawner!");
                 }
-            }
-        }
-    }
-
-    @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event.getEntity() instanceof Monster) {
-            return;
-        }
-
-        Location location = event.getLocation();
-        Chunk chunk = location.getChunk();
-
-        int entInChunk = 0;
-        int maxEntInChunk = 10;
-
-        for (Entity entity : chunk.getEntities()) {
-            if (entity instanceof Monster) {
-                continue;
-            }
-
-            entInChunk++;
-
-            if (entInChunk > maxEntInChunk) {
-                event.setCancelled(true);
-                return;
             }
         }
     }

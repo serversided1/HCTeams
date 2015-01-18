@@ -6,6 +6,6 @@ authors:
  - LazyLemons
  - macguy8
 main: net.frozenorb.foxtrot.FoxtrotPlugin
-depend: [ProtocolLib]
+depend: [ProtocolLib, mBasic]
 commands:
   eval:

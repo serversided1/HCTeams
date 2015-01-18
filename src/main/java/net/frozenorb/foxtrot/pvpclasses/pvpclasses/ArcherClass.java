@@ -79,13 +79,11 @@ public class ArcherClass extends PvPClass {
                 return;
             }
 
-            int damage = isMarked(player) ? 6 : 4; // Ternary for getting damage!
+            // 2 hearts for a marked shot
+            // 1.5 hearts for a marking / unmarked shot.
+            int damage = isMarked(player) ? 4 : 3; // Ternary for getting damage!
 
-            // Only do 2 hearts to other archers
-            if (PvPClassHandler.hasKitOn(player, this)) {
-                damage = 4; // 2 hearts
-            }
-
+            // If the bow isn't 100% pulled back we do 1 heart no matter what.
             if (pullback < 0.5F) {
                 damage = 2; // 1 heart
             }

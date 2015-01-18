@@ -7,9 +7,7 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.commands.FreezeCommand;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -18,7 +16,6 @@ import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
@@ -257,11 +254,6 @@ public class ServerHandler {
     public void beginWarp(final Player player, final Team team, int price) {
         boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
 
-        if (FreezeCommand.isFrozen(player)) {
-            player.sendMessage(ChatColor.RED + "You cannot teleport while frozen!");
-            return;
-        }
-
         Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
         double bal = playerTeam.getBalance();
 
@@ -371,8 +363,8 @@ public class ServerHandler {
         Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmaskType.HALF_DTR_LOSS)) {
-                return (0.5F);
+            if (ownerTo.hasDTRBitmask(DTRBitmaskType.REDUCED_DTR_LOSS)) {
+                return (0.75F);
             }
         }
 
@@ -425,7 +417,7 @@ public class ServerHandler {
 
         // Max deathban of 2 hours during Citadel
         if (citadel != null && citadel.isActive()) {
-            max = TimeUnit.HOURS.toSeconds(2);
+            max = TimeUnit.HOURS.toSeconds(1);
         }
 
         if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
