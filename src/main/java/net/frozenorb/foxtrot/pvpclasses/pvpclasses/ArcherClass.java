@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -56,6 +57,11 @@ public class ArcherClass extends PvPClass {
         if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
         }
+    }
+
+    @Override
+    public boolean canApply(Player player) {
+        return (player.isOp() && player.getGameMode() == GameMode.CREATIVE);
     }
 
     @EventHandler(priority=EventPriority.MONITOR)

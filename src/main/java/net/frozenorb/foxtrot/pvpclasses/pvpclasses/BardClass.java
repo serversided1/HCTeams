@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -51,6 +52,11 @@ public class BardClass extends BaseBardClass implements Listener {
         if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
         }
+    }
+
+    @Override
+    public boolean canApply(Player player) {
+        return (player.isOp() && player.getGameMode() == GameMode.CREATIVE);
     }
 
     @EventHandler
