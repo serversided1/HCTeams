@@ -4,14 +4,12 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.relic.enums.Relic;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -130,12 +128,6 @@ public class EnderpearlListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into claims while having a PvP Timer!");
                 return;
-            }
-        }
-
-        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(target) || !DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
-            if (event.getPlayer().getWorld().getEnvironment() != World.Environment.THE_END) {
-                SpawnTagHandler.addSeconds(event.getPlayer(), 8);
             }
         }
 
