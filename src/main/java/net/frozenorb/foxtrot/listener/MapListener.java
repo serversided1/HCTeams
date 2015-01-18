@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.enchantments.Enchantment;
@@ -69,6 +70,12 @@ public class MapListener implements Listener {
                         multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel3LootingMultiplier();
                         break;
                 }
+            }
+
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+
+            if (playerTeam != null && playerTeam.isTrading()) {
+                multiplier *= FoxtrotPlugin.getInstance().getMapHandler().getTradingLootingMultiplier();
             }
         }
 

@@ -28,6 +28,7 @@ public class MapHandler {
     @Getter private double level1LootingMultiplier;
     @Getter private double level2LootingMultiplier;
     @Getter private double level3LootingMultiplier;
+    @Getter private double tradingLootingMultiplier;
 
     public MapHandler() {
         try {
@@ -61,6 +62,7 @@ public class MapHandler {
                 looting.put("level1", 1.2D);
                 looting.put("level2", 1.4D);
                 looting.put("level3", 2D);
+                looting.put("tradingMod", 2D);
 
                 dbo.put("enchants", enchants);
                 dbo.put("looting", looting);
@@ -88,6 +90,7 @@ public class MapHandler {
                 this.level1LootingMultiplier = looting.getDouble("level1");
                 this.level2LootingMultiplier = looting.getDouble("level2");
                 this.level3LootingMultiplier = looting.getDouble("level3");
+                this.tradingLootingMultiplier = looting.getDouble("tradingMod");
             }
         } catch (Exception e) {
             e.printStackTrace();
