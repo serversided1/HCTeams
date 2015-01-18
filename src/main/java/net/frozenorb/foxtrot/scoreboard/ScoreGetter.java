@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
@@ -175,30 +173,6 @@ public abstract class ScoreGetter {
 
     };
 
-    public static final ScoreGetter INVALID_LOCATION = new ScoreGetter() {
-
-        @Override
-        public String getTitle(Player player) {
-            return (ChatColor.RED + "Invalid Loc");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
-            CTFGame ctfGame = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
-
-            if (ctfGame != null) {
-                for (CTFFlag flag : ctfGame.getFlags().values()) {
-                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                        return (flag.getInvalidLocationTimer());
-                    }
-                }
-            }
-
-            return (NO_SCORE);
-        }
-
-    };
-
     public static final ScoreGetter[] SCORES = {
 
             KOTH_TIMER,
@@ -207,8 +181,7 @@ public abstract class ScoreGetter {
             PVP_TIMER,
             ENERGY,
             ARCHER_MARK,
-            BARD_BUFF,
-            INVALID_LOCATION
+            BARD_BUFF
 
     };
 

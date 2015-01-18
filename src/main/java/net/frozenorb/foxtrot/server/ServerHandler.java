@@ -7,7 +7,6 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -343,14 +342,6 @@ public class ServerHandler {
     }
 
     public float getDTRLoss(Player player) {
-        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                    return (0F);
-                }
-            }
-        }
-
         return (getDTRLoss(player.getLocation()));
     }
 
@@ -374,14 +365,6 @@ public class ServerHandler {
     }
 
     public int getDeathban(Player player) {
-        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                    return ((int) TimeUnit.SECONDS.toSeconds(10));
-                }
-            }
-        }
-
         return (getDeathban(player.getName(), player.getLocation()));
     }
 

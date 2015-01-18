@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.CTFHandler;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,15 +19,6 @@ public class GoldenAppleListener implements Listener {
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         if (event.getItem() == null || event.getItem().getDurability() != (short) 1 || event.getItem().getType() != Material.GOLDEN_APPLE) {
             return;
-        }
-
-        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
-                    event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot use golden applies while carrying the flag.");
-                    return;
-                }
-            }
         }
 
         long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getName());
