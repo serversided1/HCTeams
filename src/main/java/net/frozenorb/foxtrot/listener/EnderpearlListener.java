@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -53,27 +52,6 @@ public class EnderpearlListener implements Listener {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(16));
-            }
-
-            // Relic pearl cooldown reduction
-            int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(shooter, Relic.PEARL_CDR);
-
-            if (tier != -1) {
-                long reduction = 0;
-
-                switch (tier) {
-                    case 1:
-                        reduction = 500;
-                        break;
-                    case 2:
-                        reduction = 1000;
-                        break;
-                    case 3:
-                        reduction = 2000;
-                        break;
-                }
-
-                enderpearlCooldown.put(shooter.getName(), enderpearlCooldown.get(shooter.getName()) - reduction);
             }
         }
     }

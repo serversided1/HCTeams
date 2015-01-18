@@ -14,7 +14,6 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
-import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -565,54 +564,6 @@ public class ServerHandler {
                         "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
                 );
             }
-        }
-    }
-
-    public void handleRelicSign(Sign sign, Player player) {
-        Relic relic = Relic.parse(sign.getLine(1));
-        int tier  = Integer.parseInt(sign.getLine(2).replace("Tier ", ""));
-        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-
-        if (relic == null) {
-            showSignPacket(player, sign,
-                    "§c§lError",
-                    "",
-                    "Unknown",
-                    "relic"
-            );
-
-            return;
-        }
-
-        if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
-            if (player.getInventory().firstEmpty() != -1) {
-                Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
-
-                player.getInventory().addItem(InvUtils.generateRelic(relic, tier, "Spawn Shop"));
-                player.updateInventory();
-                FoxtrotPlugin.getInstance().getRelicHandler().updatePlayer(player);
-
-                showSignPacket(player, sign,
-                        "§aBOUGHT",
-                        "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
-                        "New Balance:",
-                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
-                );
-            } else {
-                showSignPacket(player, sign,
-                        "§c§lError!",
-                        "",
-                        "§cNo space",
-                        "§cin inventory!"
-                );
-            }
-        } else {
-            showSignPacket(player, sign,
-                    "§cInsufficient",
-                    "§cfunds for",
-                    sign.getLine(1),
-                    "relic."
-            );
         }
     }
 

@@ -378,8 +378,6 @@ public class FoxListener implements Listener {
                         FoxtrotPlugin.getInstance().getServerHandler().handleShopSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("DTR Regen")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleDTRRegenSign(s, event.getPlayer());
-                    } else if (s.getLine(0).contains("Relic")) {
-                        FoxtrotPlugin.getInstance().getServerHandler().handleRelicSign(s, event.getPlayer());
                     }
 
                     event.setCancelled(true);
