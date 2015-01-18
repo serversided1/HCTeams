@@ -65,6 +65,7 @@ public class Team {
     @Getter private Set<String> invitations = new HashSet<String>();
     @Getter private Set<ObjectId> allies = new HashSet<ObjectId>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<ObjectId>();
+    @Getter private boolean trading = false;
     @Getter @Setter private float DTRRegenMultiplier = 1F; // We're safe to use a @Setter here as this value isn't persisted.
 
     public Team(String name) {
@@ -166,6 +167,11 @@ public class Team {
 
     public void setDTRCooldown(long dtrCooldown) {
         this.DTRCooldown = dtrCooldown;
+        flagForSave();
+    }
+
+    public void setTrading(boolean trading) {
+        this.trading = trading;
         flagForSave();
     }
 
@@ -616,6 +622,8 @@ public class Team {
                         getSubclaims().add(subclaimObj);
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("Trading")) {
+                setTrading(Boolean.valueOf(lineParts[0]));
             }
         }
 
@@ -680,6 +688,7 @@ public class Team {
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName()).append('\n');
+        teamString.append("Trading:").append(isTrading()).append('\n');
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -704,6 +713,7 @@ public class Team {
         dbObject.put("Balance", getBalance());
         dbObject.put("Name", getName());
         dbObject.put("HQ", locationSerializer.serialize(getHQ()));
+        dbObject.put("Trading", isTrading());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
