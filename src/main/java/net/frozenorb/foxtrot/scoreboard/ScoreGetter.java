@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BaseBardClass;
@@ -85,21 +84,27 @@ public abstract class ScoreGetter {
 
     public static final ScoreGetter KOTH_TIMER = new ScoreGetter() {
 
+        private String lastActiveKOTH;
+
         @Override
         public String getTitle(Player player) {
-            return (KOTH.LAST_ACTIVE_KOTH);
+            return (lastActiveKOTH);
         }
 
         @Override
         public int getSeconds(Player player) {
-            for (KOTH koth : KOTHHandler.getKOTHs()) {
+            for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+                if (koth.isHidden()) {
+                    continue;
+                }
+
                 if (koth.isActive()) {
                     if (koth.getName().equals("Citadel")) {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_PURPLE + "Citadel";
+                        lastActiveKOTH = ChatColor.DARK_PURPLE + "Citadel";
                     } else if (koth.getName().equals("EOTW")) {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.DARK_RED + "EOTW";
+                        lastActiveKOTH = ChatColor.DARK_RED + "EOTW";
                     } else {
-                        KOTH.LAST_ACTIVE_KOTH = ChatColor.BLUE + koth.getName();
+                        lastActiveKOTH = ChatColor.BLUE + koth.getName();
                     }
 
                     return (koth.getRemainingCapTime());

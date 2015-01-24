@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.util;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -35,7 +34,7 @@ public class InvUtils {
         CROWBAR.setItemMeta(meta);
     }
 
-    public static boolean conformEnchants(ItemStack item, boolean removeUndefined) {
+    public static boolean conformEnchants(ItemStack item) {
         if (item == null) {
             return (false);
         }
@@ -43,7 +42,7 @@ public class InvUtils {
         if (item.hasItemMeta()) {
             ItemMeta itemMeta = item.getItemMeta();
 
-            if (itemMeta.hasDisplayName() && itemMeta.getDisplayName().contains(ChatColor.COLOR_CHAR + "b")) {
+            if (itemMeta.hasDisplayName() && itemMeta.getDisplayName().contains(ChatColor.AQUA.toString())) {
                 return (false);
             }
         }
@@ -54,15 +53,8 @@ public class InvUtils {
         for (Enchantment enchantment : enchants.keySet()) {
             int level = enchants.get(enchantment);
 
-            if (FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().containsKey(enchantment)) {
-                int max = FoxtrotPlugin.getInstance().getMapHandler().getMaxEnchantments().get(enchantment);
-
-                if (level > max) {
-                    item.addUnsafeEnchantment(enchantment, max);
-                    fixed = true;
-                }
-            } else if (removeUndefined) {
-                item.removeEnchantment(enchantment);
+            if (level > enchantment.getMaxLevel()) {
+                item.addUnsafeEnchantment(enchantment, enchantment.getMaxLevel());
                 fixed = true;
             }
         }
@@ -174,31 +166,6 @@ public class InvUtils {
         if (index < lore.size()) {
             String str = ChatColor.stripColor(lore.get(index));
             return (str.split("\\{")[1].replace("}", ""));
-        }
-
-        return ("");
-    }
-
-    public static String getLoreDataAlternate(ItemStack item, int index) {
-        List<String> lore = item.getItemMeta().getLore();
-
-        if (index < 0) {
-            index = lore.size() + index;
-        }
-
-        if (index < lore.size()) {
-            String str = ChatColor.stripColor(lore.get(index));
-            return (str.split("\\[")[1].replace("]", ""));
-        }
-
-        return ("");
-    }
-
-    public static String getLoreDataRaw(ItemStack item, int index) {
-        List<String> lore = item.getItemMeta().getLore();
-
-        if (index < lore.size()) {
-            return (ChatColor.stripColor(lore.get(index)));
         }
 
         return ("");

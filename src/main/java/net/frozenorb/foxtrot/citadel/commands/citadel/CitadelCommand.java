@@ -3,9 +3,7 @@ package net.frozenorb.foxtrot.citadel.commands.citadel;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,7 +21,7 @@ public class CitadelCommand {
         Team capper = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(FoxtrotPlugin.getInstance().getCitadelHandler().getCapper());
 
         if (capper == null) {
-            KOTH citadel = KOTHHandler.getKOTH("Citadel");
+            KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
 
             if (citadel != null && citadel.isActive()) {
                 sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel can be captured now.");

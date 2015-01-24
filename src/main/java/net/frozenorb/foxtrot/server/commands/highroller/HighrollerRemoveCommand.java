@@ -17,7 +17,7 @@ public class HighrollerRemoveCommand {
         if (FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(player.getName())) {
             FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().remove(player.getName());
             FoxtrotPlugin.getInstance().getServerHandler().save();
-            sender.sendMessage(ChatColor.GREEN + "Remove " + player.getName() + "'s HighRoller tag.");
+            sender.sendMessage(ChatColor.GREEN + "Removed " + player.getName() + "'s HighRoller tag.");
         } else {
             sender.sendMessage(ChatColor.RED + player.getName() + " isn't a HighRoller.");
         }

@@ -15,23 +15,21 @@ public class KOTHCapturedEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @Getter
-    private KOTH koth;
-    @Getter @Setter
-    private boolean cancelled;
+    @Getter private KOTH KOTH;
+    @Getter @Setter private boolean cancelled;
 
-    public KOTHCapturedEvent(KOTH koth, Player capper) {
+    public KOTHCapturedEvent(KOTH KOTH, Player capper) {
         super(capper);
 
-        this.koth = koth;
+        this.KOTH = KOTH;
     }
 
     public HandlerList getHandlers() {
-        return handlers;
+        return (handlers);
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return (handlers);
     }
 
 }

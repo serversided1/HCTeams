@@ -187,11 +187,6 @@ public class FoxListener implements Listener {
 
         event.setJoinMessage(null);
 
-        // "Pad" the player's chat
-        for (int i = 0; i < 6; i++) {
-            player.sendMessage("");
-        }
-
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
 

@@ -66,7 +66,7 @@ public class CitadelHandler {
                 dbo.put("courtyardLootable", getCourtyardLootable());
                 dbo.put("chests", new BasicDBList());
 
-                FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+                FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));

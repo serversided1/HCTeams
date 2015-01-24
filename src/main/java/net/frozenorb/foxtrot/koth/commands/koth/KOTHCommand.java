@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,11 @@ public class KOTHCommand {
 
     @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
     public static void kothSchedule(Player sender) {
-        for (KOTH koth : KOTHHandler.getKOTHs()) {
+        for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+            if (koth.isHidden()) {
+                continue;
+            }
+
             if (koth.isActive()) {
                 sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + koth.getName() + ChatColor.GOLD + " can be contested now.");
                 return;
@@ -28,7 +32,7 @@ public class KOTHCommand {
         Calendar date = Calendar.getInstance();
         int hour = date.get(Calendar.HOUR_OF_DAY);
 
-        for (Map.Entry<Integer, String> entry : KOTHHandler.getKothSchedule().entrySet()) {
+        for (Map.Entry<Integer, String> entry : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
             if (entry.getKey() > hour) {
                 Calendar activationTime = Calendar.getInstance();
 

@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.koth.listeners;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
@@ -11,7 +10,6 @@ import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -26,10 +24,11 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onKOTHActivated(KOTHActivatedEvent event) {
-        boolean citadel = event.getKoth().getName().equals("Citadel");
-        boolean eotw = event.getKoth().getName().equals("EOTW");
+        if (event.getKOTH().isHidden()) {
+            return;
+        }
 
-        if (eotw) {
+        if (event.getKOTH().getName().equals("EOTW")) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1F, 1F);
             }
@@ -41,11 +40,11 @@ public class KOTHListener implements Listener {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.DARK_RED + "EOTW " + ChatColor.GOLD + "can be contested now.");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "███████");
-        } else if (citadel) {
+        } else if (event.getKOTH().getName().equals("Citadel")) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "███████");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.GOLD + "[Citadel]");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.DARK_PURPLE + event.getKoth().getName());
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.DARK_PURPLE + event.getKOTH().getName());
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.GOLD + "can be contested now.");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
@@ -54,7 +53,7 @@ public class KOTHListener implements Listener {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "███████");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + " " + ChatColor.GOLD + "[KingOfTheHill]");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + " " + ChatColor.YELLOW + event.getKoth().getName() + " KOTH");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "███" + ChatColor.GRAY + "███" + " " + ChatColor.YELLOW + event.getKOTH().getName() + " KOTH");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "██" + " " + ChatColor.GOLD + "can be contested now.");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "███" + ChatColor.DARK_AQUA + "█" + ChatColor.GRAY + "█");
@@ -63,7 +62,11 @@ public class KOTHListener implements Listener {
     }
 
     @EventHandler
-    public void onKOTHCap(KOTHCapturedEvent event) {
+    public void onKOTHCaptured(KOTHCapturedEvent event) {
+        if (event.getKOTH().isHidden()) {
+            return;
+        }
+
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
@@ -75,14 +78,12 @@ public class KOTHListener implements Listener {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage("");
         }
 
-        boolean citadel = event.getKoth().getName().equalsIgnoreCase("Citadel");
+        if (!event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.BLUE + " " + event.getKOTH().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKOTH().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
 
-        if (!citadel) {
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.BLUE + " " + event.getKoth().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Awarded" + ChatColor.BLUE + " Level " + event.getKoth().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + ".");
-
-            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKoth().getName() + " KOTH", event.getKoth().getLevel());
-            ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKoth().getName(), team == null ? event.getPlayer().getName() : team.getName());
+            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKOTH().getName() + " KOTH", event.getKOTH().getLevel());
+            ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKOTH().getName(), team == null ? event.getPlayer().getName() : team.getName());
 
             event.getPlayer().getInventory().addItem(rewardKey);
             event.getPlayer().getInventory().addItem(kothSign);
@@ -95,52 +96,55 @@ public class KOTHListener implements Listener {
                 event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), kothSign);
             }
         } else {
-            Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.GOLD + "[Citadel]");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.YELLOW + "controlled by");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName());
-            Bukkit.broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
-            Bukkit.broadcastMessage(ChatColor.GRAY + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.GOLD + "[Citadel]");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + ChatColor.YELLOW + "controlled by");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████ " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName());
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.GRAY + "█████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "██" + ChatColor.DARK_PURPLE + "████" + ChatColor.GRAY + "█");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GRAY + "███████");
         }
     }
 
     @EventHandler
     public void onKOTHControlList(KOTHControlLostEvent event) {
-        if (event.getKoth().getRemainingCapTime() <= (event.getKoth().getCapTime() - 30)) {
-            boolean citadel = event.getKoth().getName().equals("Citadel");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + " Control of " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " lost.");
+        if (event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
         }
     }
 
     @EventHandler
     public void onKOTHControlTick(KOTHControlTickEvent event) {
-        if (event.getKoth().getRemainingCapTime() <= (event.getKoth().getCapTime() - 30)) {
-            boolean citadel = event.getKoth().getName().equals("Citadel");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + " " + ChatColor.YELLOW + event.getKoth().getName() + ChatColor.GOLD + " is trying to be controlled.");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS(event.getKoth().getRemainingCapTime()));
+        if (event.getKOTH().getRemainingCapTime() % 180 == 0 && event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " is trying to be controlled.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS(event.getKOTH().getRemainingCapTime()));
         }
     }
 
     @EventHandler
     public void onHour(HourEvent event) {
         // Don't start a KOTH if another one is active.
-        for (KOTH koth : KOTHHandler.getKOTHs()) {
+        for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+            if (koth.isHidden()) {
+                continue;
+            }
+
             if (koth.isActive()) {
                 return;
             }
         }
 
-        if (KOTHHandler.getKothSchedule().containsKey(event.getHour())) {
-            KOTH koth = KOTHHandler.getKOTH(KOTHHandler.getKothSchedule().get(event.getHour()));
+        if (FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().containsKey(event.getHour())) {
+            String resolvedName = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().get(event.getHour());
+            KOTH resolved = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH(resolvedName);
 
-            if (koth == null) {
-                FoxtrotPlugin.getInstance().getLogger().warning("The KOTH Scheduler has a schedule for a KOTH named " + KOTHHandler.getKothSchedule().get(event.getHour()) + ", but the KOTH does not exist.");
+            if (resolved == null) {
+                FoxtrotPlugin.getInstance().getLogger().warning("The KOTH Scheduler has a schedule for a KOTH named " + resolvedName + ", but the KOTH does not exist.");
                 return;
             }
 
-            koth.activate();
+            resolved.activate();
         }
     }
 

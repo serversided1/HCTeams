@@ -9,9 +9,7 @@ import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
-import net.minecraft.util.com.google.gson.Gson;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
-import net.minecraft.util.org.apache.commons.io.IOUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
@@ -19,7 +17,7 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 /**
@@ -27,10 +25,10 @@ import java.util.*;
  */
 public class KOTHHandler {
     
-    @Getter private static Set<KOTH> KOTHs = new HashSet<KOTH>();
-    @Getter private static Map<Integer, String> kothSchedule = new TreeMap<Integer, String>();
+    @Getter private Set<KOTH> KOTHs = new HashSet<KOTH>();
+    @Getter private Map<Integer, String> KOTHSchedule = new TreeMap<Integer, String>();
 
-    public static void init() {
+    public KOTHHandler() {
         loadKOTHs();
         loadSchedules();
 
@@ -82,7 +80,7 @@ public class KOTHHandler {
         // The initial delay of 5 ticks is to 'offset' us with the scoreboard handler.
     }
 
-    public static void loadKOTHs() {
+    public void loadKOTHs() {
         try {
             File kothsBase = new File("KOTHs");
 
@@ -92,14 +90,7 @@ public class KOTHHandler {
 
             for (File kothFile : kothsBase.listFiles()) {
                 if (kothFile.getName().endsWith(".json")) {
-                    BufferedInputStream e = new BufferedInputStream(new FileInputStream(kothFile));
-
-                    StringWriter writer = new StringWriter();
-                    IOUtils.copy(e, writer, "utf-8");
-
-                    KOTHs.add((new Gson()).fromJson(writer.toString(), KOTH.class));
-
-                    e.close();
+                    KOTHs.add(FoxtrotPlugin.GSON.fromJson(FileUtils.readFileToString(kothFile), KOTH.class));
                 }
             }
         } catch (Exception e) {
@@ -107,8 +98,8 @@ public class KOTHHandler {
         }
     }
 
-    public static void loadSchedules() {
-        kothSchedule.clear();
+    public void loadSchedules() {
+        KOTHSchedule.clear();
 
         try {
             File kothSchedule = new File("kothSchedule.json");
@@ -122,7 +113,7 @@ public class KOTHHandler {
 
             if (dbo != null) {
                 for (Map.Entry<String, Object> entry : dbo.entrySet()) {
-                    KOTHHandler.kothSchedule.put(Integer.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+                    this.KOTHSchedule.put(Integer.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
                 }
             }
         } catch (Exception e) {
@@ -130,7 +121,7 @@ public class KOTHHandler {
         }
     }
 
-    public static void saveKOTHs() {
+    public void saveKOTHs() {
         try {
             File kothsBase = new File("KOTHs");
 
@@ -144,19 +135,14 @@ public class KOTHHandler {
 
             for (KOTH koth : KOTHs) {
                 File kothFile = new File(kothsBase, koth.getName() + ".json");
-                FileWriter e = new FileWriter(kothFile);
-
-                e.write((new Gson()).toJson(koth));
-
-                e.flush();
-                e.close();
+                FileUtils.write(kothFile, FoxtrotPlugin.GSON.toJson(koth));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static KOTH getKOTH(String name) {
+    public KOTH getKOTH(String name) {
         for (KOTH koth : KOTHs) {
             if (koth.getName().equalsIgnoreCase(name)) {
                 return (koth);

@@ -24,6 +24,7 @@ public class ChatListener implements Listener {
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
         String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? ChatColor.DARK_PURPLE + "[HighRoller]" : "";
+        String customPrefixString = FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
         ChatMode chatMode = FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(event.getPlayer().getName());
 
         boolean doTeamChat = event.getMessage().startsWith("@");
@@ -67,7 +68,7 @@ public class ChatListener implements Listener {
 
                 // TODO: Rewrite
                 if (team == null) {
-                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
                     String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -82,7 +83,7 @@ public class ChatListener implements Listener {
 
                     FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
                 } else {
-                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
                     String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 
                     for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {

@@ -24,18 +24,18 @@ public class CitadelListener implements Listener {
 
     @EventHandler
     public void onKOTHActivate(KOTHActivatedEvent event) {
-        if (event.getKoth().getName().equalsIgnoreCase("Citadel")) {
+        if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
             FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelActivatedEvent());
         }
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onKOTHCaptured(KOTHCapturedEvent event) {
-        if (event.getKoth().getName().equalsIgnoreCase("Citadel")) {
+        if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
             if (playerTeam != null) {
-                FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId(), event.getKoth().getLevel());
+                FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId(), event.getKOTH().getLevel());
             }
         }
     }

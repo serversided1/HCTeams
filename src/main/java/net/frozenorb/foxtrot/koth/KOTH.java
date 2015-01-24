@@ -7,7 +7,6 @@ import net.frozenorb.foxtrot.koth.events.*;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.libs.com.google.gson.annotations.SerializedName;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockVector;
 
@@ -20,18 +19,12 @@ import java.util.List;
  */
 public class KOTH {
 
-    public static String LAST_ACTIVE_KOTH = "";
-
-    @SerializedName("Name")
     @Getter private String name;
-    @SerializedName("Location")
     @Getter private BlockVector capLocation;
-    @SerializedName("World")
     @Getter private String world;
-    @SerializedName("MaxDistance")
     @Getter private int capDistance;
-    @SerializedName("CapTime")
     @Getter private int capTime;
+    @Getter private boolean hidden = false;
 
     @Getter private transient boolean active;
     @Getter private transient String currentCapper;
@@ -46,19 +39,19 @@ public class KOTH {
         this.capTime = 60 * 15;
         this.level = 2;
 
-        KOTHHandler.getKOTHs().add(this);
-        KOTHHandler.saveKOTHs();
+        FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs().add(this);
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setLocation(Location location) {
         this.capLocation = location.toVector().toBlockVector();
         this.world = location.getWorld().getName();
-        KOTHHandler.saveKOTHs();
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setCapDistance(int capDistance) {
         this.capDistance = capDistance;
-        KOTHHandler.saveKOTHs();
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setCapTime(int capTime) {
@@ -68,7 +61,12 @@ public class KOTH {
             this.capTime = capTime;
         }
 
-        KOTHHandler.saveKOTHs();
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public boolean activate() {
@@ -144,14 +142,13 @@ public class KOTH {
             if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL) {
                 resetCapTime();
             } else {
-                if (remainingCapTime % 10 == 0 && remainingCapTime > 1) {
-                    boolean citadel = name.equalsIgnoreCase("Citadel");
-                    capper.sendMessage(ChatColor.GOLD + (citadel ? "[Citadel]" : "[KingOfTheHill]") + ChatColor.YELLOW + " Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
+                if (remainingCapTime % 10 == 0 && remainingCapTime > 1 && !isHidden()) {
+                    capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
                 }
 
                 if (remainingCapTime <= 0) {
                     finishCapping();
-                } else if (remainingCapTime % 180 == 0) {
+                } else {
                     FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 

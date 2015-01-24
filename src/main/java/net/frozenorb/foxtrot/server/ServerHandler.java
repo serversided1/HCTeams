@@ -67,30 +67,14 @@ public class ServerHandler {
 
     @Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
 
-    @Getter private Set<String> usedNames = new HashSet<String>();
+    @Getter private Map<String, String> customPrefixes = new HashMap<String, String>();
     @Getter private Set<String> highRollers = new HashSet<String>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
 
     public ServerHandler() {
-        try {
-            File f = new File("usedNames.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
-
-            if (dbo != null) {
-                for (Object o : (BasicDBList) dbo.get("names")) {
-                    usedNames.add((String) o);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadPrefixes();
 
         try {
             File f = new File("highRollers.json");
@@ -128,27 +112,29 @@ public class ServerHandler {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
     }
 
-    public void save() {
+    public void loadPrefixes() {
         try {
-            File f = new File("usedNames.json");
+            File f = new File("customPrefixes.json");
 
             if (!f.exists()) {
                 f.createNewFile();
             }
 
-            BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = new BasicDBList();
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
-            for (String n : usedNames) {
-                list.add(n);
+            if (dbo != null) {
+                customPrefixes.clear();
+
+                for (Map.Entry<String, Object> o : ((BasicDBObject) dbo.get("prefixes")).entrySet()) {
+                    customPrefixes.put(o.getKey(), ChatColor.translateAlternateColorCodes('&', o.getValue().toString()));
+                }
             }
-
-            dbo.put("names", list);
-            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void save() {
         try {
             File f = new File("highRollers.json");
 
@@ -168,16 +154,20 @@ public class ServerHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    public boolean isBannedPotion(int value) {
-        for (int i : DISALLOWED_POTIONS) {
-            if (i == value) {
-                return (true);
+        try {
+            File f = new File("customPrefixes.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
             }
-        }
 
-        return (false);
+            BasicDBObject dbo = new BasicDBObject();
+            dbo.put("prefixes", customPrefixes);
+            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isWarzone(Location loc) {
@@ -329,7 +319,7 @@ public class ServerHandler {
             }
         }
 
-        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
 
         // 0.75 DTR loss while Citadel is active.
         if (citadel != null && citadel.isActive()) {
@@ -366,7 +356,7 @@ public class ServerHandler {
         long max = TimeUnit.HOURS.toSeconds(3);
         long ban;
 
-        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
 
         PlayerProfile profile = Shared.get().getProfileManager().getProfile(playerName);
 
