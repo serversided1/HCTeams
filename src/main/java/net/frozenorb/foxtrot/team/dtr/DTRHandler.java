@@ -24,11 +24,11 @@ public class DTRHandler extends BukkitRunnable {
 
     private static Set<String> wasOnCooldown = new HashSet<String>();
 
-    // * 3 is to 'speed up' DTR regen while keeping the ratios the same.
+    // * 4.5 is to 'speed up' DTR regen while keeping the ratios the same.
     // We're using this instead of changing the array incase we need to change this value
     // In the future.
     public static double getBaseDTRIncrement(int teamsize) {
-        return (teamsize == 0 ? 0 : BASE_DTR_INCREMENT[teamsize - 1] * 3F);
+        return (teamsize == 0 ? 0 : BASE_DTR_INCREMENT[teamsize - 1] * 4.5F);
     }
 
     public static double getMaxDTR(int teamsize) {

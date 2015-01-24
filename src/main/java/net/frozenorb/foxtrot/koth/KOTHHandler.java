@@ -28,7 +28,7 @@ import java.util.*;
 public class KOTHHandler {
     
     @Getter private static Set<KOTH> KOTHs = new HashSet<KOTH>();
-    @Getter private static Map<Integer, String> kothSchedule = new HashMap<Integer, String>();
+    @Getter private static Map<Integer, String> kothSchedule = new TreeMap<Integer, String>();
 
     public static void init() {
         loadKOTHs();

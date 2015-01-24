@@ -26,7 +26,7 @@ public class TeamSetHQCommand {
                     sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
                     return;
                 } else {
-                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check  is being bypassed due to your rank.");
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check is being bypassed due to your rank.");
                 }
             }
 
@@ -37,8 +37,6 @@ public class TeamSetHQCommand {
                     player.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
                 }
             }
-
-            sender.sendMessage(ChatColor.DARK_AQUA + "Headquarters set.");
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }

@@ -125,8 +125,6 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onHour(HourEvent event) {
-        FoxtrotPlugin.getInstance().sendOPMessage(ChatColor.DARK_AQUA + "Running KOTH scheduler...");
-
         // Don't start a KOTH if another one is active.
         for (KOTH koth : KOTHHandler.getKOTHs()) {
             if (koth.isActive()) {

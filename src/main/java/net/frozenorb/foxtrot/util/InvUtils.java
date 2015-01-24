@@ -40,6 +40,14 @@ public class InvUtils {
             return (false);
         }
 
+        if (item.hasItemMeta()) {
+            ItemMeta itemMeta = item.getItemMeta();
+
+            if (itemMeta.hasDisplayName() && itemMeta.getDisplayName().contains(ChatColor.COLOR_CHAR + "b")) {
+                return (false);
+            }
+        }
+
         boolean fixed = false;
         Map<Enchantment, Integer> enchants = item.getEnchantments();
 

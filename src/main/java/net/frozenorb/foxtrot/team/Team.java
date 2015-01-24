@@ -41,11 +41,11 @@ public class Team {
 
     // Configurable values //
 
-    public static final int MAX_TEAM_SIZE = 30;
+    public static final int MAX_TEAM_SIZE = 20;
     public static final int MAX_CLAIMS = 2;
     public static final int MAX_ALLIES = 0;
-    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
-    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
+    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
+    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
 
     // End configurable values //
 

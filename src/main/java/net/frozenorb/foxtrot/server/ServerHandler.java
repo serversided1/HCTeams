@@ -11,7 +11,6 @@ import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -27,7 +26,6 @@ import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Cow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -250,80 +248,55 @@ public class ServerHandler {
         return (new RegionData(RegionType.WILDNERNESS, null));
     }
 
-    public void beginWarp(final Player player, final Team team, int price) {
-        boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
+    public void beginHQWarp(final Player player, final Team team, int warmup) {
+        Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        double bal = playerTeam.getBalance();
+        if (inClaim != null) {
+            if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
+                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
+                return;
+            }
 
-        if (bal < price) {
-            player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
-            return;
+            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
+                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
+                return;
+            }
         }
 
-        if (!enemyCheckBypass) {
-            // Disallow warping while on enderpearl cooldown.
-            if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
-                return;
-            }
+        player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
 
-            boolean enemyWithinRange = false;
+        new BukkitRunnable() {
 
-            for (Entity e : player.getNearbyEntities(30, 256, 30)) {
-                if (e instanceof Player) {
-                    Player other = (Player) e;
+            int time = warmup;
+            Location startLocation = player.getLocation();
+            double startHealth = player.getHealth();
 
-                    if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(other.getName())) {
-                        continue;
-                    }
+            @Override
+            public void run() {
+                time--;
 
-                    if (!playerTeam.isMember(other.getName()) && !playerTeam.isAlly(other.getName())) {
-                        enemyWithinRange = true;
-                        break;
-                    }
-                }
-            }
-
-            if (enemyWithinRange) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
-                return;
-            }
-
-            if (player.getHealth() <= player.getMaxHealth() - 1D) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
-                return;
-            }
-
-            if (player.getFoodLevel() != 20) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
-                return;
-            }
-
-            Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
-
-            if (inClaim != null) {
-                if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim!");
+                if (!player.getLocation().getWorld().equals(startLocation.getWorld()) || player.getLocation().distanceSquared(startLocation) >= 0.1 || player.getHealth() < startHealth) {
+                    player.sendMessage(ChatColor.YELLOW + "Teleport cancelled.");
+                    cancel();
                     return;
                 }
 
-                if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
-                    return;
+                // Reset their previous health, so players can't start on 1/2 a heart, splash, and then be able to take damage before warping.
+                startHealth = player.getHealth();
+
+                if (time == 0) {
+                    // Remove their PvP timer.
+                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
+                        FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
+                    }
+
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
+                    player.teleport(team.getHQ());
+                    cancel();
                 }
             }
-        }
 
-        // Remove their PvP timer.
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
-        }
-
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "$" + price + ChatColor.YELLOW + " has been deducted from your team balance.");
-        playerTeam.setBalance(playerTeam.getBalance() - price);
-
-        player.teleport(team.getHQ());
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     public boolean isUnclaimed(Location loc) {
