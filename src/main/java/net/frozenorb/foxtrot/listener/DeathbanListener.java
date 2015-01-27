@@ -40,7 +40,7 @@ public class DeathbanListener implements Listener {
             }
 
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned for the remainder of the map.");
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned for the remainder of the map.");
                 return;
             }
 
@@ -50,7 +50,7 @@ public class DeathbanListener implements Listener {
             int totalLives = soulboundLives + friendLives + transferableLives;
 
             if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". Lives cannot be used on kit maps.");
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". Lives cannot be used on kit maps.");
                 return;
             }
 
@@ -73,16 +73,16 @@ public class DeathbanListener implements Listener {
 
                     totalLives--;
 
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You now have " + totalLives + " " + (totalLives == 1 ? "life" : "lives") + " left. You have been revived.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You now have " + totalLives + " " + (totalLives == 1 ? "life" : "lives") + " left. You have been revived.");
                 } else {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You do not have any lives. To buy a life, go to MineHQ.com/shop.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You do not have any lives. To buy a life, go to MineHQ.com/shop.");
                 }
             } else {
                 if (totalLives > 0) {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
                     lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                 } else {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.RED + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have no lives. To buy a life, go to MineHQ.com/store.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have no lives. To buy a life, go to MineHQ.com/store.");
                 }
             }
         }
@@ -102,9 +102,9 @@ public class DeathbanListener implements Listener {
                 event.getEntity().teleport(event.getEntity().getLocation().add(0, 100, 0));
 
                 if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                    event.getEntity().kickPlayer(ChatColor.RED + "§cCome back tomorrow for SOTW!");
+                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
                 } else {
-                    event.getEntity().kickPlayer(ChatColor.RED + "Come back in " + time + "!");
+                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
                 }
             }
         }, 5L);

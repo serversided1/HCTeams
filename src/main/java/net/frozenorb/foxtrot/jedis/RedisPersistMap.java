@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.jedis;
 
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;

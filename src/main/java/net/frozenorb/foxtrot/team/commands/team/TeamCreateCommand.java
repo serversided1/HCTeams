@@ -3,9 +3,8 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -24,9 +23,6 @@ public class TeamCreateCommand {
                 sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
                 return;
             }
-
-            // Do we need this?
-            //name = name.substring(0, 1).toUpperCase() + name.substring(1);
 
             if (name.length() > 16) {
                 sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
@@ -53,9 +49,6 @@ public class TeamCreateCommand {
 
                 FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(team);
                 FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getName(), team);
-
-                // Raffle
-                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(sender, RaffleAchievement.MAKING_FRIENDS);
 
                 FoxtrotPlugin.getInstance().getServer().broadcastMessage("§eTeam §9" + team.getName() + "§e has been §acreated §eby §f" + sender.getDisplayName());
             } else {

@@ -1,7 +1,8 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
+import net.frozenorb.foxtrot.koth.KOTH;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,13 @@ public class KOTHScheduleCommand {
     public static void kothSchedule(Player sender) {
         int sent = 0;
 
-        for (Map.Entry<Integer, String> entry : KOTHHandler.getKothSchedule().entrySet()) {
+        for (Map.Entry<Integer, String> entry : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
+            KOTH resolved = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH(entry.getValue());
+
+            if (resolved == null || resolved.isHidden()) {
+                continue;
+            }
+
             sent++;
             Calendar activationTime = Calendar.getInstance();
 

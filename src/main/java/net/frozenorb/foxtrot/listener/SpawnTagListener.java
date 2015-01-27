@@ -33,6 +33,7 @@ public class SpawnTagListener implements Listener {
 
         if (damager != null && damager != event.getEntity()) {
             SpawnTagHandler.addSeconds(damager, SpawnTagHandler.MAX_SPAWN_TAG);
+            SpawnTagHandler.addSeconds((Player) event.getEntity(), SpawnTagHandler.MAX_SPAWN_TAG);
         }
     }
 

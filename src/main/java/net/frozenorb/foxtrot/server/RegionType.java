@@ -3,9 +3,6 @@ package net.frozenorb.foxtrot.server;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 
@@ -43,31 +40,7 @@ public enum RegionType {
         return (true);
     }),
 
-    ROAD((event) -> true),
-
-    CITADEL_TOWN((event) -> {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-            event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-            event.setTo(event.getFrom());
-            return (false);
-        }
-
-        return (true);
-    }),
-
-    CITADEL_KEEP((event) -> {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-            event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-            event.setTo(event.getFrom());
-            return (false);
-        }
-
-        return (true);
-    }),
-
-    CITADEL_COURTYARD((event) -> {
+    CITADEL((event) -> {
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");

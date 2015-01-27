@@ -12,7 +12,7 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class SpawnTagHandler {
 
-    public static final int MAX_SPAWN_TAG = 60;
+    public static final int MAX_SPAWN_TAG = 15;
     @Getter private static HashMap<String, Long> spawnTags = new HashMap<String, Long>();
 
     public static void removeTag(Player player) {

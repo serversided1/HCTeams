@@ -2,16 +2,12 @@ package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.relic.enums.Relic;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,40 +38,10 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
-            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == shooter) {
-                        enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2));
-                        return;
-                    }
-                }
-            }
-
             if (DTRBitmaskType.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(16));
-            }
-
-            // Relic pearl cooldown reduction
-            int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(shooter, Relic.PEARL_CDR);
-
-            if (tier != -1) {
-                long reduction = 0;
-
-                switch (tier) {
-                    case 1:
-                        reduction = 500;
-                        break;
-                    case 2:
-                        reduction = 1000;
-                        break;
-                    case 3:
-                        reduction = 2000;
-                        break;
-                }
-
-                enderpearlCooldown.put(shooter.getName(), enderpearlCooldown.get(shooter.getName()) - reduction);
             }
         }
     }
@@ -130,12 +96,6 @@ public class EnderpearlListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into claims while having a PvP Timer!");
                 return;
-            }
-        }
-
-        if (!DTRBitmaskType.SAFE_ZONE.appliesAt(target) || !DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
-            if (event.getPlayer().getWorld().getEnvironment() != World.Environment.THE_END) {
-                SpawnTagHandler.addSeconds(event.getPlayer(), 8);
             }
         }
 

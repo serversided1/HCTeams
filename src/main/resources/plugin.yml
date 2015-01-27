@@ -1,11 +1,7 @@
 name: ${artifactId}
 version: ${version}
-description: What does the fox say?
-authors:
- - chasechocolate
- - LazyLemons
- - macguy8
+authors: MineHQ Development Team
 main: net.frozenorb.foxtrot.FoxtrotPlugin
-depend: [ProtocolLib, mBasic]
+depend: [ProtocolLib]
 commands:
   eval:

@@ -1,21 +1,14 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.CTFHandler;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Created by macguy8 on 11/5/2014.
@@ -75,16 +68,6 @@ public class PortalTrapListener implements Listener {
 
             }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);*/
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.NETHER) {
-            if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-                for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                    if (flag.getFlagHolder() != null && flag.getFlagHolder() == event.getPlayer()) {
-                        event.getPlayer().sendMessage(CTFHandler.PREFIX + " " + ChatColor.RED + "You cannot go to the nether while carrying the flag.");
-                        event.setCancelled(true);
-                        return;
-                    }
-                }
-            }
-
             // Going to the nether.
             /*new BukkitRunnable() {
 

@@ -10,7 +10,6 @@ import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -71,22 +70,6 @@ public class DeathTracker {
             potionEffectDBObject.put("Duration", potionEffect.getAmplifier() > 1_000_000L ? "Infinite" : TimeUtils.getMMSS(potionEffect.getAmplifier() / 20));
 
             potionEffects.add(potionEffectDBObject);
-        }
-
-        BasicDBList relics = new BasicDBList();
-
-        for (Relic relic : Relic.values()) {
-            int tier = FoxtrotPlugin.getInstance().getRelicHandler().getTier(player, relic);
-
-            if (tier != -1) {
-                BasicDBObject relicDBObject = new BasicDBObject();
-
-                relicDBObject.put("Name", relic.getName());
-                relicDBObject.put("Description", relic.getDescription());
-                relicDBObject.put("Tier", tier);
-
-                relics.add(relicDBObject);
-            }
         }
 
         BasicDBObject locationData = new BasicDBObject();
@@ -172,7 +155,6 @@ public class DeathTracker {
         }
 
         playerData.put("Hunger", player.getFoodLevel());
-        playerData.put("Relics", relics);
         playerData.put("Team", teamData == null ? "N/A" : teamData);
         playerData.put("PotionEffects", potionEffects);
         playerData.put("Balance", Basic.get().getEconomyManager().getBalance(player.getName()));

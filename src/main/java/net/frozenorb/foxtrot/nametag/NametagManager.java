@@ -2,16 +2,10 @@ package net.frozenorb.foxtrot.nametag;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,24 +19,6 @@ public class NametagManager {
     private static int teamCreateIndex = 1;
 
     @Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
-
-    static {
-        new BukkitRunnable() {
-
-            public void run() {
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (player.getGameMode() == GameMode.CREATIVE && player.getItemInHand() != null && player.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
-                        for (Entity entity : player.getNearbyEntities(20, 40, 20)) {
-                            if (entity instanceof Player) {
-                                NametagManager.reloadPlayer((Player) entity, player);
-                            }
-                        }
-                    }
-                }
-            }
-
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
-    }
 
     public static void reloadPlayer(Player toRefresh) {
         for (Player refreshFor : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -59,6 +35,8 @@ public class NametagManager {
                 teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
             } else if (team.isAlly(refreshFor.getName())) {
                 teamInfo = getOrCreate(Team.ALLY_COLOR.toString(), "");
+            } else if (team.isTrading()) {
+                teamInfo = getOrCreate(Team.TRADING_COLOR.toString(), "");
             } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
                 teamInfo = getOrCreate(ChatColor.RED.toString(), "");
             }
@@ -69,29 +47,6 @@ public class NametagManager {
         // You always see yourself as green, even if you're not on a team.
         if (refreshFor == toRefresh) {
             teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
-        }
-
-        if (refreshFor.getGameMode() == GameMode.CREATIVE && refreshFor.getItemInHand() != null && refreshFor.getItemInHand().getType() == Material.REDSTONE_BLOCK) {
-            String enderpearlString = "";
-            String combatTagString = "";
-
-            if (EnderpearlListener.getEnderpearlCooldown().containsKey(toRefresh.getName()) && EnderpearlListener.getEnderpearlCooldown().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                long millisLeft = EnderpearlListener.getEnderpearlCooldown().get(toRefresh.getName()) - System.currentTimeMillis();
-                double value = (millisLeft / 1000D);
-                double sec = Math.round(10.0 * value) / 10.0;
-
-                enderpearlString = sec + " ";
-            }
-
-            if (SpawnTagHandler.isTagged(toRefresh)) {
-                long millisLeft = SpawnTagHandler.getTag(toRefresh);
-                double value = (millisLeft / 1000D);
-                double sec = Math.round(10.0 * value) / 10.0;
-
-                combatTagString = " " + sec;
-            }
-
-            teamInfo = getOrCreate(ChatColor.GREEN.toString() + enderpearlString + teamInfo.getPrefix(), ChatColor.DARK_RED + combatTagString);
         }
 
         HashMap<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();

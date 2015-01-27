@@ -2,8 +2,6 @@ package net.frozenorb.foxtrot.pvpclasses;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
-import net.frozenorb.foxtrot.ctf.game.CTFGame;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -69,17 +67,6 @@ public abstract class PvPClass implements Listener {
     }
 
     public static void smartAddPotion(Player player, PotionEffect potionEffect, boolean persistOldValues) {
-        CTFGame game = FoxtrotPlugin.getInstance().getCTFHandler().getGame();
-
-        // No Speed for flag holders!
-        if (game != null && potionEffect.getType().equals(PotionEffectType.SPEED)) {
-            for (CTFFlag flag : game.getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                    return;
-                }
-            }
-        }
-
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
             if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                 continue;

@@ -10,8 +10,9 @@ import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
-import net.frozenorb.foxtrot.ctf.CTFHandler;
+import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.RedisSaveTask;
 import net.frozenorb.foxtrot.jedis.persist.*;
@@ -21,12 +22,9 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.raffle.RaffleHandler;
-import net.frozenorb.foxtrot.relic.RelicHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
 import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.foxtrot.tasks.HourlyScheduleTask;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
@@ -37,24 +35,21 @@ import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
+import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Timer;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
@@ -63,6 +58,7 @@ public class FoxtrotPlugin extends JavaPlugin {
     private static FoxtrotPlugin instance;
 
     public static final Random RANDOM = new Random();
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Getter private ItemMessage itemMessage;
 
@@ -75,9 +71,8 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private MapHandler mapHandler;
     @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
-    @Getter private RaffleHandler raffleHandler;
-    @Getter private RelicHandler relicHandler;
-    @Getter private CTFHandler CTFHandler;
+    @Getter private KOTHHandler KOTHHandler;
+    @Getter private ConquestHandler conquestHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -138,7 +133,20 @@ public class FoxtrotPlugin extends JavaPlugin {
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
 
-        (new Timer("Hourly Scheduler")).schedule(new HourlyScheduleTask(), date.getTime(), TimeUnit.HOURS.toMillis(1));
+        (new Timer("Hourly Scheduler")).schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                new BukkitRunnable() {
+
+                    public void run() {
+                        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new HourEvent(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)));
+                    }
+
+                }.runTask(FoxtrotPlugin.getInstance());
+            }
+
+        }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
         new PacketBorder.BorderThread().start();
 
@@ -167,17 +175,14 @@ public class FoxtrotPlugin extends JavaPlugin {
         // NEXT MAP
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
 
-        // Clear old recipe
         while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
 
-            if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
+            // Disallow the crafting of gopples.
+            if (recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
                 recipeIterator.remove();
             }
         }
-
-        // and add ours in.
-        getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
     }
 
     @Override
@@ -237,11 +242,9 @@ public class FoxtrotPlugin extends JavaPlugin {
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
-        raffleHandler = new RaffleHandler();
-        relicHandler = new RelicHandler();
-        CTFHandler = new CTFHandler();
+        KOTHHandler = new KOTHHandler();
+        conquestHandler = new ConquestHandler();
 
-        KOTHHandler.init();
         CommandHandler.init();
         DeathMessageHandler.init();
 

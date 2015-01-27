@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -27,6 +26,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,6 +35,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -93,6 +94,13 @@ public class FoxListener implements Listener {
     public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
             Material.FENCE_GATE };
+
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof IronGolem) {
+            ((IronGolem) event.getEntity()).setPlayerCreated(false);
+        }
+    }
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -187,11 +195,6 @@ public class FoxListener implements Listener {
         NametagManager.reloadPlayer(event.getPlayer());
 
         event.setJoinMessage(null);
-
-        // "Pad" the player's chat
-        for (int i = 0; i < 6; i++) {
-            player.sendMessage("");
-        }
 
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
@@ -300,15 +303,7 @@ public class FoxListener implements Listener {
                     if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
                         CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
 
-                        if (DTRBitmaskType.CITADEL_TOWN.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelTown(event.getPlayer())) {
-                            return;
-                        }
-
-                        if (DTRBitmaskType.CITADEL_COURTYARD.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelCourtyard(event.getPlayer())) {
-                            return;
-                        }
-
-                        if (DTRBitmaskType.CITADEL_KEEP.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelKeep(event.getPlayer())) {
+                        if (DTRBitmaskType.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
                             return;
                         }
                     }
@@ -378,8 +373,6 @@ public class FoxListener implements Listener {
                         FoxtrotPlugin.getInstance().getServerHandler().handleShopSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("DTR Regen")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleDTRRegenSign(s, event.getPlayer());
-                    } else if (s.getLine(0).contains("Relic")) {
-                        FoxtrotPlugin.getInstance().getServerHandler().handleRelicSign(s, event.getPlayer());
                     }
 
                     event.setCancelled(true);
@@ -521,10 +514,6 @@ public class FoxListener implements Listener {
         if (event.getEntity().getKiller() != null) {
             Player killer = event.getEntity().getKiller();
             ItemStack hand = killer.getItemInHand();
-
-            // Raffle
-            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.FIRST_BLOOD);
-            FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(killer, RaffleAchievement.EXECUTIONER);
 
             // Add kills to sword lore
             if (hand.getType().name().contains("SWORD") || hand.getType() == Material.BOW) {

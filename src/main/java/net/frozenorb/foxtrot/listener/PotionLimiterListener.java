@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -104,9 +103,6 @@ public class PotionLimiterListener implements Listener {
                     if (item.getType() == Material.AIR || item.getDurability() == result) {
                         continue;
                     }
-
-                    // Raffle
-                    FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievement(player, RaffleAchievement.BREAKING_BAD);
                 }
 
             }

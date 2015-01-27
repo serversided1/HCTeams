@@ -7,19 +7,16 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.ctf.game.CTFFlag;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.raffle.enums.RaffleAchievement;
-import net.frozenorb.foxtrot.relic.enums.Relic;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mShared.API.Profile.PlayerProfile;
+import net.frozenorb.mShared.Shared;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -28,7 +25,6 @@ import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Cow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -70,30 +66,14 @@ public class ServerHandler {
 
     @Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
 
-    @Getter private Set<String> usedNames = new HashSet<String>();
+    @Getter private Map<String, String> customPrefixes = new HashMap<String, String>();
     @Getter private Set<String> highRollers = new HashSet<String>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
 
     public ServerHandler() {
-        try {
-            File f = new File("usedNames.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
-
-            if (dbo != null) {
-                for (Object o : (BasicDBList) dbo.get("names")) {
-                    usedNames.add((String) o);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadPrefixes();
 
         try {
             File f = new File("highRollers.json");
@@ -131,27 +111,29 @@ public class ServerHandler {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
     }
 
-    public void save() {
+    public void loadPrefixes() {
         try {
-            File f = new File("usedNames.json");
+            File f = new File("customPrefixes.json");
 
             if (!f.exists()) {
                 f.createNewFile();
             }
 
-            BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = new BasicDBList();
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
-            for (String n : usedNames) {
-                list.add(n);
+            if (dbo != null) {
+                customPrefixes.clear();
+
+                for (Map.Entry<String, Object> o : ((BasicDBObject) dbo.get("prefixes")).entrySet()) {
+                    customPrefixes.put(o.getKey(), ChatColor.translateAlternateColorCodes('&', o.getValue().toString()));
+                }
             }
-
-            dbo.put("names", list);
-            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void save() {
         try {
             File f = new File("highRollers.json");
 
@@ -171,16 +153,20 @@ public class ServerHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    public boolean isBannedPotion(int value) {
-        for (int i : DISALLOWED_POTIONS) {
-            if (i == value) {
-                return (true);
+        try {
+            File f = new File("customPrefixes.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
             }
-        }
 
-        return (false);
+            BasicDBObject dbo = new BasicDBObject();
+            dbo.put("prefixes", customPrefixes);
+            FileUtils.write(f, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isWarzone(Location loc) {
@@ -221,24 +207,14 @@ public class ServerHandler {
         tasks.put(player.getName(), taskid.getTaskId());
     }
 
-    public RegionData getRegion(Location location) {
-        return (getRegion(LandBoard.getInstance().getTeam(location), location));
-    }
-
     public RegionData getRegion(Team ownerTo, Location location) {
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
                 return (new RegionData(RegionType.SPAWN, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.ROAD)) {
-                return (new RegionData(RegionType.ROAD, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.KOTH)) {
                 return (new RegionData(RegionType.KOTH, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                return (new RegionData(RegionType.CITADEL_COURTYARD, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
-                return (new RegionData(RegionType.CITADEL_TOWN, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                return (new RegionData(RegionType.CITADEL_KEEP, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+                return (new RegionData(RegionType.CITADEL, ownerTo));
             }
         }
 
@@ -251,83 +227,60 @@ public class ServerHandler {
         return (new RegionData(RegionType.WILDNERNESS, null));
     }
 
-    public void beginWarp(final Player player, final Team team, int price) {
-        boolean enemyCheckBypass = player.getGameMode() == GameMode.CREATIVE || player.hasMetadata("invisible") || (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()));
+    public void beginHQWarp(final Player player, final Team team, int warmup) {
+        Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        double bal = playerTeam.getBalance();
+        if (inClaim != null) {
+            if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
+                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
+                return;
+            }
 
-        if (bal < price) {
-            player.sendMessage(ChatColor.RED + "This costs §e$" + price + "§c while your team has only §e$" + bal + "§c!");
+            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL))) {
+                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
+                return;
+            }
+        }
+
+        if (SpawnTagHandler.isTagged(player)) {
+            player.sendMessage(ChatColor.RED + "You may not go to your team headquarters while spawn tagged!");
             return;
         }
 
-        if (!enemyCheckBypass) {
-            // Disallow warping while on enderpearl cooldown.
-            if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) > System.currentTimeMillis()) {
-                player.sendMessage(ChatColor.RED + "You cannot warp while your enderpearl cooldown is active!");
-                return;
-            }
+        player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
 
-            boolean enemyWithinRange = false;
+        new BukkitRunnable() {
 
-            for (Entity e : player.getNearbyEntities(30, 256, 30)) {
-                if (e instanceof Player) {
-                    Player other = (Player) e;
+            int time = warmup;
+            Location startLocation = player.getLocation();
+            double startHealth = player.getHealth();
 
-                    if (other.hasMetadata("invisible") || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(other.getName())) {
-                        continue;
-                    }
+            @Override
+            public void run() {
+                time--;
 
-                    if (!playerTeam.isMember(other.getName()) && !playerTeam.isAlly(other.getName())) {
-                        enemyWithinRange = true;
-                        break;
-                    }
-                }
-            }
-
-            if (enemyWithinRange) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because an enemy is nearby!");
-                return;
-            }
-
-            if (player.getHealth() <= player.getMaxHealth() - 1D) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full health!");
-                return;
-            }
-
-            if (player.getFoodLevel() != 20) {
-                player.sendMessage(ChatColor.RED + "You cannot warp because you do not have full hunger!");
-                return;
-            }
-
-            Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
-
-            if (inClaim != null) {
-                if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim!");
+                if (!player.getLocation().getWorld().equals(startLocation.getWorld()) || player.getLocation().distanceSquared(startLocation) >= 0.1 || player.getHealth() < startHealth) {
+                    player.sendMessage(ChatColor.YELLOW + "Teleport cancelled.");
+                    cancel();
                     return;
                 }
 
-                if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
-                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
-                    return;
+                // Reset their previous health, so players can't start on 1/2 a heart, splash, and then be able to take damage before warping.
+                startHealth = player.getHealth();
+
+                if (time == 0) {
+                    // Remove their PvP timer.
+                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
+                        FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
+                    }
+
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
+                    player.teleport(team.getHQ());
+                    cancel();
                 }
             }
-        }
 
-        // Remove their PvP timer.
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
-        }
-
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "$" + price + ChatColor.YELLOW + " has been deducted from your team balance.");
-        playerTeam.setBalance(playerTeam.getBalance() - price);
-
-        // Raffle
-        FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.BIG_SPENDER, 1);
-
-        player.teleport(team.getHQ());
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
     }
 
     public boolean isUnclaimed(Location loc) {
@@ -348,18 +301,14 @@ public class ServerHandler {
     }
 
     public float getDTRLoss(Player player) {
-        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                    return (0F);
-                }
-            }
-        }
-
         return (getDTRLoss(player.getLocation()));
     }
 
     public float getDTRLoss(Location location) {
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return (0.01F);
+        }
+
         Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
@@ -368,7 +317,7 @@ public class ServerHandler {
             }
         }
 
-        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
 
         // 0.75 DTR loss while Citadel is active.
         if (citadel != null && citadel.isActive()) {
@@ -379,14 +328,6 @@ public class ServerHandler {
     }
 
     public int getDeathban(Player player) {
-        if (FoxtrotPlugin.getInstance().getCTFHandler().getGame() != null) {
-            for (CTFFlag flag : FoxtrotPlugin.getInstance().getCTFHandler().getGame().getFlags().values()) {
-                if (flag.getFlagHolder() != null && flag.getFlagHolder() == player) {
-                    return ((int) TimeUnit.SECONDS.toSeconds(10));
-                }
-            }
-        }
-
         return (getDeathban(player.getName(), player.getLocation()));
     }
 
@@ -410,12 +351,24 @@ public class ServerHandler {
         }
 
         PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
-        long max = TimeUnit.HOURS.toSeconds(24);
+        long max = TimeUnit.HOURS.toSeconds(3);
         long ban;
 
-        KOTH citadel = KOTHHandler.getKOTH("Citadel");
+        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
 
-        // Max deathban of 2 hours during Citadel
+        PlayerProfile profile = Shared.get().getProfileManager().getProfile(playerName);
+
+        if (profile != null) {
+            if (profile.getPermissions().contains("pro")) {
+                max = TimeUnit.HOURS.toSeconds(1);
+            } else if (profile.getPermissions().contains("vip")) {
+                max = TimeUnit.HOURS.toSeconds(2);
+            }
+        } else {
+            FoxtrotPlugin.getInstance().getLogger().warning("We don't have a mShared PlayerProfile for " + playerName + "!");
+        }
+
+        // Max deathban of 1 hour during Citadel
         if (citadel != null && citadel.isActive()) {
             max = TimeUnit.HOURS.toSeconds(1);
         }
@@ -551,11 +504,13 @@ public class ServerHandler {
                 );
             } else {
                 int totalPrice = (int) (amountInInventory * pricePerItem);
+
+                // Trading factions get more money for their items at spawn.
+                totalPrice *= FoxtrotPlugin.getInstance().getMapHandler().getTradingSpawnShopMultiplier();
+
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 
-                // Raffle
-                FoxtrotPlugin.getInstance().getRaffleHandler().giveRaffleAchievementProgress(player, RaffleAchievement.TRUMP, totalPrice);
                 Basic.get().getEconomyManager().depositPlayer(player.getName(), totalPrice);
 
                 showSignPacket(player, sign,
@@ -565,54 +520,6 @@ public class ServerHandler {
                         "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
                 );
             }
-        }
-    }
-
-    public void handleRelicSign(Sign sign, Player player) {
-        Relic relic = Relic.parse(sign.getLine(1));
-        int tier  = Integer.parseInt(sign.getLine(2).replace("Tier ", ""));
-        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-
-        if (relic == null) {
-            showSignPacket(player, sign,
-                    "§c§lError",
-                    "",
-                    "Unknown",
-                    "relic"
-            );
-
-            return;
-        }
-
-        if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
-            if (player.getInventory().firstEmpty() != -1) {
-                Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
-
-                player.getInventory().addItem(InvUtils.generateRelic(relic, tier, "Spawn Shop"));
-                player.updateInventory();
-                FoxtrotPlugin.getInstance().getRelicHandler().updatePlayer(player);
-
-                showSignPacket(player, sign,
-                        "§aBOUGHT",
-                        "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
-                        "New Balance:",
-                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
-                );
-            } else {
-                showSignPacket(player, sign,
-                        "§c§lError!",
-                        "",
-                        "§cNo space",
-                        "§cin inventory!"
-                );
-            }
-        } else {
-            showSignPacket(player, sign,
-                    "§cInsufficient",
-                    "§cfunds for",
-                    sign.getLine(1),
-                    "relic."
-            );
         }
     }
 
