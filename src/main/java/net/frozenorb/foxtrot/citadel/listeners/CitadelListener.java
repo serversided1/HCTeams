@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by macguy8 on 11/15/2014.
@@ -35,23 +34,19 @@ public class CitadelListener implements Listener {
             Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
 
             if (playerTeam != null) {
-                FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId(), event.getKOTH().getLevel());
+                FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId());
             }
         }
     }
 
     @EventHandler
     public void onCitadelActivated(CitadelActivatedEvent event) {
-        FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(null, 0);
+        FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(null);
     }
 
     @EventHandler
     public void onCitadelCaptured(CitadelCapturedEvent event) {
-        Date townLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getTownLootable();
-        Date courtyardLootable = FoxtrotPlugin.getInstance().getCitadelHandler().getCourtyardLootable();
-
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.RED + "CitadelTown " + ChatColor.YELLOW + "is " + ChatColor.DARK_RED + "closed " + ChatColor.YELLOW + "until " + ChatColor.WHITE + (new SimpleDateFormat()).format(townLootable) + ChatColor.YELLOW + ".");
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.RED + "CitadelCourtyard " + ChatColor.YELLOW + "is " + ChatColor.DARK_RED + "closed " + ChatColor.YELLOW + "until " + ChatColor.WHITE + (new SimpleDateFormat()).format(courtyardLootable) + ChatColor.YELLOW + ".");
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.RED + "Citadel" + ChatColor.YELLOW + " is " + ChatColor.DARK_RED + "closed " + ChatColor.YELLOW + "until " + ChatColor.WHITE + (new SimpleDateFormat()).format(FoxtrotPlugin.getInstance().getCitadelHandler().getLootable()) + ChatColor.YELLOW + ".");
     }
 
     @EventHandler(priority=EventPriority.MONITOR) // The monitor is here so we get called 'after' most join events.

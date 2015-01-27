@@ -12,9 +12,13 @@ import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -119,6 +123,35 @@ public class KOTHListener implements Listener {
         if (event.getKOTH().getRemainingCapTime() % 180 == 0 && event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " is trying to be controlled.");
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS(event.getKOTH().getRemainingCapTime()));
+        }
+    }
+
+    @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        if (!event.getPlayer().isOp() || !event.getLine(0).equalsIgnoreCase("[KOTH]")) {
+            return;
+        }
+
+        event.setLine(0, ChatColor.translateAlternateColorCodes('&', event.getLine(1)));
+        event.setLine(1, "");
+
+        FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSigns().add(event.getBlock().getLocation());
+        FoxtrotPlugin.getInstance().getKOTHHandler().saveSigns();
+
+        event.getPlayer().sendMessage(ChatColor.GREEN + "Created a KOTH sign!");
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled() || !(event.getBlock().getState() instanceof Sign)) {
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSigns().contains(event.getBlock().getLocation())) {
+            FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSigns().remove(event.getBlock().getLocation());
+            FoxtrotPlugin.getInstance().getKOTHHandler().saveSigns();
+
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Removed a KOTH sign!");
         }
     }
 

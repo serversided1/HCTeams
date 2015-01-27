@@ -12,7 +12,7 @@ public class CitadelCapturedEvent extends Event {
     @Getter private ObjectId capper;
     @Getter private int level;
 
-    public CitadelCapturedEvent(ObjectId capper, int level) {
+    public CitadelCapturedEvent(ObjectId capper) {
         this.capper = capper;
         this.level = level;
     }

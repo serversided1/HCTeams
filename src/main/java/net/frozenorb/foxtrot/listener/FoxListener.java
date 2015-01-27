@@ -26,6 +26,7 @@ import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,6 +35,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -92,6 +94,13 @@ public class FoxListener implements Listener {
     public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
             Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
             Material.FENCE_GATE };
+
+    @EventHandler
+    public void onCreatureSpawn(CreatureSpawnEvent event) {
+        if (event.getEntity() instanceof IronGolem) {
+            ((IronGolem) event.getEntity()).setPlayerCreated(false);
+        }
+    }
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -294,15 +303,7 @@ public class FoxListener implements Listener {
                     if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
                         CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
 
-                        if (DTRBitmaskType.CITADEL_TOWN.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelTown(event.getPlayer())) {
-                            return;
-                        }
-
-                        if (DTRBitmaskType.CITADEL_COURTYARD.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelCourtyard(event.getPlayer())) {
-                            return;
-                        }
-
-                        if (DTRBitmaskType.CITADEL_KEEP.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadelKeep(event.getPlayer())) {
+                        if (DTRBitmaskType.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
                             return;
                         }
                     }

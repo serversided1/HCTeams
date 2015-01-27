@@ -3,8 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team.subclaim;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.VisualClaim;
-import net.frozenorb.foxtrot.team.claims.VisualClaimType;
+import net.frozenorb.foxtrot.team.claims.VisualSubclaimMap;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,8 +32,8 @@ public class TeamSubclaimStartCommand {
             return;
         }
 
-        if (!VisualClaim.getCurrentSubclaimMaps().containsKey(sender.getName())) {
-            new VisualClaim(sender, VisualClaimType.SUBCLAIM_MAP, true).draw(true);
+        if (!VisualSubclaimMap.getCurrentMaps().containsKey(sender.getName())) {
+            new VisualSubclaimMap(sender).draw(true);
         }
 
         sender.getInventory().setItem(slot, TeamSubclaimCommand.SELECTION_WAND.clone());

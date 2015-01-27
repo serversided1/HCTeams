@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
@@ -37,12 +38,10 @@ public class Team {
 
     public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
     public static final ChatColor TRADING_COLOR = ChatColor.LIGHT_PURPLE;
-    public static final int TRADING_MIN_CLAIM_DISTANCE = 1250;
 
     // Configurable values //
 
     public static final int MAX_TEAM_SIZE = 20;
-    public static final int MAX_CLAIMS = 2;
     public static final int MAX_ALLIES = 0;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
@@ -114,26 +113,14 @@ public class Team {
                     case NETHER:
                         return (ChatColor.GREEN + "Nether Spawn");
                     case THE_END:
-                        return (ChatColor.GREEN + "The End Spawn");
-
-                        /*if (hasDTRBitmask(DTRBitmaskType.DENY_REENTRY)) {
-                            return (ChatColor.GREEN + "The End Spawn");
-                        } else {
-                            return (ChatColor.GREEN + "The End Exit");
-                        }*/
+                        return (ChatColor.GREEN + "The End Safezone");
                 }
 
                 return (ChatColor.GREEN + "Spawn");
             } else if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
                 return (ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
-            } else if (hasDTRBitmask(DTRBitmaskType.ROAD)) {
-                return (ChatColor.RED + getName().replaceAll("Road", " Road"));
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                return (ChatColor.DARK_PURPLE + "Citadel Courtyard");
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                return (ChatColor.DARK_PURPLE + "Citadel Keep");
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
-                return (ChatColor.DARK_PURPLE + "Citadel Town");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+                return (ChatColor.DARK_PURPLE + "Citadel");
             }
         }
 
@@ -228,19 +215,28 @@ public class Team {
         }
 
         FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(this);
-        LandBoard.getInstance().clear(this);
 
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+        for (Claim claim : getClaims()) {
+            LandBoard.getInstance().removeClaim(claim);
+        }
 
-            @Override
-            public Object execute(Jedis jedis) {
-                jedis.del("fox_teams." + name.toLowerCase());
-                return (null);
+        new BukkitRunnable() {
+
+            public void run() {
+                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+                    @Override
+                    public Object execute(Jedis jedis) {
+                        jedis.del("fox_teams." + name.toLowerCase());
+                        return (null);
+                    }
+
+                });
+
+                needsSave = false;
             }
 
-        });
-
-        needsSave = false;
+        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
     public void rename(String newName) {
@@ -261,11 +257,11 @@ public class Team {
 
         });
 
-        for (Claim claim : getClaims()) {
-            claim.setName(claim.getName().replaceAll(oldName, newName));
-        }
-
         flagForSave();
+    }
+
+    public int getMaxClaims() {
+        return (getSize());
     }
 
     public void flagForSave() {
@@ -328,14 +324,6 @@ public class Team {
 
     public boolean isAlly(Team team) {
         return (getAllies().contains(team.getUniqueId()));
-    }
-
-    public boolean ownsLocation(Location location) {
-        return (LandBoard.getInstance().getTeam(location) == this);
-    }
-
-    public boolean ownsClaim(Claim claim) {
-        return (claims.contains(claim));
     }
 
     public boolean removeMember(String name) {
@@ -558,26 +546,12 @@ public class Team {
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
                 setName(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Claims")) {
-                for (String claim : lineParts) {
-                    claim = claim.replace("[", "").replace("]", "");
-
-                    if (claim.contains(":")) {
-                        String[] split = claim.split(":");
-
-                        int x1 = Integer.valueOf(split[0].trim());
-                        int y1 = Integer.valueOf(split[1].trim());
-                        int z1 = Integer.valueOf(split[2].trim());
-                        int x2 = Integer.valueOf(split[3].trim());
-                        int y2 = Integer.valueOf(split[4].trim());
-                        int z2 = Integer.valueOf(split[5].trim());
-                        String name = split[6].trim();
-                        String world = split[7].trim();
-
-                        Claim claimObj = new Claim(world, x1, y1, z1, x2, y2, z2);
-                        claimObj.setName(name);
-
-                        getClaims().add(claimObj);
+                for (String data : lineParts) {
+                    if (data.trim().isEmpty()) {
+                        continue;
                     }
+
+                    getClaims().add(new Claim(data.trim(), this));
                 }
             } else if (identifier.equalsIgnoreCase("Allies")) {
                 for (String ally : lineParts) {
@@ -652,6 +626,7 @@ public class Team {
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
+        StringBuilder claims = new StringBuilder();
 
         for (String member : getMembers()) {
             members.append(member.trim()).append(", ");
@@ -663,6 +638,10 @@ public class Team {
 
         for (String invite : getInvitations()) {
             invites.append(invite.trim()).append(", ");
+        }
+
+        for (Claim claim : getClaims()) {
+            claims.append(claim.toString().trim()).append(", ");
         }
 
         if (members.length() > 2) {
@@ -677,13 +656,17 @@ public class Team {
             invites.setLength(invites.length() - 2);
         }
 
+        if (claims.length() > 2) {
+            claims.setLength(claims.length() - 2);
+        }
+
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
         teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
-        teamString.append("Claims:").append(getClaims().toString()).append('\n');
+        teamString.append("Claims:").append(claims.toString()).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
@@ -757,12 +740,8 @@ public class Team {
 
             if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
                 player.sendMessage(ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Town");
-            }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Courtyard");
-            }  else if (hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel Keep");
+            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel");
             } else {
                 player.sendMessage(ChatColor.BLUE + getName());
             }

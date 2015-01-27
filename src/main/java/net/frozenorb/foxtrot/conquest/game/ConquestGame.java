@@ -52,7 +52,7 @@ public class ConquestGame implements Listener {
         } else {
             new BukkitRunnable() {
 
-                int repeats = 5;
+                int repeats = 3;
 
                 public void run() {
                     if (repeats-- == 0) {
@@ -60,10 +60,10 @@ public class ConquestGame implements Listener {
                         return;
                     }
 
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + winner.getName() + ChatColor.GOLD + " has won Conquest!");
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
                 }
 
-            }.runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
+            }.runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 120L);
         }
 
         HandlerList.unregisterAll(this);

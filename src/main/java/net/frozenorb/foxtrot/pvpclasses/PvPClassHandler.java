@@ -3,9 +3,8 @@ package net.frozenorb.foxtrot.pvpclasses;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.HealerClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -33,9 +32,8 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     public PvPClassHandler() {
         pvpClasses.add(new ArcherClass());
-        pvpClasses.add(new RogueClass());
         pvpClasses.add(new BardClass());
-        pvpClasses.add(new HealerClass());
+        pvpClasses.add(new MinerClass());
 
         for (PvPClass pvpClass : pvpClasses) {
             FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvpClass, FoxtrotPlugin.getInstance());

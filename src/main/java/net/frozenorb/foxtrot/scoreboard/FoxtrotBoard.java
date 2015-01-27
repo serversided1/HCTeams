@@ -53,7 +53,6 @@ public class FoxtrotBoard {
                 }
             } else {
                 displayedScores.add(title);
-
                 Score score = objective.getScore(title);
 
                 if (score.getScore() != seconds) {

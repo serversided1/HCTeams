@@ -1,7 +1,6 @@
-package net.frozenorb;
+package net.frozenorb.foxtrot.command;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.CommandHandler;
 
 import java.io.IOException;
 import java.net.URL;

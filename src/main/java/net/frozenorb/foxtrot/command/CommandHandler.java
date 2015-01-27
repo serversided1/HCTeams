@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.command;
 
-import net.frozenorb.CommandRegistrar;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;

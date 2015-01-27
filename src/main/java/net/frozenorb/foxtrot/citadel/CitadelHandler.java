@@ -4,9 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
-import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.citadel.enums.CitadelLootType;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
@@ -19,11 +17,10 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -39,11 +36,10 @@ public class CitadelHandler {
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
 
     @Getter private ObjectId capper;
-    @Getter private int level;
-    @Getter private Date townLootable;
-    @Getter private Date courtyardLootable;
-    @Getter private Set<Location> citadelChests = new HashSet<Location>();
-    @Getter private Map<CitadelLootType, List<ItemStack>> citadelLoot = new HashMap<CitadelLootType, List<ItemStack>>();
+    @Getter private Date lootable;
+
+    @Getter private Set<Location> citadelChests = new HashSet<>();
+    @Getter private List<ItemStack> citadelLoot = new ArrayList<>();
 
     public CitadelHandler() {
         loadCitadelInfo();
@@ -61,10 +57,9 @@ public class CitadelHandler {
                 BasicDBObject dbo = new BasicDBObject();
 
                 dbo.put("capper", null);
-                dbo.put("level", 0);
-                dbo.put("townLootable", getTownLootable());
-                dbo.put("courtyardLootable", getCourtyardLootable());
+                dbo.put("lootable", new Date());
                 dbo.put("chests", new BasicDBList());
+                dbo.put("loot", new BasicDBList());
 
                 FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
             }
@@ -73,34 +68,21 @@ public class CitadelHandler {
 
             if (dbo != null) {
                 this.capper = dbo.getString("capper") == null ? null : new ObjectId(dbo.getString("capper"));
-                this.level = dbo.getInt("level");
-                this.townLootable = dbo.getDate("townLootable");
-                this.courtyardLootable = dbo.getDate("courtyardLootable");
+                this.lootable = dbo.getDate("lootable");
 
                 BasicDBList chests = (BasicDBList) dbo.get("chests");
                 LocationSerializer locationSerializer = new LocationSerializer();
 
-                if (chests != null) {
-                    for (Object chestObj : chests) {
-                        BasicDBObject chest = (BasicDBObject) chestObj;
-                        citadelChests.add(locationSerializer.deserialize((BasicDBObject) chest.get("location")));
-                    }
+                for (Object chestObj : chests) {
+                    BasicDBObject chest = (BasicDBObject) chestObj;
+                    citadelChests.add(locationSerializer.deserialize((BasicDBObject) chest.get("location")));
                 }
 
+                BasicDBList loot = (BasicDBList) dbo.get("loot");
                 ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
 
-                for (CitadelLootType type : CitadelLootType.values()) {
-                    BasicDBList list = (BasicDBList) dbo.get(type.name());
-                    List<ItemStack> loot = new ArrayList<ItemStack>();
-
-                    if (list != null) {
-                        for (Object itemObj : list) {
-                            BasicDBObject item = (BasicDBObject) itemObj;
-                            loot.add(itemStackSerializer.deserialize(item));
-                        }
-                    }
-
-                    citadelLoot.put(type, loot);
+                for (Object lootObj : loot) {
+                    loot.add(itemStackSerializer.deserialize((BasicDBObject) lootObj));
                 }
             }
         } catch (Exception e) {
@@ -113,89 +95,49 @@ public class CitadelHandler {
             File citadelInfo = new File("citadelInfo.json");
             BasicDBObject dbo = new BasicDBObject();
 
-            dbo.put("capper", capper.toString());
-            dbo.put("level", level);
-            dbo.put("townLootable", townLootable);
-            dbo.put("courtyardLootable", courtyardLootable);
+            dbo.put("capper", capper == null ? null : capper.toString());
+            dbo.put("lootable", lootable);
 
             BasicDBList chests = new BasicDBList();
             LocationSerializer locationSerializer = new LocationSerializer();
 
             for (Location citadelChest : citadelChests) {
                 BasicDBObject chest = new BasicDBObject();
-
                 chest.put("location", locationSerializer.serialize(citadelChest));
-
                 chests.add(chest);
             }
 
             dbo.put("chests", chests);
+
+            BasicDBList loot = new BasicDBList();
             ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
 
-            for (CitadelLootType type : CitadelLootType.values()) {
-                BasicDBList list = new BasicDBList();
-
-                if (citadelLoot.containsKey(type)) {
-                    for (ItemStack itemStack : citadelLoot.get(type)) {
-                        list.add(itemStackSerializer.serialize(itemStack));
-                    }
-                }
-
-                dbo.put(type.name(), list);
+            for (ItemStack lootItem : citadelLoot) {
+                loot.add(itemStackSerializer.serialize(lootItem));
             }
 
+            dbo.put("loot", loot);
             citadelInfo.delete();
-            FileUtils.write(citadelInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+            FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void setCapper(ObjectId capper, int level) {
+    public void setCapper(ObjectId capper) {
         this.capper = capper;
-        this.level = level;
-        this.townLootable = generateTownLootableDate();
-        this.courtyardLootable = generateCourtyardLootableDate();
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper, level));
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper));
         saveCitadelInfo();
     }
 
-    public boolean canLootCitadelTown(Player player) {
+    public boolean canLootCitadel(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > townLootable.getTime());
-    }
-
-    public boolean canLootCitadelCourtyard(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > courtyardLootable.getTime());
-    }
-
-    public boolean canLootCitadelKeep(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return (team != null && capper.equals(team.getUniqueId()));
+        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > lootable.getTime());
     }
 
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
-    private Date generateTownLootableDate() {
-        Calendar date = Calendar.getInstance();
-        int diff = Calendar.MONDAY  - date.get(Calendar.DAY_OF_WEEK);
-
-        if (diff <= 0) {
-            diff += 7;
-        }
-
-        date.add(Calendar.DAY_OF_MONTH, diff);
-        date.set(Calendar.HOUR_OF_DAY, 17); // 5 PM server time
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-
-        return (date.getTime());
-    }
-
-    // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
-    private Date generateCourtyardLootableDate() {
+    private Date generateLootableDate() {
         Calendar date = Calendar.getInstance();
         int diff = Calendar.MONDAY  - date.get(Calendar.DAY_OF_WEEK);
 
@@ -220,14 +162,14 @@ public class CitadelHandler {
                 continue;
             }
 
-            if (team.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || team.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
+            if (team.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
                 for (Claim claim : team.getClaims()) {
-                    for (Location location : new CuboidRegion("Citadel", claim.getMinimumPoint(), claim.getMaximumPoint())) {
-                        if (location.getBlock().getType() != Material.CHEST) {
-                            continue;
-                        }
+                    Chunk chunk = claim.getChunk();
 
-                        citadelChests.add(location);
+                    for (BlockState state : chunk.getTileEntities()) {
+                        if (state instanceof Chest) {
+                            citadelChests.add(state.getLocation());
+                        }
                     }
                 }
             }
@@ -253,25 +195,11 @@ public class CitadelHandler {
                 return;
             }
 
-            // Re-checking the bitmask flags happens for 2 reasons...
-            // 1) To get what part of it's in (even though we could be caching)
-            // 2) To ensure there's never a way to get respawning chests in your base
-            if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
+            // Re-checking the bitmask flag ensures there's never a way to get respawning chests in your base
+            if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
                 chest.getBlockInventory().clear();
 
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getTown(level), 1)) {
-                    chest.getBlockInventory().addItem(loot);
-                }
-            } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                chest.getBlockInventory().clear();
-
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getCourtyard(level), 1)) {
-                    chest.getBlockInventory().addItem(loot);
-                }
-            } else if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                chest.getBlockInventory().clear();
-
-                for (ItemStack loot : getRandomLoot(CitadelLootType.getKeep(level), 1)) {
+                for (ItemStack loot : getRandomLoot(1)) {
                     chest.getBlockInventory().addItem(loot);
                 }
             }
@@ -280,16 +208,12 @@ public class CitadelHandler {
         }
     }
 
-    private List<ItemStack> getRandomLoot(CitadelLootType type, int items) {
+    private List<ItemStack> getRandomLoot(int items) {
         List<ItemStack> loot = new ArrayList<ItemStack>();
 
-        if (citadelLoot.containsKey(type)) {
-            List<ItemStack> allowedLoot = citadelLoot.get(type);
-
-            for (int i = 0; i < items; i++) {
-                ItemStack chosen = allowedLoot.get(FoxtrotPlugin.RANDOM.nextInt(allowedLoot.size()));
-                loot.add(chosen);
-            }
+        for (int i = 0; i < items; i++) {
+            ItemStack chosen = citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size()));
+            loot.add(chosen);
         }
 
         return (loot);

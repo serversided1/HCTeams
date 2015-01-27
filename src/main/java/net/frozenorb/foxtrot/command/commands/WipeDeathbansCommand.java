@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.command.commands;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 

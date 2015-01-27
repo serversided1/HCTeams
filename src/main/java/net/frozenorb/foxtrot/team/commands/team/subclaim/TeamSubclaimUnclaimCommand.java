@@ -17,7 +17,7 @@ public class TeamSubclaimUnclaimCommand {
 
         if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
             team.getSubclaims().remove(subclaim);
-            LandBoard.getInstance().updateSubclaim(subclaim);
+            LandBoard.getInstance().notifySubclaimChange(subclaim);
             team.flagForSave();
             sender.sendMessage(ChatColor.RED + "You have unclaimed the subclaim " + ChatColor.YELLOW + subclaim.getName() + ChatColor.RED + ".");
         } else {

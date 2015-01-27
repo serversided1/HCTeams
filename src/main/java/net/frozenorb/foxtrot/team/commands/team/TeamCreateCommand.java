@@ -24,9 +24,6 @@ public class TeamCreateCommand {
                 return;
             }
 
-            // Do we need this?
-            //name = name.substring(0, 1).toUpperCase() + name.substring(1);
-
             if (name.length() > 16) {
                 sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
                 return;

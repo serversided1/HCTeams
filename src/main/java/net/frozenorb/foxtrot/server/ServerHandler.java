@@ -10,7 +10,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
@@ -208,24 +207,14 @@ public class ServerHandler {
         tasks.put(player.getName(), taskid.getTaskId());
     }
 
-    public RegionData getRegion(Location location) {
-        return (getRegion(LandBoard.getInstance().getTeam(location), location));
-    }
-
     public RegionData getRegion(Team ownerTo, Location location) {
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
                 return (new RegionData(RegionType.SPAWN, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.ROAD)) {
-                return (new RegionData(RegionType.ROAD, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.KOTH)) {
                 return (new RegionData(RegionType.KOTH, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD)) {
-                return (new RegionData(RegionType.CITADEL_COURTYARD, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN)) {
-                return (new RegionData(RegionType.CITADEL_TOWN, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP)) {
-                return (new RegionData(RegionType.CITADEL_KEEP, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+                return (new RegionData(RegionType.CITADEL, ownerTo));
             }
         }
 
@@ -247,10 +236,15 @@ public class ServerHandler {
                 return;
             }
 
-            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_COURTYARD) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_KEEP) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL_TOWN))) {
+            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL))) {
                 player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
                 return;
             }
+        }
+
+        if (SpawnTagHandler.isTagged(player)) {
+            player.sendMessage(ChatColor.RED + "You may not go to your team headquarters while spawn tagged!");
+            return;
         }
 
         player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
@@ -311,6 +305,10 @@ public class ServerHandler {
     }
 
     public float getDTRLoss(Location location) {
+        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return (0.01F);
+        }
+
         Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {

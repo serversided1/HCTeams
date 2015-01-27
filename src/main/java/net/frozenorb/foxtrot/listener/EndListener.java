@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
@@ -16,8 +15,6 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -165,17 +162,7 @@ public class EndListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) {
-            // Don't let players leave the end while combat tagged
-            if (SpawnTagHandler.isTagged(event.getPlayer())) {
-                event.setCancelled(true);
-
-                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot leave the end while spawn tagged.");
-                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
-                }
-            }
-
+        if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) { // Leaving the End
             // Don't let players leave the end while the dragon is still alive.
             if (event.getFrom().getWorld().getEntitiesByClass(EnderDragon.class).size() != 0) {
                 event.setCancelled(true);
@@ -185,17 +172,9 @@ public class EndListener implements Listener {
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
             }
-        } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
-            // Don't let players enter the end while combat tagged
-            if (SpawnTagHandler.isTagged(event.getPlayer())) {
-                event.setCancelled(true);
 
-                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while spawn tagged.");
-                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
-                }
-            }
-
+            event.setTo(new Location(event.getTo().getWorld(), 0.6, 64, 125.5));
+        } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                 event.setCancelled(true);
@@ -214,21 +193,6 @@ public class EndListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED + "The End is currently disabled.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
-            }
-        }
-
-        // Remove Strength II
-        if (event.getPlayer().hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-            boolean found = false;
-
-            for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
-                if (potionEffect.getType().equals(PotionEffectType.INCREASE_DAMAGE) && potionEffect.getDuration() < 20 * 10) {
-                    found = true;
-                }
-            }
-
-            if (found) {
-                event.getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
             }
         }
     }
