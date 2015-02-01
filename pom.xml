@@ -3,38 +3,27 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.frozenorb</groupId>
 	<artifactId>Foxtrot</artifactId>
-	<version>${git.commit.id.abbrev}</version>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-	</properties>
+	<version>1.0-SNAPSHOT</version>
 
 	<build>
-		<defaultGoal>clean package install</defaultGoal>
-		<finalName>${project.artifactId}-${git.commit.id.abbrev}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.0.2</version>
+				<version>3.2</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.5</version>
+				<version>2.3</version>
 				<configuration>
 					<artifactSet>
 						<includes>
 							<include>redis.clients:jedis</include>
-							<include>commons-pool:commons-pool</include>
 							<include>com.comphenix.packetwrapper:PacketWrapper</include>
 						</includes>
 					</artifactSet>
@@ -48,76 +37,51 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<version>2.1.11</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.jar</exclude>
-				</excludes>
 			</resource>
 		</resources>
 	</build>
 
 	<repositories>
 		<repository>
-			<id>comphenix-repo</id>
-			<url>http://repo.comphenix.net/content/groups/public/</url>
+			<id>minehq-repo</id>
+			<url>http://maven.minehq.com:8081/artifactory/repo/</url>
 		</repository>
 		<repository>
-			<id>md5-repo</id>
-			<url>http://repo.md-5.net/content/groups/public/</url>
+			<id>comphenix-repo</id>
+			<url>http://repo.comphenix.net/content/groups/public/</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
-		<!-- How you find this jar is up to you. -->
+		<!-- Spigot Jars -->
 		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
+			<groupId>io.kohi</groupId>
+			<artifactId>kspigot</artifactId>
 			<version>LATEST</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/jars/spigot.jar</systemPath>
 		</dependency>
-
-		<!-- Jars that are exclusive to MineHQ. -->
+		
+		<!-- MineHQ Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/jars/mBasic.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mShared</artifactId>
 			<version>LATEST</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/jars/mShared.jar</systemPath>
 		</dependency>
 
+		<!-- Misc. Jars -->
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.7.9-R0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.comphenix.packetwrapper</groupId>
@@ -131,19 +95,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>2.6.1</version>
+			<version>LATEST</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.12.6</version>
+			<version>LATEST</version>
 		</dependency>
 	</dependencies>
 </project>
