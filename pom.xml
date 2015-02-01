@@ -6,7 +6,6 @@
 	<version>1.0-SNAPSHOT</version>
 
 	<build>
-		<finalName>${artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
