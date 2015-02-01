@@ -103,6 +103,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         Basic.get();
 
+        // Redis fucking dies without this here. I honestly don't even know.
+        Thread.currentThread().setContextClassLoader(getClassLoader());
+
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
