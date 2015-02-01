@@ -2,103 +2,142 @@ package net.frozenorb.foxtrot.team.claims;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.commands.team.TeamMapCommand;
-import org.bukkit.Chunk;
+import net.minecraft.util.com.google.common.collect.HashMultimap;
+import net.minecraft.util.com.google.common.collect.Multimap;
+import net.minecraft.util.com.google.common.collect.Multimaps;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LandBoard {
 
     private static LandBoard instance;
-    private final Map<String, Claim> claims = new HashMap<String, Claim>();
+    private final Map<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>> buckets = new ConcurrentHashMap<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>>();
+
+    public LandBoard() {
+        for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
+            buckets.put(world.getName(), Multimaps.synchronizedMultimap(HashMultimap.create()));
+        }
+    }
 
     public void loadFromTeams() {
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             for (Claim claim : team.getClaims()) {
-                addClaim(claim);
+                setTeamAt(claim, team);
             }
         }
     }
 
-    public Collection<Claim> getNearbyClaims(Location location, double radius) {
-        int radiusChunks = (int) Math.ceil(radius / 16D);
-        Set<Claim> results = new HashSet<Claim>();
+    public Set<Map.Entry<Claim, Team>> getRegionData(Location center, int xDistance, int yDistance, int zDistance) {
+        Location loc1 = new Location(center.getWorld(), center.getBlockX() - xDistance, center.getBlockY() - yDistance, center.getBlockZ() - zDistance);
+        Location loc2 = new Location(center.getWorld(), center.getBlockX() + xDistance, center.getBlockY() + yDistance, center.getBlockZ() + zDistance);
 
-        int xOffset = location.getBlockX() >> 4;
-        int zOffset = location.getBlockZ() >> 4;
+        return (getRegionData(loc1, loc2));
+    }
 
-        for (int x = -radiusChunks; x <= radiusChunks; x++) {
-            for (int z = -radiusChunks; z <= radiusChunks; z++) {
-                Claim claimAt = claims.get(location.getWorld().getName() + ";" + (x + xOffset) + ";" + (z + zOffset));
+    public Set<Map.Entry<Claim, Team>> getRegionData(Location min, Location max) {
+        Set<Map.Entry<Claim, Team>> regions = new HashSet<Map.Entry<Claim, Team>>();
+        int step = 1 << CoordinateSet.BITS;
 
-                if (claimAt != null) {
-                    results.add(claimAt);
+        for (int x = min.getBlockX(); x < max.getBlockX() + step; x += step) {
+            for (int z = min.getBlockZ(); z < max.getBlockZ() + step; z += step) {
+                CoordinateSet coordinateSet = new CoordinateSet(x, z);
+
+                for (Map.Entry<Claim, Team> regionEntry : buckets.get(min.getWorld().getName()).get(coordinateSet)) {
+                    if (!regions.contains(regionEntry)) {
+                        if ((max.getBlockX() >= regionEntry.getKey().getX1())
+                                && (min.getBlockX() <= regionEntry.getKey().getX2())
+                                && (max.getBlockZ() >= regionEntry.getKey().getZ1())
+                                && (min.getBlockZ() <= regionEntry.getKey().getZ2())
+                                && (max.getBlockY() >= regionEntry.getKey().getY1())
+                                && (min.getBlockY() <= regionEntry.getKey().getY2())) {
+                            regions.add(regionEntry);
+                        }
+                    }
                 }
             }
         }
 
-        return (results);
+        return (regions);
     }
 
-    public Claim getClaim(Chunk chunk) {
-        return (claims.get(chunk.getWorld().getName() + ";" + chunk.getX() + ";" + chunk.getZ()));
+    public Map.Entry<Claim, Team> getRegionData(Location location) {
+        for (Map.Entry<Claim, Team> data : buckets.get(location.getWorld().getName()).get(new CoordinateSet(location.getBlockX(), location.getBlockZ()))) {
+            if (data.getKey().contains(location)) {
+                return (data);
+            }
+        }
+
+        return (null);
     }
 
     public Claim getClaim(Location location) {
-        return (claims.get(location.getWorld().getName() + ";" + location.getChunk().getX() + ";" + location.getChunk().getZ()));
-    }
-
-    public Claim getClaim(Block block) {
-        return (claims.get(block.getWorld().getName() + ";" + block.getChunk().getX() + ";" + block.getChunk().getZ()));
+        Map.Entry<Claim, Team> regionData = getRegionData(location);
+        return (regionData == null ? null : regionData.getKey());
     }
 
     public Team getTeam(Location location) {
-        Claim claim = getClaim(location);
-        return (claim == null ? null : claim.getOwner());
+        Map.Entry<Claim, Team> regionData = getRegionData(location);
+        return (regionData == null ? null : regionData.getValue());
     }
 
-    public void addClaim(Claim claim) {
-        claims.put(claim.toString(), claim);
-        notifyClaimChange(claim);
-    }
+    public void setTeamAt(Claim claim, Team team) {
+        Map.Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<Claim, Team>(claim, team);
+        int step = 1 << CoordinateSet.BITS;
 
-    public void removeClaim(Claim claim) {
-        claims.remove(claim.toString());
-        notifyClaimChange(claim);
-    }
+        for (int x = regionData.getKey().getX1(); x < regionData.getKey().getX2() + step; x += step) {
+            for (int z = regionData.getKey().getZ1(); z < regionData.getKey().getZ2() + step; z += step) {
+                Multimap<CoordinateSet, Map.Entry<Claim, Team>> worldMap = buckets.get(regionData.getKey().getWorld());
 
-    public void removeClaims(Collection<Claim> toRemove) {
-        for (Claim claim : toRemove) {
-            claims.remove(claim.toString());
+                if (regionData.getValue() == null) {
+                    CoordinateSet coordinateSet = new CoordinateSet(x, z);
+                    Iterator<Map.Entry<Claim, Team>> claimIterator = worldMap.get(coordinateSet).iterator();
+
+                    while (claimIterator.hasNext()) {
+                        Map.Entry<Claim, Team> entry = claimIterator.next();
+
+                        if (entry.getKey().equals(regionData.getKey())) {
+                            claimIterator.remove();
+                        }
+                    }
+                } else {
+                    worldMap.put(new CoordinateSet(x, z), regionData);
+                }
+            }
         }
 
-        Iterator<Claim> peek = toRemove.iterator();
-
-        if (peek.hasNext()) {
-            notifyClaimChange(peek.next());
-        }
+        updateClaim(claim);
     }
 
-    public void notifyClaimChange(Claim modified) {
-        for (Map.Entry<String, Set<Location>> claimMapEntry : new HashSet<Map.Entry<String, Set<Location>>>(TeamMapCommand.getSentLocations().entrySet())) {
-            Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(claimMapEntry.getKey());
+    public void updateClaim(Claim modified) {
+        ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
+        visualClaims.addAll(VisualClaim.getCurrentMaps().values());
 
-            if (bukkitPlayer != null) {
-                TeamMapCommand.toggleMap(bukkitPlayer, true);
-                TeamMapCommand.toggleMap(bukkitPlayer, true);
+        for (VisualClaim visualClaim : visualClaims) {
+            if (modified.isWithin(visualClaim.getPlayer().getLocation().getBlockX(), visualClaim.getPlayer().getLocation().getBlockZ(), VisualClaim.MAP_RADIUS, modified.getWorld())) {
+                visualClaim.draw(true);
+                visualClaim.draw(true);
             }
         }
     }
 
-    public void notifySubclaimChange(Subclaim modified) {
-        for (VisualSubclaimMap visualSubclaimMap : VisualSubclaimMap.getCurrentMaps().values()) {
-            if (modified.getLoc1().distanceSquared(visualSubclaimMap.getPlayer().getLocation()) < VisualSubclaimMap.MAP_RADIUS * VisualSubclaimMap.MAP_RADIUS || modified.getLoc2().distanceSquared(visualSubclaimMap.getPlayer().getLocation()) < VisualSubclaimMap.MAP_RADIUS * VisualSubclaimMap.MAP_RADIUS) {
-                visualSubclaimMap.draw(true);
-                visualSubclaimMap.draw(true);
+    public void updateSubclaim(Subclaim modified) {
+        ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
+        visualClaims.addAll(VisualClaim.getCurrentSubclaimMaps().values());
+
+        for (VisualClaim visualClaim : visualClaims) {
+            if (modified.getLoc1().distanceSquared(visualClaim.getPlayer().getLocation()) < VisualClaim.MAP_RADIUS * VisualClaim.MAP_RADIUS || modified.getLoc2().distanceSquared(visualClaim.getPlayer().getLocation()) < VisualClaim.MAP_RADIUS * VisualClaim.MAP_RADIUS) {
+                visualClaim.draw(true);
+                visualClaim.draw(true);
             }
+        }
+    }
+
+    public void clear(Team team) {
+        for (Claim claim : team.getClaims()) {
+            setTeamAt(claim, null);
         }
     }
 
@@ -107,7 +146,9 @@ public class LandBoard {
             instance = new LandBoard();
         }
 
+
         return (instance);
     }
+
 
 }

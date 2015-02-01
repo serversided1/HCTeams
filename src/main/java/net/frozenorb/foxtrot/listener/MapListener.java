@@ -91,7 +91,7 @@ public class MapListener implements Listener {
 
         switch (event.getBlock().getType()) {
             case GOLD_ORE:
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 1; i++) {
                     event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT));
                 }
 
@@ -99,7 +99,7 @@ public class MapListener implements Listener {
                 event.getBlock().setType(Material.AIR);
                 break;
             case IRON_ORE:
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 1; i++) {
                     event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT));
                 }
 

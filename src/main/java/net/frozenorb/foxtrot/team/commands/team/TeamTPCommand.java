@@ -15,7 +15,7 @@ public class TeamTPCommand {
             sender.teleport(target.getHQ());
         } else if (target.getClaims().size() != 0) {
             sender.sendMessage(ChatColor.YELLOW + "Teleported to " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + "'s claim.");
-            sender.teleport(target.getClaims().get(0).getChunk().getBlock(8, 100, 8).getLocation());
+            sender.teleport(target.getClaims().get(0).getMaximumPoint().add(0, 100, 0));
         } else {
             sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " doesn't have a HQ or any claims.");
         }

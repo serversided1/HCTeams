@@ -5,6 +5,9 @@ package net.frozenorb.foxtrot.team.claims;
  */
 public enum VisualClaimType {
 
-    SUBCLAIM_MAP
+    MAP,
+    SUBCLAIM_MAP,
+    RESIZE,
+    CREATE
 
 }

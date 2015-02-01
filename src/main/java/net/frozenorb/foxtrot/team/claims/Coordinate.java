@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@AllArgsConstructor
 @Data
 public class Coordinate {
 
-    private int x;
-    private int z;
+    int x, z;
 
 }

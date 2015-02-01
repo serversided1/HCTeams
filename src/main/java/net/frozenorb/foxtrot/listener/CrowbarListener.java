@@ -47,6 +47,11 @@ public class CrowbarListener implements Listener {
         }
 
         if (event.getClickedBlock().getType() == Material.ENDER_PORTAL_FRAME) {
+            if (true) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Crowbars on End Portals are removed for this map.");
+                return;
+            }
+
             int portals = InvUtils.getCrowbarUsesPortal(event.getItem());
 
             if (portals == 0) {

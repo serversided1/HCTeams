@@ -24,7 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
@@ -42,6 +41,7 @@ public class Team {
     // Configurable values //
 
     public static final int MAX_TEAM_SIZE = 20;
+    public static final int MAX_CLAIMS = 2;
     public static final int MAX_ALLIES = 0;
     public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
     public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
@@ -215,28 +215,19 @@ public class Team {
         }
 
         FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(this);
+        LandBoard.getInstance().clear(this);
 
-        for (Claim claim : getClaims()) {
-            LandBoard.getInstance().removeClaim(claim);
-        }
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
-        new BukkitRunnable() {
-
-            public void run() {
-                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-                    @Override
-                    public Object execute(Jedis jedis) {
-                        jedis.del("fox_teams." + name.toLowerCase());
-                        return (null);
-                    }
-
-                });
-
-                needsSave = false;
+            @Override
+            public Object execute(Jedis jedis) {
+                jedis.del("fox_teams." + name.toLowerCase());
+                return (null);
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        });
+
+        needsSave = false;
     }
 
     public void rename(String newName) {
@@ -257,11 +248,11 @@ public class Team {
 
         });
 
-        flagForSave();
-    }
+        for (Claim claim : getClaims()) {
+            claim.setName(claim.getName().replaceAll(oldName, newName));
+        }
 
-    public int getMaxClaims() {
-        return (getSize());
+        flagForSave();
     }
 
     public void flagForSave() {
@@ -324,6 +315,14 @@ public class Team {
 
     public boolean isAlly(Team team) {
         return (getAllies().contains(team.getUniqueId()));
+    }
+
+    public boolean ownsLocation(Location location) {
+        return (LandBoard.getInstance().getTeam(location) == this);
+    }
+
+    public boolean ownsClaim(Claim claim) {
+        return (claims.contains(claim));
     }
 
     public boolean removeMember(String name) {
@@ -546,12 +545,26 @@ public class Team {
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
                 setName(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Claims")) {
-                for (String data : lineParts) {
-                    if (data.trim().isEmpty()) {
-                        continue;
-                    }
+                for (String claim : lineParts) {
+                    claim = claim.replace("[", "").replace("]", "");
 
-                    getClaims().add(new Claim(data.trim(), this));
+                    if (claim.contains(":")) {
+                        String[] split = claim.split(":");
+
+                        int x1 = Integer.valueOf(split[0].trim());
+                        int y1 = Integer.valueOf(split[1].trim());
+                        int z1 = Integer.valueOf(split[2].trim());
+                        int x2 = Integer.valueOf(split[3].trim());
+                        int y2 = Integer.valueOf(split[4].trim());
+                        int z2 = Integer.valueOf(split[5].trim());
+                        String name = split[6].trim();
+                        String world = split[7].trim();
+
+                        Claim claimObj = new Claim(world, x1, y1, z1, x2, y2, z2);
+                        claimObj.setName(name);
+
+                        getClaims().add(claimObj);
+                    }
                 }
             } else if (identifier.equalsIgnoreCase("Allies")) {
                 for (String ally : lineParts) {
@@ -626,7 +639,6 @@ public class Team {
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
-        StringBuilder claims = new StringBuilder();
 
         for (String member : getMembers()) {
             members.append(member.trim()).append(", ");
@@ -638,10 +650,6 @@ public class Team {
 
         for (String invite : getInvitations()) {
             invites.append(invite.trim()).append(", ");
-        }
-
-        for (Claim claim : getClaims()) {
-            claims.append(claim.toString().trim()).append(", ");
         }
 
         if (members.length() > 2) {
@@ -656,17 +664,13 @@ public class Team {
             invites.setLength(invites.length() - 2);
         }
 
-        if (claims.length() > 2) {
-            claims.setLength(claims.length() - 2);
-        }
-
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
         teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString()).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
-        teamString.append("Claims:").append(claims.toString()).append('\n');
+        teamString.append("Claims:").append(getClaims().toString()).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
@@ -681,6 +685,7 @@ public class Team {
 
         return (teamString.toString());
     }
+
 
     public BasicDBObject json() {
         BasicDBObject dbObject = new BasicDBObject();

@@ -34,7 +34,7 @@ import java.util.List;
 public class DeathTracker {
 
     public static void logDeath(Player player, Player killer) {
-        File logToFolder = new File("deathtracker" + File.separator + player.getName());
+        File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
         File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
 
         try {

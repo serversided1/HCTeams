@@ -10,7 +10,6 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -43,74 +42,61 @@ public class TeamUnclaimCommand {
             }
 
             int claims = team.getClaims().size();
+            int refund = 0;
 
             for (Claim claim : team.getClaims()) {
-                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: " + claim.toString() + " [Unclaimed by: " + sender.getName() + "]");
+                refund += Claim.getPrice(claim, team, false);
+                TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
             }
 
-            LandBoard.getInstance().removeClaims(team.getClaims());
+            team.setBalance(team.getBalance() + refund);
+            LandBoard.getInstance().clear(team);
+            team.getClaims().clear();
 
             for (Subclaim subclaim : team.getSubclaims()) {
-                LandBoard.getInstance().notifySubclaimChange(subclaim);
+                LandBoard.getInstance().updateSubclaim(subclaim);
             }
 
-            team.getClaims().clear();
             team.getSubclaims().clear();
             team.setHQ(null);
-
             team.flagForSave();
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed all of your team's land. (" + ChatColor.LIGHT_PURPLE + claims + " chunks total" + ChatColor.YELLOW + ")");
+                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed all of your team's claims. (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.YELLOW + ")");
                 }
             }
 
             return;
         }
 
-        Claim atLocation = LandBoard.getInstance().getClaim(sender.getLocation());
+        if (LandBoard.getInstance().getClaim(sender.getLocation()) != null && team.ownsLocation(sender.getLocation())) {
+            Claim claim = LandBoard.getInstance().getClaim(sender.getLocation());
+            int refund = Claim.getPrice(claim, team, false);
 
-        if (atLocation != null && atLocation.getOwner().equals(team)) {
-            LandBoard.getInstance().removeClaim(atLocation);
-            team.getClaims().remove(atLocation);
-
-            for (Claim claim : team.getClaims()) {
-                World world = FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld());
-
-                Claim north = LandBoard.getInstance().getClaim(world.getChunkAt(claim.getChunkX() + 1, claim.getChunkX() + 1));
-                Claim south = LandBoard.getInstance().getClaim(world.getChunkAt(claim.getChunkX() - 1, claim.getChunkX() + 1));
-                Claim east = LandBoard.getInstance().getClaim(world.getChunkAt(claim.getChunkX() + 1, claim.getChunkX() - 1));
-                Claim west = LandBoard.getInstance().getClaim(world.getChunkAt(claim.getChunkX() - 1, claim.getChunkX() - 1));
-
-                if (team.getClaims().size() != 0 && (north == null || !north.getOwner().equals(team)) && (south == null || !south.getOwner().equals(team)) && (east == null || !east.getOwner().equals(team)) && (west == null || !west.getOwner().equals(team))) {
-                    sender.sendMessage(ChatColor.RED + "All of your claims must be touching.");
-
-                    // Oh well. Add it back.
-                    LandBoard.getInstance().addClaim(atLocation);
-                    team.getClaims().add(atLocation);
-                    return;
-                }
-            }
+            team.setBalance(team.getBalance() + refund);
+            team.getClaims().remove(claim);
 
             for (Subclaim subclaim : new ArrayList<Subclaim>(team.getSubclaims())) {
-                if (atLocation.contains(subclaim.getLoc1()) || atLocation.contains(subclaim.getLoc2())) {
+                if (claim.contains(subclaim.getLoc1()) || claim.contains(subclaim.getLoc2())) {
                     team.getSubclaims().remove(subclaim);
-                    LandBoard.getInstance().notifySubclaimChange(subclaim);
+                    LandBoard.getInstance().updateSubclaim(subclaim);
                 }
             }
 
             team.flagForSave();
 
-            TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: " + atLocation.toString() + " [Unclaimed by: " + sender.getName() + "]");
+            LandBoard.getInstance().setTeamAt(claim, null);
+
+            TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed the chunk " + ChatColor.LIGHT_PURPLE + atLocation.getChunkX() + ", " + atLocation.getChunkZ() + ChatColor.YELLOW + ".");
+                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
                 }
             }
 
-            if (team.getHQ() != null && atLocation.contains(team.getHQ())) {
+            if (team.getHQ() != null && claim.contains(team.getHQ())) {
                 team.setHQ(null);
                 sender.sendMessage(ChatColor.RED + "Your HQ was in this claim, so it has been unset.");
             }

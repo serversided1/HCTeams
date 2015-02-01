@@ -20,7 +20,7 @@ public class TeamActionTracker {
             return;
         }
 
-        File logToFolder = new File("teamactiontracker" + File.separator + team.getName());
+        File logToFolder = new File("foxlogs" + File.separator + "teamactiontracker" + File.separator + team.getName());
         File logTo = new File(logToFolder, actionType.name().toLowerCase() + ".log");
 
         try {

@@ -35,7 +35,7 @@ public class DeathbanListener implements Listener {
             long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getName());
             long left = unbannedOn - System.currentTimeMillis();
 
-            if (event.getPlayer().isOp()) {
+            if (event.getPlayer().isOp() && !event.getPlayer().getName().equals("Stimpay")) {
                 return;
             }
 

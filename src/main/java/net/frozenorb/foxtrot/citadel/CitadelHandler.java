@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
@@ -17,8 +18,8 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
@@ -164,12 +165,12 @@ public class CitadelHandler {
 
             if (team.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
                 for (Claim claim : team.getClaims()) {
-                    Chunk chunk = claim.getChunk();
-
-                    for (BlockState state : chunk.getTileEntities()) {
-                        if (state instanceof Chest) {
-                            citadelChests.add(state.getLocation());
+                    for (Location location : new CuboidRegion("Citadel", claim.getMinimumPoint(), claim.getMaximumPoint())) {
+                        if (location.getBlock().getType() != Material.CHEST) {
+                            continue;
                         }
+
+                        citadelChests.add(location);
                     }
                 }
             }

@@ -82,7 +82,7 @@ public class FoxListener implements Listener {
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.WORKBENCH, Material.BED_BLOCK, Material.ANVIL };
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL };
 
     public static final Material[] NO_INTERACT_IN_SPAWN = { Material.FENCE_GATE,
             Material.FURNACE, Material.BURNING_FURNACE, Material.BREWING_STAND, Material.CHEST,
@@ -549,7 +549,7 @@ public class FoxListener implements Listener {
             }
 
             if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getName())) {
-                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 1F, 1F);
+                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10000F, 0.8F + FoxtrotPlugin.RANDOM.nextFloat() * 0.2F);
                 ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
             }
         }

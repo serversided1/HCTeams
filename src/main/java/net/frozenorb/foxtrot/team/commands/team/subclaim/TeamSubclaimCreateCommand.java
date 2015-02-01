@@ -69,7 +69,7 @@ public class TeamSubclaimCreateCommand {
         Subclaim sc = new Subclaim(selection.getLoc1(), selection.getLoc2(), subclaim);
 
         team.getSubclaims().add(sc);
-        LandBoard.getInstance().notifySubclaimChange(sc);
+        LandBoard.getInstance().updateSubclaim(sc);
         team.flagForSave();
 
         sender.sendMessage(ChatColor.GREEN + "You have created the subclaim " + ChatColor.YELLOW + sc.getName() + ChatColor.GREEN + "!");

@@ -2,23 +2,37 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.claims.VisualClaim;
+import net.frozenorb.foxtrot.team.claims.VisualClaimType;
+import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.util.ListUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TeamClaimCommand implements Listener {
 
-    @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permissionNode="")
-    public static void teamClaim(Player sender) {
-        TeamClaimCommand.claim(sender, false);
+    public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_HOE);
+
+    static {
+        ItemMeta meta = SELECTION_WAND.getItemMeta();
+
+        meta.setDisplayName("§a§oClaiming Wand");
+        meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect claim's corners" + " | §eRight Click §6Air  |  §b- §fCancel current claim" + " | §9Shift §eLeft Click §6Block/Air   §b- §fPurchase current claim", ""));
+        SELECTION_WAND.setItemMeta(meta);
     }
 
-    public static void claim(Player sender, boolean force) {
+    @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permissionNode="")
+    public static void teamClaim(Player sender) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {
@@ -26,54 +40,60 @@ public class TeamClaimCommand implements Listener {
             return;
         }
 
-        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName()) || force) {
-            if (LandBoard.getInstance().getClaim(sender.getLocation()) != null) {
-                sender.sendMessage(ChatColor.RED + "This location is already claimed!");
+        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+            sender.getInventory().remove(SELECTION_WAND);
+
+            if (team.isRaidable()) {
+                sender.sendMessage(ChatColor.RED + "You may not claim land while your faction is raidable!");
                 return;
             }
 
-            if (!force) {
-                if (team.getClaims().size() >= team.getMaxClaims()) {
-                    sender.sendMessage(ChatColor.RED + "Your team has the maximum amount of claims for its size, which is " + team.getMaxClaims() + ".");
-                    return;
+            new BukkitRunnable() {
+
+                public void run() {
+                    sender.getInventory().addItem(SELECTION_WAND.clone());
                 }
 
-                if (team.isRaidable()) {
-                    sender.sendMessage(ChatColor.RED + "You may not claim land while your faction is raidable!");
-                    return;
-                }
+            }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
 
-                if (sender.getWorld().getEnvironment() != World.Environment.NORMAL) {
-                    sender.sendMessage(ChatColor.RED + "Land can only be claimed in the overworld.");
-                    return;
-                }
+            new VisualClaim(sender, VisualClaimType.CREATE, false).draw(false);
 
-                if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(sender.getLocation())) {
-                    sender.sendMessage(ChatColor.RED + "You cannot claim land this close to spawn. Go at least " + ServerHandler.WARZONE_RADIUS + " blocks from spawn to be able to claim land!");
-                    return;
-                }
-
-                Claim north = LandBoard.getInstance().getClaim(sender.getWorld().getChunkAt(sender.getLocation().getChunk().getX() + 1, sender.getLocation().getChunk().getZ() + 1));
-                Claim south = LandBoard.getInstance().getClaim(sender.getWorld().getChunkAt(sender.getLocation().getChunk().getX() - 1, sender.getLocation().getChunk().getZ() + 1));
-                Claim east = LandBoard.getInstance().getClaim(sender.getWorld().getChunkAt(sender.getLocation().getChunk().getX() + 1, sender.getLocation().getChunk().getZ() - 1));
-                Claim west = LandBoard.getInstance().getClaim(sender.getWorld().getChunkAt(sender.getLocation().getChunk().getX() - 1, sender.getLocation().getChunk().getZ() - 1));
-
-                if (team.getClaims().size() != 0 && (north == null || !north.getOwner().equals(team)) && (south == null || !south.getOwner().equals(team)) && (east == null || !east.getOwner().equals(team)) && (west == null || !west.getOwner().equals(team))) {
-                    sender.sendMessage(ChatColor.RED + "All of your claims must be touching.");
-                    return;
-                }
+            if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
+                new VisualClaim(sender, VisualClaimType.MAP, false).draw(true);
             }
-
-            Claim claim = new Claim(sender.getLocation().getChunk(), team);
-
-            LandBoard.getInstance().addClaim(claim);
-            team.getClaims().add(claim);
-            team.flagForSave();
-
-            sender.sendMessage(ChatColor.YELLOW + "You have claimed this land for your team. " + ChatColor.GOLD + "Claims: " + team.getClaims().size() + "/" + team.getMaxClaims());
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        if (event.getItemDrop().getItemStack().equals(TeamClaimCommand.SELECTION_WAND) || event.getItemDrop().getItemStack().equals(TeamResizeCommand.SELECTION_WAND)) {
+            VisualClaim visualClaim = VisualClaim.getVisualClaim(event.getPlayer().getName());
+
+            if (visualClaim != null) {
+                event.setCancelled(true);
+                visualClaim.cancel();
+            }
+
+            event.getItemDrop().remove();
+        } else if (event.getItemDrop().getItemStack().equals(TeamSubclaimCommand.SELECTION_WAND)) {
+            event.getItemDrop().remove();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamResizeCommand.SELECTION_WAND);
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        event.getPlayer().getInventory().remove(TeamSubclaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamClaimCommand.SELECTION_WAND);
+        event.getPlayer().getInventory().remove(TeamResizeCommand.SELECTION_WAND);
     }
 
 }
