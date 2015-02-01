@@ -35,7 +35,10 @@ public enum DTRBitmaskType {
     REDUCED_DTR_LOSS(128, "Reduced-DTR-Loss", "Determines if a region takes away reduced DTR upon death"),
 
     // Used in various regions.
-    NO_ENDERPEARL(256, "No-Enderpearl", "Determines if a region cannot be pearled into");
+    NO_ENDERPEARL(256, "No-Enderpearl", "Determines if a region cannot be pearled into"),
+
+    // Used in various regions.
+    QUARTER_DTR_LOSS(512, "1/4-DTR-Loss", "Determines if a region takes away 1/4th DTR loss.");
 
     @Getter private int bitmask;
     @Getter private String name;

@@ -314,6 +314,8 @@ public class ServerHandler {
         if (ownerTo != null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.REDUCED_DTR_LOSS)) {
                 return (0.75F);
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.QUARTER_DTR_LOSS)) {
+                return (0.25F);
             }
         }
 
