@@ -32,6 +32,7 @@ import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mBasic.EconomySystem.EconomyManager;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -47,7 +48,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -103,11 +103,8 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         Basic.get();
 
-        // Redis fucking dies without this here. I honestly don't even know.
-        Thread.currentThread().setContextClassLoader(getClassLoader());
-
         try {
-            jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
+            jedisPool = /*new JedisPool(new JedisPoolConfig(), "localhost")*/ EconomyManager.getPool();
             mongoPool = new MongoClient();
         } catch (Exception e) {
             e.printStackTrace();
