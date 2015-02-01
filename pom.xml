@@ -23,6 +23,7 @@
 				<configuration>
 					<artifactSet>
 						<includes>
+							<include>org.apache.commons:commons-pool2</include>
 							<include>redis.clients:jedis</include>
 							<include>com.comphenix.packetwrapper:PacketWrapper</include>
 						</includes>
