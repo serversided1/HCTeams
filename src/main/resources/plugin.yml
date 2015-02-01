@@ -2,6 +2,6 @@ name: ${artifactId}
 version: ${version}
 author: MineHQ Development Team
 main: net.frozenorb.foxtrot.FoxtrotPlugin
-depend: [ProtocolLib]
+depend: [ProtocolLib, mBasic]
 commands:
   eval:
