@@ -15,6 +15,7 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -24,11 +25,21 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>org.apache.commons:commons-pool2</include>
 							<include>redis.clients:jedis</include>
+							<include>org.apache.commons:commons-pool2</include>
 							<include>com.comphenix.packetwrapper:PacketWrapper</include>
 						</includes>
 					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>redis.clients</pattern>
+							<shadedPattern>net.frozenorb.foxtrot.redis.clients</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.apache.commons</pattern>
+							<shadedPattern>net.frozenorb.foxtrot.org.apache.commons</shadedPattern>
+						</relocation>
+					</relocations>
 				</configuration>
 				<executions>
 					<execution>
@@ -80,6 +91,16 @@
 		</dependency>
 
 		<!-- Misc. Jars -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>LATEST</version>
+		</dependency>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>

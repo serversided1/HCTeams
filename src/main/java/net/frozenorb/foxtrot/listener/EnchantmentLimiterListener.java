@@ -109,7 +109,7 @@ public class EnchantmentLimiterListener implements Listener {
         }
     }
 
-    private final char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_'".toCharArray();
+    private final char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_' ".toCharArray();
 
     private String fixName(String name) {
         String b = name.toLowerCase().trim();
