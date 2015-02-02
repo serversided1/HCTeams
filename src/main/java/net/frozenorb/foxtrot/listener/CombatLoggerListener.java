@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -109,6 +110,14 @@ public class CombatLoggerListener implements Listener {
             if (entity.hasMetadata(COMBAT_LOGGER_METADATA) && !entity.isDead()) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    // Don't let the NPC go through portals
+    @EventHandler
+    public void onEntityPortal(EntityPortalEvent event) {
+        if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+            event.setCancelled(true);
         }
     }
 
