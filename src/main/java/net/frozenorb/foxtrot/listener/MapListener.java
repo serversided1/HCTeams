@@ -96,6 +96,7 @@ public class MapListener implements Listener {
                 }
 
                 event.setCancelled(true);
+                event.getPlayer().giveExp(4);
                 event.getBlock().setType(Material.AIR);
                 break;
             case IRON_ORE:
@@ -104,6 +105,7 @@ public class MapListener implements Listener {
                 }
 
                 event.setCancelled(true);
+                event.getPlayer().giveExp(4);
                 event.getBlock().setType(Material.AIR);
                 break;
         }
