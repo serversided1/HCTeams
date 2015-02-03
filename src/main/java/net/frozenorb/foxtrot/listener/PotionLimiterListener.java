@@ -21,7 +21,6 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -50,7 +49,7 @@ public class PotionLimiterListener implements Listener {
             Iterator<PotionEffect> iterator = event.getPotion().getEffects().iterator();
 
             if (iterator.hasNext()) {
-                if (Arrays.asList(FoxListener.DEBUFFS).contains(iterator.next().getType())) {
+                if (FoxListener.DEBUFFS.contains(iterator.next().getType())) {
                     if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
                         SpawnTagHandler.addSeconds((Player) event.getPotion().getShooter(), SpawnTagHandler.MAX_SPAWN_TAG);
                     }

@@ -103,7 +103,7 @@ public class BaseBardClass extends PvPClass {
 
         BaseBardClass.getEnergy().put(event.getPlayer().getName(), BaseBardClass.getEnergy().get(event.getPlayer().getName()) - bardEffect.getEnergy());
 
-        boolean negative = bardEffect.getPotionEffect() != null && Arrays.asList(FoxListener.DEBUFFS).contains(bardEffect.getPotionEffect().getType());
+        boolean negative = bardEffect.getPotionEffect() != null && FoxListener.DEBUFFS.contains(bardEffect.getPotionEffect().getType());
 
         if (negative) {
             ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);

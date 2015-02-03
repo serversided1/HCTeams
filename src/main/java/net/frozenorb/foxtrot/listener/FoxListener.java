@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
@@ -48,52 +49,24 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.spigotmc.CustomTimingsHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
 
-    private CustomTimingsHandler pmeSafeLogout = new CustomTimingsHandler("Foxtrot - PME Safe Logout");
-    private CustomTimingsHandler pmePvPTimer = new CustomTimingsHandler("Foxtrot - PME PvP Time");
-    private CustomTimingsHandler pmeTeamGrab = new CustomTimingsHandler("Foxtrot - PME Team Grab");
-    private CustomTimingsHandler pmeRegionGrab = new CustomTimingsHandler("Foxtrot - PME Region Grab");
-    private CustomTimingsHandler pmeRegionNotify = new CustomTimingsHandler("Foxtrot - PME Region Notify");
-    private CustomTimingsHandler pmeRegionNotifyHM = new CustomTimingsHandler("Foxtrot - PME Region Notify HM");
-    private CustomTimingsHandler pmeRegionNotifySpawn = new CustomTimingsHandler("Foxtrot - PME Region Notify Spawn");
-    private CustomTimingsHandler pmeRegionNotifyBM = new CustomTimingsHandler("Foxtrot - PME Region Notify BM");
-
-    public static final PotionEffectType[] DEBUFFS = { PotionEffectType.POISON,
-            PotionEffectType.SLOW, PotionEffectType.WEAKNESS,
-            PotionEffectType.HARM, PotionEffectType.WITHER };
-
-    public static final Material[] NO_INTERACT_WITH = { Material.LAVA_BUCKET,
-            Material.WATER_BUCKET, Material.BUCKET };
-
-    public static final Material[] NO_INTERACT_WITH_SPAWN = {
-            Material.SNOW_BALL, Material.ENDER_PEARL, Material.EGG,
-            Material.FISHING_ROD };
-
-    public static final Material[] NO_INTERACT = { Material.FENCE_GATE,
+    public static final Set<PotionEffectType> DEBUFFS = ImmutableSet.of(PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.WEAKNESS, PotionEffectType.HARM, PotionEffectType.WITHER);
+    public static final Set<Material> NO_INTERACT_WITH = ImmutableSet.of(Material.LAVA_BUCKET, Material.WATER_BUCKET, Material.BUCKET);
+    public static final Set<Material> ATTACK_DISABLING_BLOCKS = ImmutableSet.of(Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR, Material.FENCE_GATE);
+    public static final Set<Material> NO_INTERACT = ImmutableSet.of(Material.FENCE_GATE,
             Material.FURNACE, Material.BURNING_FURNACE, Material.BREWING_STAND, Material.CHEST,
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL };
-
-    public static final Material[] NO_INTERACT_IN_SPAWN = { Material.FENCE_GATE,
-            Material.FURNACE, Material.BURNING_FURNACE, Material.BREWING_STAND, Material.CHEST,
-            Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
-            Material.STONE_BUTTON, Material.WOOD_BUTTON,
-            Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL };
-
-    public static final Material[] NON_TRANSPARENT_ATTACK_DISABLING_BLOCKS = {
-            Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR,
-            Material.FENCE_GATE };
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL);
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
@@ -102,64 +75,43 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
 
-        pmeSafeLogout.startTiming();
         if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
             FoxtrotPlugin.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
             ServerHandler.getTasks().remove(event.getPlayer().getName());
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
+            event.getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
         }
-        pmeSafeLogout.stopTiming();
 
-        pmeTeamGrab.startTiming();
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
-        pmeTeamGrab.stopTiming();
 
-        pmePvPTimer.startTiming();
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getName())) {
             FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
         }
-        pmePvPTimer.stopTiming();
 
-        pmeTeamGrab.startTiming();
         Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
-        pmeTeamGrab.stopTiming();
         ServerHandler sm = FoxtrotPlugin.getInstance().getServerHandler();
-        pmeRegionGrab.startTiming();
         RegionData from = sm.getRegion(ownerFrom, event.getFrom());
         RegionData to = sm.getRegion(ownerTo, event.getTo());
-        pmeRegionGrab.stopTiming();
 
-        pmeRegionNotify.startTiming();
         if (!from.equals(to)) {
-            pmeRegionNotifyHM.startTiming();
             if (!to.getRegionType().getMoveHandler().handleMove(event)) {
                 return;
             }
-            pmeRegionNotifyHM.stopTiming();
 
-            pmeRegionNotifySpawn.startTiming();
             // PVP Timer
             if (from.getRegionType() == RegionType.SPAWN) {
                 if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
                     FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getName(), 30 * 60);
                 }
             }
-            pmeRegionNotifySpawn.stopTiming();
 
-            pmeRegionNotifyBM.startTiming();
             boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
-            pmeRegionNotifyBM.stopTiming();
 
             // Don't display non-deathbans during EOTW.
             if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
@@ -167,17 +119,13 @@ public class FoxListener implements Listener {
                 toReduceDeathban = false;
             }
 
-            String fromStr = "§eNow leaving: " + from.getName(event.getPlayer()) + (fromReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
-            String toStr = "§eNow entering: " + to.getName(event.getPlayer()) + (toReduceDeathban ? "§e(§aNon-Deathban§e)" : "§e(§cDeathban§e)");
-
-            event.getPlayer().sendMessage(new String[] { fromStr, toStr });
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "Now leaving: " + from.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (fromReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
         }
-        pmeRegionNotify.stopTiming();
     }
 
-    @SuppressWarnings("unchecked")
     @EventHandler
-    public void onPlayerQuit(final PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName(), true);
 
@@ -217,30 +165,22 @@ public class FoxListener implements Listener {
         FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getEntity() instanceof Player) {
-            Player p = (Player) event.getEntity();
+            Player player = (Player) event.getEntity();
 
-            if (ServerHandler.getTasks().containsKey(p.getName())) {
-                Bukkit.getScheduler().cancelTask(ServerHandler.getTasks().get(p.getName()));
-                ServerHandler.getTasks().remove(p.getName());
-                p.sendMessage(ChatColor.YELLOW + "§lLOGOUT §c§lCANCELLED!");
+            if (ServerHandler.getTasks().containsKey(player.getName())) {
+                FoxtrotPlugin.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(player.getName()));
+                ServerHandler.getTasks().remove(player.getName());
+                player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
             }
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onProjetileInteract(PlayerInteractEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
-        Player p = event.getPlayer();
+        Player player = event.getPlayer();
 
         if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             if (event.getItem().getType() == Material.POTION) {
@@ -251,15 +191,15 @@ public class FoxListener implements Listener {
                     if (i.getDurability() != (short) 0) {
                         Potion pot = Potion.fromItemStack(i);
 
-                        if (pot.isSplash() && Arrays.asList(DEBUFFS).contains(pot.getType().getEffectType())) {
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(p.getName())) {
-                                p.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-                                p.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
+                        if (pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                                player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
+                                player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                                 event.setCancelled(true);
                                 return;
                             }
 
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(p.getLocation())) {
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
                                 event.setCancelled(true);
                                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
                                 event.getPlayer().updateInventory();
@@ -272,82 +212,67 @@ public class FoxListener implements Listener {
             }
         }
 
-        if (event.getClickedBlock() != null) {
-            if (event.getClickedBlock().getType() == Material.ENCHANTMENT_TABLE && event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                if (event.getItem() != null) {
-                    if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                        event.getItem().setType(Material.BOOK);
-
-                        event.getPlayer().sendMessage(ChatColor.GREEN + "You reverted this book to its original form!");
-                        event.setCancelled(true);
-                    }
-                }
-
-                return;
-            }
-
-            if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
-                return;
-            }
-
-            Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
-
-            if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
-                if (Arrays.asList(FoxListener.NO_INTERACT_WITH_SPAWN).contains(event.getMaterial()) || Arrays.asList(FoxListener.NO_INTERACT_IN_SPAWN).contains(event.getClickedBlock().getType())) {
-                    event.setCancelled(true);
-                }
-            }
-
-            if (team != null && !team.isMember(event.getPlayer())) {
-                if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                    if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
-                        CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
-
-                        if (DTRBitmaskType.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
-                            return;
-                        }
-                    }
-
-                    event.setCancelled(true);
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory.");
-
-                    if (event.getMaterial() == Material.TRAP_DOOR || event.getMaterial() == Material.FENCE_GATE || event.getMaterial().name().contains("DOOR")) {
-                        FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
-                    }
-
-                    return;
-                }
-
-                if (event.getAction() == Action.PHYSICAL) {
-                    event.setCancelled(true);
-                }
-            } else if (event.getMaterial() == Material.LAVA_BUCKET) {
-                if (team == null || !team.isMember(event.getPlayer())) {
-                    event.setCancelled(true);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You can only do this in your own claims!");
-                    return;
-                }
-            } else {
-                if (team != null && !team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
-                    Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
-
-                    if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
-                        if (Arrays.asList(FoxListener.NO_INTERACT).contains(event.getClickedBlock().getType()) || Arrays.asList(FoxListener.NO_INTERACT_WITH).contains(event.getMaterial())) {
-                            event.setCancelled(true);
-                            event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
-                            return;
-                        }
-                    }
-                }
-            }
+        if (event.getClickedBlock() == null) {
+            return;
         }
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getItemInHand().getTypeId() == 333) {
-            Block target = event.getClickedBlock();
+        if (event.getClickedBlock().getType() == Material.ENCHANTMENT_TABLE && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (event.getItem() != null) {
+                if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
+                    event.getItem().setType(Material.BOOK);
 
-            if (target.getTypeId() != 8 && target.getTypeId() != 9) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You can only place a boat on water!");
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "You reverted this book to its original form!");
+                    event.setCancelled(true);
+                }
+            }
+
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            return;
+        }
+
+        Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
+
+        if (team != null && !team.isMember(event.getPlayer())) {
+            if (NO_INTERACT.contains(event.getClickedBlock().getType()) || NO_INTERACT_WITH.contains(event.getMaterial())) {
+                if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
+                    CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
+
+                    if (DTRBitmaskType.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
+                        return;
+                    }
+                }
+
                 event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot do this in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory.");
+
+                if (event.getMaterial() == Material.TRAP_DOOR || event.getMaterial() == Material.FENCE_GATE || event.getMaterial().name().contains("DOOR")) {
+                    FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
+                }
+
+                return;
+            }
+
+            if (event.getAction() == Action.PHYSICAL) {
+                event.setCancelled(true);
+            }
+        } else if (event.getMaterial() == Material.LAVA_BUCKET) {
+            if (team == null || !team.isMember(event.getPlayer())) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.RED + "You can only do this in your own claims!");
+            }
+        } else {
+            if (team != null && !team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+                Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
+
+                if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+                    if (NO_INTERACT.contains(event.getClickedBlock().getType()) || NO_INTERACT_WITH.contains(event.getMaterial())) {
+                        event.setCancelled(true);
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
+                    }
+                }
             }
         }
     }

@@ -36,8 +36,8 @@
 							<shadedPattern>net.frozenorb.foxtrot.redis.clients</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons</pattern>
-							<shadedPattern>net.frozenorb.foxtrot.org.apache.commons</shadedPattern>
+							<pattern>org.apache.commons.pool2</pattern>
+							<shadedPattern>net.frozenorb.foxtrot.org.apache.commons.pool2</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>

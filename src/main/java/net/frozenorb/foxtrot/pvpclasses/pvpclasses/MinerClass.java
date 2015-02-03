@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -140,21 +139,24 @@ public class MinerClass extends PvPClass implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event){
-        Player player = event.getPlayer();
-        Location to = event.getTo();
-
-        if(!PvPClassHandler.hasKitOn(player, this)){
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
 
-        if (to.getBlockY() <= Y_HEIGHT) { // Going below 20
+        Player player = event.getPlayer();
+
+        if (!PvPClassHandler.hasKitOn(player, this)) {
+            return;
+        }
+
+        if (event.getTo().getBlockY() <= Y_HEIGHT) { // Going below 20
             if (!invis.containsKey(player.getName())) {
                 invis.put(player.getName(), 10);
                 player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " will be activated in 10 seconds!");
             }
-        } else if (to.getBlockY() > Y_HEIGHT) { // Going above 20
+        } else if (event.getTo().getBlockY() > Y_HEIGHT) { // Going above 20
             if (invis.containsKey(player.getName())) {
                 noDamage.remove(player.getName());
                 invis.remove(player.getName());

@@ -112,14 +112,12 @@ public class EnchantmentLimiterListener implements Listener {
     private final char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_' ".toCharArray();
 
     private String fixName(String name) {
-        String b = name.toLowerCase().trim();
-        char[] charArray = b.toCharArray();
         StringBuilder result = new StringBuilder();
 
-        for (char c : charArray) {
-            for (char a : allowed) {
-                if (c == a) {
-                    result.append(a);
+        for (char nameCharacter : name.toCharArray()) {
+            for (char whitelistCharacter : allowed) {
+                if (nameCharacter == whitelistCharacter) {
+                    result.append(whitelistCharacter);
                 }
             }
         }

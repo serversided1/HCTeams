@@ -82,7 +82,7 @@ public class BorderListener implements Listener {
         Location from = event.getFrom();
         Location to = event.getTo();
 
-        if (from.getX() != to.getX() || from.getZ() != to.getZ() || from.getY() != to.getY()) {
+        if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ() || from.getBlockY() != to.getBlockY()) {
             if (Math.abs(event.getTo().getBlockX()) > BORDER_SIZE || Math.abs(event.getTo().getBlockZ()) > BORDER_SIZE) {
                 if (event.getPlayer().getVehicle() != null) {
                     event.getPlayer().getVehicle().eject();
