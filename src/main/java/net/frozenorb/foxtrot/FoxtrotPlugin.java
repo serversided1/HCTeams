@@ -20,7 +20,6 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.nms.EntityRegistrar;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.PacketBorder;
@@ -109,12 +108,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            EntityRegistrar.registerCustomEntities();
         } catch (Exception e) {
             e.printStackTrace();
         }

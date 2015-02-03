@@ -1,21 +1,17 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.nms.FixedVillager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.minecraft.server.v1_7_R3.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftHumanEntity;
+import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -30,7 +26,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
@@ -72,7 +67,7 @@ public class CombatLoggerListener implements Listener {
             Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(playerName);
 
             if (target == null) {
-                //Create an entity to load the player data
+                // Create an entity to load the player data
                 MinecraftServer server = ((CraftServer) FoxtrotPlugin.getInstance().getServer()).getServer();
                 EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(playerName).getUniqueId()), new PlayerInteractManager(server.getWorldServer(0)));
                 target = entity.getBukkitEntity();
@@ -136,24 +131,39 @@ public class CombatLoggerListener implements Listener {
     // Prevent combat logger friendly fire.
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
-            Player player = (Player) event.getDamager();
+        if (!event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+            return;
+        }
+
+        Player damager = null;
+
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+
+            if (projectile.getShooter() instanceof Player) {
+                damager = (Player) projectile.getShooter();
+            }
+        }
+
+        if (damager != null) {
             Villager villager = (Villager) event.getEntity();
             String playerName = villager.getCustomName().substring(2);
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(villager.getLocation()))) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmaskType.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(villager.getLocation()))) {
                 event.setCancelled(true);
                 return;
             }
 
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getName())) {
                 event.setCancelled(true);
                 return;
             }
 
             Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
 
-            if (team != null && team.isMember(player.getName())) {
+            if (team != null && team.isMember(damager.getName())) {
                 event.setCancelled(true);
             }
         }
@@ -174,7 +184,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If they have a PvP timer.
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
             return;
         }
 
@@ -190,7 +200,7 @@ public class CombatLoggerListener implements Listener {
 
         boolean enemyWithinRange = false;
 
-        for (Entity entity : event.getPlayer().getNearbyEntities(40, 256, 40)) {
+        for (Entity entity : event.getPlayer().getNearbyEntities(40, 40, 40)) {
             if (entity instanceof Player) {
                 Player other = (Player) entity;
 
@@ -204,82 +214,60 @@ public class CombatLoggerListener implements Listener {
             }
         }
 
-        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !(event.getPlayer().hasMetadata("invisible"))){
-            if (enemyWithinRange && !event.getPlayer().isDead()) {
-                String playerName = ChatColor.RED.toString() + event.getPlayer().getName();
-                FoxtrotPlugin.getInstance().getLogger().info(event.getPlayer().getName() + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ")");
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !event.getPlayer().hasMetadata("invisible") && enemyWithinRange && !event.getPlayer().isDead()) {
+            FoxtrotPlugin.getInstance().getLogger().info(event.getPlayer().getName() + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ")");
 
-                ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
-                ItemStack[] inv = event.getPlayer().getInventory().getContents();
-                ItemStack[] drops = new ItemStack[armor.length + inv.length];
+            ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
+            ItemStack[] inv = event.getPlayer().getInventory().getContents();
+            ItemStack[] drops = new ItemStack[armor.length + inv.length];
 
-                System.arraycopy(armor, 0, drops, 0, armor.length);
-                System.arraycopy(inv, 0, drops, armor.length, inv.length);
+            System.arraycopy(armor, 0, drops, 0, armor.length);
+            System.arraycopy(inv, 0, drops, armor.length, inv.length);
 
-                FixedVillager fixedVillager = new FixedVillager(((CraftWorld) event.getPlayer().getWorld()).getHandle());
-                Location location = event.getPlayer().getLocation();
-                fixedVillager.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            final Villager villager = (Villager) event.getPlayer().getWorld().spawnEntity(event.getPlayer().getLocation(), EntityType.VILLAGER);
 
-                int i = MathHelper.floor(fixedVillager.locX / 16.0D);
-                int j = MathHelper.floor(fixedVillager.locZ / 16.0D);
-                net.minecraft.server.v1_7_R3.World world = ((CraftWorld) event.getPlayer().getWorld()).getHandle();
+            villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
+            villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
-                world.getChunkAt(i, j).a(fixedVillager);
-                world.entityList.add(fixedVillager);
+            villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(FoxtrotPlugin.getInstance(), drops));
 
-                try {
-                    Method m = world.getClass().getDeclaredMethod("a", net.minecraft.server.v1_7_R3.Entity.class);
-                    m.setAccessible(true);
+            villager.setMaxHealth(calculateCombatLoggerHealth(event.getPlayer()));
+            villager.setHealth(villager.getMaxHealth());
 
-                    m.invoke(world, fixedVillager);
-                } catch (Exception e) {
+            villager.setCustomName(ChatColor.RED.toString() + event.getPlayer().getName());
+            villager.setCustomNameVisible(true);
 
-                }
+            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
 
-                final Villager villager = (Villager) fixedVillager.getBukkitEntity();
-
-
-                villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
-                villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
-
-                villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(FoxtrotPlugin.getInstance(), drops));
-                villager.setAgeLock(true);
-
-                int potions = 0;
-                boolean gapple = false;
-
-                for (ItemStack itemStack : event.getPlayer().getInventory().getContents()) {
-                    if (itemStack == null) {
-                        continue;
-                    }
-
-
-                    if (itemStack.getType() == Material.POTION && itemStack.getDurability() == (short) 16421) {
-                        potions++;
-                    } else if (!gapple && itemStack.getType() == Material.GOLDEN_APPLE && itemStack.getDurability() == (short) 1) {
-                        // Only let the player have one gapple count.
-                        potions += 15;
-                        gapple = true;
+                public void run() {
+                    if (!villager.isDead() && villager.isValid()) {
+                        villager.remove();
                     }
                 }
 
-                villager.setMaxHealth((potions * 3.5D) + event.getPlayer().getHealth());
-                villager.setHealth(villager.getMaxHealth());
+            }, 30 * 20L);
+        }
+    }
 
-                villager.setCustomName(playerName);
-                villager.setCustomNameVisible(true);
+    public double calculateCombatLoggerHealth(Player player) {
+        int potions = 0;
+        boolean gapple = false;
 
-                FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+        for (ItemStack itemStack : player.getInventory().getContents()) {
+            if (itemStack == null) {
+                continue;
+            }
 
-                    public void run() {
-                        if (!villager.isDead() && villager.isValid()) {
-                            villager.remove();
-                        }
-                    }
-
-                }, 30 * 20L);
+            if (itemStack.getType() == Material.POTION && itemStack.getDurability() == (short) 16421) {
+                potions++;
+            } else if (!gapple && itemStack.getType() == Material.GOLDEN_APPLE && itemStack.getDurability() == (short) 1) {
+                // Only let the player have one gapple count.
+                potions += 15;
+                gapple = true;
             }
         }
+
+        return ((potions * 3.5D) + player.getHealth());
     }
 
 }
