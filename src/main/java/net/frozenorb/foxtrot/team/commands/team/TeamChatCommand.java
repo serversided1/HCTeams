@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.chat.ChatMode;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -45,11 +46,12 @@ public class TeamChatCommand {
 
             FoxtrotPlugin.getInstance().getChatModeMap().setChatMode(player.getName(), chatMode);
         } else {
-            chatMode = FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(player.getName());
-
-            switch (chatMode) {
+            switch (FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(player.getName())) {
                 case PUBLIC:
-                    setChat(player, ChatMode.ALLIANCE);
+                    Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+                    boolean teamHasAllies = team != null && team.getAllies().size() > 0;
+
+                    setChat(player, teamHasAllies ? ChatMode.ALLIANCE : ChatMode.TEAM);
                     break;
                 case ALLIANCE:
                     setChat(player, ChatMode.TEAM);
