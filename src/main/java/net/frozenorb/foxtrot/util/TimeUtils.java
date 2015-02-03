@@ -19,7 +19,7 @@ public class TimeUtils {
 
         if (hours != 0) {
             sb.append(hours);
-            sb.append(" hours");
+            sb.append(" hour" + (hours == 1 ? "" : "s"));
         }
 
         if (minutes != 0) {
