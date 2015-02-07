@@ -7,6 +7,7 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -300,26 +301,32 @@ public class ServerHandler {
         return (owner == null || owner.isRaidable());
     }
 
-    public float getDTRLoss(Player player) {
+    public double getDTRLoss(Player player) {
         return (getDTRLoss(player.getLocation()));
     }
 
-    public float getDTRLoss(Location location) {
+    public double getDTRLoss(Location location) {
+        double dtrLoss = 1.00D;
+
         if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
-            return (0.01F);
+            dtrLoss = Math.min(dtrLoss, 0.01D);
+        }
+
+        if (FoxtrotPlugin.getInstance().getConquestHandler().getGame() != null) {
+            dtrLoss = Math.min(dtrLoss, 0.50D);
         }
 
         Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmaskType.REDUCED_DTR_LOSS)) {
-                return (0.75F);
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.QUARTER_DTR_LOSS)) {
-                return (0.25F);
+            if (ownerTo.hasDTRBitmask(DTRBitmaskType.QUARTER_DTR_LOSS)) {
+                dtrLoss = Math.min(dtrLoss, 0.25D);
+            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.REDUCED_DTR_LOSS)) {
+                dtrLoss = Math.min(dtrLoss, 0.75D);
             }
         }
 
-        return (1F);
+        return (dtrLoss);
     }
 
     public long getDeathban(Player player) {
@@ -356,13 +363,6 @@ public class ServerHandler {
             } else if (player.hasPermission("VIP")) {
                 max = TimeUnit.HOURS.toSeconds(2);
             }
-        }
-
-        // Max 1 hour DB while Citadel is active.
-        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
-
-        if (citadel != null && citadel.isActive()) {
-            max = TimeUnit.HOURS.toSeconds(1);
         }
 
         // Actually calculate their ban.
