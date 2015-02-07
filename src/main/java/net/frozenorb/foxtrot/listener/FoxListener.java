@@ -23,7 +23,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
-import org.bukkit.block.Skull;
 import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
@@ -279,14 +278,6 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onSignInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.SKULL) {
-            Skull sk = (Skull) event.getClickedBlock().getState();
-
-            if (sk.getSkullType() == SkullType.PLAYER) {
-                event.getPlayer().sendMessage(ChatColor.YELLOW + "Head of " + ChatColor.WHITE + sk.getOwner() + ChatColor.YELLOW + ".");
-            }
-        }
-
         if (event.getClickedBlock() != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getClickedBlock().getState() instanceof Sign) {
                 Sign s = (Sign) event.getClickedBlock().getState();
