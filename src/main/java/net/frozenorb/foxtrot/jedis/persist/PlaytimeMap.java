@@ -51,4 +51,12 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
         return (contains(player) ? getValue(player) : 0L);
     }
 
+    public boolean hasPlayed(String player) {
+        return (contains(player));
+    }
+
+    public void setPlaytime(String player, long playtime) {
+        updateValue(player, playtime);
+    }
+
 }
