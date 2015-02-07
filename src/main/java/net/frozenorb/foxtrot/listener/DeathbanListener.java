@@ -90,7 +90,7 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        int seconds = FoxtrotPlugin.getInstance().getServerHandler().getDeathban(event.getEntity());
+        int seconds = (int) FoxtrotPlugin.getInstance().getServerHandler().getDeathban(event.getEntity());
         FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getName(), seconds);
 
         final String time = TimeUtils.getDurationBreakdown(seconds * 1000);

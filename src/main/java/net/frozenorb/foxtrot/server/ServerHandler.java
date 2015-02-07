@@ -319,69 +319,60 @@ public class ServerHandler {
             }
         }
 
-        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
-
-        // 0.75 DTR loss while Citadel is active.
-        if (citadel != null && citadel.isActive()) {
-            return (0.75F);
-        }
-
         return (1F);
     }
 
-    public int getDeathban(Player player) {
+    public long getDeathban(Player player) {
         return (getDeathban(player.getName(), player.getLocation()));
     }
 
-    public int getDeathban(String playerName, Location location) {
+    public long getDeathban(String playerName, Location location) {
+        // Things we already know and can easily eliminate.
         if (isPreEOTW()) {
-            return ((int) TimeUnit.DAYS.toSeconds(1000));
+            return (TimeUnit.DAYS.toSeconds(1000));
+        } else if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+            return (TimeUnit.SECONDS.toSeconds(10));
         }
 
         Team ownerTo = LandBoard.getInstance().getTeam(location);
+        Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName); // Used in various checks down below.
 
+        // Check DTR flags, which will also take priority over playtime.
         if (ownerTo != null && ownerTo.getOwner() == null) {
             if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {
-                return ((int) TimeUnit.MINUTES.toSeconds(5));
+                return (TimeUnit.MINUTES.toSeconds(5));
             } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN)) {
-                return ((int) TimeUnit.MINUTES.toSeconds(15));
+                return (TimeUnit.MINUTES.toSeconds(15));
             }
         }
 
-        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
-            return ((int) TimeUnit.SECONDS.toSeconds(10));
-        }
-
-        PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
+        // The default max.
         long max = TimeUnit.HOURS.toSeconds(3);
-        long ban;
 
-        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
-
-        PlayerProfile profile = Shared.get().getProfileManager().getProfile(playerName);
-
-        if (profile != null) {
-            if (profile.getPermissions().contains("pro")) {
+        // 1 to 2 hours based on the player's rank.
+        if (player != null) {
+            if (player.hasPermission("PRO")) {
                 max = TimeUnit.HOURS.toSeconds(1);
-            } else if (profile.getPermissions().contains("vip")) {
+            } else if (player.hasPermission("VIP")) {
                 max = TimeUnit.HOURS.toSeconds(2);
             }
-        } else {
-            FoxtrotPlugin.getInstance().getLogger().warning("We don't have a mShared PlayerProfile for " + playerName + "!");
         }
 
-        // Max deathban of 1 hour during Citadel
+        // Max 1 hour DB while Citadel is active.
+        KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
+
         if (citadel != null && citadel.isActive()) {
             max = TimeUnit.HOURS.toSeconds(1);
         }
 
-        if (FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName) != null && playtime.contains(playerName)){
-            ban = playtime.getPlaytime(playerName) + (playtime.getCurrentSession(playerName) / 1000L);
-        } else {
-            ban = playtime.getCurrentSession(playerName) / 1000L;
+        // Actually calculate their ban.
+        long ban = FoxtrotPlugin.getInstance().getPlaytimeMap().getPlaytime(playerName);
+
+        if (player != null && FoxtrotPlugin.getInstance().getPlaytimeMap().contains(playerName)) {
+            ban += FoxtrotPlugin.getInstance().getPlaytimeMap().getCurrentSession(playerName) / 1000L;
         }
 
-        return ((int) Math.min(max, ban));
+        return (Math.min(max, ban));
     }
 
     public void disablePlayerAttacking(final Player p, int seconds) {
