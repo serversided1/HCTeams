@@ -146,7 +146,6 @@ public class LandBoard {
             instance = new LandBoard();
         }
 
-
         return (instance);
     }
 

@@ -49,7 +49,7 @@ public class TeamShadowMuteCommand {
 
         }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.GRAY + "Shadow muted the tean " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
+        sender.sendMessage(ChatColor.GRAY + "Shadow muted the team " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.getDurationBreakdown(timeSeconds * 1000L) + ".");
     }
 
 }

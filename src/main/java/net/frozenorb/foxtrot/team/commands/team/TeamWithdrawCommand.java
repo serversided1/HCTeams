@@ -33,11 +33,16 @@ public class TeamWithdrawCommand {
             }
 
             Basic.get().getEconomyManager().depositPlayer(sender.getName(), amount);
-            sender.sendMessage(ChatColor.YELLOW + "You have withdrawn §d" + amount + "§e from the team balance!");
+            sender.sendMessage(ChatColor.YELLOW + "You have withdrawn " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " from the team balance!");
 
             TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
             team.setBalance(team.getBalance() - amount);
-            team.getOnlineMembers().forEach(pe -> pe.sendMessage("§e" + sender.getName() + " withdrew §d" + amount + " §efrom the team balance."));
+
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player)) {
+                    player.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " withdrew " + ChatColor.LIGHT_PURPLE + "$" + amount + ChatColor.YELLOW + " from the team balance.");
+                }
+            }
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }

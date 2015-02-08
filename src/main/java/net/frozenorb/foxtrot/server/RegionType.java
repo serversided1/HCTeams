@@ -5,61 +5,37 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 @AllArgsConstructor
 public enum RegionType {
 
-    SPAWN((event) -> {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+    WARZONE(RegionMoveHandler.ALWAYS_TRUE),
+    WILDNERNESS(RegionMoveHandler.ALWAYS_TRUE),
+
+    KOTH(RegionMoveHandler.PVP_TIMER),
+    CITADEL(RegionMoveHandler.PVP_TIMER),
+    CLAIMED_LAND(RegionMoveHandler.PVP_TIMER),
+
+    SPAWN(new RegionMoveHandler() {
+
+        @Override
+        public boolean handleMove(PlayerMoveEvent event) {
+            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+                return (true);
+            }
+
+            if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
+                event.setTo(event.getFrom());
+                return (false);
+            }
+
+            event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
+            event.getPlayer().setFoodLevel(20);
             return (true);
         }
 
-        if (SpawnTagHandler.isTagged(event.getPlayer()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter spawn while spawn-tagged.");
-            event.setTo(event.getFrom());
-            return (false);
-        }
-
-        event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
-        event.getPlayer().setFoodLevel(20);
-        return (true);
-    }),
-
-    WARZONE((event) -> true),
-
-    WILDNERNESS((event) -> true),
-
-    KOTH((event) -> {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-            event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-            event.setTo(event.getFrom());
-            return (false);
-        }
-
-        return (true);
-    }),
-
-    CITADEL((event) -> {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-            event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-            event.setTo(event.getFrom());
-            return (false);
-        }
-
-        return (true);
-    }),
-
-    CLAIMED_LAND((event) -> {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
-            event.setTo(event.getFrom());
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
-            event.getPlayer().sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
-            return (false);
-        }
-
-        return (true);
     });
 
     @Getter private RegionMoveHandler moveHandler;
