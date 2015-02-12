@@ -601,6 +601,8 @@ public class VisualClaim implements Listener {
             return;
         }
 
+        Iterator<Location> blockChangeIterator = blockChanges.iterator();
+
         blockChanges.removeIf(blockChange -> {
 
             if (blockChange.getBlockX() == location.getBlockX() && blockChange.getBlockZ() == location.getBlockZ()) {
