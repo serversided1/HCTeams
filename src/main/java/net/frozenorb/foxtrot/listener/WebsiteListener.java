@@ -25,7 +25,7 @@ public class WebsiteListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        BasicDBObject playerDeath = new BasicDBObject();
+        final BasicDBObject playerDeath = new BasicDBObject();
 
         if (event.getEntity().getKiller() != null) {
             playerDeath.append("soups", -1);

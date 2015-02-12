@@ -51,7 +51,7 @@ public abstract class RedisPersistMap<T> {
         });
     }
 
-    public void reloadValue(String key) {
+    public void reloadValue(final String key) {
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
             public Object execute(Jedis jedis) {
@@ -91,7 +91,7 @@ public abstract class RedisPersistMap<T> {
     protected void updateValueAsync(final String key, T value) {
         wrappedMap.put(key.toLowerCase(), value);
 
-        JedisCommand<Object> jdc = new JedisCommand<Object>() {
+        final JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
             @Override
             public Object execute(Jedis jedis) {

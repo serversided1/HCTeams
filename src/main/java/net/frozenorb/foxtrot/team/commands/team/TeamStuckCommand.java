@@ -55,7 +55,7 @@ public class TeamStuckCommand implements Listener {
     private static List<String> damaged = Lists.newArrayList();
 
     @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck" }, permissionNode="")
-    public static void teamStuck(Player sender) {
+    public static void teamStuck(final Player sender) {
         if (warping.contains(sender.getName())) {
             sender.sendMessage(ChatColor.RED +"You are already being warped!");
             return;

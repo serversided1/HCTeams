@@ -32,7 +32,7 @@ public class TeamClaimCommand implements Listener {
     }
 
     @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permissionNode="")
-    public static void teamClaim(Player sender) {
+    public static void teamClaim(final Player sender) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

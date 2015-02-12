@@ -17,14 +17,14 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
-import net.minecraft.server.v1_7_R3.EntityLightning;
-import net.minecraft.server.v1_7_R3.PacketPlayOutSpawnEntityWeather;
+import net.minecraft.server.v1_7_R4.EntityLightning;
+import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityWeather;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
@@ -277,7 +277,7 @@ public class FoxListener implements Listener {
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onSignInteract(PlayerInteractEvent event) {
+    public void onSignInteract(final PlayerInteractEvent event) {
         if (event.getClickedBlock() != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (event.getClickedBlock().getState() instanceof Sign) {
                 Sign s = (Sign) event.getClickedBlock().getState();

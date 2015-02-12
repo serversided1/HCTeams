@@ -228,7 +228,7 @@ public class ServerHandler {
         return (new RegionData(RegionType.WILDNERNESS, null));
     }
 
-    public void beginHQWarp(final Player player, final Team team, int warmup) {
+    public void beginHQWarp(final Player player, final Team team, final int warmup) {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (inClaim != null) {

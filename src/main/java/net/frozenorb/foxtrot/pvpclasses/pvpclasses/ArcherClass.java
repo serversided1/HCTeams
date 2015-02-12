@@ -63,7 +63,7 @@ public class ArcherClass extends PvPClass {
 
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) event.getDamager();
-            Player player = (Player) event.getEntity();
+            final Player player = (Player) event.getEntity();
 
             if (!(arrow.getShooter() instanceof Player)) {
                 return;

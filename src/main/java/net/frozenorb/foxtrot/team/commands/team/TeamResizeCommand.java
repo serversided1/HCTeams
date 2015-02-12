@@ -27,7 +27,7 @@ public class TeamResizeCommand {
 
     //TODO: Remove permission node to deploy
     @Command(names={ "team resize", "t resize", "f resize", "faction resize", "fac resize" }, permissionNode="op")
-    public static void teamResize(Player sender) {
+    public static void teamResize(final Player sender) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

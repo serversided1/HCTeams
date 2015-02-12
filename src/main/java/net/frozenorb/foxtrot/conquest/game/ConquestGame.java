@@ -46,7 +46,7 @@ public class ConquestGame implements Listener {
         FoxtrotPlugin.getInstance().getConquestHandler().setGame(this);
     }
 
-    public void endGame(Team winner) {
+    public void endGame(final Team winner) {
         if (winner == null) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has ended.");
         } else {
@@ -71,7 +71,7 @@ public class ConquestGame implements Listener {
     }
 
     @EventHandler
-    public void onKOTHCaptured(KOTHCapturedEvent event) {
+    public void onKOTHCaptured(final KOTHCapturedEvent event) {
         if (!event.getKOTH().getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
             return;
         }

@@ -66,7 +66,7 @@ public abstract class PvPClass implements Listener {
                        armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
     }
 
-    public static void smartAddPotion(Player player, PotionEffect potionEffect, boolean persistOldValues) {
+    public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues) {
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
             if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                 continue;
@@ -94,7 +94,7 @@ public abstract class PvPClass implements Listener {
         }
 
         if (potionEffect.getType().equals(PotionEffectType.SPEED) && persistOldValues) {
-            for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
+            for (final PotionEffect activePotionEffect : player.getActivePotionEffects()) {
                 if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                     continue;
                 }

@@ -57,8 +57,8 @@ public class FocusCommand {
             String[] split = param.split(",");
 
             try {
-                double x = Double.parseDouble(split[0]);
-                double z = Double.parseDouble(split[1]);
+                final double x = Double.parseDouble(split[0]);
+                final double z = Double.parseDouble(split[1]);
 
                 Focusable focusable = new Focusable(ChatColor.LIGHT_PURPLE + "(" + ChatColor.AQUA + (int) x + ChatColor.LIGHT_PURPLE + ", " + ChatColor.AQUA + (int) z + ChatColor.LIGHT_PURPLE + ")") {
                     Location loc = null;

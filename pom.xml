@@ -59,6 +59,17 @@
 		</resources>
 	</build>
 
+	<distributionManagement>
+		<repository>
+			<id>minehq-repo</id>
+			<url>http://maven.minehq.com:8081/artifactory/medium</url>
+		</repository>
+		<snapshotRepository>
+			<id>minehq-repo</id>
+			<url>http://maven.minehq.com:8081/artifactory/medium</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<repositories>
 		<repository>
 			<id>minehq-repo</id>
@@ -73,8 +84,8 @@
 	<dependencies>
 		<!-- Spigot Jars -->
 		<dependency>
-			<groupId>io.kohi</groupId>
-			<artifactId>kspigot</artifactId>
+			<groupId>net.frozenorb</groupId>
+			<artifactId>mSpigot</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		

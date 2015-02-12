@@ -20,7 +20,6 @@ import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
@@ -165,7 +164,6 @@ public class DeathTracker {
         playerData.put("Health", player.getHealth());
         playerData.put("Name", player.getName());
         playerData.put("UUID", player.getUniqueId().toString());
-        playerData.put("Ping", ((CraftPlayer) player).getHandle().ping);
 
         return (playerData);
     }

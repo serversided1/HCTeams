@@ -25,7 +25,7 @@ import java.util.List;
 public class KOTHRewardKeyListener implements Listener {
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(final PlayerInteractEvent event) {
         if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation()) || !InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
             return;
         }
@@ -45,7 +45,7 @@ public class KOTHRewardKeyListener implements Listener {
             return;
         }
 
-        int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
+        final int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
 
         event.getPlayer().setItemInHand(null);
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
@@ -58,7 +58,7 @@ public class KOTHRewardKeyListener implements Listener {
 
         Chest chest = (Chest) block.getState();
         ItemStack[] lootTables = chest.getBlockInventory().getContents();
-        List<ItemStack> loot = new ArrayList<ItemStack>();
+        final List<ItemStack> loot = new ArrayList<ItemStack>();
         int given = 0;
         int tries = 0;
 
@@ -89,7 +89,7 @@ public class KOTHRewardKeyListener implements Listener {
             loot.add(chosenItem);
         }
 
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         for (ItemStack itemStack : loot) {
             String displayName = itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() ? ChatColor.RED.toString() + ChatColor.ITALIC + ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()) : ChatColor.BLUE.toString() + itemStack.getAmount() + "x " + ChatColor.YELLOW + WordUtils.capitalize(itemStack.getType().name().replace("_", " ").toLowerCase());

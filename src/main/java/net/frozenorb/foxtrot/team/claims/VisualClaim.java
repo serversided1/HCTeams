@@ -246,7 +246,7 @@ public class VisualClaim implements Listener {
         return (touchingClaims);
     }
 
-    public void setLoc(int locationId, Location clicked) {
+    public void setLoc(int locationId, final Location clicked) {
         Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         if (playerTeam == null) {
@@ -277,7 +277,15 @@ public class VisualClaim implements Listener {
                 this.corner2 = clicked;
             }
 
-            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> erectPillar(clicked, Material.EMERALD_BLOCK), 1L);
+            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    erectPillar(clicked, Material.EMERALD_BLOCK);
+                }
+
+            }, 1L);
+
             player.sendMessage(ChatColor.YELLOW + "Set claim's location " + ChatColor.LIGHT_PURPLE + locationId + ChatColor.YELLOW + " to " + ChatColor.GREEN + "(" + ChatColor.WHITE + clicked.getBlockX() + ", " + clicked.getBlockY() + ", " + clicked.getBlockZ() + ChatColor.GREEN + ")" + ChatColor.YELLOW + ".");
 
             if (corner1 != null && corner2 != null) {
@@ -309,7 +317,7 @@ public class VisualClaim implements Listener {
                     return;
                 }
 
-                Claim claimClone = resizing.clone();
+                final Claim claimClone = resizing.clone();
 
                 applyResize(claimClone, clicked);
 
@@ -603,16 +611,14 @@ public class VisualClaim implements Listener {
 
         Iterator<Location> blockChangeIterator = blockChanges.iterator();
 
-        blockChanges.removeIf(blockChange -> {
+        while (blockChangeIterator.hasNext()) {
+          Location blockChange = blockChangeIterator.next();
 
             if (blockChange.getBlockX() == location.getBlockX() && blockChange.getBlockZ() == location.getBlockZ()) {
                 player.sendBlockChange(blockChange, blockChange.getBlock().getType(), blockChange.getBlock().getData());
-                return (true);
+                blockChangeIterator.remove();
             }
-
-            return (false);
-
-        });
+        }
     }
 
     public boolean isIllegalClaim(Claim claim, List<Claim> ignoreNearby) {

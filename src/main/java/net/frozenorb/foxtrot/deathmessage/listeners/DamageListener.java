@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import net.frozenorb.foxtrot.deathtracker.DeathTracker;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,7 +60,7 @@ public class DamageListener implements Listener {
 
         Damage deathCause = record.get(record.size() - 1);
 
-        // Hacky reflection to change the player's killer
+        // Hacky NMS to change the player's killer
         if (deathCause instanceof PlayerDamage) {
             Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(((PlayerDamage) deathCause).getDamager());
             ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();

@@ -133,7 +133,7 @@ public class BaseBardClass extends PvPClass {
             return;
         }
 
-        BardEffect bardEffect = BARD_CLICK_EFFECTS.get(held.getType());
+        final BardEffect bardEffect = BARD_CLICK_EFFECTS.get(held.getType());
 
         FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), new ItemMessage.ItemMessageGetter() {
 

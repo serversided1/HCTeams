@@ -12,7 +12,7 @@ public class RedisSaveTask extends BukkitRunnable {
         save(false);
     }
 
-    public static int save(boolean forceAll) {
+    public static int save(final boolean forceAll) {
         System.out.println("Saving teams to Redis...");
         FoxtrotPlugin.getInstance().sendOPMessage(ChatColor.DARK_PURPLE + "Saving teams to Redis...");
 

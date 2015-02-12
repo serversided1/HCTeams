@@ -76,7 +76,7 @@ public class CannonCommand {
         spawnCannon(sender, x, z);
     }
 
-    public static void spawnCannon(Player player, int x, int z) {
+    public static void spawnCannon(final Player player, final int x, final int z) {
         player.sendMessage(ChatColor.YELLOW + "Cannoning to " + ChatColor.GREEN + x + ", " + z + ChatColor.YELLOW + ".");
         player.setVelocity(new Vector(0F, 1F, 0F));
 
