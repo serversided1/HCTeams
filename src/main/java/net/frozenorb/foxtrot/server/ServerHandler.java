@@ -97,15 +97,15 @@ public class ServerHandler {
         new BukkitRunnable() {
 
             public void run() {
-                StringBuilder highRollers = new StringBuilder();
+                StringBuilder messageBuilder = new StringBuilder();
 
                 for (String highRoller : highRollers) {
-                    highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
+                    messageBuilder.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
                 }
 
-                if (highRollers.length() > 2) {
-                    highRollers.setLength(highRollers.length() - 2);
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
+                if (messageBuilder.length() > 2) {
+                    messageBuilder.setLength(messageBuilder.length() - 2);
+                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + messageBuilder.toString());
                 }
             }
 
