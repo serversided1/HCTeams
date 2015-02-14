@@ -27,7 +27,7 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
         joinDate.put(player, System.currentTimeMillis());
 
         if (!contains(player)) {
-            updateValue(player, 0L);
+            updateValueAsync(player, 0L);
         }
     }
 

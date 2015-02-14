@@ -243,10 +243,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         CommandHandler.init();
         DeathMessageHandler.init();
-
-        // Init region system from mUtilities.
-        RegionManager.register(this);
-        RegionManager.get();
     }
 
     private void setupListeners() {

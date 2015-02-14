@@ -99,7 +99,7 @@ public class ServerHandler {
             public void run() {
                 StringBuilder highRollers = new StringBuilder();
 
-                for (String highRoller : FoxtrotPlugin.getInstance().getServerHandler().getHighRollers()) {
+                for (String highRoller : highRollers) {
                     highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
                 }
 
@@ -109,7 +109,7 @@ public class ServerHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L * 60 * 5);
+        }.runTaskTimer(FoxtrotPlugin.getInstance(), 6000L, 6000L);
     }
 
     public void loadPrefixes() {

@@ -118,7 +118,7 @@ public class ArcherClass extends PvPClass {
                         NametagManager.reloadPlayer(player);
                     }
 
-                }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 1);
+                }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 5);
             } else {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + (damage == 2 ? "" : "s") + ")");
             }
