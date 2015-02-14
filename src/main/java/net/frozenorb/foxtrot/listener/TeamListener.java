@@ -126,6 +126,7 @@ public class TeamListener implements Listener {
         if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
+
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (!team.isMember(event.getPlayer())) {
@@ -155,7 +156,7 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-        if (event.isCancelled() || !event.isSticky() || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (event.isCancelled() || !event.isSticky()) {
             return;
         }
 
