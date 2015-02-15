@@ -22,6 +22,7 @@ import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.Date;
@@ -32,18 +33,26 @@ import java.util.List;
  */
 public class DeathTracker {
 
-    public static void logDeath(Player player, Player killer) {
-        File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
-        File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
+    public static void logDeath(final Player player, final Player killer) {
+        final BasicDBObject data = generateDeathData(player, killer);
 
-        try {
-            logTo.getParentFile().mkdirs();
-            logTo.createNewFile();
+        new BukkitRunnable() {
 
-            FileUtils.write(logTo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(generateDeathData(player, killer).toString())));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            public void run() {
+                File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
+                File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
+
+                try {
+                    logTo.getParentFile().mkdirs();
+                    logTo.createNewFile();
+
+                    FileUtils.write(logTo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(data.toString())));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
     public static BasicDBObject generateDeathData(Player player, Player killer) {
