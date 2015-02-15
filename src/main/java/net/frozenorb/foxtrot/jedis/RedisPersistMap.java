@@ -1,5 +1,8 @@
 package net.frozenorb.foxtrot.jedis;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -73,7 +76,7 @@ public abstract class RedisPersistMap<T> {
         FoxtrotPlugin.getInstance().runJedisCommand(jdc);
     }
 
-    protected void updateValue(final String key, T value) {
+    protected void updateValue(final String key, final T value) {
         wrappedMap.put(key.toLowerCase(), value);
 
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
@@ -81,6 +84,10 @@ public abstract class RedisPersistMap<T> {
             @Override
             public Object execute(Jedis jedis) {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
+                DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getValue(key))), true, false);
+
                 return (null);
             }
         };
@@ -96,6 +103,10 @@ public abstract class RedisPersistMap<T> {
             @Override
             public Object execute(Jedis jedis) {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
+                DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getValue(key))), true, false);
+                
                 return (null);
             }
         };
