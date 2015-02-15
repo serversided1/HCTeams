@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,9 @@ public class NametagManager {
     private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
     private static int teamCreateIndex = 1;
 
+    private static CustomTimingsHandler reloadPlayerColorGrab = new CustomTimingsHandler("Nametags - reloadPlayer - colorGrab");
+    private static CustomTimingsHandler reloadPlayerSendPackets = new CustomTimingsHandler("Nametags - reloadPlayer - sendPackets");
+
     @Getter private static HashMap<String, HashMap<String, TeamInfo>> teamMap = new HashMap<String, HashMap<String, TeamInfo>>();
 
     public static void reloadPlayer(Player toRefresh) {
@@ -27,6 +31,7 @@ public class NametagManager {
     }
 
     public static void reloadPlayer(Player toRefresh, Player refreshFor) {
+        reloadPlayerColorGrab.startTiming();
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
         TeamInfo teamInfo = getOrCreate(ChatColor.YELLOW.toString(), "");
 
@@ -49,6 +54,9 @@ public class NametagManager {
             teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
         }
 
+        reloadPlayerColorGrab.stopTiming();
+        reloadPlayerSendPackets.startTiming();
+
         HashMap<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();
 
         if (teamMap.containsKey(refreshFor.getName())) {
@@ -67,6 +75,7 @@ public class NametagManager {
         sendPacketsAddToTeam(teamInfo, new String[] { toRefresh.getName() }, refreshFor);
         teamInfoMap.put(toRefresh.getName(), teamInfo);
         teamMap.put(refreshFor.getName(), teamInfoMap);
+        reloadPlayerSendPackets.stopTiming();
     }
 
     public static void initPlayer(Player player) {
