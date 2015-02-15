@@ -19,6 +19,7 @@ public abstract class RedisPersistMap<T> {
     private HashMap<String, T> wrappedMap = new HashMap<String, T>();
 
     @NonNull private String keyPrefix;
+    @NonNull private String mongoKeyPrefix;
 
     public void loadFromRedis() {
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
@@ -87,7 +88,7 @@ public abstract class RedisPersistMap<T> {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
                 DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
 
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getMongoValue(getValue(key)))), true, false);
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
 
                 return (null);
             }
@@ -106,7 +107,7 @@ public abstract class RedisPersistMap<T> {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
                 DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
 
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getMongoValue(getValue(key)))), true, false);
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
 
                 return (null);
             }

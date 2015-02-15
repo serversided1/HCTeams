@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class SoulboundLivesMap extends RedisPersistMap<Integer> {
 
     public SoulboundLivesMap() {
-        super("SoulboundLives");
+        super("SoulboundLives", "Lives.Soulbound");
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.Date;
 public class OppleMap extends RedisPersistMap<Long> {
 
     public OppleMap() {
-        super("OppleCooldowns");
+        super("OppleCooldowns", "OppleCooldown");
     }
 
     @Override

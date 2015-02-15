@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class ToggleLightningMap extends RedisPersistMap<Boolean> {
 
     public ToggleLightningMap() {
-        super("LightningToggles");
+        super("LightningToggles", "Lightning");
     }
 
     @Override

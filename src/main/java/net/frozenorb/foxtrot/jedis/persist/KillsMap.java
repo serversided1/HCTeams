@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class KillsMap extends RedisPersistMap<Integer> {
 
     public KillsMap() {
-        super("Kills");
+        super("Kills", "Kills");
     }
 
     @Override

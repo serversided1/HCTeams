@@ -10,7 +10,7 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
     private Map<String, Long> joinDate = new HashMap<String, Long>();
 
     public PlaytimeMap() {
-        super("PlayerPlaytimes");
+        super("PlayerPlaytimes", "Playtime");
     }
 
     @Override

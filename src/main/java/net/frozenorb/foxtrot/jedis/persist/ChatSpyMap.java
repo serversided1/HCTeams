@@ -13,7 +13,7 @@ import java.util.List;
 public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
 
     public ChatSpyMap() {
-        super("ChatSpy");
+        super("ChatSpy", "ChatSpy");
     }
 
     @Override

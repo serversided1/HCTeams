@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class GoldMinedMap extends RedisPersistMap<Integer> {
 
     public GoldMinedMap() {
-        super("GoldMined");
+        super("GoldMined", "MiningStats.Gold");
     }
 
     @Override

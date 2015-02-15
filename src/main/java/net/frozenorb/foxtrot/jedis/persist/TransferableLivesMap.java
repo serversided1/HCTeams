@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class TransferableLivesMap extends RedisPersistMap<Integer> {
 
     public TransferableLivesMap() {
-        super("TransferableLives");
+        super("TransferableLives", "Lives.Transferable");
     }
 
     @Override

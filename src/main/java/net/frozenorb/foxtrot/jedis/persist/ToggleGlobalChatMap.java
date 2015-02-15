@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class ToggleGlobalChatMap extends RedisPersistMap<Boolean> {
 
     public ToggleGlobalChatMap() {
-        super("GlobalChatToggles");
+        super("GlobalChatToggles", "GlobalChat");
     }
 
     @Override

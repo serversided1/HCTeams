@@ -8,7 +8,7 @@ import java.util.Date;
 public class DeathbanMap extends RedisPersistMap<Long> {
 
     public DeathbanMap() {
-        super("Deathbans");
+        super("Deathbans", "Deathban");
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.Date;
 public class FirstJoinMap extends RedisPersistMap<Long> {
 
     public FirstJoinMap() {
-        super("FirstJoin");
+        super("FirstJoin", "FirstJoined");
     }
 
     @Override

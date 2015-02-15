@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class FriendLivesMap extends RedisPersistMap<Integer> {
 
     public FriendLivesMap() {
-        super("FriendLives");
+        super("FriendLives", "Lives.Friend");
     }
 
     @Override

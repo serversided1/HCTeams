@@ -8,7 +8,7 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
     public static final long PENDING_USE = -10L;
 
     public PvPTimerMap() {
-        super("PvPTimers");
+        super("PvPTimers", "PvPTimer");
     }
 
     @Override

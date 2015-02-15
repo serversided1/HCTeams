@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 public class FishingKitMap extends RedisPersistMap<Integer> {
 
     public FishingKitMap() {
-        super("FishingKitUses");
+        super("FishingKitUses", "FishingKitUses");
     }
 
     @Override

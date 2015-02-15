@@ -6,7 +6,7 @@ import net.frozenorb.foxtrot.team.chat.ChatMode;
 public class ChatModeMap extends RedisPersistMap<ChatMode> {
 
     public ChatModeMap() {
-        super("ChatModes");
+        super("ChatModes", "ChatMode");
     }
 
     @Override
