@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
+import java.util.Date;
+
 /**
  * Created by macguy8 on 11/8/2014.
  */
@@ -19,6 +21,11 @@ public class FirstJoinMap extends RedisPersistMap<Long> {
     @Override
     public Long getJavaObject(String str) {
         return (Long.parseLong(str));
+    }
+
+    @Override
+    public Object getMongoValue(Long time) {
+        return (new Date(time));
     }
 
     public void setFirstJoin(String player) {

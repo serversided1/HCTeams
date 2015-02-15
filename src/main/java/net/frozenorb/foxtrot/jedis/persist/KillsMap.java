@@ -18,6 +18,11 @@ public class KillsMap extends RedisPersistMap<Integer> {
         return (Integer.parseInt(str));
     }
 
+    @Override
+    public Object getMongoValue(Integer kills) {
+        return (kills);
+    }
+
     public int getKills(String player) {
         return (contains(player) ? getValue(player) : 0);
     }

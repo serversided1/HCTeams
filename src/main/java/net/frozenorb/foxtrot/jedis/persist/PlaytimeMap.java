@@ -23,6 +23,11 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
         return (Long.parseLong(str));
     }
 
+    @Override
+    public Object getMongoValue(Long time) {
+        return (time);
+    }
+
     public void playerJoined(String player) {
         joinDate.put(player, System.currentTimeMillis());
 

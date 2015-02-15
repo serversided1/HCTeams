@@ -18,6 +18,11 @@ public class FishingKitMap extends RedisPersistMap<Integer> {
         return (Integer.parseInt(str));
     }
 
+    @Override
+    public Object getMongoValue(Integer uses) {
+        return (uses);
+    }
+
     public int getUses(String player) {
         return (contains(player) ? getValue(player) : 0);
     }

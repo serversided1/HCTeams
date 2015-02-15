@@ -21,6 +21,11 @@ public class ToggleGlobalChatMap extends RedisPersistMap<Boolean> {
         return (Boolean.valueOf(str));
     }
 
+    @Override
+    public Object getMongoValue(Boolean toggled) {
+        return (toggled);
+    }
+
     public void setGlobalChatToggled(String player, boolean toggled) {
         updateValueAsync(player, toggled);
     }

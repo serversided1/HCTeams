@@ -3,6 +3,8 @@ package net.frozenorb.foxtrot.jedis.persist;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
+import java.util.Date;
+
 public class DeathbanMap extends RedisPersistMap<Long> {
 
     public DeathbanMap() {
@@ -17,6 +19,11 @@ public class DeathbanMap extends RedisPersistMap<Long> {
     @Override
     public Long getJavaObject(String str) {
         return (Long.parseLong(str));
+    }
+
+    @Override
+    public Object getMongoValue(Long time) {
+        return (new Date(time));
     }
 
     public boolean isDeathbanned(String player) {

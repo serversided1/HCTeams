@@ -19,6 +19,11 @@ public class ChatModeMap extends RedisPersistMap<ChatMode> {
         return (ChatMode.valueOf(str));
     }
 
+    @Override
+    public Object getMongoValue(ChatMode chatMode) {
+        return (chatMode.name());
+    }
+
     public ChatMode getChatMode(String player) {
         return (contains(player) ? getValue(player) : ChatMode.PUBLIC);
     }

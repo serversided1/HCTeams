@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.team.chat.ChatMode;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -43,6 +44,11 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
         }
 
         return (results);
+    }
+
+    @Override
+    public Object getMongoValue(List<ObjectId> teams) {
+        return (teams);
     }
 
     public List<ObjectId> getChatSpy(String player) {

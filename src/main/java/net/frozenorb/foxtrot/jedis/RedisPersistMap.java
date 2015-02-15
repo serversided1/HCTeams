@@ -6,6 +6,7 @@ import com.mongodb.DBCollection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import org.bson.codecs.configuration.RootCodecRegistry;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
@@ -86,7 +87,7 @@ public abstract class RedisPersistMap<T> {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
                 DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
 
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getValue(key))), true, false);
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getMongoValue(getValue(key)))), true, false);
 
                 return (null);
             }
@@ -105,8 +106,8 @@ public abstract class RedisPersistMap<T> {
                 jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
                 DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
 
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getValue(key))), true, false);
-                
+                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(keyPrefix, getMongoValue(getValue(key)))), true, false);
+
                 return (null);
             }
         };
@@ -130,14 +131,16 @@ public abstract class RedisPersistMap<T> {
 
     public abstract String getRedisValue(T t);
 
-    public T getJavaObjectSafe(String key, String str) {
+    public abstract Object getMongoValue(T t);
+
+    public T getJavaObjectSafe(String key, String redisValue) {
         try {
-            return (getJavaObject(str));
+            return (getJavaObject(redisValue));
         } catch (Exception e) {
             System.out.println("Error parsing Redis result.");
             System.out.println(" - Prefix: " + keyPrefix);
             System.out.println(" - Key: " + key);
-            System.out.println(" - Value: " + str);
+            System.out.println(" - Value: " + redisValue);
             return (null);
         }
     }

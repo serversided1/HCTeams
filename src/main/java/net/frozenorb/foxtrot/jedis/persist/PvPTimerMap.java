@@ -21,6 +21,11 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
         return (Long.parseLong(str));
     }
 
+    @Override
+    public Object getMongoValue(Long time) {
+        return (time);
+    }
+
     public void pendingTimer(String player){
         updateValueAsync(player, PENDING_USE);
     }

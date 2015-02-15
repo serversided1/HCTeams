@@ -18,6 +18,11 @@ public class ToggleLightningMap extends RedisPersistMap<Boolean> {
         return (Boolean.valueOf(str));
     }
 
+    @Override
+    public Object getMongoValue(Boolean toggled) {
+        return (toggled);
+    }
+
     public void setLightningToggled(String player, boolean toggled) {
         updateValueAsync(player, toggled);
     }

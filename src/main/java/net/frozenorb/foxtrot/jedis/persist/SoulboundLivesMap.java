@@ -21,6 +21,11 @@ public class SoulboundLivesMap extends RedisPersistMap<Integer> {
         return (Integer.parseInt(str));
     }
 
+    @Override
+    public Object getMongoValue(Integer lives) {
+        return (lives);
+    }
+
     public int getLives(String player) {
         return (contains(player) ? getValue(player) : 0);
     }

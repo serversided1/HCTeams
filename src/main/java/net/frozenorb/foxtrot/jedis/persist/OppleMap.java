@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
+import java.util.Date;
+
 public class OppleMap extends RedisPersistMap<Long> {
 
     public OppleMap() {
@@ -16,6 +18,11 @@ public class OppleMap extends RedisPersistMap<Long> {
     @Override
     public Long getJavaObject(String str) {
         return (Long.parseLong(str));
+    }
+
+    @Override
+    public Object getMongoValue(Long time) {
+        return (new Date(time));
     }
 
     public boolean isOnCooldown(String player) {

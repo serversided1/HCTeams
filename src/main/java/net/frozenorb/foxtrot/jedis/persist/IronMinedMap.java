@@ -21,6 +21,11 @@ public class IronMinedMap extends RedisPersistMap<Integer> {
         return (Integer.parseInt(str));
     }
 
+    @Override
+    public Object getMongoValue(Integer mined) {
+        return (mined);
+    }
+
     public int getMined(String player) {
         return (contains(player) ? getValue(player) : 0);
     }
