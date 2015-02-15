@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
@@ -227,6 +228,10 @@ public class Team {
 
         });
 
+        DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
+
+        teamsCollection.remove(getJSONIdentifier());
+
         needsSave = false;
     }
 
@@ -247,6 +252,9 @@ public class Team {
             }
 
         });
+
+        // We don't need to do anything here as all we're doing is changing the name, not the Unique ID (which is what Mongo uses)
+        // therefore, Mongo will be notified of this once the 'flagForSave()' down below gets processed.
 
         for (Claim claim : getClaims()) {
             claim.setName(claim.getName().replaceAll(oldName, newName));
@@ -687,7 +695,7 @@ public class Team {
     }
 
 
-    public BasicDBObject json() {
+    public BasicDBObject toJSON() {
         BasicDBObject dbObject = new BasicDBObject();
         LocationSerializer locationSerializer = new LocationSerializer();
 
@@ -720,6 +728,10 @@ public class Team {
         dbObject.put("Subclaims", subclaims);
 
         return (dbObject);
+    }
+
+    public BasicDBObject getJSONIdentifier() {
+        return (new BasicDBObject("_id", getUniqueId()));
     }
 
     private Location parseLocation(String[] args) {

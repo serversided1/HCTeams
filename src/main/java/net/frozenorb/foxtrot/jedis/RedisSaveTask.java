@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.jedis;
 
+import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
@@ -20,12 +21,15 @@ public class RedisSaveTask extends BukkitRunnable {
 
             @Override
             public Integer execute(Jedis jedis) {
+                DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
                 int changed = 0;
 
                 for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
                     if (team.isNeedsSave() || forceAll) {
                         changed++;
+
                         jedis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
+                        teamsCollection.update(team.getJSONIdentifier(), team.toJSON(), true, false);
                     }
                 }
 
