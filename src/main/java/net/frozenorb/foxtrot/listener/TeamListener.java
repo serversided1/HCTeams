@@ -46,7 +46,7 @@ public class TeamListener implements Listener {
                 }
             }
 
-            TeamActionTracker.logAction(team, TeamActionType.CONNECTIONS, "Member Online: " + event.getPlayer().getName());
+            TeamActionTracker.logActionAsync(team, TeamActionType.CONNECTIONS, "Member Online: " + event.getPlayer().getName());
             team.sendTeamInfo(event.getPlayer());
         } else {
             event.getPlayer().sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -70,7 +70,7 @@ public class TeamListener implements Listener {
                 }
             }
 
-            TeamActionTracker.logAction(team, TeamActionType.CONNECTIONS, "Member Offline: " + event.getPlayer().getName());
+            TeamActionTracker.logActionAsync(team, TeamActionType.CONNECTIONS, "Member Offline: " + event.getPlayer().getName());
         }
     }
 

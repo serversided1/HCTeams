@@ -80,11 +80,11 @@ public class Team {
         }
 
         if (DTR <= 0 && newDTR > 0) {
-            TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Team no longer raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team no longer raidable.");
         }
 
         if (DTRRegenMultiplier != 1F && newDTR == getMaxDTR()) {
-            TeamActionTracker.logAction(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as team is max DTR. [DTR Regen Multiplier: " + DTRRegenMultiplier + ", DTR: " + newDTR + "]");
+            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as team is max DTR. [DTR Regen Multiplier: " + DTRRegenMultiplier + ", DTR: " + newDTR + "]");
             DTRRegenMultiplier = 1F;
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -140,13 +140,13 @@ public class Team {
         }
 
         members.add(member);
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Member Added: " + member);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + member);
         flagForSave();
     }
 
     public void addCaptain(String captain) {
         captains.add(captain);
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Captain Added: " + captain);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + captain);
         flagForSave();
     }
 
@@ -174,7 +174,7 @@ public class Team {
             }
         }
 
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Captain Removed: " + name);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + name);
         flagForSave();
     }
 
@@ -186,7 +186,7 @@ public class Team {
             members.add(owner);
         }
 
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Owner Changed: " + oldOwner + " -> " + owner);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + oldOwner + " -> " + owner);
         flagForSave();
     }
 
@@ -194,7 +194,7 @@ public class Team {
         String oldHQ = this.HQ == null ? "None" : (getHQ().getBlockX() + ", " + getHQ().getBlockY() + ", " + getHQ().getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         this.HQ = hq;
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
         flagForSave();
     }
 
@@ -371,7 +371,7 @@ public class Team {
             DTR = getMaxDTR();
         }
 
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Member Removed: " + name);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + name);
         flagForSave();
         return (owner == null || members.size() == 0);
     }
@@ -465,7 +465,7 @@ public class Team {
 
     public void playerDeath(String p, double dtrLoss) {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
-        TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
         for (Player player : getOnlineMembers()) {
             player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
@@ -473,7 +473,7 @@ public class Team {
         }
 
         if (DTRRegenMultiplier != 1F) {
-            TeamActionTracker.logAction(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as " + p + " died. [DTR Regen Multiplier: " + DTRRegenMultiplier + "]");
+            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as " + p + " died. [DTR Regen Multiplier: " + DTRRegenMultiplier + "]");
             DTRRegenMultiplier = 1F;
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -487,7 +487,7 @@ public class Team {
         setDTR(newDTR);
 
         if (isRaidable()) {
-            TeamActionTracker.logAction(this, TeamActionType.GENERAL, "Team now raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team now raidable.");
             DTRCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
         } else {
             DTRCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;

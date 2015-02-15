@@ -38,7 +38,7 @@ public class TeamUninviteCommand {
                 }
 
                 if (remove != null) {
-                    TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
+                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
                     team.getInvitations().remove(remove);
                     team.flagForSave();
                     sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + remove + "!");

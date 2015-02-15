@@ -1,7 +1,9 @@
 package net.frozenorb.foxtrot.teamactiontracker;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +15,16 @@ import java.util.Date;
  * Created by macguy8 on 11/6/2014.
  */
 public class TeamActionTracker {
+
+    public static void logActionAsync(final Team team, final TeamActionType actionType, final String message) {
+        new BukkitRunnable() {
+
+            public void run() {
+                logAction(team, actionType, message);
+            }
+
+        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+    }
 
     public static void logAction(Team team, TeamActionType actionType, String message) {
         // If the team is still being setup this might happen.

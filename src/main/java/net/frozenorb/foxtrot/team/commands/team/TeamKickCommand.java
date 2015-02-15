@@ -56,7 +56,7 @@ public class TeamKickCommand {
             }
         }
 
-        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Member Kicked: " + target + " [Kicked by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + target + " [Kicked by: " + sender.getName() + "]");
 
         if (team.removeMember(target)) {
             team.disband();

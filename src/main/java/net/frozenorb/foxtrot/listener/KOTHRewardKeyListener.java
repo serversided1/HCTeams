@@ -46,15 +46,14 @@ public class KOTHRewardKeyListener implements Listener {
         }
 
         final int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
-
-        event.getPlayer().setItemInHand(null);
-        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
-
         Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, tier + 3);
 
         if (block.getType() != Material.CHEST) {
             return;
         }
+
+        event.getPlayer().setItemInHand(null);
+        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
 
         Chest chest = (Chest) block.getState();
         ItemStack[] lootTables = chest.getBlockInventory().getContents();
@@ -62,7 +61,7 @@ public class KOTHRewardKeyListener implements Listener {
         int given = 0;
         int tries = 0;
 
-        while (given < 5 && tries < 500) {
+        while (given < 5 && tries < 100) {
             tries++;
 
             ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];

@@ -34,7 +34,7 @@ public class TeamDepositCommand {
         Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), amount);
 
         sender.sendMessage(ChatColor.YELLOW + "You have added " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " to the team balance!");
-        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() + amount) + " [Amount: " + amount + ", Deposited by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() + amount) + " [Amount: " + amount + ", Deposited by: " + sender.getName() + "]");
         team.setBalance(team.getBalance() + amount);
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {

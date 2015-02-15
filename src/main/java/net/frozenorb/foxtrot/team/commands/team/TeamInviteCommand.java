@@ -46,7 +46,7 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(target.getName());
         team.flagForSave();
 

@@ -15,7 +15,7 @@ public class TeamUnShadowMuteCommand {
 
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamUnShadowmuteFaction(Player sender, @Param(name="team") Team target) {
-        TeamActionTracker.logAction(target, TeamActionType.GENERAL, "Mute: Team shadowmute removed. [Unmuted by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team shadowmute removed. [Unmuted by: " + sender.getName() + "]");
         Iterator<Map.Entry<String, String>> mutesIterator = TeamShadowMuteCommand.getTeamShadowMutes().entrySet().iterator();
 
         while (mutesIterator.hasNext()) {

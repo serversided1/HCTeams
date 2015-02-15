@@ -35,7 +35,7 @@ public class TeamWithdrawCommand {
             Basic.get().getEconomyManager().depositPlayer(sender.getName(), amount);
             sender.sendMessage(ChatColor.YELLOW + "You have withdrawn " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " from the team balance!");
 
-            TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
+            TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
             team.setBalance(team.getBalance() - amount);
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {

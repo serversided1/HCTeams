@@ -37,12 +37,12 @@ public class TeamMuteCommand {
             }
         }
 
-        TeamActionTracker.logAction(target, TeamActionType.GENERAL, "Mute: Team mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
-                TeamActionTracker.logAction(target, TeamActionType.GENERAL, "Mute: Team mute expired.");
+                TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team mute expired.");
 
                 Iterator<Map.Entry<String, String>> mutesIterator = teamMutes.entrySet().iterator();
 

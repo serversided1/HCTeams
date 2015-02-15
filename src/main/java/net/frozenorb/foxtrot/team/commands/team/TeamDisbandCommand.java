@@ -36,7 +36,7 @@ public class TeamDisbandCommand {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + " has disbanded the team.");
         }
 
-        TeamActionTracker.logAction(team, TeamActionType.GENERAL, "Team disbanded. [Disbanded by: " + player.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Team disbanded. [Disbanded by: " + player.getName() + "]");
         team.disband();
     }
 
