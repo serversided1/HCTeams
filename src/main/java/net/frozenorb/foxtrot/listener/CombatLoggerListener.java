@@ -67,7 +67,7 @@ public class CombatLoggerListener implements Listener {
                 event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(playerName, event.getEntity().getKiller().getName()));
             }
 
-            Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(playerName);
+            Player target = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName);
 
             if (target == null) {
                 // Create an entity to load the player data
