@@ -1,22 +1,20 @@
 package net.frozenorb.foxtrot.jedis;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import org.bson.codecs.configuration.RootCodecRegistry;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 public abstract class RedisPersistMap<T> {
 
-    private HashMap<String, T> wrappedMap = new HashMap<String, T>();
+    private Map<String, T> wrappedMap = new ConcurrentHashMap<String, T>();
 
     @NonNull private String keyPrefix;
     @NonNull private String mongoKeyPrefix;

@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
@@ -32,7 +33,7 @@ public class ArcherClass extends PvPClass {
     public static final int MARK_SECONDS = 10;
 
     private static Map<String, Long> lastSpeedUsage = new HashMap<String, Long>();
-    @Getter private static Map<String, Long> markedPlayers = new HashMap<String, Long>();
+    @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<String, Long>();
 
     public ArcherClass() {
         super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR));

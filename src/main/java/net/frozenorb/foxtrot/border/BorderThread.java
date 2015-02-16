@@ -12,6 +12,10 @@ public class BorderThread extends Thread {
     @Getter private static String stateString = "Not started";
     @Getter private static long stateUpdated = System.currentTimeMillis();
 
+    public BorderThread() {
+        super("Foxtrot - Border Thread");
+    }
+
     public void run() {
         try {
             while (true) {
@@ -36,7 +40,7 @@ public class BorderThread extends Thread {
             setState("Uncaught exception: " + e.getMessage() + " @ " + new Date());
             e.printStackTrace();
         }
-    }
+}
 
     public void setState(String state) {
         BorderThread.stateString = state;

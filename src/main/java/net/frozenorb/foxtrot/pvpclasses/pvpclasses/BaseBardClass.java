@@ -22,14 +22,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BaseBardClass extends PvPClass {
 
     public final HashMap<Material, BardEffect> BARD_CLICK_EFFECTS = new HashMap<Material, BardEffect>();
     public final HashMap<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, BardEffect>();
 
-    @Getter private static Map<String, Long> lastEffectUsage = new HashMap<>();
-    @Getter private static Map<String, Float> energy = new HashMap<>();
+    @Getter private static Map<String, Long> lastEffectUsage = new ConcurrentHashMap<>();
+    @Getter private static Map<String, Float> energy = new ConcurrentHashMap<>();
 
     public static final int BARD_RANGE = 20;
     public static final int EFFECT_COOLDOWN = 10 * 1000;

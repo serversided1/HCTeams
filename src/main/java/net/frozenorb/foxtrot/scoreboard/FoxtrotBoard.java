@@ -2,8 +2,14 @@ package net.frozenorb.foxtrot.scoreboard;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.nametag.ScoreboardTeamPacketMod;
+import net.frozenorb.foxtrot.nametag.TeamInfo;
 import net.minecraft.server.v1_7_R4.Packet;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardTeam;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -11,17 +17,29 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by chasechocolate.
  */
 public class FoxtrotBoard {
 
+    public static final ScoreGetter[] SCORES = {
+
+            ScoreGetter.KOTH_TIMER,
+            ScoreGetter.SPAWN_TAG,
+            ScoreGetter.ENDERPEARL,
+            ScoreGetter.PVP_TIMER,
+            ScoreGetter.ENERGY,
+            ScoreGetter.ARCHER_MARK,
+            ScoreGetter.BARD_BUFF
+
+    };
+
     @Getter private Player player;
     @Getter private Objective objective;
-    @Getter private Set<String> displayedScores = new HashSet<String>();
+    @Getter private Map<String, Integer> displayedScores = new HashMap<String, Integer>();
+    @Getter private Set<String> sentTeamCreates = new HashSet<String>();
 
     public FoxtrotBoard(Player player) {
         this.player = player;
@@ -32,31 +50,62 @@ public class FoxtrotBoard {
         objective.setDisplayName(FoxtrotPlugin.getInstance().getMapHandler().getScoreboardTitle());
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        update();
         player.setScoreboard(board);
     }
 
     public void update() {
-        for (ScoreGetter getter : ScoreGetter.SCORES) {
-            int seconds = getter.getSeconds(player);
-            String title = getter.getTitle(player);
+        int nextValue = 14;
 
-            if (seconds == ScoreGetter.NO_SCORE) {
-                if (displayedScores.contains(title)) {
+        for (ScoreGetter score : SCORES) {
+            String value = score.getValue(player);
+            String title = score.getTitle(player);
+
+            // Null is returned if we shouldn't display anything.
+            if (value == null) {
+                if (displayedScores.containsKey(title)) {
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutScoreboardScore(title));
                     displayedScores.remove(title);
                 }
             } else {
-                displayedScores.add(title);
-                PacketPlayOutScoreboardScore scoreboardScorePacket = new PacketPlayOutScoreboardScore();
+                if (!sentTeamCreates.contains(title)) {
+                    ScoreboardTeamPacketMod scoreboardTeamAdd = new ScoreboardTeamPacketMod(title, "_", "_", new ArrayList<String>(), 0);
+                    ScoreboardTeamPacketMod scoreboardTeamAddMember = new ScoreboardTeamPacketMod(title, Arrays.asList(title), 3);
 
-                setField(scoreboardScorePacket, "a", title);
-                setField(scoreboardScorePacket, "b", objective.getName());
-                setField(scoreboardScorePacket, "c", seconds);
-                setField(scoreboardScorePacket, "d", 0);
+                    scoreboardTeamAdd.sendToPlayer(player);
+                    scoreboardTeamAddMember.sendToPlayer(player);
 
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(scoreboardScorePacket);
+                    sentTeamCreates.add(title);
+                }
+
+                if (!displayedScores.containsKey(title) || displayedScores.get(title) != nextValue) {
+                    PacketPlayOutScoreboardScore scoreboardScorePacket = new PacketPlayOutScoreboardScore();
+
+                    setField(scoreboardScorePacket, "a", title);
+                    setField(scoreboardScorePacket, "b", objective.getName());
+                    setField(scoreboardScorePacket, "c", nextValue);
+                    setField(scoreboardScorePacket, "d", 0);
+
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(scoreboardScorePacket);
+                    displayedScores.put(title, nextValue);
+                }
+
+                ScoreboardTeamPacketMod scoreboardTeamModify = new ScoreboardTeamPacketMod(title, "", ChatColor.GRAY + ": " + ChatColor.RED + value, null, 2);
+                scoreboardTeamModify.sendToPlayer(player);
+                nextValue--;
             }
+        }
+
+        if (nextValue == 14) {
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutScoreboardScore(" "));
+        } else {
+            PacketPlayOutScoreboardScore scoreboardScorePacket = new PacketPlayOutScoreboardScore();
+
+            setField(scoreboardScorePacket, "a", " ");
+            setField(scoreboardScorePacket, "b", objective.getName());
+            setField(scoreboardScorePacket, "c", 15);
+            setField(scoreboardScorePacket, "d", 0);
+
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(scoreboardScorePacket);
         }
     }
 

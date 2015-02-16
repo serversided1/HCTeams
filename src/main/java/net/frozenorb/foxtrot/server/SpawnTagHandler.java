@@ -8,12 +8,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 public class SpawnTagHandler {
 
     public static final int MAX_SPAWN_TAG = 30;
-    @Getter private static HashMap<String, Long> spawnTags = new HashMap<String, Long>();
+    @Getter private static Map<String, Long> spawnTags = new ConcurrentHashMap<String, Long>();
 
     public static void removeTag(Player player) {
         spawnTags.remove(player.getName());

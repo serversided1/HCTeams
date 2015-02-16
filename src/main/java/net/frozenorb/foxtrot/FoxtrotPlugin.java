@@ -22,6 +22,7 @@ import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
+import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -144,6 +145,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
         (new BorderThread()).start();
+        (new ScoreboardThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getName());

@@ -9,75 +9,55 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by chasechocolate.
- */
 public abstract class ScoreGetter {
 
-    public static final int NO_SCORE = -1;
-
-    public static final ScoreGetter SPAWN_TAG = new ScoreGetter() {
+    public static final ScoreGetter SPAWN_TAG = new ScoreGetter(ChatColor.RED.toString() + ChatColor.BOLD + "Spawn Tag") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.RED + "Spawn Tag");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             if (SpawnTagHandler.isTagged(player)) {
-                long diff = SpawnTagHandler.getTag(player);
+                float diff = SpawnTagHandler.getTag(player);
 
                 if (diff >= 0) {
-                    return ((int) diff / 1000);
+                    return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
                 }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter ENDERPEARL = new ScoreGetter() {
+    public static final ScoreGetter ENDERPEARL = new ScoreGetter(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Enderpearl") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.YELLOW + "Enderpearl");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
+                float diff = EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff >= 0) {
-                    return ((int) diff / 1000);
+                    return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
                 }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter PVP_TIMER = new ScoreGetter() {
+    public static final ScoreGetter PVP_TIMER = new ScoreGetter(ChatColor.GREEN.toString() + ChatColor.BOLD + "PVP Timer") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.GREEN + "PVP Timer");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                long diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis();
+                float diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis();
 
                 if (diff >= 0) {
-                    return ((int) diff / 1000);
+                    return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
                 }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
@@ -92,106 +72,96 @@ public abstract class ScoreGetter {
         }
 
         @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
-                if (koth.isHidden()) {
+                if (koth.isHidden() || !koth.isActive()) {
                     continue;
                 }
 
-                if (koth.isActive()) {
-                    if (koth.getName().equals("Citadel")) {
-                        lastActiveKOTH = ChatColor.DARK_PURPLE + "Citadel";
-                    } else if (koth.getName().equals("EOTW")) {
-                        lastActiveKOTH = ChatColor.DARK_RED + "EOTW";
-                    } else {
-                        lastActiveKOTH = ChatColor.BLUE + koth.getName();
-                    }
-
-                    return (koth.getRemainingCapTime());
+                if (koth.getName().equals("Citadel")) {
+                    lastActiveKOTH = ChatColor.DARK_PURPLE + "Citadel";
+                } else if (koth.getName().equals("EOTW")) {
+                    lastActiveKOTH = ChatColor.DARK_RED + "EOTW";
+                } else {
+                    lastActiveKOTH = ChatColor.BLUE + koth.getName();
                 }
+
+                return (ScoreFunction.TIME_SIMPLE.apply((float) koth.getRemainingCapTime()));
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter BARD_BUFF = new ScoreGetter() {
+    public static final ScoreGetter BARD_BUFF = new ScoreGetter(ChatColor.GREEN.toString() + ChatColor.BOLD + "Bard Buff") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.GREEN + "Bard Buff");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             if (BaseBardClass.getLastEffectUsage().containsKey(player.getName()) && BaseBardClass.getLastEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                long diff = BaseBardClass.getLastEffectUsage().get(player.getName()) - System.currentTimeMillis();
+                float diff = BaseBardClass.getLastEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
-                    return ((int) diff / 1000);
+                    return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
                 }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter ARCHER_MARK = new ScoreGetter() {
+    public static final ScoreGetter ARCHER_MARK = new ScoreGetter(ChatColor.GOLD.toString() + ChatColor.BOLD + "Archer Mark") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.GOLD + "Archer Mark");
-        }
-
-        @Override
-        public int getSeconds(Player player) {
+        public String getValue(Player player) {
             if (ArcherClass.isMarked(player)) {
                 long diff = ArcherClass.getMarkedPlayers().get(player.getName()) - System.currentTimeMillis();
 
                 if (diff > 0) {
-                    return ((int) diff / 1000);
+                    return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
                 }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter ENERGY = new ScoreGetter() {
+    public static final ScoreGetter ENERGY = new ScoreGetter(ChatColor.AQUA.toString() + ChatColor.BOLD + "Energy") {
 
         @Override
-        public String getTitle(Player player) {
-            return (ChatColor.AQUA + "Energy");
-        }
+        public String getValue(Player player) {
+            if (BaseBardClass.getEnergy().containsKey(player.getName())) {
+                float energy = BaseBardClass.getEnergy().get(player.getName());
 
-        @Override
-        public int getSeconds(Player player) {
-            if (BaseBardClass.getEnergy().containsKey(player.getName()) && BaseBardClass.getEnergy().get(player.getName()) > 0) {
-                return (BaseBardClass.getEnergy().get(player.getName()).intValue());
+                if (energy > 0) {
+                    // No function here, as it's a "raw" value.
+                    return (String.valueOf(BaseBardClass.getEnergy().get(player.getName())));
+                }
             }
 
-            return (NO_SCORE);
+            return (null);
         }
 
     };
 
-    public static final ScoreGetter[] SCORES = {
+    private String defaultTitle;
 
-            KOTH_TIMER,
-            SPAWN_TAG,
-            ENDERPEARL,
-            PVP_TIMER,
-            ENERGY,
-            ARCHER_MARK,
-            BARD_BUFF
+    // If we're not going to have a constant title,
+    // we need to use this.
+    public ScoreGetter() {
 
-    };
+    }
 
-    public abstract String getTitle(Player player);
+    public ScoreGetter(String defaultTitle) {
+        this.defaultTitle = defaultTitle;
+    }
 
-    public abstract int getSeconds(Player player);
+    public String getTitle(Player player) {
+        return (defaultTitle);
+    }
+
+    public abstract String getValue(Player player);
 
 }

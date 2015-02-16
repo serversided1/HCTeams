@@ -138,6 +138,8 @@ public class FoxListener implements Listener {
         NametagManager.sendTeamsToPlayer(event.getPlayer());
         NametagManager.reloadPlayer(event.getPlayer());
 
+        FoxtrotPlugin.getInstance().getScoreboardHandler().create(event.getPlayer());
+
         event.setJoinMessage(null);
 
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
@@ -157,8 +159,6 @@ public class FoxListener implements Listener {
         if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
-
-        FoxtrotPlugin.getInstance().getScoreboardHandler().update(event.getPlayer());
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)

@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class EnderpearlListener implements Listener {
 
-    @Getter private static Map<String, Long> enderpearlCooldown = new HashMap<String, Long>();
+    @Getter private static Map<String, Long> enderpearlCooldown = new ConcurrentHashMap<>();
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
