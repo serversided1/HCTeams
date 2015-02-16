@@ -7,13 +7,20 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 
 @Data
-@RequiredArgsConstructor
 public class TeamInfo {
 
-    @NonNull private String name;
-    @NonNull private String prefix;
-    @NonNull private String suffix;
+    private String name;
+    private String prefix;
+    private String suffix;
 
-    private ScoreboardTeamPacketMod teamAddPacket = new ScoreboardTeamPacketMod(name, prefix, suffix, new ArrayList<String>(), 0);
+    private ScoreboardTeamPacketMod teamAddPacket;
+
+    public TeamInfo(String name, String prefix, String suffix) {
+        this.name = name;
+        this.prefix = prefix;
+        this.suffix = suffix;
+
+        teamAddPacket = new ScoreboardTeamPacketMod(name, prefix, suffix, new ArrayList<String>(), 0);
+    }
 
 }

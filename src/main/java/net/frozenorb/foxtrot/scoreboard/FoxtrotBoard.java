@@ -43,7 +43,7 @@ public class FoxtrotBoard {
 
             if (seconds == ScoreGetter.NO_SCORE) {
                 if (displayedScores.contains(title)) {
-                    objective.getScoreboard().resetScores(title);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutScoreboardScore(title));
                     displayedScores.remove(title);
                 }
             } else {
