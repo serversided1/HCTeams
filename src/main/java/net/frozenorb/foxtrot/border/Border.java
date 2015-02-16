@@ -37,11 +37,15 @@ public class Border {
             Claim claim = regionDataEntry.getKey();
             Team team = regionDataEntry.getValue();
 
+            if (claim.contains(player)) {
+                continue;
+            }
+
             if (team.getOwner() == null) {
-                if (team.hasDTRBitmask(DTRBitmaskType.DENY_REENTRY) && !claim.contains(player)) {
+                if (team.hasDTRBitmask(DTRBitmaskType.DENY_REENTRY)) {
                     // If the team is a DENY_REENTRY claim (IE the End Spawn) and they're not inside of the claim
                     addClaim(claim);
-                } else if (team.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && !claim.contains(player) && SpawnTagHandler.isTagged(player)) {
+                } else if (team.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player)) {
                     // If the team is a SAFE_ZONE (IE spawn), they're not inside of it, and they're spawn tagged
                     addClaim(claim);
                 } else if ((team.hasDTRBitmask(DTRBitmaskType.KOTH) || team.hasDTRBitmask(DTRBitmaskType.CITADEL)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
