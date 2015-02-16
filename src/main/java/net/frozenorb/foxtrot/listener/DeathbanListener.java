@@ -99,8 +99,6 @@ public class DeathbanListener implements Listener {
 
             @Override
             public void run() {
-                event.getEntity().teleport(event.getEntity().getLocation().add(0, 100, 0));
-
                 if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                     event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
                 } else {
