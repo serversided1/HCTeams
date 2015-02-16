@@ -2,13 +2,15 @@ package net.frozenorb.foxtrot.scoreboard;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.minecraft.server.v1_7_R4.Packet;
+import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.spigotmc.CustomTimingsHandler;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,15 +19,11 @@ import java.util.Set;
  */
 public class FoxtrotBoard {
 
-    private static CustomTimingsHandler creation = new CustomTimingsHandler("Foxtrot - FB Creation");
-    private static CustomTimingsHandler valueGrab = new CustomTimingsHandler("Foxtrot - FB Value Grab");
-
     @Getter private Player player;
     @Getter private Objective objective;
     @Getter private Set<String> displayedScores = new HashSet<String>();
 
     public FoxtrotBoard(Player player) {
-        creation.startTiming();
         this.player = player;
 
         Scoreboard board = FoxtrotPlugin.getInstance().getServer().getScoreboardManager().getNewScoreboard();
@@ -34,17 +32,14 @@ public class FoxtrotBoard {
         objective.setDisplayName(FoxtrotPlugin.getInstance().getMapHandler().getScoreboardTitle());
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        creation.stopTiming();
         update();
         player.setScoreboard(board);
     }
 
     public void update() {
         for (ScoreGetter getter : ScoreGetter.SCORES) {
-            valueGrab.startTiming();
             int seconds = getter.getSeconds(player);
             String title = getter.getTitle(player);
-            valueGrab.stopTiming();
 
             if (seconds == ScoreGetter.NO_SCORE) {
                 if (displayedScores.contains(title)) {
@@ -53,12 +48,26 @@ public class FoxtrotBoard {
                 }
             } else {
                 displayedScores.add(title);
-                Score score = objective.getScore(title);
+                PacketPlayOutScoreboardScore scoreboardScorePacket = new PacketPlayOutScoreboardScore();
 
-                if (score.getScore() != seconds) {
-                    score.setScore(seconds);
-                }
+                setField(scoreboardScorePacket, "a", title);
+                setField(scoreboardScorePacket, "b", objective.getName());
+                setField(scoreboardScorePacket, "c", seconds);
+                setField(scoreboardScorePacket, "d", 0);
+
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(scoreboardScorePacket);
             }
+        }
+    }
+
+    public void setField(Packet packet, String field, Object value) {
+        try {
+            Field fieldObject = packet.getClass().getDeclaredField(field);
+
+            fieldObject.setAccessible(true);
+            fieldObject.set(packet, value);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

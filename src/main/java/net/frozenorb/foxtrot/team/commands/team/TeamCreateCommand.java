@@ -19,11 +19,6 @@ public class TeamCreateCommand {
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Param(name="team") String name) {
         if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
-            if (ALPHA_NUMERIC.matcher(name).find()) {
-                sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
-                return;
-            }
-
             if (name.length() > 16) {
                 sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
                 return;
@@ -31,6 +26,11 @@ public class TeamCreateCommand {
 
             if (name.length() < 3) {
                 sender.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
+                return;
+            }
+
+            if (ALPHA_NUMERIC.matcher(name).find()) {
+                sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
                 return;
             }
 

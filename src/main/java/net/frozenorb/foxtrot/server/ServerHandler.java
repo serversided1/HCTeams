@@ -179,17 +179,18 @@ public class ServerHandler {
     }
 
     public void startLogoutSequence(final Player player) {
-        player.sendMessage(ChatColor.YELLOW + "§lLogging out... §ePlease wait§c 30§e seconds.");
-        final AtomicInteger seconds = new AtomicInteger(30);
+        player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Logging out... " +ChatColor.YELLOW + "Please wait" + ChatColor.RED+ " 30" + ChatColor.YELLOW + " seconds.");
 
         BukkitTask taskid = new BukkitRunnable() {
 
+            int seconds = 30;
+
             @Override
             public void run() {
-                seconds.set(seconds.get() - 1);
-                player.sendMessage(ChatColor.RED + "" + seconds.get() + "§e seconds...");
+                seconds--;
+                player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds...");
 
-                if (seconds.get() == 0) {
+                if (seconds == 0) {
                     if (tasks.containsKey(player.getName())) {
                         tasks.remove(player.getName());
                         player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));

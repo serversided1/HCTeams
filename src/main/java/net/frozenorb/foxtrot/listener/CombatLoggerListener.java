@@ -29,6 +29,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,10 +40,12 @@ import java.util.UUID;
 public class CombatLoggerListener implements Listener {
 
     public static final String COMBAT_LOGGER_METADATA = "CombatLogger";
+    private Set<Entity> combatLoggers = new HashSet<Entity>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+            combatLoggers.remove(event.getEntity());
             String playerName = event.getEntity().getCustomName().substring(2);
 
             FoxtrotPlugin.getInstance().getLogger().info(playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
@@ -122,11 +127,14 @@ public class CombatLoggerListener implements Listener {
     // Despawn the NPC when its owner joins.
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        for (Entity entity : event.getPlayer().getWorld().getEntitiesByClass(Villager.class)) {
-            Villager villager = (Villager) entity;
+        Iterator<Entity> combatLoggerIterator = combatLoggers.iterator();
+
+        while (combatLoggerIterator.hasNext()) {
+            Villager villager = (Villager) combatLoggerIterator.next();
 
             if (villager.isCustomNameVisible() && ChatColor.stripColor(villager.getCustomName()).equals(event.getPlayer().getName())) {
                 villager.remove();
+                combatLoggerIterator.remove();
             }
         }
     }
@@ -154,7 +162,7 @@ public class CombatLoggerListener implements Listener {
             Villager villager = (Villager) event.getEntity();
             String playerName = villager.getCustomName().substring(2);
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmaskType.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(villager.getLocation()))) {
+            if (DTRBitmaskType.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmaskType.SAFE_ZONE.appliesAt(villager.getLocation())) {
                 event.setCancelled(true);
                 return;
             }
@@ -240,10 +248,13 @@ public class CombatLoggerListener implements Listener {
             villager.setCustomName(ChatColor.RED.toString() + event.getPlayer().getName());
             villager.setCustomNameVisible(true);
 
+            combatLoggers.add(villager);
+
             FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
 
                 public void run() {
                     if (!villager.isDead() && villager.isValid()) {
+                        combatLoggers.remove(villager);
                         villager.remove();
                     }
                 }
