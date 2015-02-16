@@ -64,6 +64,7 @@ public class CitadelListener implements Listener {
     public void onHour(HourEvent event) {
         // Every other hour
         if (event.getHour() % 2 == 0) {
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
             FoxtrotPlugin.getInstance().getCitadelHandler().respawnCitadelChests();
         }
     }
