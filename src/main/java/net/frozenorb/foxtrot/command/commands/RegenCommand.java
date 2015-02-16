@@ -22,23 +22,21 @@ public class RegenCommand {
         }
 
         if (target.getMaxDTR() == target.getDTR()) {
-            sender.sendMessage(ChatColor.YELLOW + "Your team is currently at max DTR, which is §d" + target.getMaxDTR() + "§e.");
+            sender.sendMessage(ChatColor.YELLOW + "Your team is currently at max DTR, which is " + ChatColor.LIGHT_PURPLE + target.getMaxDTR() + ChatColor.YELLOW + ".");
             return;
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of §d" + target.getMaxDTR() + "§e.");
-        sender.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of §d" + Team.DTR_FORMAT.format(target.getDTRIncrement() * 60) + "/hr§e.");
-        sender.sendMessage(ChatColor.YELLOW + "At this rate, it will take you §d" + (hrsToRegain(target) == -1 ? "Infinity" : hrsToRegain(target)) + "§eh to fully gain all DTR.");
+        sender.sendMessage(ChatColor.YELLOW + "Your team has a max DTR of " + ChatColor.LIGHT_PURPLE + target.getMaxDTR() + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "You are regaining DTR at a rate of " + ChatColor.LIGHT_PURPLE + Team.DTR_FORMAT.format(target.getDTRIncrement() * 60) + "/hour" + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "At this rate, it will take you " + ChatColor.LIGHT_PURPLE + (hrsToRegain(target) == -1 ? "Infinity" : hrsToRegain(target)) + ChatColor.YELLOW + " hours to fully gain all DTR.");
 
         if (target.getDTRCooldown() > System.currentTimeMillis()) {
-            sender.sendMessage(ChatColor.YELLOW + "Your team is on DTR cooldown for §d" + TimeUtils.getDurationBreakdown(target.getDTRCooldown() - System.currentTimeMillis()) + "§e.");
+            sender.sendMessage(ChatColor.YELLOW + "Your team is on DTR cooldown for " + ChatColor.LIGHT_PURPLE + TimeUtils.getDurationBreakdown(target.getDTRCooldown() - System.currentTimeMillis()) + ChatColor.YELLOW + ".");
         }
     }
 
     private static double hrsToRegain(Team team) {
-        double cur = team.getDTR();
-        double max = team.getMaxDTR();
-        double diff = max - cur;
+        double diff = team.getMaxDTR() - team.getDTR();
         double dtrIncrement = team.getDTRIncrement();
 
         if (dtrIncrement == 0D) {
