@@ -79,11 +79,11 @@ public abstract class ScoreGetter {
                 }
 
                 if (koth.getName().equals("Citadel")) {
-                    lastActiveKOTH = ChatColor.DARK_PURPLE + "Citadel";
+                    lastActiveKOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
                 } else if (koth.getName().equals("EOTW")) {
-                    lastActiveKOTH = ChatColor.DARK_RED + "EOTW";
+                    lastActiveKOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
                 } else {
-                    lastActiveKOTH = ChatColor.BLUE + koth.getName();
+                    lastActiveKOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
                 }
 
                 return (ScoreFunction.TIME_SIMPLE.apply((float) koth.getRemainingCapTime()));
