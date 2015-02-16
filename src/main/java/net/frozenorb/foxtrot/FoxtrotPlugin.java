@@ -8,6 +8,7 @@ import com.google.common.base.Joiner;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.RegionManager;
+import net.frozenorb.foxtrot.border.BorderThread;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -144,7 +145,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
-        new PacketBorder.BorderThread().start();
+        (new BorderThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getName());
