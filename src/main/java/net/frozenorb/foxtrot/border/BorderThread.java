@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class BorderThread extends Thread {
 
-    @Getter private static String state = "Not started";
+    @Getter private static String stateString = "Not started";
     @Getter private static long stateUpdated = System.currentTimeMillis();
 
     public void run() {
@@ -39,7 +39,7 @@ public class BorderThread extends Thread {
     }
 
     public void setState(String state) {
-        BorderThread.state = state;
+        BorderThread.stateString = state;
         BorderThread.stateUpdated = System.currentTimeMillis();
     }
 
