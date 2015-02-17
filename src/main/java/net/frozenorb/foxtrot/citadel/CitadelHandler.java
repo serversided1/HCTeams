@@ -83,7 +83,7 @@ public class CitadelHandler {
                 ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
 
                 for (Object lootObj : loot) {
-                    loot.add(itemStackSerializer.deserialize((BasicDBObject) lootObj));
+                    citadelLoot.add(itemStackSerializer.deserialize((BasicDBObject) lootObj));
                 }
             }
         } catch (Exception e) {
