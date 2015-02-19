@@ -34,6 +34,10 @@ import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -179,8 +183,20 @@ public class FoxtrotPlugin extends JavaPlugin {
             if (recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
                 recipeIterator.remove();
             }
+            
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+
+            if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
+                recipeIterator.remove();
+            }
         }
+
+        // add our glistering melon recipe
+        getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
+
     }
+
 
     @Override
     public void onDisable() {
