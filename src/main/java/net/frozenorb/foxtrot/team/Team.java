@@ -707,7 +707,7 @@ public class Team {
         dbObject.put("Allies", getAllies());
         dbObject.put("RequestedAllies", getRequestedAllies());
         dbObject.put("DTR", getDTR());
-        dbObject.put("DTRCooldown", getDTRCooldown());
+        dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
         dbObject.put("Name", getName());
         dbObject.put("HQ", locationSerializer.serialize(getHQ()));
