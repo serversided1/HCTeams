@@ -183,10 +183,8 @@ public class FoxtrotPlugin extends JavaPlugin {
             if (recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
                 recipeIterator.remove();
             }
-            
-        while (recipeIterator.hasNext()) {
-            Recipe recipe = recipeIterator.next();
 
+            // Remove vanilla glistering melon recipe
             if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
                 recipeIterator.remove();
             }
@@ -194,7 +192,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         // add our glistering melon recipe
         getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
-
     }
 
 
