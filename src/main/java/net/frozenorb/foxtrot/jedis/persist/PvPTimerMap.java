@@ -3,6 +3,8 @@ package net.frozenorb.foxtrot.jedis.persist;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
+import java.util.Date;
+
 public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public static final long PENDING_USE = -10L;
@@ -23,7 +25,7 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     @Override
     public Object getMongoValue(Long time) {
-        return (time);
+        return (new Date(time));
     }
 
     public void pendingTimer(String player){

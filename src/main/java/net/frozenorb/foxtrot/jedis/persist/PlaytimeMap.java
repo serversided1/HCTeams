@@ -25,7 +25,7 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 
     @Override
     public Object getMongoValue(Long time) {
-        return (time);
+        return (Integer.valueOf((int) time));
     }
 
     public void playerJoined(String player) {
