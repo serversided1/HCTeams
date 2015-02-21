@@ -175,7 +175,7 @@ public class FoxListener implements Listener {
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
-    public void onProjetileInteract(PlayerInteractEvent event) {
+    public void onProjectileInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
         if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
