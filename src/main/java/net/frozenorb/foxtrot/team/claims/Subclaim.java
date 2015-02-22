@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import com.google.common.base.Joiner;
 import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -62,17 +63,7 @@ public class Subclaim extends ReflectionSerializer {
 
     @Override
     public String toString() {
-        StringBuilder members = new StringBuilder();
-
-        for (String member : this.members) {
-            members.append(member).append(",");
-        }
-
-        if (members.length() > 1) {
-            members.setLength(members.length() - 1);
-        }
-
-        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + members.toString());
+        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + Joiner.on(",").join(members));
     }
 
 }
