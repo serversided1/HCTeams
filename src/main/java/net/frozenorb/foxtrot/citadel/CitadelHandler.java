@@ -188,34 +188,15 @@ public class CitadelHandler {
 
         if (blockState instanceof Chest) {
             Chest chest = (Chest) blockState;
-            Team ownerAt = LandBoard.getInstance().getTeam(location);
-
-            if (ownerAt.getOwner() != null) {
-                return;
-            }
 
             // Re-checking the bitmask flag ensures there's never a way to get respawning chests in your base
-            if (ownerAt.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+            if (DTRBitmaskType.CITADEL.appliesAt(location)) {
                 chest.getBlockInventory().clear();
-
-                for (ItemStack loot : getRandomLoot(1)) {
-                    chest.getBlockInventory().addItem(loot);
-                }
+                chest.getBlockInventory().addItem(citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size())));
             }
         } else {
             FoxtrotPlugin.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
         }
-    }
-
-    private List<ItemStack> getRandomLoot(int items) {
-        List<ItemStack> loot = new ArrayList<ItemStack>();
-
-        for (int i = 0; i < items; i++) {
-            ItemStack chosen = citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size()));
-            loot.add(chosen);
-        }
-
-        return (loot);
     }
 
 }
