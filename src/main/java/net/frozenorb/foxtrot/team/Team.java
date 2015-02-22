@@ -467,9 +467,11 @@ public class Team {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
-        for (Player player : getOnlineMembers()) {
-            player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
-            player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (isMember(player)) {
+                player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
+                player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+            }
         }
 
         if (DTRRegenMultiplier != 1F) {
