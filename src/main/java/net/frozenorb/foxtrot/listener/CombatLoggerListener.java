@@ -70,6 +70,9 @@ public class CombatLoggerListener implements Listener {
 
                 // Add the death sign.
                 event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(playerName, event.getEntity().getKiller().getName()));
+
+                // and give them the kill
+                FoxtrotPlugin.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getName(), FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getName()) + 1);
             }
 
             Player target = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName);
