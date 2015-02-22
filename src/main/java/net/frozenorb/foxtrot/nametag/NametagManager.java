@@ -9,26 +9,46 @@ import org.bukkit.entity.Player;
 import org.spigotmc.CustomTimingsHandler;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("deprecation")
 public class NametagManager {
 
-    private static List<TeamInfo> registeredTeams = new ArrayList<TeamInfo>();
+    private static List<TeamInfo> registeredTeams = Collections.synchronizedList(new ArrayList<>());
     private static int teamCreateIndex = 1;
 
-    private static CustomTimingsHandler reloadPlayerColorGrab = new CustomTimingsHandler("Nametags - reloadPlayer - colorGrab");
-    private static CustomTimingsHandler reloadPlayerSendPackets = new CustomTimingsHandler("Nametags - reloadPlayer - sendPackets");
+    @Getter private static Map<String, Map<String, TeamInfo>> teamMap = new ConcurrentHashMap<>();
 
-    @Getter private static Map<String, Map<String, TeamInfo>> teamMap = new HashMap<String, Map<String, TeamInfo>>();
+    public static void applyUpdate(NametagUpdate nametagUpdate) {
+        Player toRefreshPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(nametagUpdate.getToRefresh());
 
-    public static void reloadPlayer(Player toRefresh) {
-        for (Player refreshFor : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            reloadPlayer(toRefresh, refreshFor);
+        // Just ignore it if they logged off since the request to update was submitted
+        if (toRefreshPlayer == null) {
+            return;
+        }
+
+        if (nametagUpdate.getRefreshFor() == null) {
+            for (Player refreshFor : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                reloadPlayer0(toRefreshPlayer, refreshFor);
+            }
+        } else {
+            Player refreshForPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(nametagUpdate.getRefreshFor());
+
+            if (refreshForPlayer != null) {
+                reloadPlayer0(toRefreshPlayer, refreshForPlayer);
+            }
         }
     }
 
+    public static void reloadPlayer(Player toRefresh) {
+        NametagThread.getPendingUpdates().add(new NametagUpdate(toRefresh));
+    }
+
     public static void reloadPlayer(Player toRefresh, Player refreshFor) {
-        reloadPlayerColorGrab.startTiming();
+        NametagThread.getPendingUpdates().add(new NametagUpdate(toRefresh, refreshFor));
+    }
+
+    public static void reloadPlayer0(Player toRefresh, Player refreshFor) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
         TeamInfo teamInfo = getOrCreate(ChatColor.YELLOW.toString(), "");
 
@@ -51,9 +71,6 @@ public class NametagManager {
             teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
         }
 
-        reloadPlayerColorGrab.stopTiming();
-        reloadPlayerSendPackets.startTiming();
-
         Map<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();
 
         if (teamMap.containsKey(refreshFor.getName())) {
@@ -72,7 +89,6 @@ public class NametagManager {
         (new ScoreboardTeamPacketMod(teamInfo.getName(), Arrays.asList(toRefresh.getName()), 3)).sendToPlayer(refreshFor);
         teamInfoMap.put(toRefresh.getName(), teamInfo);
         teamMap.put(refreshFor.getName(), teamInfoMap);
-        reloadPlayerSendPackets.stopTiming();
     }
 
     public static void initPlayer(Player player) {
