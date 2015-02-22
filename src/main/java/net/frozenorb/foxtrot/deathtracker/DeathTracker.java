@@ -39,6 +39,8 @@ public class DeathTracker {
         new BukkitRunnable() {
 
             public void run() {
+                FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("DetailedKills").insert(data);
+
                 File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
                 File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
 

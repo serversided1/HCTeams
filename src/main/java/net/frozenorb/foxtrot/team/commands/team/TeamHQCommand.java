@@ -24,7 +24,7 @@ public class TeamHQCommand {
         }
 
         if (sender.getWorld().getEnvironment() == World.Environment.THE_END) {
-            sender.sendMessage(ChatColor.RED + "You cannot do this in The End!");
+            sender.sendMessage(ChatColor.RED + "You cannot do this in The End.");
             return;
         }
 
