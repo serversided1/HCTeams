@@ -467,9 +467,11 @@ public class Team {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
-        for (Player player : getOnlineMembers()) {
-            player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
-            player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            if (isMember(player)) {
+                player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
+                player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
+            }
         }
 
         if (DTRRegenMultiplier != 1F) {
@@ -591,6 +593,7 @@ public class Team {
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
+// loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + Joiner.on(",").join(members));
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
 
@@ -614,7 +617,7 @@ public class Team {
                         Location loc2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
 
                         Subclaim subclaimObj = new Subclaim(loc1, loc2, name);
-                        subclaimObj.setMembers(new ArrayList<String>(Arrays.asList(members.split(","))));
+                        subclaimObj.setMembers(Arrays.asList(members.split(",")));
 
                         getSubclaims().add(subclaimObj);
                     }

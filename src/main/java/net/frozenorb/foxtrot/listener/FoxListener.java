@@ -396,12 +396,9 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerDeath(final PlayerDeathEvent event) {
-        Player player = event.getEntity();
-        Date now = new Date();
-
         SpawnTagHandler.removeTag(event.getEntity());
 
-        Team t = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getName());
 
         if (event.getEntity().getKiller() != null) {
             Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
@@ -411,14 +408,14 @@ public class FoxListener implements Listener {
             }
         }
 
-        if (t != null) {
-            t.playerDeath(event.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity()));
+        if (playerTeam != null) {
+            playerTeam.playerDeath(event.getEntity().getName(), FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity()));
         }
 
         // Add deaths to armor
-        String deathMsg = ChatColor.YELLOW + player.getName() + ChatColor.RESET + " " + (player.getKiller() != null ? "killed by " + ChatColor.YELLOW + player.getKiller().getName() : "died") + " " + ChatColor.GOLD + InvUtils.DEATH_TIME_FORMAT.format(now);
+        String deathMsg = ChatColor.YELLOW + event.getEntity().getName() + ChatColor.RESET + " " + (event.getEntity().getKiller() != null ? "killed by " + ChatColor.YELLOW + event.getEntity().getKiller().getName() : "died") + " " + ChatColor.GOLD + InvUtils.DEATH_TIME_FORMAT.format(new Date());
 
-        for (ItemStack armor : player.getInventory().getArmorContents()) {
+        for (ItemStack armor : event.getEntity().getInventory().getArmorContents()) {
             if (armor != null && armor.getType() != Material.AIR) {
                 InvUtils.addDeath(armor, deathMsg);
             }
@@ -438,8 +435,8 @@ public class FoxListener implements Listener {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
 
-                meta.setOwner(player.getName());
-                meta.setDisplayName(ChatColor.YELLOW + "Head of " + player.getName());
+                meta.setOwner(event.getEntity().getName());
+                meta.setDisplayName(ChatColor.YELLOW + "Head of " + event.getEntity().getName());
                 meta.setLore(Arrays.asList("", deathMsg));
                 skull.setItemMeta(meta);
                 event.getDrops().add(skull);
@@ -451,13 +448,13 @@ public class FoxListener implements Listener {
         }
 
         // Lightning
-        Location loc = player.getLocation();
+        Location loc = event.getEntity().getLocation();
 
         EntityLightning entity = new EntityLightning(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), true, false);
         PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(entity);
 
-        for (Player online : player.getWorld().getPlayers()) {
-            if (online.equals(player)) {
+        for (Player online : event.getEntity().getWorld().getPlayers()) {
+            if (online.equals(event.getEntity())) {
                 continue;
             }
 
@@ -468,12 +465,12 @@ public class FoxListener implements Listener {
         }
 
         // Transfer money
-        double bal = Basic.get().getEconomyManager().getBalance(player.getName());
-        Basic.get().getEconomyManager().withdrawPlayer(player.getName(), bal);
+        double bal = Basic.get().getEconomyManager().getBalance(event.getEntity().getName());
+        Basic.get().getEconomyManager().withdrawPlayer(event.getEntity().getName(), bal);
 
-        if (player.getKiller() != null) {
-            Basic.get().getEconomyManager().depositPlayer(player.getKiller().getName(), bal);
-            player.getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + player.getDisplayName() + ChatColor.GOLD + "!");
+        if (event.getEntity().getKiller() != null) {
+            Basic.get().getEconomyManager().depositPlayer(event.getEntity().getKiller().getName(), bal);
+            event.getEntity().getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + event.getEntity().getDisplayName() + ChatColor.GOLD + "!");
         }
     }
 

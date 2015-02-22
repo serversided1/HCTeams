@@ -105,7 +105,8 @@ public class DeathbanListener implements Listener {
                     event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
                 }
             }
-        }, 5L);
+
+        }, 5);
     }
 
 }

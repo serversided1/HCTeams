@@ -134,7 +134,7 @@ public class CitadelHandler {
 
     public boolean canLootCitadel(Player player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-        return ((team != null && capper.equals(team.getUniqueId())) || System.currentTimeMillis() > lootable.getTime());
+        return ((team != null && team.getUniqueId().equals(capper)) || System.currentTimeMillis() > lootable.getTime());
     }
 
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
