@@ -143,7 +143,7 @@ public class KOTHListener implements Listener {
     }
 
     @EventHandler
-    public void onKOTHControlList(KOTHControlLostEvent event) {
+    public void onKOTHControlLost(KOTHControlLostEvent event) {
         if (event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
         }
