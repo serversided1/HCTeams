@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class TeamHQCommand {
@@ -19,6 +20,11 @@ public class TeamHQCommand {
 
         if (team.getHQ() == null) {
             sender.sendMessage(ChatColor.RED + "HQ not set.");
+            return;
+        }
+
+        if (sender.getWorld().getEnvironment() == World.Environment.THE_END) {
+            sender.sendMessage(ChatColor.RED + "You cannot do this in The End.");
             return;
         }
 
