@@ -33,7 +33,7 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getName(), TimeUnit.HOURS.toSeconds(8));
+        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getName(), TimeUnit.HOURS.toSeconds(4));
 
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "██" + ChatColor.DARK_GREEN + "███");
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "█" + ChatColor.DARK_GREEN + "████");
