@@ -20,6 +20,7 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.nametag.NametagThread;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
@@ -150,6 +151,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         (new BorderThread()).start();
         (new ScoreboardThread()).start();
+        (new NametagThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getName());
