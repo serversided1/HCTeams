@@ -46,7 +46,7 @@ public class CitadelHandler {
         loadCitadelInfo();
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
 
-        (new CitadelSaveTask()).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
+        (new CitadelSaveTask()).runTaskTimerAsynchronously(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
     }
 
     public void loadCitadelInfo() {
