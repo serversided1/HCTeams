@@ -127,6 +127,7 @@ public class CitadelHandler {
 
     public void setCapper(ObjectId capper) {
         this.capper = capper;
+        this.lootable = generateLootableDate();
 
         FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper));
         saveCitadelInfo();
@@ -147,10 +148,11 @@ public class CitadelHandler {
         }
 
         date.add(Calendar.DAY_OF_MONTH, diff);
-        date.set(Calendar.HOUR_OF_DAY, 17); // 5 PM server time
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
+
+        // 11:59 PM
+        date.set(Calendar.HOUR_OF_DAY, 23);
+        date.set(Calendar.MINUTE, 59);
+        date.set(Calendar.SECOND, 59);
 
         return (date.getTime());
     }
