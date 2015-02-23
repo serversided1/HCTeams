@@ -17,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper=false)
 @SerializableClass
 @Data
-public class Subclaim extends ReflectionSerializer {
+public class Subclaim {
 
     @NonNull private Location loc1, loc2;
     @NonNull private String name;
