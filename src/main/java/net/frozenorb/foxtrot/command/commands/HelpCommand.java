@@ -10,13 +10,10 @@ public class HelpCommand {
 
     @Command(names={ "Help" }, permissionNode="")
     public static void help(Player sender) {
-
-         final String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
-         final String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
+         String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
+         String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
 
         String[] msg = {
-
-
 
                 "§6§m-----------------------------------------------------",
                 "§9§lHCTeams Help §7- §eInformation on HCTeams",
