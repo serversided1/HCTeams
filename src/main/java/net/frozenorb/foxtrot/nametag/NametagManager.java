@@ -41,11 +41,11 @@ public class NametagManager {
     }
 
     public static void reloadPlayer(Player toRefresh) {
-        NametagThread.getPendingUpdates().add(new NametagUpdate(toRefresh));
+        NametagThread.getPendingUpdates().put(new NametagUpdate(toRefresh), true);
     }
 
     public static void reloadPlayer(Player toRefresh, Player refreshFor) {
-        NametagThread.getPendingUpdates().add(new NametagUpdate(toRefresh, refreshFor));
+        NametagThread.getPendingUpdates().put(new NametagUpdate(toRefresh, refreshFor), true);
     }
 
     public static void reloadPlayer0(Player toRefresh, Player refreshFor) {

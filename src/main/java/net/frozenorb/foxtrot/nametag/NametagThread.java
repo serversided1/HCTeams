@@ -5,10 +5,16 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class NametagThread extends Thread {
 
-    @Getter private static List<NametagUpdate> pendingUpdates = Collections.synchronizedList(new ArrayList<NametagUpdate>());
+    // We use a Map here for a few reasons...
+    // 1) Why the heck not
+    // 2) There's no good concurrent set implementation
+    // 3) Sets are backed by Maps anyway so...
+    @Getter private static Map<NametagUpdate, Boolean> pendingUpdates = new ConcurrentHashMap<>();
 
     public NametagThread() {
         super("Foxtrot - Nametag Thread");
@@ -17,7 +23,7 @@ public class NametagThread extends Thread {
     public void run() {
         try {
             while (true) {
-                for (NametagUpdate pendingUpdate : pendingUpdates) {
+                for (NametagUpdate pendingUpdate : pendingUpdates.keySet()) {
                     NametagManager.applyUpdate(pendingUpdate);
                 }
 
