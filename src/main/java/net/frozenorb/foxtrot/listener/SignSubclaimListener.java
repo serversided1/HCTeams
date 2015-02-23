@@ -77,6 +77,10 @@ public class SignSubclaimListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "It appears you've forgotten to add yourself to this subclaim! You're not an officer, so this would lock you out of your subclaim.");
             event.getPlayer().sendMessage(ChatColor.YELLOW + "We've automatically added you to your subclaim.");
 
+            if (event.getPlayer().getName().length() > 15) {
+                event.getPlayer().sendMessage("§cYour name is too long for sign subclaims. Consider changing your username.");
+                return;
+            }
             event.setLine(1, event.getPlayer().getName());
         }
 
