@@ -24,7 +24,11 @@ public class NametagThread extends Thread {
         try {
             while (true) {
                 for (NametagUpdate pendingUpdate : pendingUpdates.keySet()) {
-                    NametagManager.applyUpdate(pendingUpdate);
+                    try {
+                        NametagManager.applyUpdate(pendingUpdate);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 pendingUpdates.clear();
