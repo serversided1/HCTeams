@@ -35,13 +35,9 @@ public class TeamListener implements Listener {
 
         if (team != null) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (player.equals(event.getPlayer())) {
-                    continue;
-                }
-
                 if (team.isMember(player)) {
                     player.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
-                } else if (team.isAlly(player)) {
+                } else if (team.getAllies().size() != 0 && team.isAlly(player)) {
                     player.sendMessage(Team.ALLY_COLOR + "Ally Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
