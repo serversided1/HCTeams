@@ -62,10 +62,14 @@ public class DamageListener implements Listener {
 
         // Hacky NMS to change the player's killer
         if (deathCause instanceof PlayerDamage) {
-            Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(((PlayerDamage) deathCause).getDamager());
-            ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+            String killerName = ((PlayerDamage) deathCause).getDamager();
+            Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(killerName);
 
-            FoxtrotPlugin.getInstance().getKillsMap().setKills(killer.getName(), FoxtrotPlugin.getInstance().getKillsMap().getKills(killer.getName()) + 1);
+            if (killer != null) {
+                ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+            }
+
+            FoxtrotPlugin.getInstance().getKillsMap().setKills(killerName, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerName) + 1);
         }
 
         event.setDeathMessage(deathCause.getDeathMessage());
