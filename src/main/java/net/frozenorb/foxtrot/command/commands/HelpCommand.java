@@ -1,12 +1,9 @@
 package net.frozenorb.foxtrot.command.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.mBasic.CommandSystem.Commands.Enchant;
-import net.minecraft.server.v1_7_R4.Enchantment;
-import org.bukkit.ChatColor;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 public class HelpCommand {
