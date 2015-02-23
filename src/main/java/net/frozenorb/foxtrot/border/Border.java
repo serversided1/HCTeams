@@ -96,7 +96,7 @@ public class Border {
             for (int i = -4; i < 5; i++) {
                 Location check = onPlayerY.clone().add(0, i, 0);
 
-                if (check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
+                if (check.getWorld().isChunkLoaded(check.getBlockX(), check.getBlockZ()) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
                     player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
                     sentBlockChanges.get(player.getName()).put(check, System.currentTimeMillis() + 4000L);
                 }
