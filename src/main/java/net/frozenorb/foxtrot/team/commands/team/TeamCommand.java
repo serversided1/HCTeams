@@ -8,32 +8,53 @@ public class TeamCommand {
 
     @Command(names={ "team", "t", "f", "faction", "fac" }, permissionNode="")
     public static void team(Player sender) {
-        sender.sendMessage(ChatColor.DARK_AQUA + "***Anyone***");
-        sender.sendMessage(ChatColor.GRAY + "/t accept <teamName> - Accept a pending invitation.");
-        sender.sendMessage(ChatColor.GRAY + "/t create [teamName] - Create a team.");
-        sender.sendMessage(ChatColor.GRAY + "/t leave - Leave your current team.");
-        sender.sendMessage(ChatColor.GRAY + "/t who [playerName/teamName] - Get details about a team.");
-        sender.sendMessage(ChatColor.GRAY + "/t chat - Toggle team chat mode on or off.");
-        sender.sendMessage(ChatColor.GRAY + "/t hq - Teleport to the team HQ.");
-        sender.sendMessage(ChatColor.GRAY + "/t deposit <amount> - Deposit money to team balance.");
-        sender.sendMessage(ChatColor.GRAY + "/t map - View the boundaries of teams near you.");
-        sender.sendMessage("");
-        sender.sendMessage(ChatColor.DARK_AQUA + "***Team Captains Only***");
-        sender.sendMessage(ChatColor.GRAY + "/t kick [player] - Kick a player from the team.");
-        sender.sendMessage(ChatColor.GRAY + "/t claim - Receive the claiming wand.");
-        sender.sendMessage(ChatColor.GRAY + "/t uninvite - Manage pending invitations.");
-        sender.sendMessage(ChatColor.GRAY + "/t invite <player> - Invite a player to the team.");
-        sender.sendMessage(ChatColor.GRAY + "/t sethq - Set the team HQ location.");
-        sender.sendMessage(ChatColor.GRAY + "/t withdraw <amount> - Withdraw money from team balance.");
-        sender.sendMessage(ChatColor.GRAY + "/t ally [team] - sends a request to ally another team");
-        sender.sendMessage(ChatColor.GRAY + "/t unally [team] - unallies another team");
-        sender.sendMessage("");
-        sender.sendMessage(ChatColor.DARK_AQUA + "***Team Owner Only***");
-        sender.sendMessage(ChatColor.GRAY + "/t promote - Promotes the targeted player to a captain.");
-        sender.sendMessage(ChatColor.GRAY + "/t demote - Demotes the targeted player to a member.");
-        sender.sendMessage(ChatColor.GRAY + "/t unclaim - Unclaim land.");
-        sender.sendMessage(ChatColor.GRAY + "/t leader [playerName] - Gives a player leader of your team.");
-        sender.sendMessage(ChatColor.GRAY + "/t disband - Disband the team. [Warning]");
+
+        String[] msg = {
+
+                "§6§m-----------------------------------------------------",
+                "§d§lTeam Help §7- §fTeam Help",
+                "§7§m-----------------------------------------------------",
+
+
+                "§9General Commands:",
+                "§e/t create <teamName> §7- Create a new team",
+                "§e/t accept <teamName> §7- Accept a pending invitation",
+                "§e/t leave §7- Leave your current team",
+                "§e/t home §7- Teleport to your team home",
+                "§e/t deposit <amount§7|§eall> §7- Deposit money into your team balance",
+
+
+                "",
+                "§9Information Commands:",
+                "§e/t who [player§7|§eteamName] §7- Display team information",
+                "§e/t map §7- Show nearby claims (identified by pillars)",
+
+
+                "",
+                "§9Captain Commands:",
+                "§e/t invite <player> §7- Invite a player to your team",
+                "§e/t uninvite <player> §7- Revoke an invitation",
+                "§e/t invites §7- List all open invitations",
+                "§e/t kick <player> §7- Kick a player from your team.",
+                "§e/t sethome §7- Set your team's home at your current location",
+                "§e/t withdraw <amount> §7- Withdraw money from your team's balance",
+                "§e/t motd [message here] §7- Set your team's message of the day",
+
+                "",
+                "§9Leader Commands:",
+
+                "§e/t promote <player> §7- Promote a member to Captain",
+                "§e/t demote <player> §7- Demotes a Captain to member",
+                "§e/t unclaim [all] §7- Unclaim land",
+                "§e/t disband §7- Disband your team.",
+
+
+                "§6§m-----------------------------------------------------",
+
+
+
+        };
+        sender.sendMessage(msg);
     }
 
 }
