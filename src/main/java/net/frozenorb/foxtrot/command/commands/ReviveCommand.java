@@ -20,11 +20,6 @@ public class ReviveCommand {
             return;
         }
 
-        if ((reason.length() <= 9 || reason.startsWith(".")) && sender.getName().equals("itsjhalt")) {
-            sender.sendMessage(ChatColor.RED + "rip $25 =[");
-            return;
-        }
-
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(target)) {
             File logTo = new File(new File("foxlogs"), "adminrevives.log");
 

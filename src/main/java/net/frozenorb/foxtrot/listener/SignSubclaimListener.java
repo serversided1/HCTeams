@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.*;
+import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +20,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.material.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,6 +55,11 @@ public class SignSubclaimListener implements Listener {
         BlockFace attachedFace = ((org.bukkit.material.Sign) sign.getData()).getAttachedFace();
         Block attachedTo = event.getBlock().getRelative(attachedFace);
 
+        if (!(attachedTo.getType().equals(Material.CHEST)) && !(attachedTo.getType().equals(Material.TRAPPED_CHEST))) {
+            event.getPlayer().sendMessage("§cSign subclaims only work on chests.");
+            return;
+        }
+
         if (subclaimSigns(attachedTo).size() != 0) {
             event.getBlock().breakNaturally();
             event.getPlayer().sendMessage(ChatColor.RED + "This chest is already subclaimed!");
@@ -73,12 +81,17 @@ public class SignSubclaimListener implements Listener {
             }
         }
 
-        if (!found && !(playerTeam.isOwner(event.getPlayer().getName()) || playerTeam.isCaptain(event.getPlayer().getName()))) {
+        if (!found) {
             if (event.getPlayer().getName().length() > 15) {
                 event.getBlock().breakNaturally();
                 event.getPlayer().sendMessage("§cYour name is too long for sign subclaims. Consider changing your username.");
                 return;
             }
+        }
+
+        String signText = event.getLine(1) + event.getLine(2) + event.getLine(3);
+
+        if (signText.isEmpty()) {
             event.getPlayer().sendMessage(ChatColor.GREEN + "We automatically added you to this subclaim.");
             event.setLine(1, event.getPlayer().getName());
         }
