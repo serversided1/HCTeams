@@ -21,26 +21,22 @@ public class NametagThread extends Thread {
     }
 
     public void run() {
-        try {
-            while (true) {
-                for (NametagUpdate pendingUpdate : pendingUpdates.keySet()) {
-                    try {
-                        NametagManager.applyUpdate(pendingUpdate);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                pendingUpdates.clear();
-
+        while (true) {
+            for (NametagUpdate pendingUpdate : pendingUpdates.keySet()) {
                 try {
-                    Thread.sleep(100L);
-                } catch (InterruptedException e) {
+                    NametagManager.applyUpdate(pendingUpdate);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            pendingUpdates.clear();
+
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
