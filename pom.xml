@@ -87,7 +87,7 @@
 		<!-- Spigot Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mSpigot</artifactId>
+			<artifactId>mSpigot-API</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		
@@ -95,11 +95,6 @@
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mBasic</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
-			<artifactId>mShared</artifactId>
 			<version>LATEST</version>
 		</dependency>
 
