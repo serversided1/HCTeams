@@ -29,7 +29,7 @@ public class SignSubclaimListener implements Listener {
 
     public static final Set<BlockFace> OUTSIDE_FACES = ImmutableSet.of(BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH);
     public static final String SUBCLAIM_IDENTIFIER = ChatColor.YELLOW.toString() + ChatColor.BOLD + "[Subclaim]";
-    public static final String NO_ACCESS = ChatColor.YELLOW + "You don't have access to this chest subclaim!";
+    public static final String NO_ACCESS = ChatColor.YELLOW + "You do not have access to this chest subclaim!";
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onSignUpdate(SignChangeEvent event) {
