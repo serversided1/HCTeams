@@ -7,17 +7,12 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.conquest.ConquestHandler;
-import net.frozenorb.foxtrot.jedis.persist.PlaytimeMap;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
-import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
-import net.frozenorb.mShared.API.Profile.PlayerProfile;
-import net.frozenorb.mShared.Shared;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -46,7 +41,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
@@ -65,10 +59,10 @@ public class ServerHandler {
         8234, 8266, 16426, 16458 // Slowness Potions
     );
 
-    @Getter private static Map<String, Integer> tasks = new HashMap<String, Integer>();
+    @Getter private static Map<String, Integer> tasks = new HashMap<>();
 
-    @Getter private Map<String, String> customPrefixes = new HashMap<String, String>();
-    @Getter private Set<String> highRollers = new HashSet<String>();
+    @Getter private Map<String, String> customPrefixes = new HashMap<>();
+    @Getter private Set<String> highRollers = new HashSet<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
@@ -434,8 +428,8 @@ public class ServerHandler {
         }
 
         if (sign.getLine(0).toLowerCase().contains("buy")) {
-            int price = 0;
-            int amount = 0;
+            int price;
+            int amount;
 
             try {
                 price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
@@ -475,8 +469,8 @@ public class ServerHandler {
                 );
             }
         } else if (sign.getLine(0).toLowerCase().contains("sell")) {
-            double pricePerItem = 0D;
-            int amount = 0;
+            double pricePerItem;
+            int amount;
 
             try {
                 int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
@@ -596,7 +590,7 @@ public class ServerHandler {
             int uses = FoxtrotPlugin.getInstance().getFishingKitMap().getUses(player.getName());
 
             if (uses == 3){
-                showSignPacket(player, sign, new String[]{ "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!"});
+                showSignPacket(player, sign, "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!");
             } else {
                 ItemStack rod = new ItemStack(Material.FISHING_ROD);
 
@@ -605,7 +599,7 @@ public class ServerHandler {
                 player.updateInventory();
                 player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
                 FoxtrotPlugin.getInstance().getFishingKitMap().setUses(player.getName(), uses + 1);
-                showSignPacket(player, sign, new String[]{"§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3"});
+                showSignPacket(player, sign, "§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3");
             }
         }
     }
@@ -635,7 +629,7 @@ public class ServerHandler {
         ItemStack deathsign = new ItemStack(Material.SIGN);
         ItemMeta meta = deathsign.getItemMeta();
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
 
         lore.add("§4" + killed);
         lore.add("§eSlain By:");
@@ -656,7 +650,7 @@ public class ServerHandler {
         ItemStack kothsign = new ItemStack(Material.SIGN);
         ItemMeta meta = kothsign.getItemMeta();
 
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
 
         lore.add("§9" + koth);
         lore.add("§eCaptured By:");

@@ -27,8 +27,8 @@ import java.util.Map;
 @SuppressWarnings("deprecation")
 public class PvPClassHandler extends BukkitRunnable implements Listener {
 
-    @Getter private static Map<String, PvPClass> equippedKits = new HashMap<String, PvPClass>();
-    @Getter List<PvPClass> pvpClasses = new ArrayList<PvPClass>();
+    @Getter private static Map<String, PvPClass> equippedKits = new HashMap<>();
+    @Getter List<PvPClass> pvpClasses = new ArrayList<>();
 
     public PvPClassHandler() {
         pvpClasses.add(new ArcherClass());

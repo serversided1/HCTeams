@@ -10,7 +10,6 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.ItemMessage;
-import net.frozenorb.foxtrot.util.ParticleEffects;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -21,13 +20,16 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BaseBardClass extends PvPClass {
 
-    public final HashMap<Material, BardEffect> BARD_CLICK_EFFECTS = new HashMap<Material, BardEffect>();
-    public final HashMap<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<Material, BardEffect>();
+    public final HashMap<Material, BardEffect> BARD_CLICK_EFFECTS = new HashMap<>();
+    public final HashMap<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<>();
 
     @Getter private static Map<String, Long> lastEffectUsage = new ConcurrentHashMap<>();
     @Getter private static Map<String, Float> energy = new ConcurrentHashMap<>();
@@ -106,12 +108,6 @@ public class BaseBardClass extends PvPClass {
 
         boolean negative = bardEffect.getPotionEffect() != null && FoxListener.DEBUFFS.contains(bardEffect.getPotionEffect().getType());
 
-        if (negative) {
-            ParticleEffects.sendToLocation(ParticleEffects.WITCH_MAGIC, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
-        } else {
-            ParticleEffects.sendToLocation(ParticleEffects.HAPPY_VILLAGER, event.getPlayer().getLocation(), 1, 1, 1, 1, 50);
-        }
-
         getLastEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + EFFECT_COOLDOWN);
         SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 60 : 30);
         giveBardEffect(event.getPlayer(), bardEffect, !negative, true);
@@ -173,7 +169,7 @@ public class BaseBardClass extends PvPClass {
     }
 
     public List<Player> getNearbyPlayers(Player player, boolean friendly) {
-        List<Player> valid = new ArrayList<Player>();
+        List<Player> valid = new ArrayList<>();
         Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
 
         // We divide by 2 so that the range isn't as much on the Y level (and can't be abused by standing on top of / under events)

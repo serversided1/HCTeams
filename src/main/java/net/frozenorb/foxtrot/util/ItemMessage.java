@@ -34,7 +34,7 @@ public class ItemMessage {
         private int iterations = 0;
 
         public NamerTask(Player player, ItemMessageGetter message, int slot) {
-            this.playerRef = new WeakReference<Player>(player);
+            this.playerRef = new WeakReference<>(player);
             this.slot = slot;
             this.message = message;
 

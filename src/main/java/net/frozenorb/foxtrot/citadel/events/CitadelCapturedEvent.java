@@ -10,11 +10,9 @@ public class CitadelCapturedEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     @Getter private ObjectId capper;
-    @Getter private int level;
 
     public CitadelCapturedEvent(ObjectId capper) {
         this.capper = capper;
-        this.level = level;
     }
 
     public HandlerList getHandlers() {

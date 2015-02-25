@@ -152,7 +152,7 @@ public class KOTH {
                 this.remainingCapTime--;
             }
         } else {
-            List<Player> onCap = new ArrayList<Player>();
+            List<Player> onCap = new ArrayList<>();
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {

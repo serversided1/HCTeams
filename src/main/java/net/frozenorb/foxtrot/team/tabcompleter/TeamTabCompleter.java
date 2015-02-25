@@ -12,7 +12,7 @@ import java.util.List;
 public class TeamTabCompleter extends ParamTabCompleter {
 
     public List<String> tabComplete(Player sender, String source) {
-        List<String> completions = new ArrayList<String>();
+        List<String> completions = new ArrayList<>();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             if (StringUtils.startsWithIgnoreCase(team.getName(), source)) {

@@ -39,7 +39,7 @@ public class WebsiteListener implements Listener {
         } else {
             try{
                 playerDeath.append("reason", event.getEntity().getLastDamageCause().getCause().toString());
-            } catch (NullPointerException localNullPointerException) {
+            } catch (NullPointerException ignored) {
 
             }
         }

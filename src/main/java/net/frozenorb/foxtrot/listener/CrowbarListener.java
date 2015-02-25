@@ -7,7 +7,6 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,12 +43,9 @@ public class CrowbarListener implements Listener {
         }
 
         if (event.getClickedBlock().getType() == Material.ENDER_PORTAL_FRAME) {
-            if (true) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Crowbars on End Portals are removed for this map.");
-                return;
-            }
+            event.getPlayer().sendMessage(ChatColor.RED + "Crowbars on End Portals are removed for this map.");
 
-            int portals = InvUtils.getCrowbarUsesPortal(event.getItem());
+            /*int portals = InvUtils.getCrowbarUsesPortal(event.getItem());
 
             if (portals == 0) {
                 event.getPlayer().sendMessage(ChatColor.RED + "This crowbar has no more uses on end portals!");
@@ -92,7 +88,7 @@ public class CrowbarListener implements Listener {
             double dura = (max / (double) InvUtils.CROWBAR_PORTALS) * portals;
 
             event.getItem().setDurability((short) (max - dura));
-            event.getPlayer().setItemInHand(event.getItem());
+            event.getPlayer().setItemInHand(event.getItem());*/
         } else if (event.getClickedBlock().getType() == Material.MOB_SPAWNER) {
             CreatureSpawner spawner = (CreatureSpawner) event.getClickedBlock().getState();
             int spawners = InvUtils.getCrowbarUsesSpawner(event.getItem());

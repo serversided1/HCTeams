@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class PvPTimerListener implements Listener {
 
-    private Set<Integer> droppedItems = new HashSet<Integer>();
+    private Set<Integer> droppedItems = new HashSet<>();
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
@@ -67,7 +67,7 @@ public class PvPTimerListener implements Listener {
         for (ItemStack itemStack : event.getDrops()) {
             ItemMeta meta = itemStack.getItemMeta();
 
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
 
             if (meta.hasLore()) {
                 lore = meta.getLore();

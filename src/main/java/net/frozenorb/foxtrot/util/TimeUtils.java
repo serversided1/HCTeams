@@ -19,16 +19,16 @@ public class TimeUtils {
 
         if (hours != 0) {
             sb.append(hours);
-            sb.append(" hour" + (hours == 1 ? "" : "s"));
+            sb.append(" hour").append(hours == 1 ? "" : "s");
         }
 
         if (minutes != 0) {
-            sb.append((hours != 0 ? ", " : "") + minutes);
+            sb.append(hours != 0 ? ", " : "").append(minutes);
             sb.append(" minutes");
         }
 
         if (seconds != 0) {
-            sb.append((minutes != 0 ? ", " : "") + seconds);
+            sb.append(minutes != 0 ? ", " : "").append(seconds);
             sb.append(" seconds");
         }
 
@@ -74,9 +74,9 @@ public class TimeUtils {
     public static String getMMSS(int seconds) {
         int millis = seconds * 1000;
 
-        int sec = (int) (millis / 1000) % 60;
-        int min = (int) ((millis / (1000 * 60)) % 60);
-        int hr = (int) ((millis / (1000 * 60 * 60)) % 24);
+        int sec = (millis / 1000) % 60;
+        int min = ((millis / (1000 * 60)) % 60);
+        int hr = ((millis / (1000 * 60 * 60)) % 24);
 
         return (hr > 0 ? String.format("%02d", hr) : "") + String.format("%02d:%02d", min, sec);
     }

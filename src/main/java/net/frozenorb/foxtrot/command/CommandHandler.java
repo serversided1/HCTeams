@@ -25,9 +25,9 @@ import java.util.*;
 
 public class CommandHandler implements Listener {
 
-    private static List<CommandData> commands = new ArrayList<CommandData>();
-    private static Map<Class<?>, ParamTransformer> parameterTransformers = new HashMap<Class<?>, ParamTransformer>();
-    private static Map<Class<?>, ParamTabCompleter> parameterTabCompleters = new HashMap<Class<?>, ParamTabCompleter>();
+    private static List<CommandData> commands = new ArrayList<>();
+    private static Map<Class<?>, ParamTransformer> parameterTransformers = new HashMap<>();
+    private static Map<Class<?>, ParamTabCompleter> parameterTabCompleters = new HashMap<>();
 
     public static void init() {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CommandHandler(), FoxtrotPlugin.getInstance());
@@ -113,7 +113,7 @@ public class CommandHandler implements Listener {
         registerTabCompleter(boolean.class, new ParamTabCompleter() {
 
             public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
+                List<String> completions = new ArrayList<>();
 
                 for (String string : new String[]{ "true", "false" }) {
                     if (StringUtils.startsWithIgnoreCase(string, source)) {
@@ -149,7 +149,7 @@ public class CommandHandler implements Listener {
         registerTabCompleter(Player.class, new ParamTabCompleter() {
 
             public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
+                List<String> completions = new ArrayList<>();
 
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
@@ -178,7 +178,7 @@ public class CommandHandler implements Listener {
         registerTabCompleter(OfflinePlayer.class, new ParamTabCompleter() {
 
             public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
+                List<String> completions = new ArrayList<>();
 
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                     if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
@@ -210,7 +210,7 @@ public class CommandHandler implements Listener {
         registerTabCompleter(World.class, new ParamTabCompleter() {
 
             public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
+                List<String> completions = new ArrayList<>();
 
                 for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
                     if (StringUtils.startsWithIgnoreCase(world.getName(), source)) {
@@ -256,7 +256,7 @@ public class CommandHandler implements Listener {
 
     public static void registerMethod(Method method) {
         Command command = method.getAnnotation(Command.class);
-        List<ParamData> paramData = new ArrayList<ParamData>();
+        List<ParamData> paramData = new ArrayList<>();
 
         for (int i = 1; i < method.getParameterTypes().length; i++) {
             Param param = null;
@@ -386,7 +386,7 @@ public class CommandHandler implements Listener {
 
     public static List<String> tabCompleteParameter(Player sender, String parameter, Class<?> transformTo) {
         if (!parameterTabCompleters.containsKey(transformTo)) {
-            return (new ArrayList<String>());
+            return (new ArrayList<>());
         }
 
         return (parameterTabCompleters.get(transformTo).tabComplete(sender, parameter));

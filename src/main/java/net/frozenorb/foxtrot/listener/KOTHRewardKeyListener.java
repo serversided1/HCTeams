@@ -54,7 +54,7 @@ public class KOTHRewardKeyListener implements Listener {
 
         Chest chest = (Chest) block.getState();
         ItemStack[] lootTables = chest.getBlockInventory().getContents();
-        final List<ItemStack> loot = new ArrayList<ItemStack>();
+        final List<ItemStack> loot = new ArrayList<>();
         int given = 0;
         int tries = 0;
 

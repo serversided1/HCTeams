@@ -14,7 +14,7 @@ public class SubclaimTabCompleter extends ParamTabCompleter {
 
     @Override
     public List<String> tabComplete(Player sender, String source) {
-        List<String> completions = new ArrayList<String>();
+        List<String> completions = new ArrayList<>();
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

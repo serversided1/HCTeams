@@ -40,15 +40,15 @@ public class VisualClaim implements Listener {
             Material.COAL_BLOCK, Material.DIAMOND_ORE, Material.COAL_ORE,
             Material.GOLD_ORE, Material.REDSTONE_ORE, Material.FURNACE };
 
-    @Getter private static Map<String, VisualClaim> currentMaps = new HashMap<String, VisualClaim>();
-    @Getter private static Map<String, VisualClaim> currentSubclaimMaps = new HashMap<String, VisualClaim>();
-    @Getter private static Map<String, VisualClaim> visualClaims = new HashMap<String, VisualClaim>();
+    @Getter private static Map<String, VisualClaim> currentMaps = new HashMap<>();
+    @Getter private static Map<String, VisualClaim> currentSubclaimMaps = new HashMap<>();
+    @Getter private static Map<String, VisualClaim> visualClaims = new HashMap<>();
 
     @Getter @NonNull private Player player;
     @Getter @NonNull private VisualClaimType type;
     @Getter @NonNull private boolean bypass;
 
-    @Getter private List<Location> blockChanges = new ArrayList<Location>();
+    @Getter private List<Location> blockChanges = new ArrayList<>();
 
     @Getter @Setter private Claim resizing;
     @Getter @Setter private Location corner1;
@@ -119,7 +119,7 @@ public class VisualClaim implements Listener {
                 break;
             case MAP:
                 int claimIteration = 0;
-                Map<Map.Entry<Claim, Team>, Material> sendMaps = new HashMap<Map.Entry<Claim, Team>, Material>();
+                Map<Map.Entry<Claim, Team>, Material> sendMaps = new HashMap<>();
 
                 for (Map.Entry<Claim, Team> regionData : LandBoard.getInstance().getRegionData(player.getLocation(), MAP_RADIUS, 256, MAP_RADIUS)) {
                     Material mat = getMaterial(claimIteration);
@@ -168,7 +168,7 @@ public class VisualClaim implements Listener {
                 }
 
                 int subclaimIteration = 0;
-                Map<Subclaim, Material> subclaimMaterialMap = new HashMap<Subclaim, Material>();
+                Map<Subclaim, Material> subclaimMaterialMap = new HashMap<>();
 
                 for (Subclaim subclaim : senderTeam.getSubclaims()) {
                     if (subclaim.getLoc1().distanceSquared(player.getLocation()) > MAP_RADIUS * MAP_RADIUS && subclaim.getLoc2().distanceSquared(player.getLocation()) > MAP_RADIUS * MAP_RADIUS) {
@@ -232,7 +232,7 @@ public class VisualClaim implements Listener {
     }
 
     public Set<Claim> getTouchingClaims(Claim claim) {
-        Set<Claim> touchingClaims = new HashSet<Claim>();
+        Set<Claim> touchingClaims = new HashSet<>();
 
         for (Coordinate coordinate : claim.outset(CuboidDirection.Horizontal, 1)) {
             Location loc = new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), coordinate.getX(), 80, coordinate.getZ());
@@ -317,7 +317,7 @@ public class VisualClaim implements Listener {
                     return;
                 }
 
-                final Claim claimClone = resizing.clone();
+                final Claim claimClone = new Claim(resizing);
 
                 applyResize(claimClone, clicked);
 
@@ -346,7 +346,7 @@ public class VisualClaim implements Listener {
 
             if (resizing != null && corner2 != null) {
                 int oldPrice = Claim.getPrice(resizing, null, false);
-                Claim preview = resizing.clone();
+                Claim preview = new Claim(resizing);
 
                 applyResize(preview, corner2);
 
@@ -477,7 +477,7 @@ public class VisualClaim implements Listener {
 
         if (resizing != null && corner2 != null) {
             int oldPrice = Claim.getPrice(resizing, null, false);
-            Claim preview = resizing.clone();
+            Claim preview = new Claim(resizing);
 
             applyResize(preview, corner2);
 

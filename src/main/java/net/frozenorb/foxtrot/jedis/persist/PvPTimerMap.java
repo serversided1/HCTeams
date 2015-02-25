@@ -38,11 +38,7 @@ public class PvPTimerMap extends RedisPersistMap<Long> {
 
     public boolean hasTimer(String player) {
         if (contains(player)) {
-            if (getValue(player) == PENDING_USE) {
-                return (false);
-            }
-
-            return (getValue(player) > System.currentTimeMillis());
+            return (getValue(player) != PENDING_USE && getValue(player) > System.currentTimeMillis());
         }
 
         return (false);

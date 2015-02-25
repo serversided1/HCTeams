@@ -1,9 +1,8 @@
-package net.frozenorb.foxtrot.serialization.serializers;
+package net.frozenorb.foxtrot.serialization;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.Core;
-import net.frozenorb.foxtrot.serialization.JSONSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -13,21 +12,34 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-public class ItemStackSerializer implements JSONSerializer<ItemStack> {
+public class ItemStackSerializer {
 
-    @Override
-    public BasicDBObject serialize(ItemStack o) {
-        if (o == null)
-            return new BasicDBObject("type", "AIR").append("amount", 1).append("data", 0);
-        BasicDBObject item = new BasicDBObject("type", o.getType().toString()).append("amount", o.getAmount()).append("data", o.getDurability());
+    public static final BasicDBObject AIR;
+
+    static {
+        AIR = new BasicDBObject();
+
+        AIR.append("type", "AIR");
+        AIR.append("amount", 1);
+        AIR.append("data", 0);
+    }
+
+    private ItemStackSerializer() {}
+
+    public static BasicDBObject serialize(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return (AIR);
+        }
+
+        BasicDBObject item = new BasicDBObject("type", itemStack.getType().toString()).append("amount", itemStack.getAmount()).append("data", itemStack.getDurability());
         BasicDBList enchants = new BasicDBList();
-        for (Entry<Enchantment, Integer> entry : o.getEnchantments().entrySet()) {
+        for (Entry<Enchantment, Integer> entry : itemStack.getEnchantments().entrySet()) {
             enchants.add(new BasicDBObject("enchantment", entry.getKey().getName()).append("level", entry.getValue()));
         }
-        if (o.getEnchantments().size() > 0)
+        if (itemStack.getEnchantments().size() > 0)
             item.append("enchants", enchants);
-        if (o.hasItemMeta()) {
-            ItemMeta m = o.getItemMeta();
+        if (itemStack.hasItemMeta()) {
+            ItemMeta m = itemStack.getItemMeta();
             BasicDBObject meta = new BasicDBObject("displayName", m.getDisplayName());
             if (m.getLore() != null) {
                 BasicDBList dblist = Core.get().getDatabaseRepresentation(m.getLore());
@@ -38,20 +50,21 @@ public class ItemStackSerializer implements JSONSerializer<ItemStack> {
         return item;
     }
 
-    @Override
-    public ItemStack deserialize(BasicDBObject dbobj) {
-        Material type = Material.valueOf(dbobj.getString("type"));
-        ItemStack item = new ItemStack(type, dbobj.getInt("amount"));
-        item.setDurability(Short.parseShort(dbobj.getString("data")));
-        if (dbobj.containsField("enchants")) {
-            BasicDBList enchs = (BasicDBList) dbobj.get("enchants");
+    public static ItemStack deserialize(BasicDBObject dbObject) {
+        Material type = Material.valueOf(dbObject.getString("type"));
+        ItemStack item = new ItemStack(type, dbObject.getInt("amount"));
+        item.setDurability(Short.parseShort(dbObject.getString("data")));
+
+        if (dbObject.containsField("enchants")) {
+            BasicDBList enchs = (BasicDBList) dbObject.get("enchants");
             for (Object o : enchs) {
                 BasicDBObject enchant = (BasicDBObject) o;
                 item.addUnsafeEnchantment(Enchantment.getByName(enchant.getString("enchantment")), enchant.getInt("level"));
             }
         }
-        if (dbobj.containsField("meta")) {
-            BasicDBObject meta = (BasicDBObject) dbobj.get("meta");
+
+        if (dbObject.containsField("meta")) {
+            BasicDBObject meta = (BasicDBObject) dbObject.get("meta");
             ItemMeta m = item.getItemMeta();
             if (meta.containsField("displayName")) {
                 m.setDisplayName(meta.getString("displayName"));
@@ -68,6 +81,8 @@ public class ItemStackSerializer implements JSONSerializer<ItemStack> {
             }
             item.setItemMeta(m);
         }
-        return item;
+
+        return (item);
     }
+
 }

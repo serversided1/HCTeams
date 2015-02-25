@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.command.objects;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.ChatColor;
@@ -17,7 +18,7 @@ public class CommandData {
     @Getter private String[] names;
     @Getter private String[] flags;
     @Getter private String permissionNode;
-    @Getter private List<ParamData> parameters = new ArrayList<ParamData>();
+    @Getter private List<ParamData> parameters = new ArrayList<>();
     @Getter private Method method;
     @Getter private CustomTimingsHandler timingsHandler;
 
@@ -68,7 +69,7 @@ public class CommandData {
     }
 
     public void execute(CommandSender sender, String[] params) {
-        ArrayList<Object> transformedParams = new ArrayList<Object>();
+        ArrayList<Object> transformedParams = new ArrayList<>();
 
         transformedParams.add(sender); // Add the sender
 
@@ -104,6 +105,7 @@ public class CommandData {
             method.invoke(null, transformedParams.toArray(new Object[transformedParams.size()]));
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + "It appears there was some issues processing your command...");
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 

@@ -12,7 +12,7 @@ public class DTRBitmaskTypeTabCompleter extends ParamTabCompleter {
 
     @Override
     public List<String> tabComplete(Player sender, String source) {
-        List<String> completions = new ArrayList<String>();
+        List<String> completions = new ArrayList<>();
 
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {
             if (StringUtils.startsWithIgnoreCase(bitmaskType.getName(), source)) {

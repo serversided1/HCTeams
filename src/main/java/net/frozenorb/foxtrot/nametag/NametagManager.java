@@ -6,7 +6,6 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.spigotmc.CustomTimingsHandler;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,7 +70,7 @@ public class NametagManager {
             teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
         }
 
-        Map<String, TeamInfo> teamInfoMap = new HashMap<String, TeamInfo>();
+        Map<String, TeamInfo> teamInfoMap = new HashMap<>();
 
         if (teamMap.containsKey(refreshFor.getName())) {
             teamInfoMap = teamMap.get(refreshFor.getName());

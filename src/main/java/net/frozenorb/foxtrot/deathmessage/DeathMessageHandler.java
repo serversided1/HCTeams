@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class DeathMessageHandler {
 
-    private static Map<String, List<Damage>> damage = new HashMap<String, List<Damage>>();
+    private static Map<String, List<Damage>> damage = new HashMap<>();
 
     public static void init() {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new DamageListener(), FoxtrotPlugin.getInstance());
@@ -32,7 +32,7 @@ public class DeathMessageHandler {
 
     public static void addDamage(Player player, Damage addedDamage) {
         if (!damage.containsKey(player.getName())) {
-            damage.put(player.getName(), new ArrayList<Damage>());
+            damage.put(player.getName(), new ArrayList<>());
         }
 
         damage.get(player.getName()).add(addedDamage);

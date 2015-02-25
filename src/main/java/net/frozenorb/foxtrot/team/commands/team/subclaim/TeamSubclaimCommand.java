@@ -8,7 +8,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.util.ListUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,19 +22,27 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TeamSubclaimCommand implements Listener {
 
-    @Getter private static Map<String, Selection> selections = new HashMap<String, TeamSubclaimCommand.Selection>();
+    @Getter private static Map<String, Selection> selections = new HashMap<>();
     public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_SPADE);
 
     static {
         ItemMeta meta = SELECTION_WAND.getItemMeta();
 
         meta.setDisplayName("§a§oSubclaim Wand");
-        meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect subclaim's corners", ""));
+        meta.setLore(Arrays.asList(
+
+                "",
+                "§eRight/Left Click§6 Block",
+                "§b- §fSelect subclaim's corners"
+
+        ));
+
         SELECTION_WAND.setItemMeta(meta);
     }
 
@@ -79,7 +86,7 @@ public class TeamSubclaimCommand implements Listener {
                     selection = selections.get(event.getPlayer().getName());
                 }
 
-                int set = 0;
+                int set;
 
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     set = 2;

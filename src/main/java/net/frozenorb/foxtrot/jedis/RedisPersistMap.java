@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public abstract class RedisPersistMap<T> {
 
-    private Map<String, T> wrappedMap = new ConcurrentHashMap<String, T>();
+    private Map<String, T> wrappedMap = new ConcurrentHashMap<>();
 
     @NonNull private String keyPrefix;
     @NonNull private String mongoKeyPrefix;

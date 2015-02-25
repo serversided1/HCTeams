@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class PlaytimeMap extends RedisPersistMap<Long> {
 
-    private Map<String, Long> joinDate = new HashMap<String, Long>();
+    private Map<String, Long> joinDate = new HashMap<>();
 
     public PlaytimeMap() {
         super("PlayerPlaytimes", "Playtime");
@@ -25,7 +25,7 @@ public class PlaytimeMap extends RedisPersistMap<Long> {
 
     @Override
     public Object getMongoValue(Long time) {
-        return (Integer.valueOf(time.intValue()));
+        return (time.intValue());
     }
 
     public void playerJoined(String player) {

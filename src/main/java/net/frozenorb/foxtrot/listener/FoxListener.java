@@ -379,13 +379,7 @@ public class FoxListener implements Listener {
                     meta.setDisplayName("§dDeath Sign");
                 }
 
-                ArrayList<String> lore = new ArrayList<String>();
-
-                for (String str : sign.getLines()) {
-                    lore.add(str);
-                }
-
-                meta.setLore(lore);
+                meta.setLore(Arrays.asList(sign.getLines()));
                 deathsign.setItemMeta(meta);
                 e.getBlock().getWorld().dropItemNaturally(e.getBlock().getLocation(), deathsign);
 

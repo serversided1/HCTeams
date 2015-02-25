@@ -1,11 +1,11 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.chat.ChatMode;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;

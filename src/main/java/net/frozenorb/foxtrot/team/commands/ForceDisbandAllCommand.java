@@ -23,7 +23,7 @@ public class ForceDisbandAllCommand {
             @Override
             public Prompt acceptInput(ConversationContext cc, String s) {
                 if (s.equalsIgnoreCase("yes")) {
-                    List<Team> teams = new ArrayList<Team>();
+                    List<Team> teams = new ArrayList<>();
 
                     for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
                         teams.add(team);

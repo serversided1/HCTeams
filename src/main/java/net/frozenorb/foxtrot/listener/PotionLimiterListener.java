@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
-import net.frozenorb.foxtrot.util.NMSMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -13,11 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -65,44 +60,6 @@ public class PotionLimiterListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
         }
-    }
-
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
-        InventoryView view = event.getView();
-
-        if (view.getType() != InventoryType.BREWING) {
-            return;
-        }
-
-        final Player player = (Player) event.getWhoClicked();
-        final BrewerInventory brewerInventory = (BrewerInventory) view.getTopInventory();
-
-        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-
-            @Override
-            public void run() {
-                final ItemStack itemStack = brewerInventory.getIngredient();
-
-                for (int i = 0; i < 3; i++) {
-                    if (brewerInventory.getItem(i) == null) {
-                        continue;
-                    }
-
-                    ItemStack item = brewerInventory.getItem(i);
-                    int result = NMSMethods.getPotionResult(item.getDurability(), itemStack);
-
-                    if (item.getType() == Material.AIR || item.getDurability() == result) {
-                        continue;
-                    }
-                }
-
-            }
-        }, 1);
     }
 
 }

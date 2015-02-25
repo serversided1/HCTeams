@@ -23,8 +23,8 @@ public class RecachePlayerTeamsCommand {
     @Command(names={ "playerteamcache check" }, permissionNode="op")
     public static void recachePlayerTeams(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Checking player team cache...");
-        Map<String, String> dealtWith = new HashMap<String, String>();
-        Set<String> errors = new HashSet<String>();
+        Map<String, String> dealtWith = new HashMap<>();
+        Set<String> errors = new HashSet<>();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
             for (String member : team.getMembers()) {

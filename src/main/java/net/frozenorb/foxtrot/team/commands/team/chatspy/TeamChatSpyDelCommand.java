@@ -20,7 +20,7 @@ public class TeamChatSpyDelCommand {
             return;
         }
 
-        List<ObjectId> teams = new ArrayList<ObjectId>(FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()));
+        List<ObjectId> teams = new ArrayList<>(FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()));
 
         teams.remove(target.getUniqueId());
 

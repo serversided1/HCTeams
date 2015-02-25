@@ -22,13 +22,12 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class EnchantmentLimiterListener implements Listener {
 
-    private Map<String, Long> lastArmorCheck = new HashMap<String, Long>();
-    private Map<String, Long> lastSwordCheck = new HashMap<String, Long>();
+    private Map<String, Long> lastArmorCheck = new HashMap<>();
+    private Map<String, Long> lastSwordCheck = new HashMap<>();
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -36,8 +35,8 @@ public class EnchantmentLimiterListener implements Listener {
             ItemStack[] armor = ((Player) event.getEntity()).getInventory().getArmorContents();
             boolean fixed = false;
 
-            for (int i = 0; i < armor.length; i++) {
-                if (InvUtils.conformEnchants(armor[i])) {
+            for (ItemStack armorItem : armor) {
+                if (InvUtils.conformEnchants(armorItem)) {
                     fixed = true;
                 }
             }
@@ -124,10 +123,8 @@ public class EnchantmentLimiterListener implements Listener {
 
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
-        Iterator<ItemStack> iter = event.getDrops().iterator();
-
-        while (iter.hasNext()) {
-            InvUtils.conformEnchants(iter.next());
+        for (ItemStack drop : event.getDrops()) {
+            InvUtils.conformEnchants(drop);
         }
     }
 

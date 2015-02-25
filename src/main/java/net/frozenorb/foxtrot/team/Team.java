@@ -9,7 +9,7 @@ import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.jedis.persist.KillsMap;
-import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
+import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -60,13 +60,13 @@ public class Team {
     @Getter private double balance;
     @Getter private double DTR;
     @Getter private long DTRCooldown;
-    @Getter private List<Claim> claims = new ArrayList<Claim>();
-    @Getter private List<Subclaim> subclaims = new ArrayList<Subclaim>();
-    @Getter private Set<String> members = new HashSet<String>();
-    @Getter private Set<String> captains = new HashSet<String>();
-    @Getter private Set<String> invitations = new HashSet<String>();
-    @Getter private Set<ObjectId> allies = new HashSet<ObjectId>();
-    @Getter private Set<ObjectId> requestedAllies = new HashSet<ObjectId>();
+    @Getter private List<Claim> claims = new ArrayList<>();
+    @Getter private List<Subclaim> subclaims = new ArrayList<>();
+    @Getter private Set<String> members = new HashSet<>();
+    @Getter private Set<String> captains = new HashSet<>();
+    @Getter private Set<String> invitations = new HashSet<>();
+    @Getter private Set<ObjectId> allies = new HashSet<>();
+    @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
     @Getter private boolean trading = false;
     @Getter @Setter private float DTRRegenMultiplier = 1F; // We're safe to use a @Setter here as this value isn't persisted.
 
@@ -358,11 +358,7 @@ public class Team {
             }
         }
 
-        Iterator<Subclaim> subclaimIterator = subclaims.iterator();
-
-        while (subclaimIterator.hasNext()) {
-            Subclaim subclaim = subclaimIterator.next();
-
+        for (Subclaim subclaim : subclaims) {
             if (subclaim.isMember(name)) {
                 subclaim.removeMember(name);
             }
@@ -401,7 +397,7 @@ public class Team {
     }
 
     public List<Player> getOnlineMembers() {
-        List<Player> players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
 
         for (String member : getMembers()) {
             if (member == null) {
@@ -419,7 +415,7 @@ public class Team {
     }
 
     public List<String> getOfflineMembers() {
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
 
         for (String member : getMembers()) {
             if (member == null) {
@@ -701,7 +697,6 @@ public class Team {
 
     public BasicDBObject toJSON() {
         BasicDBObject dbObject = new BasicDBObject();
-        LocationSerializer locationSerializer = new LocationSerializer();
 
         dbObject.put("_id", getUniqueId());
         dbObject.put("Owner", getOwner());
@@ -714,7 +709,7 @@ public class Team {
         dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
         dbObject.put("Name", getName());
-        dbObject.put("HQ", locationSerializer.serialize(getHQ()));
+        dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
         dbObject.put("Trading", isTrading());
 
         BasicDBList claims = new BasicDBList();

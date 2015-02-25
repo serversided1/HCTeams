@@ -2,13 +2,9 @@ package net.frozenorb.foxtrot.scoreboard;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nametag.ScoreboardTeamPacketMod;
-import net.frozenorb.foxtrot.nametag.TeamInfo;
 import net.minecraft.server.v1_7_R4.Packet;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
-import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardTeam;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -35,8 +31,8 @@ public class FoxtrotBoard {
 
     @Getter private Player player;
     @Getter private Objective objective;
-    @Getter private Map<String, Integer> displayedScores = new HashMap<String, Integer>();
-    @Getter private Set<String> sentTeamCreates = new HashSet<String>();
+    @Getter private Map<String, Integer> displayedScores = new HashMap<>();
+    @Getter private Set<String> sentTeamCreates = new HashSet<>();
 
     public FoxtrotBoard(Player player) {
         this.player = player;

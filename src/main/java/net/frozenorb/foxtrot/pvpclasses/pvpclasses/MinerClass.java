@@ -22,8 +22,8 @@ public class MinerClass extends PvPClass implements Listener {
 
     private static final int Y_HEIGHT = 20;
 
-    private Map<String, Integer> noDamage = new HashMap<String, Integer>();
-    private Map<String, Integer> invis = new HashMap<String, Integer>();
+    private Map<String, Integer> noDamage = new HashMap<>();
+    private Map<String, Integer> invis = new HashMap<>();
 
     public MinerClass() {
         super("Miner", 10, "IRON_", null);
@@ -31,7 +31,7 @@ public class MinerClass extends PvPClass implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                for (String key : new HashMap<String, Integer>(noDamage).keySet()) {
+                for (String key : new HashMap<>(noDamage).keySet()) {
                     int left = noDamage.remove(key);
                     Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(key);
 

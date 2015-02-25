@@ -23,7 +23,7 @@ public class DTRHandler extends BukkitRunnable {
                                                                                                                  6.35, 6.45, 6.65, 6.85, 7.00, // 15 to 20
                                                                                                                  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7}; // Padding
 
-    private static Set<String> wasOnCooldown = new HashSet<String>();
+    private static Set<String> wasOnCooldown = new HashSet<>();
 
     // * 4.5 is to 'speed up' DTR regen while keeping the ratios the same.
     // We're using this instead of changing the array incase we need to change this value
@@ -50,7 +50,7 @@ public class DTRHandler extends BukkitRunnable {
 
     @Override
     public void run() {
-        Map<Team, Integer> playerOnlineMap = new HashMap<Team, Integer>();
+        Map<Team, Integer> playerOnlineMap = new HashMap<>();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (player.hasMetadata("invisible")) {

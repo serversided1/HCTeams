@@ -20,12 +20,12 @@ public class Border {
     public static final int REGION_DISTANCE = 8;
     public static final int REGION_DISTANCE_SQUARED = REGION_DISTANCE * REGION_DISTANCE;
 
-    @Getter private static Map<String, Map<Location, Long>> sentBlockChanges = new HashMap<String, Map<Location, Long>>();
+    @Getter private static Map<String, Map<Location, Long>> sentBlockChanges = new HashMap<>();
 
-    @Getter private List<Claim> claims = new ArrayList<Claim>();
+    @Getter private List<Claim> claims = new ArrayList<>();
 
     public void addClaim(Claim claim) {
-        claims.add(claim.clone());
+        claims.add(new Claim(claim));
     }
 
     public void scanClaims(Player player) {
@@ -63,7 +63,7 @@ public class Border {
 
     public void sendToPlayer(Player player) {
         if (!sentBlockChanges.containsKey(player.getName())) {
-            sentBlockChanges.put(player.getName(), new HashMap<Location, Long>());
+            sentBlockChanges.put(player.getName(), new HashMap<>());
         }
 
         Iterator<Map.Entry<Location, Long>> bordersIterator = sentBlockChanges.get(player.getName()).entrySet().iterator();

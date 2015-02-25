@@ -23,7 +23,7 @@ public class TeamListCommand {
                     return;
                 }
 
-                Map<Team, Integer> teamPlayerCount = new HashMap<Team, Integer>();
+                Map<Team, Integer> teamPlayerCount = new HashMap<>();
 
                 // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -86,7 +86,7 @@ public class TeamListCommand {
 
         });
 
-        LinkedHashMap<Team, Integer> sortedHashMap = new LinkedHashMap<Team, Integer>();
+        LinkedHashMap<Team, Integer> sortedHashMap = new LinkedHashMap<>();
         Iterator<Map.Entry<Team, Integer>> iterator = list.iterator();
 
         while (iterator.hasNext()) {

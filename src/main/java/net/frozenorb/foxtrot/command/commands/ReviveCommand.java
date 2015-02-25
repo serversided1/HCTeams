@@ -27,7 +27,7 @@ public class ReviveCommand {
                 logTo.createNewFile();
 
                 BufferedWriter output = new BufferedWriter(new FileWriter(logTo, true));
-                output.append("[").append(new Date().toString()).append("] ").append(sender.getName() + " revived " + target + " for " + reason).append("\n");
+                output.append("[").append(new Date().toString()).append("] ").append(sender.getName()).append(" revived ").append(target).append(" for ").append(reason).append("\n");
                 output.close();
             } catch (Exception e) {
                 FoxtrotPlugin.getInstance().getBugSnag().notify(e);

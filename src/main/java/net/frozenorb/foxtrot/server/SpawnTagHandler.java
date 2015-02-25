@@ -7,7 +7,6 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpawnTagHandler {
 
     public static final int MAX_SPAWN_TAG = 30;
-    @Getter private static Map<String, Long> spawnTags = new ConcurrentHashMap<String, Long>();
+    @Getter private static Map<String, Long> spawnTags = new ConcurrentHashMap<>();
 
     public static void removeTag(Player player) {
         spawnTags.remove(player.getName());

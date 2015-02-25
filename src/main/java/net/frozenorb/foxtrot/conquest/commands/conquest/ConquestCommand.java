@@ -55,7 +55,7 @@ public class ConquestCommand {
 
         });
 
-        LinkedHashMap<ObjectId, Integer> sortedHashMap = new LinkedHashMap<ObjectId, Integer>();
+        LinkedHashMap<ObjectId, Integer> sortedHashMap = new LinkedHashMap<>();
         Iterator<Map.Entry<ObjectId, Integer>> iterator = list.iterator();
 
         while (iterator.hasNext()) {

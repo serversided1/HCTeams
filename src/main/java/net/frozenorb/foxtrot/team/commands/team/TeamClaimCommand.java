@@ -6,7 +6,6 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
-import net.frozenorb.foxtrot.util.ListUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
+
 public class TeamClaimCommand implements Listener {
 
     public static final ItemStack SELECTION_WAND = new ItemStack(Material.WOOD_HOE);
@@ -27,7 +28,20 @@ public class TeamClaimCommand implements Listener {
         ItemMeta meta = SELECTION_WAND.getItemMeta();
 
         meta.setDisplayName("§a§oClaiming Wand");
-        meta.setLore(ListUtils.wrap(" | §eRight/Left Click§6 Block   §b- §fSelect claim's corners" + " | §eRight Click §6Air  |  §b- §fCancel current claim" + " | §9Shift §eLeft Click §6Block/Air   §b- §fPurchase current claim", ""));
+        meta.setLore(Arrays.asList(
+
+                "",
+                "§eRight/Left Click§6 Block",
+                "§b- §fSelect claim's corners",
+                "",
+                "§eRight Click §6Air",
+                "§b- §fCancel current claim",
+                "",
+                "§9Shift §eLeft Click §6Block/Air",
+                "§b- §fPurchase current claim"
+
+        ));
+
         SELECTION_WAND.setItemMeta(meta);
     }
 

@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class ConquestGame implements Listener {
 
-    @Getter private Map<ObjectId, Integer> teamPoints = new HashMap<ObjectId, Integer>();
+    @Getter private Map<ObjectId, Integer> teamPoints = new HashMap<>();
 
     public ConquestGame() {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());

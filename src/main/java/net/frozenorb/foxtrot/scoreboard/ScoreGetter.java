@@ -78,12 +78,13 @@ public abstract class ScoreGetter {
                     continue;
                 }
 
-                if (koth.getName().equals("Citadel")) {
-                    lastActiveKOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
-                } else if (koth.getName().equals("EOTW")) {
-                    lastActiveKOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
-                } else {
-                    lastActiveKOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
+                switch (koth.getName()) {
+                    case "EOTW":
+                        lastActiveKOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
+                    case "Citadel":
+                        lastActiveKOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
+                    default:
+                        lastActiveKOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
                 }
 
                 return (ScoreFunction.TIME_SIMPLE.apply((float) koth.getRemainingCapTime()));

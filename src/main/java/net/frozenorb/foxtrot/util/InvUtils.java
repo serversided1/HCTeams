@@ -93,7 +93,7 @@ public class InvUtils {
 
             meta.setLore(lore);
         } else {
-            List<String> lore = new ArrayList<String>();
+            List<String> lore = new ArrayList<>();
 
             lore.add("");
             lore.add(title);
@@ -115,7 +115,7 @@ public class InvUtils {
     }
 
     public static List<String> getCrowbarLore(int portals, int spawners) {
-        List<String> lore = new ArrayList<String>();
+        List<String> lore = new ArrayList<>();
 
         lore.add("");
         lore.add(ChatColor.YELLOW + "Can Break:");

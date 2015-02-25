@@ -18,7 +18,6 @@ import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;

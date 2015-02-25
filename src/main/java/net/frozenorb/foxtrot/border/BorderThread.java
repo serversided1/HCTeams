@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.border;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class BorderThread extends Thread {
@@ -11,6 +10,7 @@ public class BorderThread extends Thread {
     }
 
     public void run() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 try {

@@ -9,11 +9,10 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
-import net.frozenorb.foxtrot.serialization.serializers.ItemStackSerializer;
-import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
+import net.frozenorb.foxtrot.serialization.ItemStackSerializer;
+import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
@@ -69,18 +68,15 @@ public class CitadelHandler {
                 this.lootable = dbo.getDate("lootable");
 
                 BasicDBList chests = (BasicDBList) dbo.get("chests");
-                LocationSerializer locationSerializer = new LocationSerializer();
+                BasicDBList loot = (BasicDBList) dbo.get("loot");
 
                 for (Object chestObj : chests) {
                     BasicDBObject chest = (BasicDBObject) chestObj;
-                    citadelChests.add(locationSerializer.deserialize((BasicDBObject) chest.get("location")));
+                    citadelChests.add(LocationSerializer.deserialize((BasicDBObject) chest.get("location")));
                 }
 
-                BasicDBList loot = (BasicDBList) dbo.get("loot");
-                ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
-
                 for (Object lootObj : loot) {
-                    citadelLoot.add(itemStackSerializer.deserialize((BasicDBObject) lootObj));
+                    citadelLoot.add(ItemStackSerializer.deserialize((BasicDBObject) lootObj));
                 }
             }
         } catch (Exception e) {
@@ -98,24 +94,21 @@ public class CitadelHandler {
             dbo.put("lootable", lootable);
 
             BasicDBList chests = new BasicDBList();
-            LocationSerializer locationSerializer = new LocationSerializer();
+            BasicDBList loot = new BasicDBList();
 
             for (Location citadelChest : citadelChests) {
                 BasicDBObject chest = new BasicDBObject();
-                chest.put("location", locationSerializer.serialize(citadelChest));
+                chest.put("location", LocationSerializer.serialize(citadelChest));
                 chests.add(chest);
             }
 
-            dbo.put("chests", chests);
-
-            BasicDBList loot = new BasicDBList();
-            ItemStackSerializer itemStackSerializer = new ItemStackSerializer();
-
             for (ItemStack lootItem : citadelLoot) {
-                loot.add(itemStackSerializer.serialize(lootItem));
+                loot.add(ItemStackSerializer.serialize(lootItem));
             }
 
+            dbo.put("chests", chests);
             dbo.put("loot", loot);
+
             citadelInfo.delete();
             FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (Exception e) {

@@ -4,12 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.*;
-import org.bukkit.block.Chest;
-import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,7 +17,6 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.material.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -190,7 +186,7 @@ public class SignSubclaimListener implements Listener {
     }
 
     public static Set<Sign> subclaimSigns(Block check) {
-        Set<Sign> signs = new HashSet<Sign>();
+        Set<Sign> signs = new HashSet<>();
 
         for (BlockFace blockFace : OUTSIDE_FACES) {
             Block relBlock = check.getRelative(blockFace);

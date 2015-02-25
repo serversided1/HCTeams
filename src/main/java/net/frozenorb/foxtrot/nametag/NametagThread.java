@@ -3,9 +3,6 @@ package net.frozenorb.foxtrot.nametag;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +19,7 @@ public class NametagThread extends Thread {
     }
 
     public void run() {
+        //noinspection InfiniteLoopStatement
         while (true) {
             for (NametagUpdate pendingUpdate : pendingUpdates.keySet()) {
                 try {

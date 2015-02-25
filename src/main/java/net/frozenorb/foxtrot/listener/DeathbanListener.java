@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class DeathbanListener implements Listener {
 
-    private Map<String, Long> lastJoinedRevive = new HashMap<String, Long>();
+    private Map<String, Long> lastJoinedRevive = new HashMap<>();
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {

@@ -77,7 +77,7 @@ public class TeamUnclaimCommand {
             team.setBalance(team.getBalance() + refund);
             team.getClaims().remove(claim);
 
-            for (Subclaim subclaim : new ArrayList<Subclaim>(team.getSubclaims())) {
+            for (Subclaim subclaim : new ArrayList<>(team.getSubclaims())) {
                 if (claim.contains(subclaim.getLoc1()) || claim.contains(subclaim.getLoc2())) {
                     team.getSubclaims().remove(subclaim);
                     LandBoard.getInstance().updateSubclaim(subclaim);

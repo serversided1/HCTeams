@@ -32,8 +32,8 @@ public class ArcherClass extends PvPClass {
 
     public static final int MARK_SECONDS = 10;
 
-    private static Map<String, Long> lastSpeedUsage = new HashMap<String, Long>();
-    @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<String, Long>();
+    private static Map<String, Long> lastSpeedUsage = new HashMap<>();
+    @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
 
     public ArcherClass() {
         super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR));

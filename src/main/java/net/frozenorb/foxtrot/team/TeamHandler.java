@@ -21,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamHandler {
 
-    private volatile Map<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<ObjectId, Team>();
-    private volatile Map<String, Team> teamNameMap = new ConcurrentHashMap<String, Team>();
-    private volatile Map<String, Team> playerTeamMap = new ConcurrentHashMap<String, Team>();
+    private volatile Map<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<>();
+    private volatile Map<String, Team> teamNameMap = new ConcurrentHashMap<>();
+    private volatile Map<String, Team> playerTeamMap = new ConcurrentHashMap<>();
 
     public TeamHandler() {
         CommandHandler.registerTransformer(Team.class, new TeamTransformer());
@@ -37,7 +37,7 @@ public class TeamHandler {
     }
 
     public List<Team> getTeams() {
-        return (new ArrayList<Team>(teamNameMap.values()));
+        return (new ArrayList<>(teamNameMap.values()));
     }
 
     public Team getTeam(String teamName) {

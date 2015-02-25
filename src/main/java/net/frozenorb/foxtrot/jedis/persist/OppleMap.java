@@ -26,11 +26,7 @@ public class OppleMap extends RedisPersistMap<Long> {
     }
 
     public boolean isOnCooldown(String player) {
-        if (getValue(player) != null) {
-            return (getValue(player) > System.currentTimeMillis());
-        }
-
-        return (false);
+        return (getValue(player) != null && getValue(player) > System.currentTimeMillis());
     }
 
     public void useGoldenApple(String player, long seconds) {

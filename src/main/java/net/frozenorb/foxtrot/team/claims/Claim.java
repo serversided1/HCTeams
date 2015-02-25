@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
+import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,6 +33,17 @@ public class Claim implements Iterable<Coordinate> {
         this(corner1.getWorld().getName(), corner1.getBlockX(), corner1.getBlockY(), corner1.getBlockZ(), corner2.getBlockX(), corner2.getBlockY(), corner2.getBlockZ());
     }
 
+    public Claim(Claim copyFrom) {
+        this.world = copyFrom.world;
+        this.x1 = copyFrom.x1;
+        this.y1 = copyFrom.y1;
+        this.z1 = copyFrom.z1;
+        this.x2 = copyFrom.x2;
+        this.y2 = copyFrom.y2;
+        this.z2 = copyFrom.z2;
+        this.name = copyFrom.name;
+    }
+
     public Claim(String world, int x1, int y1, int z1, int x2, int y2, int z2) {
         this.world = world;
         this.x1 = Math.min(x1, x2);
@@ -45,13 +56,12 @@ public class Claim implements Iterable<Coordinate> {
 
     public BasicDBObject json() {
         BasicDBObject dbObject = new BasicDBObject();
-        LocationSerializer locationSerializer = new LocationSerializer();
 
         dbObject.put("Name", name);
 
         World world = FoxtrotPlugin.getInstance().getServer().getWorld(getWorld());
-        dbObject.put("Location1", locationSerializer.serialize(new Location(world, x1, y1, z1)));
-        dbObject.put("Location2", locationSerializer.serialize(new Location(world, x2, y2, z2)));
+        dbObject.put("Location1", LocationSerializer.serialize(new Location(world, x1, y1, z1)));
+        dbObject.put("Location2", LocationSerializer.serialize(new Location(world, x2, y2, z2)));
 
         return (dbObject);
     }
@@ -129,7 +139,7 @@ public class Claim implements Iterable<Coordinate> {
     }
 
     public Set<Player> getPlayers() {
-        Set<Player> players = new HashSet<Player>();
+        Set<Player> players = new HashSet<>();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (contains(player)) {
@@ -220,11 +230,6 @@ public class Claim implements Iterable<Coordinate> {
     }
 
     @Override
-    public Claim clone() {
-        return new Claim(world, x1, y1, z1, x2, y2, z2);
-    }
-
-    @Override
     public Iterator<Coordinate> iterator() {
         return new BorderIterator(x1, z1, x2, z2);
     }
@@ -295,7 +300,7 @@ public class Claim implements Iterable<Coordinate> {
         Horizontal,
         Vertical,
         Both,
-        Unknown;
+        Unknown
 
     }
 

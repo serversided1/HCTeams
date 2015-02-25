@@ -13,11 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LandBoard {
 
     private static LandBoard instance;
-    private final Map<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>> buckets = new ConcurrentHashMap<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>>();
+    private final Map<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>> buckets = new ConcurrentHashMap<>();
 
     public LandBoard() {
         for (World world : FoxtrotPlugin.getInstance().getServer().getWorlds()) {
-            buckets.put(world.getName(), HashMultimap.<CoordinateSet, Map.Entry<Claim, Team>>create());
+            buckets.put(world.getName(), HashMultimap.create());
         }
     }
 
@@ -37,7 +37,7 @@ public class LandBoard {
     }
 
     public Set<Map.Entry<Claim, Team>> getRegionData(Location min, Location max) {
-        Set<Map.Entry<Claim, Team>> regions = new HashSet<Map.Entry<Claim, Team>>();
+        Set<Map.Entry<Claim, Team>> regions = new HashSet<>();
         int step = 1 << CoordinateSet.BITS;
 
         for (int x = min.getBlockX(); x < max.getBlockX() + step; x += step) {
@@ -83,7 +83,7 @@ public class LandBoard {
     }
 
     public void setTeamAt(Claim claim, Team team) {
-        Map.Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<Claim, Team>(claim, team);
+        Map.Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<>(claim, team);
         int step = 1 << CoordinateSet.BITS;
 
         for (int x = regionData.getKey().getX1(); x < regionData.getKey().getX2() + step; x += step) {
@@ -111,7 +111,7 @@ public class LandBoard {
     }
 
     public void updateClaim(Claim modified) {
-        ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
+        ArrayList<VisualClaim> visualClaims = new ArrayList<>();
         visualClaims.addAll(VisualClaim.getCurrentMaps().values());
 
         for (VisualClaim visualClaim : visualClaims) {
@@ -123,7 +123,7 @@ public class LandBoard {
     }
 
     public void updateSubclaim(Subclaim modified) {
-        ArrayList<VisualClaim> visualClaims = new ArrayList<VisualClaim>();
+        ArrayList<VisualClaim> visualClaims = new ArrayList<>();
         visualClaims.addAll(VisualClaim.getCurrentSubclaimMaps().values());
 
         for (VisualClaim visualClaim : visualClaims) {

@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
-import net.frozenorb.foxtrot.team.chat.ChatMode;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
 
     @Override
     public List<ObjectId> getJavaObject(String str) {
-        List<ObjectId> results = new ArrayList<ObjectId>();
+        List<ObjectId> results = new ArrayList<>();
 
         for (String split : str.split(",")) {
             if (split.equals("")) {
@@ -49,7 +48,7 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
     }
 
     public List<ObjectId> getChatSpy(String player) {
-        return (contains(player) ? getValue(player) : new ArrayList<ObjectId>());
+        return (contains(player) ? getValue(player) : new ArrayList<>());
     }
 
     public void setChatSpy(String player, List<ObjectId> teams) {

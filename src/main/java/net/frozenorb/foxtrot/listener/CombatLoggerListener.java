@@ -14,7 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHumanEntity;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,7 +36,7 @@ import java.util.UUID;
 public class CombatLoggerListener implements Listener {
 
     public static final String COMBAT_LOGGER_METADATA = "CombatLogger";
-    private Set<Entity> combatLoggers = new HashSet<Entity>();
+    private Set<Entity> combatLoggers = new HashSet<>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {

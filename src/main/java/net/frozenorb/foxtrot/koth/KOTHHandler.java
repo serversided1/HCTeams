@@ -10,9 +10,8 @@ import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
 import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
-import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
+import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import net.minecraft.util.io.netty.util.internal.ConcurrentSet;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -27,9 +26,9 @@ import java.util.*;
 
 public class KOTHHandler {
     
-    @Getter private Set<KOTH> KOTHs = new HashSet<KOTH>();
-    @Getter private Map<Integer, String> KOTHSchedule = new TreeMap<Integer, String>();
-    @Getter private Set<Location> KOTHSigns = new HashSet<Location>();
+    @Getter private Set<KOTH> KOTHs = new HashSet<>();
+    @Getter private Map<Integer, String> KOTHSchedule = new TreeMap<>();
+    @Getter private Set<Location> KOTHSigns = new HashSet<>();
 
     public KOTHHandler() {
         loadKOTHs();
@@ -57,7 +56,7 @@ public class KOTHHandler {
         CommandHandler.registerTabCompleter(KOTH.class, new ParamTabCompleter() {
 
             public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<String>();
+                List<String> completions = new ArrayList<>();
 
                 for (KOTH koth : getKOTHs()) {
                     if (StringUtils.startsWithIgnoreCase(koth.getName(), source)) {
@@ -161,11 +160,9 @@ public class KOTHHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(kothSigns));
 
             if (dbo != null) {
-                LocationSerializer locationSerializer = new LocationSerializer();
-
                 if (dbo.containsField("signs")) {
                     for (Object signObj : (BasicDBList) dbo.get("signs")) {
-                        this.KOTHSigns.add(locationSerializer.deserialize((BasicDBObject) signObj));
+                        this.KOTHSigns.add(LocationSerializer.deserialize((BasicDBObject) signObj));
                     }
                 }
             }
@@ -202,10 +199,9 @@ public class KOTHHandler {
             File kothSigns = new File("kothSigns.json");
             BasicDBObject dbo = new BasicDBObject();
             BasicDBList signs = new BasicDBList();
-            LocationSerializer locationSerializer = new LocationSerializer();
 
             for (Location signLocation : KOTHSigns) {
-                signs.add(locationSerializer.serialize(signLocation));
+                signs.add(LocationSerializer.serialize(signLocation));
             }
 
             dbo.put("signs", signs);

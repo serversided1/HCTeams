@@ -25,7 +25,7 @@ public class TwixCommandMap extends SimpleCommandMap {
         try {
             Player player = (Player) sender;
             int spaceIndex = cmdLine.indexOf(' ');
-            Set<String> completions = new HashSet<String>();
+            Set<String> completions = new HashSet<>();
 
             CommandLoop:
             for (CommandData command : CommandHandler.getCommands()) {
@@ -74,11 +74,11 @@ public class TwixCommandMap extends SimpleCommandMap {
                 }
             }
 
-            List<String> completionList = new ArrayList<String>(completions);
+            List<String> completionList = new ArrayList<>(completions);
             List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine);
 
             if (vanillaCompletionList == null) {
-                vanillaCompletionList = new ArrayList<String>();
+                vanillaCompletionList = new ArrayList<>();
             }
 
             for (String vanillaCompletion : vanillaCompletionList) {
@@ -98,7 +98,7 @@ public class TwixCommandMap extends SimpleCommandMap {
         } catch (Exception e) {
             FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
-            return (new ArrayList<String>());
+            return (new ArrayList<>());
         }
     }
 

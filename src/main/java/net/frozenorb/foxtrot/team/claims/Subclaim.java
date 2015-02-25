@@ -5,9 +5,7 @@ import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import net.frozenorb.foxtrot.serialization.ReflectionSerializer;
-import net.frozenorb.foxtrot.serialization.SerializableClass;
-import net.frozenorb.foxtrot.serialization.serializers.LocationSerializer;
+import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -15,13 +13,12 @@ import java.util.Iterator;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper=false)
-@SerializableClass
 @Data
 public class Subclaim {
 
     @NonNull private Location loc1, loc2;
     @NonNull private String name;
-    private List<String> members = new ArrayList<String>();
+    private List<String> members = new ArrayList<>();
 
     public void addMember(String name) {
         members.add(name);
@@ -51,12 +48,11 @@ public class Subclaim {
 
     public BasicDBObject json() {
         BasicDBObject dbObject = new BasicDBObject();
-        LocationSerializer locationSerializer = new LocationSerializer();
 
         dbObject.put("Name", name);
         dbObject.put("Members", members);
-        dbObject.put("Location1", locationSerializer.serialize(loc1));
-        dbObject.put("Location2", locationSerializer.serialize(loc2));
+        dbObject.put("Location1", LocationSerializer.serialize(loc1));
+        dbObject.put("Location2", LocationSerializer.serialize(loc2));
 
         return (dbObject);
     }

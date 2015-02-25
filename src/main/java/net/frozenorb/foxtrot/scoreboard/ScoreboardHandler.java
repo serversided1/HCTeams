@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ScoreboardHandler {
 
-    private Map<String, FoxtrotBoard> boards = new ConcurrentHashMap<String, FoxtrotBoard>();
+    private Map<String, FoxtrotBoard> boards = new ConcurrentHashMap<>();
     public static boolean scoreboardTimerEnabled = true;
 
     public void create(Player player) {

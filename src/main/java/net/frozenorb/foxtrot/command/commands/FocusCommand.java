@@ -205,7 +205,7 @@ public class FocusCommand {
         WARZONE,
         TEAM,
         PLAYER,
-        LOCATION;
+        LOCATION
     }
 
 }
