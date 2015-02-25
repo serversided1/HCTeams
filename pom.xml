@@ -103,6 +103,11 @@
 
 		<!-- Misc. Jars -->
 		<dependency>
+			<groupId>com.bugsnag</groupId>
+			<artifactId>bugsnag</artifactId>
+			<version>LATEST</version>
+		</dependency>
+		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>LATEST</version>

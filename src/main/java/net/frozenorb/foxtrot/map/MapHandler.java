@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.map;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -74,6 +75,7 @@ public class MapHandler {
                 this.tradingLootingMultiplier = looting.getDouble("tradingMod");
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

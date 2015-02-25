@@ -16,6 +16,7 @@ public class BorderThread extends Thread {
                 try {
                     checkPlayer(player);
                 } catch (Exception e) {
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }
@@ -40,10 +41,7 @@ public class BorderThread extends Thread {
                 border.sendToPlayer(player);
             }
         } catch (Exception e) {
-            if (player != null && player.isOp()) {
-                player.sendMessage(ChatColor.RED + "An exception was thrown while trying to calculate your spawn border");
-            }
-
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

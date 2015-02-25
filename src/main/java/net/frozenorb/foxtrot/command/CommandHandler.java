@@ -66,6 +66,7 @@ public class CommandHandler implements Listener {
 
                     currentCommandMap.set(FoxtrotPlugin.getInstance().getServer(), commandMap);
                 } catch (Exception e) {
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

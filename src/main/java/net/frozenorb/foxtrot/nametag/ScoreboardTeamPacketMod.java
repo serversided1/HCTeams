@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.nametag;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardTeam;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -56,6 +57,7 @@ public class ScoreboardTeamPacketMod {
             fieldObject.setAccessible(true);
             fieldObject.set(packet, value);
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -67,6 +69,7 @@ public class ScoreboardTeamPacketMod {
             fieldObject.setAccessible(true);
             ((Collection) fieldObject.get(packet)).addAll(col);
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

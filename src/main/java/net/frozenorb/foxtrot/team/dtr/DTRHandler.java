@@ -87,6 +87,7 @@ public class DTRHandler extends BukkitRunnable {
                     teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()), teamEntry.getKey().getMaxDTR()));
                 } catch (Exception e) {
                     System.out.println("Error regenerating DTR for team " + teamEntry.getKey().getName() + ".");
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

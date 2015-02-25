@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.nametag;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ public class NametagThread extends Thread {
                 try {
                     NametagManager.applyUpdate(pendingUpdate);
                 } catch (Exception e) {
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

@@ -47,6 +47,7 @@ public class TeamActionTracker {
             output.append("[").append(SimpleDateFormat.getDateTimeInstance().format(new Date())).append("] ").append(message).append("\n");
             output.close();
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 

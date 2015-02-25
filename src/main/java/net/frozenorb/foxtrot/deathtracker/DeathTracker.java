@@ -50,6 +50,7 @@ public class DeathTracker {
 
                     FileUtils.write(logTo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(data.toString())));
                 } catch (Exception e) {
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

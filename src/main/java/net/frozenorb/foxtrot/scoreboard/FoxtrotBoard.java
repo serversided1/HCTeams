@@ -116,6 +116,7 @@ public class FoxtrotBoard {
             fieldObject.setAccessible(true);
             fieldObject.set(packet, value);
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

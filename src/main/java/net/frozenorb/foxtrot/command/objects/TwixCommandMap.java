@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.command.objects;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -98,6 +99,7 @@ public class TwixCommandMap extends SimpleCommandMap {
 
             return (completionList);
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
             return (new ArrayList<String>());
         }

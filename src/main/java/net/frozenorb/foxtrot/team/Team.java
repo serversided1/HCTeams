@@ -204,6 +204,7 @@ public class Team {
                 Basic.get().getEconomyManager().depositPlayer(owner, balance);
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 

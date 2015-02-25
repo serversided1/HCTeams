@@ -121,6 +121,7 @@ public class KOTHHandler {
                 }
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -144,6 +145,7 @@ public class KOTHHandler {
                 }
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -171,6 +173,7 @@ public class KOTHHandler {
                 }
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -192,6 +195,7 @@ public class KOTHHandler {
                 FileUtils.write(kothFile, FoxtrotPlugin.GSON.toJson(koth));
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -211,6 +215,7 @@ public class KOTHHandler {
             kothSigns.delete();
             FileUtils.write(kothSigns, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

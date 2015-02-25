@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot;
 
+import com.bugsnag.Client;
 import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -68,6 +69,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
+    @Getter private Client bugSnag;
 
     @Getter private PvPClassHandler pvpClassHandler;
     @Getter private TeamHandler teamHandler;
@@ -113,6 +115,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
+            bugSnag = new Client("424ef6646404116dd57cf0178863fcf6");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -222,6 +225,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             result = jedisCommand.execute(jedis);
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
 
             if (jedis != null) {

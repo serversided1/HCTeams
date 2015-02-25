@@ -203,6 +203,7 @@ public class FoxListener implements Listener {
                         }
                     }
                 } catch (Exception e) {
+                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

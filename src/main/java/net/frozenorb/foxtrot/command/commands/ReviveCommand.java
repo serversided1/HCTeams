@@ -30,6 +30,7 @@ public class ReviveCommand {
                 output.append("[").append(new Date().toString()).append("] ").append(sender.getName() + " revived " + target + " for " + reason).append("\n");
                 output.close();
             } catch (Exception e) {
+                FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                 e.printStackTrace();
             }
 

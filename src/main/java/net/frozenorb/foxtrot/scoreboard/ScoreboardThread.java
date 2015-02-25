@@ -25,6 +25,7 @@ public class ScoreboardThread extends Thread {
                 }
             }
         } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
