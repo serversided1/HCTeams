@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/3/2014.
- */
 public class TeamInvitesCommand {
 
     @Command(names={ "team invites", "t invites", "f invites", "faction invites", "fac invites" }, permissionNode="")

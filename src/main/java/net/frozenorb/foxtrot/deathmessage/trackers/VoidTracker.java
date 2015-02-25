@@ -12,9 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
 
-/**
- * Created by macguy8 on 10/15/2014.
- */
 public class VoidTracker implements Listener {
 
     //***************************//

@@ -6,9 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/4/2014.
- */
 public class CrowbarCommand {
 
     @Command(names={ "Crowbar" }, permissionNode="op")

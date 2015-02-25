@@ -19,9 +19,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.lang.reflect.Field;
 import java.util.*;
 
-/**
- * Created by chasechocolate.
- */
 public class FoxtrotBoard {
 
     public static final ScoreGetter[] SCORES = {

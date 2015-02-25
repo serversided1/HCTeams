@@ -28,9 +28,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/18/2014.
- */
 public class DeathTracker {
 
     public static void logDeath(final Player player, final Player killer) {

@@ -2,9 +2,6 @@ package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class TransferableLivesMap extends RedisPersistMap<Integer> {
 
     public TransferableLivesMap() {

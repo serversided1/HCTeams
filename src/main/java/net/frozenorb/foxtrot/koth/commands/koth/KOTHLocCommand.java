@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 10/31/2014.
- */
 public class KOTHLocCommand {
 
     @Command(names={ "KOTH loc" }, permissionNode="foxtrot.koth.admin")

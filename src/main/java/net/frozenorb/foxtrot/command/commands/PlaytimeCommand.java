@@ -8,9 +8,6 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 12/3/2014.
- */
 public class PlaytimeCommand {
 
     @Command(names={ "Playtime", "PTime" }, permissionNode="")

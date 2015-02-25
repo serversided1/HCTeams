@@ -14,9 +14,6 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 
 import java.io.File;
 
-/**
- * Created by macguy8 on 11/8/2014.
- */
 public class MapHandler {
 
     @Getter private boolean kitMap;

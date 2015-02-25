@@ -16,9 +16,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by macguy8 on 11/2/2014.
- */
 public class TeamMuteCommand {
 
     @Getter private static Map<String, String> teamMutes = new HashMap<String, String>();

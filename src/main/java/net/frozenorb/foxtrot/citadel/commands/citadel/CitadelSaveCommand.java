@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/25/2014.
- */
 public class CitadelSaveCommand {
 
     @Command(names={"citadel save"}, permissionNode="op")

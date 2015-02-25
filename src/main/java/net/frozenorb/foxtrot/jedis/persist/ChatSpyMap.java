@@ -7,9 +7,6 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/8/2014.
- */
 public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
 
     public ChatSpyMap() {

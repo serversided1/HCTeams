@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Created by macguy8 on 10/31/2014.
- */
 @AllArgsConstructor
 public class KOTHControlTickEvent extends Event {
 

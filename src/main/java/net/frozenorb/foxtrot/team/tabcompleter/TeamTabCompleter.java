@@ -9,9 +9,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/21/2014.
- */
 public class TeamTabCompleter extends ParamTabCompleter {
 
     public List<String> tabComplete(Player sender, String source) {

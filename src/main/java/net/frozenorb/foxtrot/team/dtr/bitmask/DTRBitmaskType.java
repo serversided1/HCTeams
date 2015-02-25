@@ -5,9 +5,6 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.Location;
 
-/**
- * Created by Colin on 11/12/2014.
- */
 public enum DTRBitmaskType {
 
     // Used in spawns

@@ -11,9 +11,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/2/2014.
- */
 public class CommandData {
 
     @Getter private boolean console;

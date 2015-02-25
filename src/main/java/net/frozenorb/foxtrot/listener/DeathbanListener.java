@@ -13,9 +13,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class DeathbanListener implements Listener {
 
     private Map<String, Long> lastJoinedRevive = new HashMap<String, Long>();

@@ -11,9 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by macguy8 on 11/17/2014.
- */
 public class RecachePlayerTeamsCommand {
 
     @Command(names={ "playerteamcache rebuild" }, permissionNode="op")

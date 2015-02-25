@@ -23,9 +23,6 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.Iterator;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class PotionLimiterListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)

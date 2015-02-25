@@ -11,9 +11,6 @@ import org.bukkit.entity.Player;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by macguy8 on 11/15/2014.
- */
 public class CitadelCommand {
 
     @Command(names={ "citadel" }, permissionNode="")

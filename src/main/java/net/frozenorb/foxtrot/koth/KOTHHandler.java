@@ -25,9 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.*;
 
-/**
- * Created by macguy8 on 10/31/2014.
- */
 public class KOTHHandler {
     
     @Getter private Set<KOTH> KOTHs = new HashSet<KOTH>();

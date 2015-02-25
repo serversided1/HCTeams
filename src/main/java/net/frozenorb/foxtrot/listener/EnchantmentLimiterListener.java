@@ -25,9 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class EnchantmentLimiterListener implements Listener {
 
     private Map<String, Long> lastArmorCheck = new HashMap<String, Long>();

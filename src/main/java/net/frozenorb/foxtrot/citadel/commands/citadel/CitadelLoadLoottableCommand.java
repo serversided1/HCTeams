@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by macguy8 on 11/25/2014.
- */
 public class CitadelLoadLoottableCommand {
 
     @Command(names={"citadel loadloottable"}, permissionNode="op")

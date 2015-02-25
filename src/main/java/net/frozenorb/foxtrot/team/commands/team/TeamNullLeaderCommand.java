@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/22/2014.
- */
 public class TeamNullLeaderCommand {
 
     @Command(names={ "team nullleader", "t nullleader", "f nullleader", "faction nullleader", "fac nullleader" }, permissionNode="op")

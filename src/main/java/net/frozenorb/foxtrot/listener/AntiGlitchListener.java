@@ -6,9 +6,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-/**
- * Created by macguy8 on 11/12/2014.
- */
 public class AntiGlitchListener implements Listener {
 
     @EventHandler(priority= EventPriority.MONITOR)

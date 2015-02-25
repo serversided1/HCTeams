@@ -5,9 +5,6 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by chasechocolate.
- */
 public class ScoreboardHandler {
 
     private Map<String, FoxtrotBoard> boards = new ConcurrentHashMap<String, FoxtrotBoard>();

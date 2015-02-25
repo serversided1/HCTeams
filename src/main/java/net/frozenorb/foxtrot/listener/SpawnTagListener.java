@@ -8,9 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-/**
- * Created by macguy8 on 11/12/2014.
- */
 public class SpawnTagListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)

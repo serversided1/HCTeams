@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by chasechocolate.
- */
 public class ForceDisbandCommand {
 
     @Command(names={ "forcedisband" }, permissionNode="op")

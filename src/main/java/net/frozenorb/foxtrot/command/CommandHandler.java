@@ -23,18 +23,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-/**
- * Created by macguy8 on 11/2/2014.
- */
 public class CommandHandler implements Listener {
-
-    //***********************//
 
     private static List<CommandData> commands = new ArrayList<CommandData>();
     private static Map<Class<?>, ParamTransformer> parameterTransformers = new HashMap<Class<?>, ParamTransformer>();
     private static Map<Class<?>, ParamTabCompleter> parameterTabCompleters = new HashMap<Class<?>, ParamTabCompleter>();
-
-    //***********************//
 
     public static void init() {
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CommandHandler(), FoxtrotPlugin.getInstance());
@@ -233,16 +226,12 @@ public class CommandHandler implements Listener {
         registerClass(CommandHandler.class);
     }
 
-    //***********************//
-
     @Command(names={"ListCommands"}, permissionNode="foxtrot.listcommands")
     public static void listCommands(CommandSender sender) {
         for (CommandData command : commands) {
             sender.sendMessage(command.getPermissionNode() + ChatColor.YELLOW + " " + command.getUsageString());
         }
     }
-
-    //***********************//
 
     public static void registerTransformer(Class<?> transforms, ParamTransformer transformer) {
         parameterTransformers.put(transforms, transformer);

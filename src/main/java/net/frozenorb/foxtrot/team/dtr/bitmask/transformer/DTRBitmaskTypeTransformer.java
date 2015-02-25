@@ -5,9 +5,6 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-/**
- * Created by macguy8 on 11/21/2014.
- */
 public class DTRBitmaskTypeTransformer extends ParamTransformer {
 
     @Override

@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class PvPReviveCommand {
 
     @Command(names={ "pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive", "f revive" }, permissionNode="")

@@ -10,9 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class PortalTrapListener implements Listener {
 
     @EventHandler

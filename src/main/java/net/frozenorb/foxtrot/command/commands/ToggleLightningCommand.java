@@ -5,9 +5,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by chasechocolate.
- */
 public class ToggleLightningCommand {
 
     @Command(names={ "ToggleLightning" }, permissionNode="")

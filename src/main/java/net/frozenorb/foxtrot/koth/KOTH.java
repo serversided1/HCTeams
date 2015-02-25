@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by macguy8 on 10/31/2014.
- */
 public class KOTH {
 
     @Getter private String name;

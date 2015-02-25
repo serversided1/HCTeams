@@ -10,17 +10,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/**
- * Created by macguy8 on 11/23/2014.
- */
 public class CommandRegistrar {
-
-    /*
-
-    This class must be in this package.
-    To iteratively load commands (and get all classes), the package we're searching (net.frozenorb.foxtrot) has to be 'lower' than this class.
-
-     */
 
     public void loadCommandsFromPackage(String packageName) {
         for (Class<?> clazz : getClassesInPackage(packageName)) {

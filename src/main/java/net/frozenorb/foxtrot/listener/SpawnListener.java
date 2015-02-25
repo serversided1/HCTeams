@@ -22,9 +22,6 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)

@@ -15,9 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class ChatListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)

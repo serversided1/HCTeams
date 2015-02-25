@@ -5,9 +5,6 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class HighrollerListCommand {
 
     @Command(names={ "highroller list", "highrollers list" }, permissionNode="op")

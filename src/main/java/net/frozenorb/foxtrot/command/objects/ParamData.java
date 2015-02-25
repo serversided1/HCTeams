@@ -3,9 +3,6 @@ package net.frozenorb.foxtrot.command.objects;
 import lombok.Getter;
 import net.frozenorb.foxtrot.command.annotations.Param;
 
-/**
- * Created by macguy8 on 11/2/2014.
- */
 public class ParamData {
 
     @Getter private String name;

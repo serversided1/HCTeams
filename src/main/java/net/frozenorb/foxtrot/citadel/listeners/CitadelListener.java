@@ -16,9 +16,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.text.SimpleDateFormat;
 
-/**
- * Created by macguy8 on 11/15/2014.
- */
 public class CitadelListener implements Listener {
 
     @EventHandler

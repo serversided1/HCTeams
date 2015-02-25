@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/4/2014.
- */
 public class KOTHRewardKeyCommand {
 
     @Command(names={ "kothrewardkey" }, permissionNode="op")

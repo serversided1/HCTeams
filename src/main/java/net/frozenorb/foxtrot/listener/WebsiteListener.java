@@ -18,9 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-/**
- * Created by macguy8 on 11/12/2014.
- */
 public class WebsiteListener implements Listener {
 
     @EventHandler

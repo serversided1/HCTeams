@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.listener.BorderListener;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class SetWorldBorderCommand {
 
     @Command(names={ "SetWorldBorder" }, permissionNode="op")

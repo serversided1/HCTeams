@@ -10,9 +10,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/21/2014.
- */
 public class SubclaimTabCompleter extends ParamTabCompleter {
 
     @Override

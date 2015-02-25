@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by macguy8 on 10/3/2014.
- */
 public class DeathMessageHandler {
 
     private static Map<String, List<Damage>> damage = new HashMap<String, List<Damage>>();

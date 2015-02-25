@@ -9,9 +9,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class EOTWCommand {
 
     @Command(names={ "EOTW" }, permissionNode="op")

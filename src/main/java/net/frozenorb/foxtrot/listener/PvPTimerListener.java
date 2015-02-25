@@ -20,9 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class PvPTimerListener implements Listener {
 
     private Set<Integer> droppedItems = new HashSet<Integer>();

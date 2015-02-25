@@ -19,9 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/4/2014.
- */
 public class KOTHRewardKeyListener implements Listener {
 
     @EventHandler

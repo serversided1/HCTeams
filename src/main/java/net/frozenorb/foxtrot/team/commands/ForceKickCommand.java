@@ -8,9 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class ForceKickCommand {
 
     @Command(names={ "forcekick" }, permissionNode="op")

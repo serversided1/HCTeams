@@ -21,9 +21,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by macguy8 on 12/2/2014.
- */
 public class KOTHListener implements Listener {
 
     @EventHandler

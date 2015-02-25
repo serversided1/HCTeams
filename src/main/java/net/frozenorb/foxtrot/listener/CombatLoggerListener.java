@@ -34,9 +34,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Created by macguy8 on 11/3/2014.
- */
 public class CombatLoggerListener implements Listener {
 
     public static final String COMBAT_LOGGER_METADATA = "CombatLogger";

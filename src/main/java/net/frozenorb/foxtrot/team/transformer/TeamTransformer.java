@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/21/2014.
- */
 public class TeamTransformer extends ParamTransformer {
 
     @Override

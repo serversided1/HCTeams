@@ -10,9 +10,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by macguy8 on 11/3/2014.
- */
 public class GoldenAppleListener implements Listener {
 
     @EventHandler

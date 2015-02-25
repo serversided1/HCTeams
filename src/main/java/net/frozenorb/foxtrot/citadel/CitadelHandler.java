@@ -29,9 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.util.*;
 
-/**
- * Created by macguy8 on 11/14/2014.
- */
 public class CitadelHandler {
 
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";

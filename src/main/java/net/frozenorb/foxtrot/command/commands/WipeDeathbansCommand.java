@@ -6,9 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 
-/**
- * Created by Colin on 12/25/2014.
- */
 public class WipeDeathbansCommand {
 
     @Command(names={ "WipeDeathbans" }, permissionNode="op")

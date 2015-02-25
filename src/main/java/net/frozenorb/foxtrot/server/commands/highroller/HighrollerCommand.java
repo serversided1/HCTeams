@@ -3,9 +3,6 @@ package net.frozenorb.foxtrot.server.commands.highroller;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class HighrollerCommand {
 
     @Command(names={ "highroller", "highrollers" }, permissionNode="op")

@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-/**
- * Created by macguy8 on 11/9/2014.
- */
 public class TeamSaveStringCommand {
 
     @Command(names={ "team savestring", "t savestring", "f savestring", "faction savestring", "fac savestring" }, permissionNode="op")

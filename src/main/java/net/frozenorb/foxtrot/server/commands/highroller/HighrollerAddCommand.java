@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class HighrollerAddCommand {
 
     @Command(names={ "highroller add", "highrollers add" }, permissionNode="op")

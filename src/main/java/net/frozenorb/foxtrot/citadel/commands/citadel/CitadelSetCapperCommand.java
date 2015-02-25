@@ -8,9 +8,6 @@ import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/23/2014.
- */
 public class CitadelSetCapperCommand {
 
     @Command(names={ "citadel setcapper" }, permissionNode="op")

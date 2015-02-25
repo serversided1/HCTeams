@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.command.annotations.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class PvPGiveLivesCommand {
 
     @Command(names={ "pvptimer givelives", "timer givelives", "pvp givelives", "pvptimer givelife", "timer givelife", "pvp givelife" }, permissionNode="")

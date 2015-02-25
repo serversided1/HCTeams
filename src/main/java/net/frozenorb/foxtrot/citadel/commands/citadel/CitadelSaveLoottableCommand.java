@@ -8,9 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by macguy8 on 11/25/2014.
- */
 public class CitadelSaveLoottableCommand {
 
     @Command(names={"citadel saveloottable"}, permissionNode="op")

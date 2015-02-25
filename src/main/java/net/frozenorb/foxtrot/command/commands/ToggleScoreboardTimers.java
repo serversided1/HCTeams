@@ -5,9 +5,6 @@ import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/11/2014.
- */
 public class ToggleScoreboardTimers {
 
     @Command(names={ "ToggleScoreboardTimers" }, permissionNode="op")

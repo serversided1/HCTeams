@@ -4,9 +4,6 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Created by macguy8 on 12/2/2014.
- */
 public class HourEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();

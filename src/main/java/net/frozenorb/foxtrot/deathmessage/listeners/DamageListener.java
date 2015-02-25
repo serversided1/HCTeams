@@ -18,9 +18,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.List;
 
-/**
- * Created by macguy8 on 10/3/2014.
- */
 public class DamageListener implements Listener {
 
     //***************************//

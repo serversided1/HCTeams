@@ -4,9 +4,6 @@ import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 
 import java.util.Date;
 
-/**
- * Created by macguy8 on 11/8/2014.
- */
 public class LastJoinMap extends RedisPersistMap<Long> {
 
     public LastJoinMap() {

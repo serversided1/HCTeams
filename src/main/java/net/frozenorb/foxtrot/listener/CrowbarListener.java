@@ -17,9 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class CrowbarListener implements Listener {
 
     @EventHandler

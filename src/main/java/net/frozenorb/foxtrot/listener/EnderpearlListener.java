@@ -23,9 +23,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class EnderpearlListener implements Listener {
 
     @Getter private static Map<String, Long> enderpearlCooldown = new ConcurrentHashMap<>();

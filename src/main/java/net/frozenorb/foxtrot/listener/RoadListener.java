@@ -11,9 +11,6 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-/**
- * Created by chasechocolate.
- */
 public class RoadListener implements Listener {
 
     private boolean isRoad(Location loc){

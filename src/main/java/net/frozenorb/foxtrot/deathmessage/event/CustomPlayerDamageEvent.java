@@ -6,9 +6,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-/**
- * Created by macguy8 on 10/3/2014.
- */
 public class CustomPlayerDamageEvent extends Event {
 
     //***************************//

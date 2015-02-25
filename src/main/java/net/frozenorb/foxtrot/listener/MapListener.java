@@ -15,9 +15,6 @@ import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class MapListener implements Listener {
 
     private void startUpdate(final Furnace tile, final int increase) {

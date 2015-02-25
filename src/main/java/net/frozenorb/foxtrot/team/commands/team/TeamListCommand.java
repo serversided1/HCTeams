@@ -10,9 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-/**
- * Created by macguy8 on 11/2/2014.
- */
 public class TeamListCommand {
 
     @Command(names={ "team list", "t list", "f list", "faction list", "fac list" }, permissionNode="")

@@ -8,9 +8,6 @@ import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by chasechocolate.
- */
 public class TeamDisbandCommand {
 
     @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permissionNode="")

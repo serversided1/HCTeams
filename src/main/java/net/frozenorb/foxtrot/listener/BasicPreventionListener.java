@@ -21,9 +21,6 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
-/**
- * Created by macguy8 on 11/12/2014.
- */
 public class BasicPreventionListener implements Listener {
 
     @EventHandler

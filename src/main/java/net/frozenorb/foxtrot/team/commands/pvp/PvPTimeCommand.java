@@ -6,9 +6,6 @@ import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class PvPTimeCommand {
 
     @Command(names={ "pvptimer time", "timer time", "pvp time" }, permissionNode="")

@@ -11,9 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-/**
- * Created by macguy8 on 11/23/2014.
- */
 public class KOTHScheduleCommand {
 
     @Command(names={ "KOTH Schedule" }, permissionNode="")

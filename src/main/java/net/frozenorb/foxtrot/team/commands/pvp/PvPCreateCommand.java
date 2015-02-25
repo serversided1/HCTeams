@@ -8,9 +8,6 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class PvPCreateCommand {
 
     @Command(names={ "pvptimer create", "timer create", "pvp create" }, permissionNode="op")

@@ -11,9 +11,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class FoundDiamondsListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)

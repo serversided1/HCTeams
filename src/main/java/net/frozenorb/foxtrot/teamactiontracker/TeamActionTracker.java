@@ -12,9 +12,6 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class TeamActionTracker {
 
     public static void logActionAsync(final Team team, final TeamActionType actionType, final String message) {

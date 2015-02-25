@@ -7,9 +7,6 @@ import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-/**
- * Created by Colin on 11/13/2014.
- */
 public class BitmaskCommand {
 
     @Command(names={ "bitmask list", "bitmasks list" }, permissionNode="op")

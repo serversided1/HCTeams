@@ -7,9 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-/**
- * Created by macguy8 on 11/6/2014.
- */
 public class PvPLivesCommand {
 
     @Command(names={ "pvptimer lives", "timer lives", "pvp lives" }, permissionNode="")

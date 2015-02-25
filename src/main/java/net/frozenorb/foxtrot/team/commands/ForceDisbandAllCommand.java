@@ -10,9 +10,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by macguy8 on 11/7/2014.
- */
 public class ForceDisbandAllCommand {
 
     @Command(names={ "forcedisbandall" }, permissionNode="op")

@@ -14,9 +14,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class TeamShadowMuteCommand {
 
     @Getter public static Map<String, String> teamShadowMutes = new HashMap<String, String>();

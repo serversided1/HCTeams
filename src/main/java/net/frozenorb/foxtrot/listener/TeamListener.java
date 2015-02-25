@@ -24,9 +24,6 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Created by macguy8 on 11/5/2014.
- */
 public class TeamListener implements Listener {
 
     @EventHandler

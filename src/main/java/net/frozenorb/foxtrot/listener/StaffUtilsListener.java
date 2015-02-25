@@ -10,9 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-/**
- * Created by macguy8 on 11/12/2014.
- */
 public class StaffUtilsListener implements Listener {
 
     private static Location lastDamageLocation;

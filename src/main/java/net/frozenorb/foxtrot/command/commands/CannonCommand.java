@@ -16,9 +16,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-/**
- * Created by Colin on 11/12/2014.
- */
 public class CannonCommand {
 
     public static final int SPAWN_CANNON_MAX_DISTANCE = 600;

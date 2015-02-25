@@ -8,9 +8,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-/**
- * Created by macguy8 on 10/31/2014.
- */
 public class KOTHCapturedEvent extends PlayerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
