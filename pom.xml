@@ -28,6 +28,7 @@
 							<include>redis.clients:jedis</include>
 							<include>org.apache.commons:commons-pool2</include>
 							<include>com.comphenix.packetwrapper:PacketWrapper</include>
+							<include>com.bugsnag:bugsnag</include>
 						</includes>
 					</artifactSet>
 					<relocations>
