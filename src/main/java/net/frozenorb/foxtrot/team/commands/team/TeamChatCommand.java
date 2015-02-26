@@ -29,24 +29,14 @@ public class TeamChatCommand {
 
         setChat(sender, chatMode);
     }
-
-    @Command(names={ "tc" }, permissionNode="")
-    public static void tc(Player sender) {
-        setChat(sender, ChatMode.TEAM);
-    }
-
-    @Command(names={ "fc" }, permissionNode="")
+    
+    @Command(names={ "fc", "tc" }, permissionNode="")
     public static void fc(Player sender) {
         setChat(sender, ChatMode.TEAM);
     }
 
-    @Command(names={ "gc" }, permissionNode="")
+    @Command(names={ "gc", "pc" }, permissionNode="")
     public static void gc(Player sender) {
-        setChat(sender, ChatMode.PUBLIC);
-    }
-
-    @Command(names={ "pc" }, permissionNode="")
-    public static void pc(Player sender) {
         setChat(sender, ChatMode.PUBLIC);
     }
 
