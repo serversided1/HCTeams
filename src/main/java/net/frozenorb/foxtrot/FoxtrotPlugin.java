@@ -115,7 +115,7 @@ public class FoxtrotPlugin extends JavaPlugin {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
             bugSnag = new Client("424ef6646404116dd57cf0178863fcf6");
-            bugSnag.notify(new RuntimeException("Non-fatal"));
+            //bugSnag.notify(new RuntimeException("Non-fatal"));
         } catch (Exception e) {
             e.printStackTrace();
         }
