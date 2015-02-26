@@ -30,6 +30,16 @@ public class TeamChatCommand {
         setChat(sender, chatMode);
     }
 
+    @Command(names={ "tc" }, permissionNode="")
+    public static void tc(Player sender) {
+        setChat(sender, ChatMode.TEAM);
+    }
+
+    @Command(names={ "gc" }, permissionNode="")
+    public static void gc(Player sender) {
+        setChat(sender, ChatMode.PUBLIC);
+    }
+
     private static void setChat(Player player, ChatMode chatMode) {
         if (chatMode != null) {
             switch (chatMode) {
