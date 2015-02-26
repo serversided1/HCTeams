@@ -12,6 +12,7 @@ public class SpawnCommand {
         if (sender.hasPermission("foxtrot.spawn")) {
             sender.teleport(FoxtrotPlugin.getInstance().getServerHandler().getSpawnLocation());
         } else {
+            // Make this pretty.
             sender.sendMessage(ChatColor.RED + "HCTeams does not have a spawn command! You must walk there!");
         }
     }

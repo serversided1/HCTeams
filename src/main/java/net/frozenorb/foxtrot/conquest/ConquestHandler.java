@@ -16,8 +16,4 @@ public class ConquestHandler {
 
     @Getter @Setter private ConquestGame game;
 
-    public ConquestHandler() {
-
-    }
-
 }

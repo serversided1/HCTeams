@@ -1,8 +1,9 @@
-package net.frozenorb.foxtrot.listener;
+package net.frozenorb.foxtrot.chat.listeners;
 
+import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.chat.ChatMode;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
@@ -20,18 +21,27 @@ public class ChatListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
-        String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? ChatColor.DARK_PURPLE + "[HighRoller]" : "";
+        String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? FoxConstants.highRollerPrefix() : "";
         String customPrefixString = FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
         ChatMode chatMode = FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(event.getPlayer().getName());
 
+        // Determine if we're using one of our custom
+        // chat channel prefixes.
+        // @ for team chat,
+        // # for ally chat,
+        // ! for global chat
         boolean doTeamChat = event.getMessage().startsWith("@");
         boolean doAllyChat = event.getMessage().startsWith("#");
         boolean doGlobalChat = event.getMessage().startsWith("!");
 
-        if (doTeamChat || doGlobalChat || doAllyChat) {
+        // and take off the character 'starting' it
+        if (doTeamChat || doAllyChat || doGlobalChat) {
             event.setMessage(event.getMessage().substring(1));
         }
 
+        // Determine our final chat mode.
+        // We check if they used a custom prefix / aren't in a team,
+        // otherwise, we fall back on their configuration
         if (doGlobalChat || team == null) {
             chatMode = ChatMode.PUBLIC;
         } else if (doTeamChat) {
@@ -40,83 +50,79 @@ public class ChatListener implements Listener {
             chatMode = ChatMode.ALLIANCE;
         }
 
+        // If another plugin cancelled this event before it got to us (we are on MONITOR, so it'll happen)
         if (event.isCancelled()) {
             return;
         }
 
         // Any route we go down will cancel the event eventually.
-        // Let's just save space and do it here.
+        // Let's just do it here.
         event.setCancelled(true);
 
+        // and here starts the big logic switch
         switch (chatMode) {
             case PUBLIC:
                 if (TeamMuteCommand.getTeamMutes().containsKey(event.getPlayer().getName())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team is muted!");
-
-                    // Notify those with chatspy on the team.
-                    for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                        if (team != null && FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
-                            player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "M: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
-                        }
-                    }
-
                     return;
                 }
 
-                // TODO: Rewrite
-                if (team == null) {
-                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
-                    String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
+                String publicChatFormat = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString);
+                String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
 
-                    for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
+                // not online players
+                for (Player player : event.getRecipients()) {
+                    if (team == null) {
+                        // If the player sending the message is shadowmuted (if their team was and they left it)
+                        // then we don't allow them to. We probably could move this check "higher up", but oh well.
                         if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getName())) {
                             continue;
                         }
 
+                        // If their chat is enabled (which it is by default) or the sender is op, send them the message
+                        // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                         if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getName())) {
                             player.sendMessage(finalMessage);
                         }
-                    }
-
-                    FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
-                } else {
-                    event.setFormat(ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
-                    String finalMessage = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
-
-                    for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    } else {
                         if (team.isMember(player)) {
+                            // Gypsie way to get a custom color if they're allies/teammates
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
                         } else if (team.isAlly(player)) {
+                            // Gypsie way to get a custom color if they're allies/teammates
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
                         } else {
+                            // We only check this here as...
+                            // Team members always see their team's messages
+                            // Allies always see their allies' messages, 'cause they'll probably be in a TS or something
+                            // and they could figure out this code even exists
                             if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getName())) {
-                                if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
-                                    player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "SM: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_PURPLE + event.getPlayer().getName() + ": " + event.getMessage());
-                                }
-
                                 continue;
                             }
 
+                            // If their chat is enabled (which it is by default) or the sender is op, send them the message
+                            // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                             if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getName())) {
                                 player.sendMessage(finalMessage);
                             }
                         }
                     }
-
-                    FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
                 }
 
+                FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
                 break;
             case ALLIANCE:
+                String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
+                String allyChatSpyFormat = FoxConstants.allyChatSpyFormat(team, event.getPlayer(), event.getMessage());
+
+                // Loop online players and not recipients just in case you're weird and
+                // /ignore your teammates/allies
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player) || team.isAlly(player)) { // If they're going to receive this message, send it!
-                        player.sendMessage(Team.ALLY_COLOR + "(Ally) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
+                    if (team.isMember(player) || team.isAlly(player)) {
+                        player.sendMessage(allyChatFormat);
                     } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
-                        // Chat spying for allies are weird.
-                        // You'll only see the message if you're spying on the team SENDING it.
-                        // It might be best to make it so spying on ONE team lets you see the chat of the alliance,
-                        // but then we get teams where A is allied to B, B is allied to C, and A isn't allied to C.
-                        player.sendMessage(ChatColor.GOLD + "[" + Team.ALLY_COLOR + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + Team.ALLY_COLOR + event.getPlayer().getName() + ": " + event.getMessage());
+                        player.sendMessage(allyChatSpyFormat);
                     }
                 }
 
@@ -134,11 +140,16 @@ public class ChatListener implements Listener {
                 FoxtrotPlugin.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case TEAM:
+                String teamChatFormat = FoxConstants.teamChatFormat(event.getPlayer(), event.getMessage());
+                String teamChatSpyFormat = FoxConstants.teamChatSpyFormat(team, event.getPlayer(), event.getMessage());
+
+                // Loop online players and not recipients just in case you're weird and
+                // /ignore your teammates
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player)) { // If they're going to receive this message, send it!
-                        player.sendMessage(ChatColor.DARK_AQUA + "(Team) " + event.getPlayer().getName() + ": " + ChatColor.YELLOW + event.getMessage());
-                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) { // Otherwise, if they're going to chat spy it...
-                        player.sendMessage(ChatColor.GOLD + "[" + ChatColor.DARK_AQUA + "TC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + ChatColor.DARK_AQUA + event.getPlayer().getName() + ": " + event.getMessage());
+                    if (team.isMember(player)) {
+                        player.sendMessage(teamChatFormat);
+                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getName()).contains(team.getUniqueId())) {
+                        player.sendMessage(teamChatSpyFormat);
                     }
                 }
 

@@ -1,7 +1,9 @@
 package net.frozenorb.foxtrot.teamactiontracker.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 public enum TeamActionType {
 
     GENERAL("general"),
@@ -11,9 +13,5 @@ public enum TeamActionType {
     ALLY_CHAT("allyChat");
 
     @Getter private String name;
-
-    TeamActionType(String name) {
-        this.name = name;
-    }
 
 }

@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 
 public class BitmaskCommand {
 
+    //TODO: Cleanup
+
     @Command(names={ "bitmask list", "bitmasks list" }, permissionNode="op")
     public static void bitmaskList(Player sender) {
         for (DTRBitmaskType bitmaskType : DTRBitmaskType.values()) {

@@ -49,17 +49,15 @@ public class CitadelHandler {
         try {
             File citadelInfo = new File("citadelInfo.json");
 
-            if (!citadelInfo.exists()) {
-                if (citadelInfo.createNewFile()) {
-                    BasicDBObject dbo = new BasicDBObject();
+            if (!citadelInfo.exists() && citadelInfo.createNewFile()) {
+                BasicDBObject dbo = new BasicDBObject();
 
-                    dbo.put("capper", null);
-                    dbo.put("lootable", new Date());
-                    dbo.put("chests", new BasicDBList());
-                    dbo.put("loot", new BasicDBList());
+                dbo.put("capper", null);
+                dbo.put("lootable", new Date());
+                dbo.put("chests", new BasicDBList());
+                dbo.put("loot", new BasicDBList());
 
-                    FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
-                }
+                FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));
@@ -161,11 +159,9 @@ public class CitadelHandler {
             if (team.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
                 for (Claim claim : team.getClaims()) {
                     for (Location location : new CuboidRegion("Citadel", claim.getMinimumPoint(), claim.getMaximumPoint())) {
-                        if (location.getBlock().getType() != Material.CHEST) {
-                            continue;
+                        if (location.getBlock().getType() == Material.CHEST) {
+                            citadelChests.add(location);
                         }
-
-                        citadelChests.add(location);
                     }
                 }
             }
@@ -173,9 +169,7 @@ public class CitadelHandler {
     }
 
     public void respawnCitadelChests() {
-        for (Location citadelChest : citadelChests) {
-            respawnCitadelChest(citadelChest);
-        }
+        citadelChests.forEach((chest) -> respawnCitadelChest(chest));
     }
 
     public void respawnCitadelChest(Location location) {

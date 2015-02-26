@@ -9,11 +9,7 @@ import org.bukkit.entity.Player;
 public class GoppleResetCommand {
 
     @Command(names={ "GoppleReset" }, permissionNode="foxtrot.gopplereset")
-    public static void goppleReset(Player sender, @Param(name="Target", defaultValue="self") String target) {
-        if (target.equals("self")) {
-            target = sender.getName();
-        }
-
+    public static void goppleReset(Player sender, @Param(name="Target") String target) {
         FoxtrotPlugin.getInstance().getOppleMap().resetCooldown(target.toLowerCase());
         sender.sendMessage(ChatColor.RED + "Cooldown reset!");
     }

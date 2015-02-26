@@ -60,7 +60,6 @@ public class MapHandler {
                 this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbo.getString("scoreboardTitle"));
                 ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbo.getInt("border", 3000);
-                ScoreboardHandler.scoreboardTimerEnabled = dbo.getBoolean("scoreboardTimersEnabled", true);
                 this.tradingSpawnShopMultiplier = dbo.getDouble("tradingSpawnShopMod");
 
                 BasicDBObject looting = (BasicDBObject) dbo.get("looting");

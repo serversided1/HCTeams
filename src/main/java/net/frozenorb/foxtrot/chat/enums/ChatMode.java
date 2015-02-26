@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.team.chat;
+package net.frozenorb.foxtrot.chat.enums;
 
 public enum  ChatMode {
 

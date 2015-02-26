@@ -23,17 +23,17 @@ public class ItemMessage {
     private String[] FORMATS = new String[] { "%s", " %s " };
 
     public void sendMessage(Player player, ItemMessageGetter message, int slot) {
-        (new NamerTask(player, message, slot)).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
+        (new ItemMessageTask(player, message, slot)).runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
     }
 
-    public class NamerTask extends BukkitRunnable implements Listener {
+    public class ItemMessageTask extends BukkitRunnable implements Listener {
 
-        private final WeakReference<Player> playerRef;
-        private final ItemMessageGetter message;
+        private WeakReference<Player> playerRef;
+        private ItemMessageGetter message;
         private int slot;
         private int iterations = 0;
 
-        public NamerTask(Player player, ItemMessageGetter message, int slot) {
+        public ItemMessageTask(Player player, ItemMessageGetter message, int slot) {
             this.playerRef = new WeakReference<>(player);
             this.slot = slot;
             this.message = message;
@@ -42,7 +42,7 @@ public class ItemMessage {
             run();
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
         public void onItemHeldChange(PlayerItemHeldEvent event) {
             Player player = event.getPlayer();
 
@@ -79,11 +79,6 @@ public class ItemMessage {
         private ItemStack makeStack(Player player) {
             ItemStack stack = player.getInventory().getItem(slot);
 
-            if (stack == null || stack.getType() == Material.AIR) {
-                stack = new ItemStack(Material.SNOW, 1);
-            } else {
-                stack = new ItemStack(stack.getType(), stack.getAmount(), stack.getDurability());
-            }
 
             ItemMeta meta = Bukkit.getItemFactory().getItemMeta(stack.getType());
             // fool the client into thinking the item name has changed, so it actually (re)displays it
@@ -94,6 +89,10 @@ public class ItemMessage {
         }
 
         private void sendItemSlotChange(Player player, int slot, ItemStack stack) {
+            if (stack == null || stack.getType() == Material.AIR) {
+                return;
+            }
+
             PacketContainer setSlot = new PacketContainer(103);
             // int field 0: window id (0 = player inventory)
             // int field 1: slot number (36 - 44 for player hotbar)
@@ -102,15 +101,15 @@ public class ItemMessage {
 
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, setSlot);
-            } catch (InvocationTargetException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static abstract class ItemMessageGetter {
+    public static interface ItemMessageGetter {
 
-        public abstract String getMessage(Player player);
+        public String getMessage(Player player);
 
     }
 

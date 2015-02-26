@@ -14,9 +14,7 @@ public class BalanceCommand {
     @Command(names={ "Balance", "Econ", "Bal", "$" }, permissionNode="")
     public static void balace(Player sender, @Param(name="Target", defaultValue="self") String target) {
         if (target.equals("self")) {
-            target = sender.getName();
-            sender.sendMessage(ChatColor.GOLD + "Balance: " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(target)));
-            return;
+            sender.sendMessage(ChatColor.GOLD + "Balance: " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(sender.getName())));
         } else {
             sender.sendMessage(ChatColor.GOLD + "Balance of " + target + ": " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(target)));
         }

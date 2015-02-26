@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 public class CitadelListener implements Listener {
 
     @EventHandler
-    public void onKOTHActivate(KOTHActivatedEvent event) {
+    public void onKOTHActivated(KOTHActivatedEvent event) {
         if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
             FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelActivatedEvent());
         }

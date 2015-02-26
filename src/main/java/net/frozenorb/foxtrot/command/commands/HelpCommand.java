@@ -13,13 +13,13 @@ public class HelpCommand {
          String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
          String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
 
-        String[] msg = {
+        sender.sendMessage(new String[] {
 
                 "§6§m-----------------------------------------------------",
                 "§9§lHCTeams Help §7- §eInformation on HCTeams",
                 "§7§m-----------------------------------------------------",
                 "§9Map Information:",
-                "§eCurrent Map: §7Map 3 - Started January 31, 2015", //We should add this as a String in the mapInfo.json, I don't know how.
+                "§eCurrent Map: §7Map 3 - Started January 31, 2015", // We should add this as a String in the mapInfo.json, I don't know how.
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + sharp + ", " + prot,
@@ -45,9 +45,7 @@ public class HelpCommand {
                 "§eHCTeams Website §7- §dwww.hcteams.com",
                 "§6§m-----------------------------------------------------",
 
-        };
-
-        sender.sendMessage(msg);
+        });
     }
 
 }

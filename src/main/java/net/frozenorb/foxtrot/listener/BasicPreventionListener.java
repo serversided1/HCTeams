@@ -99,10 +99,6 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event.getEntity().getType() == EntityType.SQUID) {
-            event.setCancelled(true);
-        }
-
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL && event.getEntity().getType() == EntityType.SKELETON && ((Skeleton) event.getEntity()).getSkeletonType() == Skeleton.SkeletonType.WITHER) {
             event.setCancelled(true);
         }

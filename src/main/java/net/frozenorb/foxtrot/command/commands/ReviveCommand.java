@@ -17,7 +17,7 @@ import java.util.Date;
 public class ReviveCommand {
 
     @Command(names={ "Revive" }, permissionNode="op")
-    public static void playSound(CommandSender sender, @Param(name="Target") String target, @Param(name="Reason", wildcard=true) String reason) {
+    public static void revive(CommandSender sender, @Param(name="Target") String target, @Param(name="Reason", wildcard=true) String reason) {
         if (reason.equals(".")) {
             sender.sendMessage(ChatColor.RED + ". is not a good reason...");
             return;

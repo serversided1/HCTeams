@@ -8,8 +8,7 @@ public class HourEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    @Getter
-    int hour;
+    @Getter private int hour;
 
     public HourEvent(int hour) {
         this.hour = hour;

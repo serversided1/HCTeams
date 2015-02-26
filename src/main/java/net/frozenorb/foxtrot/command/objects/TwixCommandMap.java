@@ -95,7 +95,7 @@ public class TwixCommandMap extends SimpleCommandMap {
             });
 
             return (completionList);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
             return (new ArrayList<>());

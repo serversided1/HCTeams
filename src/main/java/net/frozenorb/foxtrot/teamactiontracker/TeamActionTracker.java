@@ -26,17 +26,14 @@ public class TeamActionTracker {
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
-    private static CustomTimingsHandler logAction = new CustomTimingsHandler("TeamActionTracker - logAction");
-
     public static void logAction(Team team, TeamActionType actionType, String message) {
-        // If the team is still being setup this might happen.
+        // If the team is still being setup this will happen.
         if (team == null || team.isLoading()) {
             return;
         }
 
-        logAction.startTiming();
         File logToFolder = new File("foxlogs" + File.separator + "teamactiontracker" + File.separator + team.getName());
-        File logTo = new File(logToFolder, actionType.name().toLowerCase() + ".log");
+        File logTo = new File(logToFolder, actionType.getName().toLowerCase() + ".log");
 
         try {
             logTo.getParentFile().mkdirs();
@@ -47,8 +44,6 @@ public class TeamActionTracker {
             FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
-
-        logAction.stopTiming();
     }
 
 }

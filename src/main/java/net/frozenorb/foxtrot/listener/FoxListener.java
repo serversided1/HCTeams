@@ -67,13 +67,6 @@ public class FoxListener implements Listener {
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
             Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL);
 
-    @EventHandler
-    public void onCreatureSpawn(CreatureSpawnEvent event) {
-        if (event.getEntity() instanceof IronGolem) {
-            ((IronGolem) event.getEntity()).setPlayerCreated(false);
-        }
-    }
-
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {

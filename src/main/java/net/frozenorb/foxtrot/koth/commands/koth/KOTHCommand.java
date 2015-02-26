@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class KOTHCommand {
 
+    // Make this pretty.
     @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
     public static void kothSchedule(Player sender) {
         for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {

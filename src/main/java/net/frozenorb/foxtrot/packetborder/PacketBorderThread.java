@@ -1,12 +1,12 @@
-package net.frozenorb.foxtrot.border;
+package net.frozenorb.foxtrot.packetborder;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.entity.Player;
 
-public class BorderThread extends Thread {
+public class PacketBorderThread extends Thread {
 
-    public BorderThread() {
-        super("Foxtrot - Border Thread");
+    public PacketBorderThread() {
+        super("Foxtrot - Packet Border Thread");
     }
 
     public void run() {
@@ -31,14 +31,14 @@ public class BorderThread extends Thread {
 
     public void checkPlayer(Player player) {
         try {
-            Border border = new Border();
+            PacketBorder packetBorder = new PacketBorder();
 
-            border.scanClaims(player);
+            packetBorder.scanClaims(player);
 
-            if (border.getClaims().size() == 0) {
-                Border.clearPlayer(player);
+            if (packetBorder.getClaims().size() == 0) {
+                PacketBorder.clearPlayer(player);
             } else {
-                border.sendToPlayer(player);
+                packetBorder.sendToPlayer(player);
             }
         } catch (Exception e) {
             FoxtrotPlugin.getInstance().getBugSnag().notify(e);

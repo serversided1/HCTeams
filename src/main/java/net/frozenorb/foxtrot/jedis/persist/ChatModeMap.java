@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.jedis.persist;
 
 import net.frozenorb.foxtrot.jedis.RedisPersistMap;
-import net.frozenorb.foxtrot.team.chat.ChatMode;
+import net.frozenorb.foxtrot.chat.enums.ChatMode;
 
 public class ChatModeMap extends RedisPersistMap<ChatMode> {
 

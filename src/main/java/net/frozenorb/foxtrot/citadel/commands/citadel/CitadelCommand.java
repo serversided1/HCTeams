@@ -13,6 +13,7 @@ import java.util.Date;
 
 public class CitadelCommand {
 
+    // Make this pretty.
     @Command(names={ "citadel" }, permissionNode="")
     public static void citadel(Player sender) {
         Team capper = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(FoxtrotPlugin.getInstance().getCitadelHandler().getCapper());

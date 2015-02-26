@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class KOTHScheduleCommand {
 
+    // Make this pretty.
     @Command(names={ "KOTH Schedule" }, permissionNode="")
     public static void kothSchedule(Player sender) {
         int sent = 0;

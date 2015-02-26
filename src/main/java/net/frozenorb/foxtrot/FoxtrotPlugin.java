@@ -8,7 +8,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.base.Joiner;
 import com.mongodb.MongoClient;
 import lombok.Getter;
-import net.frozenorb.foxtrot.border.BorderThread;
+import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
+import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -152,7 +153,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
-        (new BorderThread()).start();
+        (new PacketBorderThread()).start();
         (new ScoreboardThread()).start();
         (new NametagThread()).start();
 

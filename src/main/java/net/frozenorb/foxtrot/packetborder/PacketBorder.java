@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.border;
+package net.frozenorb.foxtrot.packetborder;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class Border {
+public class PacketBorder {
 
     public static final int REGION_DISTANCE = 8;
     public static final int REGION_DISTANCE_SQUARED = REGION_DISTANCE * REGION_DISTANCE;
@@ -37,6 +37,10 @@ public class Border {
             Claim claim = regionDataEntry.getKey();
             Team team = regionDataEntry.getValue();
 
+            // Ignore claims if the player is in them.
+            // There might become a time where we need to remove this
+            // and make it a per-claim-type check, however for now
+            // all checks work fine with this here.
             if (claim.contains(player)) {
                 continue;
             }
@@ -85,6 +89,8 @@ public class Border {
     }
 
     public void sendClaimToPlayer(Player player, Claim claim) {
+        // This gets us all the coordinates on the outside of the claim.
+        // Probably could be made better
         for (Coordinate coordinate : claim) {
             Location onPlayerY = new Location(player.getWorld(), coordinate.getX(), player.getLocation().getY(), coordinate.getZ());
 
@@ -97,23 +103,21 @@ public class Border {
                 Location check = onPlayerY.clone().add(0, i, 0);
 
                 if (check.getWorld().isChunkLoaded(check.getBlockX(), check.getBlockZ()) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
-                    player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14);
-                    sentBlockChanges.get(player.getName()).put(check, System.currentTimeMillis() + 4000L);
+                    player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14); // Red stained glass
+                    sentBlockChanges.get(player.getName()).put(check, System.currentTimeMillis() + 4000L); // The time the glass will stay for if the player walks away
                 }
             }
         }
     }
 
     public static void clearPlayer(Player player) {
-        if (!sentBlockChanges.containsKey(player.getName())) {
-            return;
-        }
+        if (sentBlockChanges.containsKey(player.getName())) {
+            for (Location changedLocation : sentBlockChanges.get(player.getName()).keySet()) {
+                player.sendBlockChange(changedLocation, changedLocation.getBlock().getType(), changedLocation.getBlock().getData());
+            }
 
-        for (Location changedLocation : sentBlockChanges.get(player.getName()).keySet()) {
-            player.sendBlockChange(changedLocation, changedLocation.getBlock().getType(), changedLocation.getBlock().getData());
+            sentBlockChanges.remove(player.getName());
         }
-
-        sentBlockChanges.remove(player.getName());
     }
 
 }

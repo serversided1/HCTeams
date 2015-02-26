@@ -13,9 +13,12 @@ public class ScoreboardThread extends Thread {
         try {
             //noinspection InfiniteLoopStatement
             while (true) {
-                if (ScoreboardHandler.scoreboardTimerEnabled) {
-                    for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                for (Player online : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                    try {
                         FoxtrotPlugin.getInstance().getScoreboardHandler().update(online);
+                    } catch (Exception e) {
+                        FoxtrotPlugin.getInstance().getBugSnag().notify(e);
+                        e.printStackTrace();
                     }
                 }
 

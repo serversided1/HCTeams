@@ -10,7 +10,7 @@ public class ToggleEndCommand {
     @Command(names={ "ToggleEnd" }, permissionNode="foxtrot.toggleend")
     public static void toggleEnd(Player sender) {
         EndListener.endActive = !EndListener.endActive;
-        sender.sendMessage(ChatColor.GRAY + "End enabled? " + ChatColor.DARK_AQUA + (EndListener.endActive ? "Yes" : "No"));
+        sender.sendMessage(ChatColor.YELLOW + "End enabled? " + ChatColor.LIGHT_PURPLE + (EndListener.endActive ? "Yes" : "No"));
     }
 
 }

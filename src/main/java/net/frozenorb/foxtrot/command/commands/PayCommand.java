@@ -10,23 +10,19 @@ import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
 
-/**
- * @author Connor Hollasch
- * @since 10/10/14
- */
 public class PayCommand {
 
     @Command(names={ "Pay", "P2P" }, permissionNode="")
-    public static void mc(Player sender, @Param(name="Target") String target, @Param(name="Amount") float value) {
+    public static void pay(Player sender, @Param(name="Target") String target, @Param(name="Amount") float value) {
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
 
-        if(!(FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target))){
-            sender.sendMessage(ChatColor.RED + target + " has never played before!");
+        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target)) {
+            sender.sendMessage(ChatColor.RED + "Player not found.");
             return;
         }
 
-        //Format online players name
-        Player pTarget = Bukkit.getPlayer(target);
+        // Format online players name
+        Player pTarget = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
 
         if (pTarget != null) {
             target = pTarget.getName();
@@ -37,8 +33,8 @@ public class PayCommand {
             return;
         }
 
-        if (value < 50) {
-            sender.sendMessage(ChatColor.RED + "You must send at least $50!");
+        if (value < 5) {
+            sender.sendMessage(ChatColor.RED + "You must send at least $5!");
             return;
         }
 
