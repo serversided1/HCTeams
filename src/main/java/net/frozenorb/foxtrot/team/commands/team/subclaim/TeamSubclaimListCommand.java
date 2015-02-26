@@ -23,7 +23,7 @@ public class TeamSubclaimListCommand {
 
         for (Subclaim scs : team.getSubclaims()) {
             if (scs.isMember(sender.getName()) || team.getOwner().equalsIgnoreCase(sender.getName()) || team.isCaptain(sender.getName())) {
-                access.append(scs).append(", ");
+                access.append(scs.getName()).append(", ");
                 continue;
             }
 

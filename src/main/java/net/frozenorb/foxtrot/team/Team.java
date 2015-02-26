@@ -618,7 +618,7 @@ public class Team {
                         Location loc2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
 
                         Subclaim subclaimObj = new Subclaim(loc1, loc2, name);
-                        subclaimObj.setMembers(Arrays.asList(members.split(",")));
+                        subclaimObj.setMembers(new ArrayList<>(Arrays.asList(members.split(","))));
 
                         getSubclaims().add(subclaimObj);
                     }
