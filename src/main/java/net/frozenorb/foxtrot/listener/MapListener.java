@@ -56,6 +56,8 @@ public class MapListener implements Listener {
                     case 3:
                         multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel3LootingMultiplier();
                         break;
+                    default:
+                        break;
                 }
             }
 

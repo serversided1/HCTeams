@@ -50,15 +50,16 @@ public class CitadelHandler {
             File citadelInfo = new File("citadelInfo.json");
 
             if (!citadelInfo.exists()) {
-                citadelInfo.createNewFile();
-                BasicDBObject dbo = new BasicDBObject();
+                if (citadelInfo.createNewFile()) {
+                    BasicDBObject dbo = new BasicDBObject();
 
-                dbo.put("capper", null);
-                dbo.put("lootable", new Date());
-                dbo.put("chests", new BasicDBList());
-                dbo.put("loot", new BasicDBList());
+                    dbo.put("capper", null);
+                    dbo.put("lootable", new Date());
+                    dbo.put("chests", new BasicDBList());
+                    dbo.put("loot", new BasicDBList());
 
-                FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
+                    FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
+                }
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));

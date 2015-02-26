@@ -29,7 +29,7 @@ public class TeamChatCommand {
 
         setChat(sender, chatMode);
     }
-    
+
     @Command(names={ "fc", "tc" }, permissionNode="")
     public static void fc(Player sender) {
         setChat(sender, ChatMode.TEAM);
