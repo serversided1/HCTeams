@@ -78,8 +78,8 @@
 			<url>http://maven.minehq.com:8081/artifactory/repo/</url>
 		</repository>
 		<repository>
-			<id>comphenix-repo</id>
-			<url>http://repo.comphenix.net/content/groups/public/</url>
+			<id>elmakers-repo</id>
+			<url>http://maven.elmakers.com/repository/</url>
 		</repository>
 	</repositories>
 
