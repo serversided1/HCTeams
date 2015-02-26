@@ -43,7 +43,6 @@ public class DeathTracker {
                 try {
                     logTo.getParentFile().mkdirs();
                     logTo.createNewFile();
-
                     FileUtils.write(logTo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(data.toString())));
                 } catch (Exception e) {
                     FoxtrotPlugin.getInstance().getBugSnag().notify(e);

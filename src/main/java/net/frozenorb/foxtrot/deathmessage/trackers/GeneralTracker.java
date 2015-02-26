@@ -39,6 +39,8 @@ public class GeneralTracker implements Listener {
             case WITHER:
                 event.setTrackerDamage(new GeneralDamage(event.getPlayer().getName(), event.getDamage(), "Wither", "withered away"));
                 break;
+            default:
+                break;
         }
     }
 

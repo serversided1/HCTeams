@@ -28,7 +28,6 @@ public class ReviveCommand {
 
             try {
                 logTo.createNewFile();
-
                 Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + sender.getName() + " revived " + target + " for " + reason + "\n", logTo, Charset.defaultCharset());
             } catch (Exception e) {
                 FoxtrotPlugin.getInstance().getBugSnag().notify(e);

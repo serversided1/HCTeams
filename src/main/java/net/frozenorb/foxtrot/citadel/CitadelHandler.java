@@ -50,15 +50,16 @@ public class CitadelHandler {
             File citadelInfo = new File("citadelInfo.json");
 
             if (!citadelInfo.exists()) {
-                citadelInfo.createNewFile();
-                BasicDBObject dbo = new BasicDBObject();
+                if (citadelInfo.createNewFile()) {
+                    BasicDBObject dbo = new BasicDBObject();
 
-                dbo.put("capper", null);
-                dbo.put("lootable", new Date());
-                dbo.put("chests", new BasicDBList());
-                dbo.put("loot", new BasicDBList());
+                    dbo.put("capper", null);
+                    dbo.put("lootable", new Date());
+                    dbo.put("chests", new BasicDBList());
+                    dbo.put("loot", new BasicDBList());
 
-                FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
+                    FileUtils.write(citadelInfo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
+                }
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));
@@ -183,11 +184,8 @@ public class CitadelHandler {
         if (blockState instanceof Chest) {
             Chest chest = (Chest) blockState;
 
-            // Re-checking the bitmask flag ensures there's never a way to get respawning chests in your base
-            if (DTRBitmaskType.CITADEL.appliesAt(location)) {
-                chest.getBlockInventory().clear();
-                chest.getBlockInventory().addItem(citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size())));
-            }
+            chest.getBlockInventory().clear();
+            chest.getBlockInventory().addItem(citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size())));
         } else {
             FoxtrotPlugin.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
         }
