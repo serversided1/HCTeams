@@ -78,8 +78,8 @@
 			<url>http://maven.minehq.com:8081/artifactory/repo/</url>
 		</repository>
 		<repository>
-			<id>elmakers-repo</id>
-			<url>http://maven.elmakers.com/repository/</url>
+            <id>shadowvolt-repo</id>
+            <url>http://ci.shadowvolt.com/plugin/repository/everything/</url>
 		</repository>
 	</repositories>
 
@@ -109,27 +109,11 @@
 			<artifactId>jedis</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>com.comphenix.packetwrapper</groupId>
-			<artifactId>PacketWrapper</artifactId>
-			<version>LATEST</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.6.3-SNAPSHOT</version>
+        </dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

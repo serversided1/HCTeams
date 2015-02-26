@@ -164,14 +164,13 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
 
-            // No sign GUI when placing death signs.
+            // No sign GUI when placing death/KOTH signs.
             @Override
             public void onPacketSending(PacketEvent event) {
                 WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
-                Player player = event.getPlayer();
-                Location loc = new Location(player.getWorld(), packet.getX(), packet.getY(), packet.getZ());
+                Location location = new Location(event.getPlayer().getWorld(), packet.getX(), packet.getY(), packet.getZ());
 
-                if (loc.getBlock().getState().hasMetadata("noSignPacket")) {
+                if (location.getBlock().getState().hasMetadata("noSignPacket")) {
                     event.setCancelled(true);
                 }
             }
