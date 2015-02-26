@@ -184,11 +184,8 @@ public class CitadelHandler {
         if (blockState instanceof Chest) {
             Chest chest = (Chest) blockState;
 
-            // Re-checking the bitmask flag ensures there's never a way to get respawning chests in your base
-            if (DTRBitmaskType.CITADEL.appliesAt(location)) {
-                chest.getBlockInventory().clear();
-                chest.getBlockInventory().addItem(citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size())));
-            }
+            chest.getBlockInventory().clear();
+            chest.getBlockInventory().addItem(citadelLoot.get(FoxtrotPlugin.RANDOM.nextInt(citadelLoot.size())));
         } else {
             FoxtrotPlugin.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
         }
