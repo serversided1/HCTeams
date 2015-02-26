@@ -84,12 +84,16 @@ public class CombatLoggerListener implements Listener {
                 }
             }
 
-            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+            if (target != null) {
+                EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
 
-            target.getInventory().clear();
-            target.getInventory().setArmorContents(null);
-            humanTarget.setHealth(0);
-            target.saveData();
+                target.getInventory().clear();
+                target.getInventory().setArmorContents(null);
+                humanTarget.setHealth(0);
+                target.saveData();
+            } else {
+                FoxtrotPlugin.getInstance().getBugSnag().notify(new NullPointerException("Target is null"));
+            }
         }
     }
 

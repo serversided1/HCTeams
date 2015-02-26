@@ -81,10 +81,13 @@ public abstract class ScoreGetter {
                 switch (koth.getName()) {
                     case "EOTW":
                         lastActiveKOTH = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
+                        break;
                     case "Citadel":
                         lastActiveKOTH = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
+                        break;
                     default:
                         lastActiveKOTH = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
+                        break;
                 }
 
                 return (ScoreFunction.TIME_SIMPLE.apply((float) koth.getRemainingCapTime()));

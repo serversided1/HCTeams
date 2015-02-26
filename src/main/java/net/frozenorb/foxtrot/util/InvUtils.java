@@ -50,11 +50,9 @@ public class InvUtils {
         boolean fixed = false;
         Map<Enchantment, Integer> enchants = item.getEnchantments();
 
-        for (Enchantment enchantment : enchants.keySet()) {
-            int level = enchants.get(enchantment);
-
-            if (level > enchantment.getMaxLevel()) {
-                item.addUnsafeEnchantment(enchantment, enchantment.getMaxLevel());
+        for (Map.Entry<Enchantment, Integer> enchantmentSet : enchants.entrySet()) {
+            if (enchantmentSet.getValue() > enchantmentSet.getKey().getMaxLevel()) {
+                item.addUnsafeEnchantment(enchantmentSet.getKey(), enchantmentSet.getKey().getMaxLevel());
                 fixed = true;
             }
         }
@@ -149,15 +147,15 @@ public class InvUtils {
     }
 
     public static int getCrowbarUsesPortal(ItemStack item){
-        return (Integer.valueOf(getLoreData(item, 2)));
+        return (Integer.parseInt(getLoreData(item, 2)));
     }
 
     public static int getCrowbarUsesSpawner(ItemStack item){
-        return (Integer.valueOf(getLoreData(item, 3)));
+        return (Integer.parseInt(getLoreData(item, 3)));
     }
 
     public static int getKOTHRewardKeyTier(ItemStack item) {
-        return (Integer.valueOf(getLoreData(item, 2)));
+        return (Integer.parseInt(getLoreData(item, 2)));
     }
 
     public static String getLoreData(ItemStack item, int index) {

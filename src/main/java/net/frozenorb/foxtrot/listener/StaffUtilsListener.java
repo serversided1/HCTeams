@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class StaffUtilsListener implements Listener {
 
-    private static Location lastDamageLocation;
+    private Location lastDamageLocation;
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {

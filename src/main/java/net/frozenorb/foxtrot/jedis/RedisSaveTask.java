@@ -33,7 +33,6 @@ public class RedisSaveTask extends BukkitRunnable {
                     }
                 }
 
-                jedis.set("TeamsLastUpdated", String.valueOf((float) (System.currentTimeMillis() / 1000L)));
                 return (changed);
             }
         };

@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.teamactiontracker;
 
+import com.google.common.io.Files;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -9,6 +10,7 @@ import org.spigotmc.CustomTimingsHandler;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,9 +42,7 @@ public class TeamActionTracker {
             logTo.getParentFile().mkdirs();
             logTo.createNewFile();
 
-            BufferedWriter output = new BufferedWriter(new FileWriter(logTo, true));
-            output.append("[").append(SimpleDateFormat.getDateTimeInstance().format(new Date())).append("] ").append(message).append("\n");
-            output.close();
+            Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + message + "\n", logTo, Charset.defaultCharset());
         } catch (Exception e) {
             FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();

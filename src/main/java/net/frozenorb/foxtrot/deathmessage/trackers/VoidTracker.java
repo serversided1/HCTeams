@@ -40,7 +40,7 @@ public class VoidTracker implements Listener {
         }
 
         if (knocker != null) {
-            event.setTrackerDamage(new VoidDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager(), !(knocker instanceof ArrowTracker.ArrowDamageByPlayer)));
+            event.setTrackerDamage(new VoidDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager()));
         } else {
             event.setTrackerDamage(new VoidDamage(event.getPlayer().getName(), event.getDamage()));
         }
@@ -48,7 +48,7 @@ public class VoidTracker implements Listener {
 
     //***************************//
 
-    public class VoidDamage extends Damage {
+    public static class VoidDamage extends Damage {
 
         //***************************//
 
@@ -72,17 +72,12 @@ public class VoidTracker implements Listener {
 
     //***************************//
 
-    public class VoidDamageByPlayer extends PlayerDamage {
+    public static class VoidDamageByPlayer extends PlayerDamage {
 
         //***************************//
 
-        private boolean knocked;
-
-        //***************************//
-
-        VoidDamageByPlayer(String damaged, double damage, String damager, boolean knocked) {
+        VoidDamageByPlayer(String damaged, double damage, String damager) {
             super(damaged, damage, damager);
-            this.knocked = knocked;
         }
 
         //***************************//

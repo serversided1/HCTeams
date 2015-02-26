@@ -22,7 +22,7 @@ public class TeamShadowMuteCommand {
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
     public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time) {
-        int timeSeconds = Integer.valueOf(time) * 60;
+        int timeSeconds = Integer.parseInt(time) * 60;
 
         for (String player : target.getMembers()) {
             teamShadowMutes.put(player, target.getName());

@@ -370,29 +370,30 @@ public class ServerHandler {
         return (Math.min(max, ban));
     }
 
-    public void disablePlayerAttacking(final Player p, int seconds) {
+    public void disablePlayerAttacking(final Player player, int seconds) {
         if (seconds == 10) {
-            p.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
+            player.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
         }
 
-        final Listener l = new Listener() {
+        final Listener listener = new Listener() {
+
             @EventHandler
-            public void onPlayerDamage(EntityDamageByEntityEvent e) {
-                if (e.getDamager() instanceof Player && (e.getEntity() instanceof Player || e.getEntity() instanceof Cow)) {
-                    if (((Player) e.getDamager()).getName().equals(p.getName())) {
-                        e.setCancelled(true);
+            public void onPlayerDamage(EntityDamageByEntityEvent event) {
+                if (event.getDamager() instanceof Player) {
+                    if (((Player) event.getDamager()).getName().equals(player.getName())) {
+                        event.setCancelled(true);
                     }
                 }
-
             }
+
         };
 
-        Bukkit.getPluginManager().registerEvents(l, FoxtrotPlugin.getInstance());
+        Bukkit.getPluginManager().registerEvents(listener, FoxtrotPlugin.getInstance());
         Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
             public void run() {
-                HandlerList.unregisterAll(l);
+                HandlerList.unregisterAll(listener);
             }
-        }, seconds * 20);
+        }, seconds * 20L);
     }
 
     public boolean isSpawnBufferZone(Location loc) {

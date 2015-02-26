@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.command.commands;
 
+import com.google.common.io.Files;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
@@ -9,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ReviveCommand {
@@ -26,9 +29,7 @@ public class ReviveCommand {
             try {
                 logTo.createNewFile();
 
-                BufferedWriter output = new BufferedWriter(new FileWriter(logTo, true));
-                output.append("[").append(new Date().toString()).append("] ").append(sender.getName()).append(" revived ").append(target).append(" for ").append(reason).append("\n");
-                output.close();
+                Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + sender.getName() + " revived " + target + " for " + reason + "\n", logTo, Charset.defaultCharset());
             } catch (Exception e) {
                 FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                 e.printStackTrace();

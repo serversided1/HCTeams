@@ -36,7 +36,7 @@ public class PVPTracker implements Listener {
 
     //***************************//
 
-    public class PVPDamage extends PlayerDamage {
+    public static class PVPDamage extends PlayerDamage {
 
         //***************************//
 

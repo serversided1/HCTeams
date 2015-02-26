@@ -58,7 +58,7 @@ public class ArrowTracker implements Listener {
 
     //***************************//
 
-    public class ArrowDamage extends Damage {
+    public static class ArrowDamage extends Damage {
 
         //***************************//
 
@@ -117,7 +117,7 @@ public class ArrowTracker implements Listener {
 
     }
 
-    public class ArrowDamageByMob extends MobDamage {
+    public static class ArrowDamageByMob extends MobDamage {
 
         //***************************//
 

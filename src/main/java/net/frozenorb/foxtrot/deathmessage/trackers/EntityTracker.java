@@ -32,7 +32,7 @@ public class EntityTracker implements Listener {
 
     //***************************//
 
-    public class EntityDamage extends MobDamage {
+    public static class EntityDamage extends MobDamage {
 
         //***************************//
 

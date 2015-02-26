@@ -358,10 +358,15 @@ public class Team {
             }
         }
 
-        for (Subclaim subclaim : subclaims) {
-            if (subclaim.isMember(name)) {
-                subclaim.removeMember(name);
+        try {
+            for (Subclaim subclaim : subclaims) {
+                if (subclaim.isMember(name)) {
+                    subclaim.removeMember(name);
+                }
             }
+        } catch (Exception e) {
+            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
+            e.printStackTrace();
         }
 
         if (DTR > getMaxDTR()) {
@@ -548,7 +553,7 @@ public class Team {
             } else if (identifier.equalsIgnoreCase("Balance")) {
                 setBalance(Double.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("DTRCooldown")) {
-                setDTRCooldown(Long.valueOf(lineParts[0]));
+                setDTRCooldown(Long.parseLong(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
                 setName(lineParts[0]);
             } else if (identifier.equalsIgnoreCase("Claims")) {
@@ -558,12 +563,12 @@ public class Team {
                     if (claim.contains(":")) {
                         String[] split = claim.split(":");
 
-                        int x1 = Integer.valueOf(split[0].trim());
-                        int y1 = Integer.valueOf(split[1].trim());
-                        int z1 = Integer.valueOf(split[2].trim());
-                        int x2 = Integer.valueOf(split[3].trim());
-                        int y2 = Integer.valueOf(split[4].trim());
-                        int z2 = Integer.valueOf(split[5].trim());
+                        int x1 = Integer.parseInt(split[0].trim());
+                        int y1 = Integer.parseInt(split[1].trim());
+                        int z1 = Integer.parseInt(split[2].trim());
+                        int x2 = Integer.parseInt(split[3].trim());
+                        int y2 = Integer.parseInt(split[4].trim());
+                        int z2 = Integer.parseInt(split[5].trim());
                         String name = split[6].trim();
                         String world = split[7].trim();
 
@@ -590,19 +595,18 @@ public class Team {
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
-// loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + Joiner.on(",").join(members));
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
 
                     if (subclaim.contains(":")) {
                         String[] split = subclaim.split(":");
 
-                        int x1 = Integer.valueOf(split[0].trim());
-                        int y1 = Integer.valueOf(split[1].trim());
-                        int z1 = Integer.valueOf(split[2].trim());
-                        int x2 = Integer.valueOf(split[3].trim());
-                        int y2 = Integer.valueOf(split[4].trim());
-                        int z2 = Integer.valueOf(split[5].trim());
+                        int x1 = Integer.parseInt(split[0].trim());
+                        int y1 = Integer.parseInt(split[1].trim());
+                        int z1 = Integer.parseInt(split[2].trim());
+                        int x2 = Integer.parseInt(split[3].trim());
+                        int y2 = Integer.parseInt(split[4].trim());
+                        int z2 = Integer.parseInt(split[5].trim());
                         String name = split[6].trim();
                         String members = "";
 
@@ -849,9 +853,14 @@ public class Team {
     }
 
     @Override
+    public int hashCode() {
+        return (getUniqueId().hashCode());
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Team) {
-            return ((Team) obj).getName().equals(getName());
+            return ((Team) obj).getUniqueId().equals(getUniqueId());
         }
 
         return (super.equals(obj));

@@ -44,7 +44,7 @@ public class GeneralTracker implements Listener {
 
     //***************************//
 
-    public class GeneralDamage extends Damage {
+    public static class GeneralDamage extends Damage {
 
         //***************************//
 

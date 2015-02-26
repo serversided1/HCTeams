@@ -48,7 +48,7 @@ public class FallTracker implements Listener {
 
     //***************************//
 
-    public class FallDamage extends Damage {
+    public static class FallDamage extends Damage {
 
         //***************************//
 
@@ -82,7 +82,7 @@ public class FallTracker implements Listener {
 
     //***************************//
 
-    public class FallDamageByPlayer extends PlayerDamage {
+    public static class FallDamageByPlayer extends PlayerDamage {
 
         //***************************//
 
