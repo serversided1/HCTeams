@@ -35,8 +35,18 @@ public class TeamChatCommand {
         setChat(sender, ChatMode.TEAM);
     }
 
+    @Command(names={ "fc" }, permissionNode="")
+    public static void fc(Player sender) {
+        setChat(sender, ChatMode.TEAM);
+    }
+
     @Command(names={ "gc" }, permissionNode="")
     public static void gc(Player sender) {
+        setChat(sender, ChatMode.PUBLIC);
+    }
+
+    @Command(names={ "pc" }, permissionNode="")
+    public static void pc(Player sender) {
         setChat(sender, ChatMode.PUBLIC);
     }
 
