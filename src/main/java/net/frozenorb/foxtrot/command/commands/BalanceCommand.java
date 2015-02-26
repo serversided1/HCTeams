@@ -15,9 +15,11 @@ public class BalanceCommand {
     public static void balace(Player sender, @Param(name="Target", defaultValue="self") String target) {
         if (target.equals("self")) {
             target = sender.getName();
+            sender.sendMessage(ChatColor.GOLD + "Balance: " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(target)));
+            return;
+        } else {
+            sender.sendMessage(ChatColor.GOLD + "Balance of " + target + ": " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(target)));
         }
-
-        sender.sendMessage(ChatColor.GOLD + "Balance: " + ChatColor.WHITE + NumberFormat.getNumberInstance(Locale.US).format(Basic.get().getEconomyManager().getBalance(target)));
     }
 
 }

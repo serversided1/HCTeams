@@ -187,7 +187,7 @@ public class FoxListener implements Listener {
                     if (i.getDurability() != (short) 0) {
                         Potion pot = Potion.fromItemStack(i);
 
-                        if (pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
+                        if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
                             if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
