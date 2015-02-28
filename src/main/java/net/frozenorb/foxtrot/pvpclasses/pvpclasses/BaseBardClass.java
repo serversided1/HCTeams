@@ -72,6 +72,13 @@ public class BaseBardClass extends PvPClass {
     }
 
     @Override
+    public void apply(Player player) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+            player.sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
+        }
+    }
+
+    @Override
     public void remove(Player player) {
         BaseBardClass.getEnergy().remove(player.getName());
     }
@@ -84,6 +91,11 @@ public class BaseBardClass extends PvPClass {
 
         if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + getName() + " effects cannot be used while in spawn.");
+            return;
+        }
+
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
             return;
         }
 
