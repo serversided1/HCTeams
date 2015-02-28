@@ -3,6 +3,8 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
+import net.frozenorb.mBasic.CommandSystem.Commands.FreezeServer;
 import net.minecraft.server.v1_7_R4.EntityHuman;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
@@ -204,6 +206,12 @@ public class CombatLoggerListener implements Listener {
 
         // If they're dead.
         if (event.getPlayer().isDead()) {
+            return;
+        }
+
+        // If they're frozen
+        // TODO: Make this check if the server is frozen
+        if (Freeze.isFrozen(event.getPlayer())) {
             return;
         }
 
