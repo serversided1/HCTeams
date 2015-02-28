@@ -15,6 +15,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -192,6 +193,13 @@ public class EndListener implements Listener {
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
                     event.getPlayer().sendMessage(ChatColor.RED + "The End is currently disabled.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+
+            // Remove all potion effects with less than 8s remaining
+            for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
+                if (potionEffect.getDuration() < 20 * 8) {
+                    event.getPlayer().removePotionEffect(potionEffect.getType());
                 }
             }
         }
