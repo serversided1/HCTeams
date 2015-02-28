@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class TeamInviteCommand {
 
-    @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite" }, permissionNode="")
+    @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
     public static void teamInvite(Player sender, @Param(name="player") OfflinePlayer target) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
