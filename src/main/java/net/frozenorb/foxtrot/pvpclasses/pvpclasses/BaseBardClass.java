@@ -46,7 +46,7 @@ public class BaseBardClass extends PvPClass {
 
             public void run() {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this)) {
+                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this) || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player)) {
                         continue;
                     }
 
