@@ -677,18 +677,18 @@ public class Team {
         }
 
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
-        teamString.append("Owner:").append(getOwner()).append('\n');
-        teamString.append("Captains:").append(captains.toString()).append('\n');
-        teamString.append("Members:").append(members.toString()).append('\n');
-        teamString.append("Invited:").append(invites.toString()).append('\n');
-        teamString.append("Subclaims:").append(getSubclaims().toString()).append('\n');
-        teamString.append("Claims:").append(getClaims().toString()).append('\n');
+        teamString.append("Owner:").append(getOwner().replace("\n", "")).append('\n');
+        teamString.append("Captains:").append(captains.toString().replace("\n", "")).append('\n');
+        teamString.append("Members:").append(members.toString().replace("\n", "")).append('\n');
+        teamString.append("Invited:").append(invites.toString().replace("\n", "")).append('\n');
+        teamString.append("Subclaims:").append(getSubclaims().toString().replace("\n", "")).append('\n');
+        teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
-        teamString.append("FriendlyName:").append(getName()).append('\n');
+        teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Trading:").append(isTrading()).append('\n');
 
         if (getHQ() != null) {
