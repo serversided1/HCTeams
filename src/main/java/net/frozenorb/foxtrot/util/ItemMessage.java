@@ -79,6 +79,9 @@ public class ItemMessage {
         private ItemStack makeStack(Player player) {
             ItemStack stack = player.getInventory().getItem(slot);
 
+            if (stack == null || stack.getType() == Material.AIR) {
+                return (null);
+            }
 
             ItemMeta meta = Bukkit.getItemFactory().getItemMeta(stack.getType());
             // fool the client into thinking the item name has changed, so it actually (re)displays it
@@ -89,7 +92,8 @@ public class ItemMessage {
         }
 
         private void sendItemSlotChange(Player player, int slot, ItemStack stack) {
-            if (stack == null || stack.getType() == Material.AIR) {
+            if (stack == null) {
+                finish(player);
                 return;
             }
 
