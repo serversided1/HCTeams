@@ -93,7 +93,7 @@ public class ItemMessage {
 
         private void sendItemSlotChange(Player player, int slot, ItemStack stack) {
             if (stack == null) {
-                finish(player);
+                cleanup();
                 return;
             }
 
