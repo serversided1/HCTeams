@@ -103,7 +103,7 @@ public class ServerHandler {
                 }
             }
 
-        }.runTaskTimerAsynchronously(FoxtrotPlugin.getInstance(), 6000L, 6000L);
+        }.runTaskTimerAsynchronously(FoxtrotPlugin.getInstance(), 3000L, 6000L);
     }
 
     public void loadPrefixes() {
