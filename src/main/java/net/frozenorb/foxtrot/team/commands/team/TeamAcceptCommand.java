@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.command.annotations.Command;
 import net.frozenorb.foxtrot.command.annotations.Param;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -20,7 +21,12 @@ public class TeamAcceptCommand {
             }
 
             if (target.getMembers().size() >= Team.MAX_TEAM_SIZE) {
-                sender.sendMessage(ChatColor.RED + target.getName() + " is currently full!");
+                sender.sendMessage(ChatColor.RED + target.getName() + " cannot be joined: Team is full!");
+                return;
+            }
+
+            if (DTRHandler.isOnCooldown(target)) {
+                sender.sendMessage(ChatColor.RED + target.getName() + " cannot be joined: Team not regenerating DTR!");
                 return;
             }
 
