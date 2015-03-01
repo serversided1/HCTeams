@@ -260,7 +260,13 @@ public class FoxtrotPlugin extends JavaPlugin {
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
 
-        FrozenCommandHandler.init();
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.conquest");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.koth");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.server");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.team");
+
         DeathMessageHandler.init();
     }
 
