@@ -16,7 +16,7 @@ public class ClickableUtils {
     }
 
     public static void appendDeathMessageName(String player, FancyMessage appendTo) {
-        appendTo.text(ChatColor.RED + player).link("http://www.hcteams.com/player/" + player).then().text(ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(player) + "]").then();
+        appendTo.text(ChatColor.RED + player).link("http://www.hcteams.com/player/" + player).tooltip(ChatColor.GREEN + "Click to view " + player + ChatColor.GREEN + "'s profile").then().text(ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(player) + "]");
     }
 
     public static FancyMessage clickableName(String player) {
@@ -26,17 +26,17 @@ public class ClickableUtils {
     }
 
     public static void appendClickableName(String player, FancyMessage appendTo) {
-        appendTo.text(player).link("http://www.hcteams.com/player/" + player).then();
+        appendTo.text(player).link("http://www.hcteams.com/player/" + player).tooltip(ChatColor.GREEN + "Click to view " + player + ChatColor.GREEN + "'s profile").then();
     }
 
-    public static FancyMessage clickableTeam(Team team) {
+    public static FancyMessage clickableTeam(String team) {
         FancyMessage appendTo = new FancyMessage();
         appendClickableTeam(team, appendTo);
         return (appendTo);
     }
 
-    public static void appendClickableTeam(Team team, FancyMessage appendTo) {
-
+    public static void appendClickableTeam(String team, FancyMessage appendTo) {
+        appendTo.text(team).link("http://www.hcteams.com/team/" + team).tooltip(ChatColor.GREEN + "Click to view " + team + ChatColor.GREEN + " on the HCTeams website").then();
     }
 
 }
