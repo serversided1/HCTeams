@@ -1,9 +1,12 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,15 +17,13 @@ import java.util.List;
 
 public class VoidTracker implements Listener {
 
-    //***************************//
-
     @EventHandler(priority=EventPriority.LOW)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
         if (event.getCause().getCause() != EntityDamageEvent.DamageCause.VOID) {
             return;
         }
 
-        List<Damage> record = net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.getDamage(event.getPlayer());
+        List<Damage> record = DeathMessageHandler.getDamage(event.getPlayer());
         Damage knocker = null;
         long knockerTime = 0L;
 
@@ -46,54 +47,34 @@ public class VoidTracker implements Listener {
         }
     }
 
-    //***************************//
-
     public static class VoidDamage extends Damage {
 
-        //***************************//
-
-        VoidDamage(String damaged, double damage) {
+        public VoidDamage(String damaged, double damage) {
             super(damaged, damage);
         }
 
-        //***************************//
-
-        public String getDescription() {
-            return ("Void");
+        public FancyMessage getDeathMessage() {
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " fell into the void."));
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " fell into the void.");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
     public static class VoidDamageByPlayer extends PlayerDamage {
 
-        //***************************//
-
-        VoidDamageByPlayer(String damaged, double damage, String damager) {
+        public VoidDamageByPlayer(String damaged, double damage, String damager) {
             super(damaged, damage, damager);
         }
 
-        //***************************//
+        public FancyMessage getDeathMessage() {
+            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-        public String getDescription() {
-            return ("Void");
+            deathMessage.then(ChatColor.YELLOW + " fell into the void thanks to ");
+            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
+            deathMessage.then(ChatColor.YELLOW + ".");
+
+            return (deathMessage);
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " fell into the void thanks to " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + ".");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
 }

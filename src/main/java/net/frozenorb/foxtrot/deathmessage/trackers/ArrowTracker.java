@@ -1,10 +1,13 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import lombok.Getter;
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -20,35 +23,31 @@ import org.bukkit.metadata.MetadataValue;
 
 public class ArrowTracker implements Listener {
 
-    //***************************//
-
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
+        if (event.getEntity() instanceof Player) {
+            event.getProjectile().setMetadata("ShotFromDistance", new FixedMetadataValue(FoxtrotPlugin.getInstance(), event.getProjectile().getLocation()));
         }
-
-        event.getProjectile().setMetadata("ShotFromDistance", new FixedMetadataValue(FoxtrotPlugin.getInstance(), event.getProjectile().getLocation()));
     }
 
     @EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
         if (event.getCause() instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event.getCause();
+            EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event.getCause();
 
-            if (e.getDamager() instanceof Arrow) {
-                Arrow a = (Arrow) e.getDamager();
+            if (entityDamageByEntityEvent.getDamager() instanceof Arrow) {
+                Arrow arrow = (Arrow) entityDamageByEntityEvent.getDamager();
 
-                if (a.getShooter() instanceof Player) {
-                    Player shooter = (Player) a.getShooter();
+                if (arrow.getShooter() instanceof Player) {
+                    Player shooter = (Player) arrow.getShooter();
 
-                    for (MetadataValue value : a.getMetadata("ShotFromDistance")) {
+                    for (MetadataValue value : arrow.getMetadata("ShotFromDistance")) {
                         Location shotFrom = (Location) value.value();
                         double distance = shotFrom.distance(event.getPlayer().getLocation());
                         event.setTrackerDamage(new ArrowDamageByPlayer(event.getPlayer().getName(), event.getDamage(), shooter.getName(), shotFrom, distance));
                     }
-                } else if (a.getShooter() instanceof Entity) {
-                    event.setTrackerDamage(new ArrowDamageByMob(event.getPlayer().getName(), event.getDamage(), (Entity) a.getShooter()));
+                } else if (arrow.getShooter() instanceof Entity) {
+                    event.setTrackerDamage(new ArrowDamageByMob(event.getPlayer().getName(), event.getDamage(), (Entity) arrow.getShooter()));
                 } else {
                     event.setTrackerDamage(new ArrowDamage(event.getPlayer().getName(), event.getDamage()));
                 }
@@ -56,38 +55,22 @@ public class ArrowTracker implements Listener {
         }
     }
 
-    //***************************//
-
     public static class ArrowDamage extends Damage {
-
-        //***************************//
 
         public ArrowDamage(String damaged, double damage) {
             super(damaged, damage);
         }
 
-        //***************************//
-
-        public String getDescription() {
-            return ("Shot");
+        public FancyMessage getDeathMessage() {
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot."));
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.GOLD + getDamaged() + ChatColor.RED + " was shot.");
-        }
-
-        //***************************//
 
     }
 
     public static class ArrowDamageByPlayer extends PlayerDamage {
 
-        //***************************//
-
-        private Location shotFrom;
-        double distance;
-
-        //***************************//
+        @Getter private Location shotFrom;
+        @Getter private double distance;
 
         public ArrowDamageByPlayer(String damaged, double damage, String damager, Location shotFrom, double distance) {
             super(damaged, damage, damager);
@@ -95,50 +78,28 @@ public class ArrowTracker implements Listener {
             this.distance = distance;
         }
 
-        //***************************//
+        public FancyMessage getDeathMessage() {
+            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-        public String getDescription() {
-            return ("Shot by " + getDamager());
+            deathMessage.then(ChatColor.YELLOW + " was shot by ");
+            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
+            deathMessage.then(ChatColor.YELLOW + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
+
+            return (deathMessage);
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was shot by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
-        }
-
-        public double getDistance() {
-            return (distance);
-        }
-
-        public Location getShotFrom() {
-            return (shotFrom);
-        }
-
-        //***************************//
 
     }
 
     public static class ArrowDamageByMob extends MobDamage {
 
-        //***************************//
-
         public ArrowDamageByMob(String damaged, double damage, Entity damager) {
             super(damaged, damage, damager.getType());
         }
 
-        //***************************//
-
-        public String getDescription() {
-            return ("Shot by " + getMobType().getName());
+        public FancyMessage getDeathMessage() {
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot by a " + getMobType().getName() + "."));
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "was shot by a " + getMobType().getName() + ".");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
 }

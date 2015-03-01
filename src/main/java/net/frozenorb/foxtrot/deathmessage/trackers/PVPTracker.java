@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.MobUtil;
+import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,12 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Tracker to detect PVP damage.
- */
 public class PVPTracker implements Listener {
-
-    //***************************//
 
     @EventHandler(priority=EventPriority.LOW, ignoreCancelled=true)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
@@ -34,15 +31,9 @@ public class PVPTracker implements Listener {
         }
     }
 
-    //***************************//
-
     public static class PVPDamage extends PlayerDamage {
 
-        //***************************//
-
         private String itemString;
-
-        //***************************//
 
         public PVPDamage(String damaged, double damage, String damager, ItemStack itemStack) {
             super(damaged, damage, damager);
@@ -55,20 +46,16 @@ public class PVPTracker implements Listener {
             }
         }
 
-        //***************************//
+        public FancyMessage getDeathMessage() {
+            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-        public String getDescription() {
-            return ("Killed by " + getDamager());
+            deathMessage.then(ChatColor.YELLOW + " was slain by ");
+            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
+            deathMessage.then(ChatColor.YELLOW + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
+
+            return (deathMessage);
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "]" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
 }

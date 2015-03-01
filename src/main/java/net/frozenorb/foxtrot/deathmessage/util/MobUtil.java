@@ -6,16 +6,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class MobUtil {
 
-    //***************************//
-
-    public static String getItemName(ItemStack i) {
-        if (i.getItemMeta().hasDisplayName()) {
-            return (ChatColor.stripColor(i.getItemMeta().getDisplayName()));
+    public static String getItemName(ItemStack itemStack) {
+        if (itemStack.getItemMeta().hasDisplayName()) {
+            return (ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()));
         }
 
-        return (WordUtils.capitalizeFully(i.getType().name().replace('_', ' ')));
+        return (WordUtils.capitalizeFully(itemStack.getType().name().replace('_', ' ')));
     }
-
-    //***************************//
 
 }

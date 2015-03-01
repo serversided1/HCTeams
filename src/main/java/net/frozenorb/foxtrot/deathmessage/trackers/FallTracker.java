@@ -1,9 +1,12 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,15 +17,13 @@ import java.util.List;
 
 public class FallTracker implements Listener {
 
-    //***************************//
-
     @EventHandler(priority=EventPriority.LOW)
     public void onCustomPlayerDamage(CustomPlayerDamageEvent event) {
         if (event.getCause().getCause() != EntityDamageEvent.DamageCause.FALL) {
             return;
         }
 
-        List<Damage> record = net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.getDamage(event.getPlayer());
+        List<Damage> record = DeathMessageHandler.getDamage(event.getPlayer());
         Damage knocker = null;
         long knockerTime = 0L;
 
@@ -40,80 +41,40 @@ public class FallTracker implements Listener {
         }
 
         if (knocker != null) {
-            event.setTrackerDamage(new FallDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager(), Math.round(event.getPlayer().getFallDistance())));
+            event.setTrackerDamage(new FallDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager()));
         } else {
-            event.setTrackerDamage(new FallDamage(event.getPlayer().getName(), event.getDamage(), Math.round(event.getPlayer().getFallDistance())));
+            event.setTrackerDamage(new FallDamage(event.getPlayer().getName(), event.getDamage()));
         }
     }
-
-    //***************************//
 
     public static class FallDamage extends Damage {
 
-        //***************************//
-
-        private int distance;
-
-        //***************************//
-
-        public FallDamage(String damaged, double damage, int distance) {
+        public FallDamage(String damaged, double damage) {
             super(damaged, damage);
-
-            this.distance = distance;
         }
 
-        //***************************//
-
-        public String getDescription() {
-            if (distance == 0) {
-                return ("Enderpearl");
-            } else {
-                return ("Fall (" + distance + " block" + (distance == 1 ? "" : "s") + ")");
-            }
+        public FancyMessage getDeathMessage() {
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " hit the ground too hard."));
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "hit the ground too hard.");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
     public static class FallDamageByPlayer extends PlayerDamage {
 
-        //***************************//
-
-        private int distance;
-
-        //***************************//
-
-        public FallDamageByPlayer(String damaged, double damage, String damager, int distance) {
+        public FallDamageByPlayer(String damaged, double damage, String damager) {
             super(damaged, damage, damager);
-
-            this.distance = distance;
         }
 
-        //***************************//
+        public FancyMessage getDeathMessage() {
+            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-        public String getDescription() {
-            if (distance == 0) {
-                return ("Enderpearl");
-            } else {
-                return ("Fall (" + distance + " block" + (distance == 1 ? "" : "s") + ")");
-            }
+            deathMessage.then(ChatColor.YELLOW + " hit the ground too hard thanks to ");
+            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
+            deathMessage.then(ChatColor.YELLOW + ".");
+
+            return (deathMessage);
         }
-
-        public String getDeathMessage() {
-            return (ChatColor.RED + getDamaged() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamaged()) + "] " + ChatColor.YELLOW + "hit the ground too hard thanks to " + ChatColor.RED + getDamager() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(getDamager()) + "]" + ChatColor.YELLOW + ".");
-        }
-
-        //***************************//
 
     }
-
-    //***************************//
 
 }

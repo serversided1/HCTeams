@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
@@ -20,61 +21,50 @@ import java.util.List;
 
 public class DamageListener implements Listener {
 
-    //***************************//
-
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            CustomPlayerDamageEvent customEvent = new CustomPlayerDamageEvent(event, new UnknownDamage(player.getName(), event.getDamage()));
 
-        CustomPlayerDamageEvent event2 = new CustomPlayerDamageEvent(event);
-
-        event2.setTrackerDamage(new UnknownDamage(((Player) event.getEntity()).getName(), event.getDamage()));
-
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(event2);
-
-        if (event2.isCancelled()) {
-            event.setCancelled(true);
-        } else {
-            event2.getTrackerDamage().setHealthAfter(((Player) event.getEntity()).getHealthScale());
-            DeathMessageHandler.addDamage((Player) event.getEntity(), event2.getTrackerDamage());
+            FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(customEvent);
+            DeathMessageHandler.addDamage(player, customEvent.getTrackerDamage());
         }
     }
 
     @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getDeathMessage() == null || event.getDeathMessage().isEmpty()) {
-            return;
-        }
+        List<Damage> record = DeathMessageHandler.getDamage(event.getEntity());
+        FancyMessage deathMessage;
 
-        List<Damage> record = net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.getDamage(event.getEntity());
+        if (record != null) {
+            Damage deathCause = record.get(record.size() - 1);
 
-        if (record == null || record.isEmpty()) {
-            event.setDeathMessage(ChatColor.RED + event.getEntity().getName() + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getName()) + "]" + ChatColor.YELLOW + " died.");
-            return;
-        }
+            // Hacky NMS to change the player's killer
+            if (deathCause instanceof PlayerDamage) {
+                String killerName = ((PlayerDamage) deathCause).getDamager();
+                Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(killerName);
 
-        Damage deathCause = record.get(record.size() - 1);
+                if (killer != null) {
+                    ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+                }
 
-        // Hacky NMS to change the player's killer
-        if (deathCause instanceof PlayerDamage) {
-            String killerName = ((PlayerDamage) deathCause).getDamager();
-            Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(killerName);
-
-            if (killer != null) {
-                ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+                // TODO: Should this be here?
+                FoxtrotPlugin.getInstance().getKillsMap().setKills(killerName, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerName) + 1);
             }
 
-            FoxtrotPlugin.getInstance().getKillsMap().setKills(killerName, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerName) + 1);
+            deathMessage = deathCause.getDeathMessage();
+        } else {
+            deathMessage = (new UnknownDamage(event.getEntity().getName(), 1)).getDeathMessage();
         }
 
-        event.setDeathMessage(deathCause.getDeathMessage());
+        // Use our custom clickable deathmessage
+        event.setDeathMessage(null);
+        deathMessage.send(FoxtrotPlugin.getInstance().getServer().getOnlinePlayers());
+        deathMessage.send(FoxtrotPlugin.getInstance().getServer().getConsoleSender());
 
         DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
-        net.frozenorb.foxtrot.deathmessage.DeathMessageHandler.clearDamage(event.getEntity());
+        DeathMessageHandler.clearDamage(event.getEntity());
     }
-
-    //***************************//
 
 }
