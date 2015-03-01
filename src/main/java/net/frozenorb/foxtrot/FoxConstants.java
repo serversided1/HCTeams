@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -26,12 +28,20 @@ public final class FoxConstants {
         return (ChatColor.DARK_PURPLE + "[HighRoller]");
     }
 
-    public static String publicChatFormat(Team team, String highRollerString, String customPrefixString) {
+    public static FancyMessage publicChatFormat(Team team, String highRollerString, String customPrefixString, ChatColor teamColor, Player player, String message) {
+        FancyMessage chat = new FancyMessage(ChatColor.GOLD + "[" + teamColor);
+
         if (team == null) {
-            return (ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+            chat.then().text("-");
         } else {
-            return (ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+            ClickableUtils.appendClickableTeam(team, chat);
         }
+
+        chat.then(ChatColor.GOLD + highRollerString + customPrefixString).then();
+        ClickableUtils.appendClickableName(player.getName(), chat);
+        chat.then(ChatColor.WHITE + ": " + message);
+
+        return (chat);
     }
 
 }

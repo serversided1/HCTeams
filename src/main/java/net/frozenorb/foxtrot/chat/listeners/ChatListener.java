@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
@@ -67,8 +68,9 @@ public class ChatListener implements Listener {
                     return;
                 }
 
-                String publicChatFormat = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString);
-                String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
+                FancyMessage publicChatFormatMember = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString, ChatColor.DARK_GREEN, event.getPlayer(), event.getMessage());
+                FancyMessage publicChatFormatAlly = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString, Team.ALLY_COLOR, event.getPlayer(), event.getMessage());
+                FancyMessage publicChatFormatGeneric = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString, ChatColor.YELLOW, event.getPlayer(), event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
                 // not online players
@@ -83,15 +85,13 @@ public class ChatListener implements Listener {
                         // If their chat is enabled (which it is by default) or the sender is op, send them the message
                         // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                         if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getName())) {
-                            player.sendMessage(finalMessage);
+                            publicChatFormatGeneric.send(player);
                         }
                     } else {
                         if (team.isMember(player)) {
-                            // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
+                            publicChatFormatMember.send(player);
                         } else if (team.isAlly(player)) {
-                            // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
+                            publicChatFormatAlly.send(player);
                         } else {
                             // We only check this here as...
                             // Team members always see their team's messages
@@ -104,13 +104,13 @@ public class ChatListener implements Listener {
                             // If their chat is enabled (which it is by default) or the sender is op, send them the message
                             // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                             if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getName())) {
-                                player.sendMessage(finalMessage);
+                                publicChatFormatGeneric.send(player);
                             }
                         }
                     }
                 }
 
-                FoxtrotPlugin.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
+                publicChatFormatGeneric.send(FoxtrotPlugin.getInstance().getServer().getConsoleSender());
                 break;
             case ALLIANCE:
                 String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
