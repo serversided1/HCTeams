@@ -21,8 +21,8 @@ public class TeamShadowMuteCommand {
     @Getter public static Map<String, String> teamShadowMutes = new HashMap<>();
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamShadowMuteFaction(Player sender, @Parameter(name="team") final Team target, @Parameter(name="minutes") String time) {
-        int timeSeconds = Integer.parseInt(time) * 60;
+    public static void teamShadowMuteFaction(Player sender, @Parameter(name="team") final Team target, @Parameter(name="minutes") int time) {
+        int timeSeconds = time * 60;
 
         for (String player : target.getMembers()) {
             teamShadowMutes.put(player, target.getName());
