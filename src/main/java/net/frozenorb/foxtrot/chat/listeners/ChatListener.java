@@ -46,7 +46,7 @@ public class ChatListener implements Listener {
             chatMode = ChatMode.PUBLIC;
         } else if (doTeamChat) {
             chatMode = ChatMode.TEAM;
-        } else if (doAllyChat) {
+        } else if (doAllyChat && team.getAllies().size() != 0) {
             chatMode = ChatMode.ALLIANCE;
         }
 
