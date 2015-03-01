@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,7 +46,7 @@ public class BardClass extends BaseBardClass implements Listener {
 
     @Override
     public void tick(Player player) {
-        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation()))) {
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && (FoxtrotPlugin.getInstance().getServerHandler().isEOTW() || !DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation()))) {
             giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true, false);
         }
 

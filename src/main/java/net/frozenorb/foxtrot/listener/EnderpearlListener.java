@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,7 +35,7 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
-            if (DTRBitmaskType.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
+            if (DTRBitmask.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(16));
@@ -70,15 +70,15 @@ public class EnderpearlListener implements Listener {
         Location target = event.getTo();
         Location from = event.getFrom();
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(target)) {
-            if (!DTRBitmaskType.SAFE_ZONE.appliesAt(from)) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(target)) {
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");
                 return;
             }
         }
 
-        if (DTRBitmaskType.NO_ENDERPEARL.appliesAt(target)) {
+        if (DTRBitmask.NO_ENDERPEARL.appliesAt(target)) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into this region!");
             return;

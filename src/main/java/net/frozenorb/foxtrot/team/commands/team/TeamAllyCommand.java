@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class TeamAllyCommand {
 
     @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="")
-    public static void teamAlly(Player sender, @Param(name="team") Team targetTeam) {
+    public static void teamAlly(Player sender, @Parameter(name="team") Team targetTeam) {
         Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (senderTeam == null) {

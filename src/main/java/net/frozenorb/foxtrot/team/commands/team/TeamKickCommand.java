@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class TeamKickCommand {
 
     @Command(names={ "team kick", "t kick", "f kick", "faction kick", "fac kick" }, permissionNode="")
-    public static void teamKick(Player sender, @Param(name="player") String target) {
+    public static void teamKick(Player sender, @Parameter(name="player") String target) {
         Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null) {

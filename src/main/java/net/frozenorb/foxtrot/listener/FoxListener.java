@@ -12,7 +12,7 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InvUtils;
@@ -26,7 +26,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,7 +34,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -102,8 +100,8 @@ public class FoxListener implements Listener {
                 }
             }
 
-            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
-            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmaskType.SAFE_ZONE));
+            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
+            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
 
             // Don't display non-deathbans during EOTW.
             if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
@@ -188,7 +186,7 @@ public class FoxListener implements Listener {
                                 return;
                             }
 
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
                                 event.setCancelled(true);
                                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
                                 event.getPlayer().updateInventory();
@@ -230,7 +228,7 @@ public class FoxListener implements Listener {
                 if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
                     CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
 
-                    if (DTRBitmaskType.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
+                    if (DTRBitmask.CITADEL.appliesAt(event.getClickedBlock().getLocation()) && citadelHandler.canLootCitadel(event.getPlayer())) {
                         return;
                     }
                 }
@@ -273,7 +271,7 @@ public class FoxListener implements Listener {
             if (event.getClickedBlock().getState() instanceof Sign) {
                 Sign s = (Sign) event.getClickedBlock().getState();
 
-                if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
+                if (DTRBitmask.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
                     if (s.getLine(0).contains("Kit")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleKitSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")) {

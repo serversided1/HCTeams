@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -17,7 +17,7 @@ public class TeamCreateCommand {
     public static final Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
-    public static void teamCreate(Player sender, @Param(name="team") String name) {
+    public static void teamCreate(Player sender, @Parameter(name="team") String name) {
         if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) != null) {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
             return;

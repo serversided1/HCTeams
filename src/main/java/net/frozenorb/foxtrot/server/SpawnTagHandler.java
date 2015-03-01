@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -21,7 +21,7 @@ public class SpawnTagHandler {
     }
 
     public static void addSeconds(Player player, int seconds) {
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
             return;
         }
 

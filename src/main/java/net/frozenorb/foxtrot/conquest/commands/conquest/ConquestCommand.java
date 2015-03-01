@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.conquest.commands.conquest;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.team.Team;

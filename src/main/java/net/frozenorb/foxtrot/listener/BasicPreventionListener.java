@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -34,7 +34,7 @@ public class BasicPreventionListener implements Listener {
             event.setCancelled(true);
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -71,7 +71,7 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
             event.setCancelled(true);
             return;
         }

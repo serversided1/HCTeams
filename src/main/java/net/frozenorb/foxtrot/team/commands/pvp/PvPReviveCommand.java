@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class PvPReviveCommand {
 
     @Command(names={ "pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive", "f revive" }, permissionNode="")
-    public static void pvpRevive(Player sender, @Param(name="player") OfflinePlayer target) {
+    public static void pvpRevive(Player sender, @Parameter(name="player") OfflinePlayer target) {
         int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(sender.getName());
         int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(sender.getName());
 

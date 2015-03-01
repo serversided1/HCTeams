@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import java.util.*;
 public class TeamListCommand {
 
     @Command(names={ "team list", "t list", "f list", "faction list", "fac list" }, permissionNode="")
-    public static void teamList(final Player sender, @Param(name="page", defaultValue="1") final int page) {
+    public static void teamList(final Player sender, @Parameter(name="page", defaultValue="1") final int page) {
         // This is sort of intensive so we run it async (cause who doesn't love async!)
         new BukkitRunnable() {
 

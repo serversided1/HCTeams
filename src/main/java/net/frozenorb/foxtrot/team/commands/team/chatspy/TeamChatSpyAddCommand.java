@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team.chatspy;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ import java.util.List;
 public class TeamChatSpyAddCommand {
 
     @Command(names={ "team chatspy add", "t chatspy add", "f chatspy add", "faction chatspy add", "fac chatspy add" }, permissionNode="foxtrot.chatspy")
-    public static void teamChatSpyAdd(Player sender, @Param(name="Team") Team target) {
+    public static void teamChatSpyAdd(Player sender, @Parameter(name="Team") Team target) {
         if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You are already spying on " + target.getName() + ".");
             return;

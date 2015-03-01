@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot;
 
 import com.bugsnag.Client;
-import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEntity;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
@@ -11,7 +11,6 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.events.HourEvent;
@@ -35,6 +34,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -163,13 +163,12 @@ public class FoxtrotPlugin extends JavaPlugin {
             player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
         }
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, WrapperPlayServerOpenSignEntity.TYPE) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Server.OPEN_SIGN_ENTITY) {
 
             // No sign GUI when placing death/KOTH signs.
             @Override
             public void onPacketSending(PacketEvent event) {
-                WrapperPlayServerOpenSignEntity packet = new WrapperPlayServerOpenSignEntity(event.getPacket());
-                Location location = new Location(event.getPlayer().getWorld(), packet.getX(), packet.getY(), packet.getZ());
+                Location location = new Location(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0), event.getPacket().getIntegers().read(1), event.getPacket().getIntegers().read(2));
 
                 if (location.getBlock().getState().hasMetadata("noSignPacket")) {
                     event.setCancelled(true);
@@ -261,7 +260,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
 
-        CommandHandler.init();
+        FrozenCommandHandler.init();
         DeathMessageHandler.init();
     }
 
@@ -323,17 +322,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     public static FoxtrotPlugin getInstance() {
         return (instance);
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (sender instanceof ConsoleCommandSender) {
-            CommandHandler.evalCommand(sender, Joiner.on(" ").join(args));
-        } else {
-            sender.sendMessage(ChatColor.RED + "This is a console-only utility command. It cannot be used from game.");
-        }
-
-        return (true);
     }
 
 }

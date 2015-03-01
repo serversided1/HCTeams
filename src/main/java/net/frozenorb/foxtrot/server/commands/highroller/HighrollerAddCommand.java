@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class HighrollerAddCommand {
 
     @Command(names={ "highroller add", "highrollers add" }, permissionNode="op")
-    public static void highrollerAdd(Player sender, @Param(name="Player") OfflinePlayer player) {
+    public static void highrollerAdd(Player sender, @Parameter(name="Player") OfflinePlayer player) {
         if (!FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(player.getName())) {
             FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().add(player.getName());
             FoxtrotPlugin.getInstance().getServerHandler().save();

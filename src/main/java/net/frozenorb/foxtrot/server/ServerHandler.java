@@ -10,7 +10,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -20,7 +20,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Cow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -205,11 +204,11 @@ public class ServerHandler {
 
     public RegionData getRegion(Team ownerTo, Location location) {
         if (ownerTo != null && ownerTo.getOwner() == null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
+            if (ownerTo.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 return (new RegionData(RegionType.SPAWN, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.KOTH)) {
+            } else if (ownerTo.hasDTRBitmask(DTRBitmask.KOTH)) {
                 return (new RegionData(RegionType.KOTH, ownerTo));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+            } else if (ownerTo.hasDTRBitmask(DTRBitmask.CITADEL)) {
                 return (new RegionData(RegionType.CITADEL, ownerTo));
             }
         }
@@ -232,7 +231,7 @@ public class ServerHandler {
                 return;
             }
 
-            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmaskType.KOTH) || inClaim.hasDTRBitmask(DTRBitmaskType.CITADEL))) {
+            if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmask.KOTH) || inClaim.hasDTRBitmask(DTRBitmask.CITADEL))) {
                 player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
                 return;
             }
@@ -314,9 +313,9 @@ public class ServerHandler {
         Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmaskType.QUARTER_DTR_LOSS)) {
+            if (ownerTo.hasDTRBitmask(DTRBitmask.QUARTER_DTR_LOSS)) {
                 dtrLoss = Math.min(dtrLoss, 0.25D);
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.REDUCED_DTR_LOSS)) {
+            } else if (ownerTo.hasDTRBitmask(DTRBitmask.REDUCED_DTR_LOSS)) {
                 dtrLoss = Math.min(dtrLoss, 0.75D);
             }
         }
@@ -341,9 +340,9 @@ public class ServerHandler {
 
         // Check DTR flags, which will also take priority over playtime.
         if (ownerTo != null && ownerTo.getOwner() == null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIVE_MINUTE_DEATHBAN)) {
+            if (ownerTo.hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN)) {
                 return (TimeUnit.MINUTES.toSeconds(5));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmaskType.FIFTEEN_MINUTE_DEATHBAN)) {
+            } else if (ownerTo.hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN)) {
                 return (TimeUnit.MINUTES.toSeconds(15));
             }
         }

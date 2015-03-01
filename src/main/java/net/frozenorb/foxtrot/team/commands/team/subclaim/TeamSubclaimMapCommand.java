@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
 import org.bukkit.entity.Player;

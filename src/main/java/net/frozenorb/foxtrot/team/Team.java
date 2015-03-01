@@ -14,7 +14,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.TimeUtils;
@@ -109,7 +109,7 @@ public class Team {
 
     public String getName(Player player) {
         if (owner == null) {
-            if (hasDTRBitmask(DTRBitmaskType.SAFE_ZONE)) {
+            if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
                     case NETHER:
                         return (ChatColor.GREEN + "Nether Spawn");
@@ -118,9 +118,9 @@ public class Team {
                 }
 
                 return (ChatColor.GREEN + "Spawn");
-            } else if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
+            } else if (hasDTRBitmask(DTRBitmask.KOTH)) {
                 return (ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+            } else if (hasDTRBitmask(DTRBitmask.CITADEL)) {
                 return (ChatColor.DARK_PURPLE + "Citadel");
             }
         }
@@ -378,7 +378,7 @@ public class Team {
         return (owner == null || members.size() == 0);
     }
 
-    public boolean hasDTRBitmask(DTRBitmaskType bitmaskType) {
+    public boolean hasDTRBitmask(DTRBitmask bitmaskType) {
         if (getOwner() != null) {
             return (false);
         }
@@ -758,9 +758,9 @@ public class Team {
         if (getOwner() == null || getOwner().equals("null")) {
             player.sendMessage(GRAY_LINE);
 
-            if (hasDTRBitmask(DTRBitmaskType.KOTH)) {
+            if (hasDTRBitmask(DTRBitmask.KOTH)) {
                 player.sendMessage(ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
-            } else if (hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+            } else if (hasDTRBitmask(DTRBitmask.CITADEL)) {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Citadel");
             } else {
                 player.sendMessage(ChatColor.BLUE + getName());

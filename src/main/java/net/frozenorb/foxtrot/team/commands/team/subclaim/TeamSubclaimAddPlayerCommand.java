@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import org.bukkit.ChatColor;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class TeamSubclaimAddPlayerCommand {
 
     @Command(names={ "team subclaim addplayer", "t subclaim addplayer", "f subclaim addplayer", "faction subclaim addplayer", "fac subclaim addplayer", "team sub addplayer", "t sub addplayer", "f sub addplayer", "faction sub addplayer", "fac sub addplayer", "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team sub grant", "t sub grant", "f sub grant", "faction sub grant", "fac sub grant" }, permissionNode="")
-    public static void teamSubclaimAddPlayer(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") OfflinePlayer player) {
+    public static void teamSubclaimAddPlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") OfflinePlayer player) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (!team.getOwner().equals(sender.getName()) && !team.isCaptain(sender.getName())) {

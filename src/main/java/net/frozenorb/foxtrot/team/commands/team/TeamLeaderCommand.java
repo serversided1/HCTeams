@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class TeamLeaderCommand {
 
     @Command(names={ "team newleader", "t newleader", "f newleader", "faction newleader", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" }, permissionNode="")
-    public static void teamLeader(Player sender, @Param(name="player") String target) {
+    public static void teamLeader(Player sender, @Parameter(name="player") String target) {
         Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null) {

@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team.chatspy;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ import java.util.List;
 public class TeamChatSpyDelCommand {
 
     @Command(names={ "team chatspy del", "t chatspy del", "f chatspy del", "faction chatspy del", "fac chatspy del" }, permissionNode="foxtrot.chatspy")
-    public static void teamChatSpyDel(Player sender, @Param(name="Team") Team target) {
+    public static void teamChatSpyDel(Player sender, @Parameter(name="Team") Team target) {
         if (!FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName()).contains(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You are not spying on " + target.getName() + ".");
             return;

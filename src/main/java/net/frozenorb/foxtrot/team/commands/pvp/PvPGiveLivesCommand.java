@@ -1,15 +1,15 @@
 package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PvPGiveLivesCommand {
 
     @Command(names={ "pvptimer givelives", "timer givelives", "pvp givelives", "pvptimer givelife", "timer givelife", "pvp givelife" }, permissionNode="")
-    public static void pvpGiveLives(Player sender, @Param(name="Player") Player target, @Param(name="Amount") int amount) {
+    public static void pvpGiveLives(Player sender, @Parameter(name="Player") Player target, @Parameter(name="Amount") int amount) {
         int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(sender.getName());
 
         if (transferableLives < amount) {

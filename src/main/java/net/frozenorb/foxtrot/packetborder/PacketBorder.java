@@ -7,7 +7,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,13 +46,13 @@ public class PacketBorder {
             }
 
             if (team.getOwner() == null) {
-                if (team.hasDTRBitmask(DTRBitmaskType.DENY_REENTRY)) {
+                if (team.hasDTRBitmask(DTRBitmask.DENY_REENTRY)) {
                     // If the team is a DENY_REENTRY claim (IE the End Spawn) and they're not inside of the claim
                     addClaim(claim);
-                } else if (team.hasDTRBitmask(DTRBitmaskType.SAFE_ZONE) && SpawnTagHandler.isTagged(player)) {
+                } else if (team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && SpawnTagHandler.isTagged(player)) {
                     // If the team is a SAFE_ZONE (IE spawn), they're not inside of it, and they're spawn tagged
                     addClaim(claim);
-                } else if ((team.hasDTRBitmask(DTRBitmaskType.KOTH) || team.hasDTRBitmask(DTRBitmaskType.CITADEL)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                } else if ((team.hasDTRBitmask(DTRBitmask.KOTH) || team.hasDTRBitmask(DTRBitmask.CITADEL)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
                     // If it's an event zone (KOTH or Citadel) and they have a PvP Timer
                     addClaim(claim);
                 }

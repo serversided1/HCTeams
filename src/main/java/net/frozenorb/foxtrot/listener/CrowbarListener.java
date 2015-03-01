@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InvUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -37,7 +37,7 @@ public class CrowbarListener implements Listener {
             }
         }
 
-        if (DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar spawn!");
             return;
         }

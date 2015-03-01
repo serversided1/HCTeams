@@ -1,16 +1,12 @@
 package net.frozenorb.foxtrot.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.CommandHandler;
 import net.frozenorb.foxtrot.jedis.JedisCommand;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
-import net.frozenorb.foxtrot.team.dtr.bitmask.tabcompleter.DTRBitmaskTypeTabCompleter;
-import net.frozenorb.foxtrot.team.dtr.bitmask.transformer.DTRBitmaskTypeTransformer;
-import net.frozenorb.foxtrot.team.subclaim.tabcompleter.SubclaimTabCompleter;
-import net.frozenorb.foxtrot.team.subclaim.transformer.SubclaimTransformer;
-import net.frozenorb.foxtrot.team.tabcompleter.TeamTabCompleter;
-import net.frozenorb.foxtrot.team.transformer.TeamTransformer;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.subclaim.SubclaimType;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
 import org.bson.types.ObjectId;
 import redis.clients.jedis.Jedis;
 
@@ -26,12 +22,9 @@ public class TeamHandler {
     private volatile Map<String, Team> playerTeamMap = new ConcurrentHashMap<>();
 
     public TeamHandler() {
-        CommandHandler.registerTransformer(Team.class, new TeamTransformer());
-        CommandHandler.registerTabCompleter(Team.class, new TeamTabCompleter());
-        CommandHandler.registerTransformer(DTRBitmaskType.class, new DTRBitmaskTypeTransformer());
-        CommandHandler.registerTabCompleter(DTRBitmaskType.class, new DTRBitmaskTypeTabCompleter());
-        CommandHandler.registerTransformer(Subclaim.class, new SubclaimTransformer());
-        CommandHandler.registerTabCompleter(Subclaim.class, new SubclaimTabCompleter());
+        FrozenCommandHandler.registerParameterType(Team.class, new TeamType());
+        FrozenCommandHandler.registerParameterType(DTRBitmask.class, new DTRBitmaskType());
+        FrozenCommandHandler.registerParameterType(Subclaim.class, new SubclaimType());
 
         loadTeams();
     }

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.entity.Player;
 
 public class HighrollerCommand {

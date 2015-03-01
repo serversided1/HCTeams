@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class TeamTPCommand {
 
     @Command(names={ "team tp", "t tp", "f tp", "faction tp", "fac tp" }, permissionNode="op")
-    public static void teamTP(Player sender, @Param(name="team", defaultValue="self") Team target) {
+    public static void teamTP(Player sender, @Parameter(name="team", defaultValue="self") Team target) {
         if (target.getHQ() != null) {
             sender.sendMessage(ChatColor.YELLOW + "Teleported to " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + "'s HQ.");
             sender.teleport(target.getHQ());

@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class TeamSubclaimCreateCommand {
 
     @Command(names={ "team subclaim create", "t subclaim create", "f subclaim create", "faction subclaim create", "fac subclaim create", "team sub create", "t sub create", "f sub create", "faction sub create", "fac sub create" }, permissionNode="")
-    public static void teamSubclaimCreate(Player sender, @Param(name="subclaim") String subclaim) {
+    public static void teamSubclaimCreate(Player sender, @Parameter(name="subclaim") String subclaim) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team == null) {

@@ -13,7 +13,7 @@ import net.frozenorb.foxtrot.serialization.ItemStackSerializer;
 import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -156,7 +156,7 @@ public class CitadelHandler {
                 continue;
             }
 
-            if (team.hasDTRBitmask(DTRBitmaskType.CITADEL)) {
+            if (team.hasDTRBitmask(DTRBitmask.CITADEL)) {
                 for (Claim claim : team.getClaims()) {
                     for (Location location : new CuboidRegion("Citadel", claim.getMinimumPoint(), claim.getMaximumPoint())) {
                         if (location.getBlock().getType() == Material.CHEST) {

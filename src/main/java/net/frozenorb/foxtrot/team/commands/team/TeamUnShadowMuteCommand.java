@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -14,7 +14,7 @@ import java.util.Map;
 public class TeamUnShadowMuteCommand {
 
     @Command(names={ "team unshadowmute", "t unshadowmute", "f unshadowmute", "faction unshadowmute", "fac unshadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamUnShadowmuteFaction(Player sender, @Param(name="team") Team target) {
+    public static void teamUnShadowmuteFaction(Player sender, @Parameter(name="team") Team target) {
         TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team shadowmute removed. [Unmuted by: " + sender.getName() + "]");
         Iterator<Map.Entry<String, String>> mutesIterator = TeamShadowMuteCommand.getTeamShadowMutes().entrySet().iterator();
 

@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class TeamSubclaimUnclaimCommand {
 
     @Command(names={ "team subclaim unclaim", "t subclaim unclaim", "f subclaim unclaim", "faction subclaim unclaim", "fac subclaim unclaim", "team subclaim unsubclaim", "t subclaim unsubclaim", "f subclaim unsubclaim", "faction subclaim unsubclaim", "fac subclaim unsubclaim", "team unsubclaim", "t unsubclaim", "f unsubclaim", "faction unsubclaim", "fac unsubclaim"}, permissionNode="")
-    public static void teamSubclaimUnclaim(Player sender, @Param(name="subclaim", defaultValue="location") Subclaim subclaim) {
+    public static void teamSubclaimUnclaim(Player sender, @Parameter(name="subclaim", defaultValue="location") Subclaim subclaim) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
 
         if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {

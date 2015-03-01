@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team.chatspy;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

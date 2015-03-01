@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -21,7 +21,7 @@ public class TeamShadowMuteCommand {
     @Getter public static Map<String, String> teamShadowMutes = new HashMap<>();
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamShadowMuteFaction(Player sender, @Param(name="team") final Team target, @Param(name="minutes") String time) {
+    public static void teamShadowMuteFaction(Player sender, @Parameter(name="team") final Team target, @Parameter(name="minutes") String time) {
         int timeSeconds = Integer.parseInt(time) * 60;
 
         for (String player : target.getMembers()) {

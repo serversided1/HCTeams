@@ -3,22 +3,17 @@ package net.frozenorb.foxtrot.koth;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
-import com.mysql.jdbc.StringUtils;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.CommandHandler;
-import net.frozenorb.foxtrot.command.objects.ParamTabCompleter;
-import net.frozenorb.foxtrot.command.objects.ParamTransformer;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
-import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -36,38 +31,7 @@ public class KOTHHandler {
         loadSigns();
 
         FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new KOTHListener(), FoxtrotPlugin.getInstance());
-
-        CommandHandler.registerTransformer(KOTH.class, new ParamTransformer() {
-
-            @Override
-            public Object transform(CommandSender sender, String source) {
-                KOTH koth = getKOTH(source);
-
-                if (koth == null) {
-                    sender.sendMessage(ChatColor.RED + "No KOTH with the name " + source + " found.");
-                    return (null);
-                }
-
-                return (koth);
-            }
-
-        });
-
-        CommandHandler.registerTabCompleter(KOTH.class, new ParamTabCompleter() {
-
-            public List<String> tabComplete(Player sender, String source) {
-                List<String> completions = new ArrayList<>();
-
-                for (KOTH koth : getKOTHs()) {
-                    if (StringUtils.startsWithIgnoreCase(koth.getName(), source)) {
-                        completions.add(koth.getName());
-                    }
-                }
-
-                return (completions);
-            }
-
-        });
+        FrozenCommandHandler.registerParameterType(KOTH.class, new KOTHType());
 
         new BukkitRunnable() {
 

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.command.annotations.Command;
-import net.frozenorb.foxtrot.command.annotations.Param;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class ForceDisbandCommand {
 
     @Command(names={ "forcedisband" }, permissionNode="op")
-    public static void forceDisband(Player sender, @Param(name="team") Team target) {
+    public static void forceDisband(Player sender, @Parameter(name="team") Team target) {
         for (Player online : target.getOnlineMembers()) {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");
         }

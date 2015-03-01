@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.ItemMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -89,7 +89,7 @@ public class BaseBardClass extends PvPClass {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
+        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + getName() + " effects cannot be used while in spawn.");
             return;
         }
@@ -163,7 +163,7 @@ public class BaseBardClass extends PvPClass {
 
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmaskType.SAFE_ZONE.appliesAt(player.getLocation())) {
+            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
             }
 

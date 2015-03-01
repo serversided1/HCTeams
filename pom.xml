@@ -5,8 +5,11 @@
 	<artifactId>Foxtrot</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <access-level>medium</access-level>
+    </properties>
+
 	<build>
-		<defaultGoal>clean package install</defaultGoal>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -17,39 +20,6 @@
 					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-					<artifactSet>
-						<includes>
-							<include>redis.clients:jedis</include>
-							<include>org.apache.commons:commons-pool2</include>
-							<include>com.bugsnag:bugsnag</include>
-							<include>org.json:json</include>
-						</includes>
-					</artifactSet>
-					<relocations>
-						<relocation>
-							<pattern>redis.clients</pattern>
-							<shadedPattern>net.frozenorb.foxtrot.redis.clients</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.apache.commons.pool2</pattern>
-							<shadedPattern>net.frozenorb.foxtrot.org.apache.commons.pool2</shadedPattern>
-						</relocation>
-					</relocations>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 		<resources>
@@ -63,11 +33,11 @@
 	<distributionManagement>
 		<repository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com:8081/artifactory/medium</url>
+			<url>http://maven.minehq.com:8081/artifactory/${access-level}</url>
 		</repository>
 		<snapshotRepository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com:8081/artifactory/medium</url>
+			<url>http://maven.minehq.com:8081/artifactory/${access-level}</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -75,10 +45,6 @@
 		<repository>
 			<id>minehq-repo</id>
 			<url>http://maven.minehq.com:8081/artifactory/repo/</url>
-		</repository>
-		<repository>
-            <id>shadowvolt-repo</id>
-            <url>http://ci.shadowvolt.com/plugin/repository/everything/</url>
 		</repository>
 	</repositories>
 
@@ -96,22 +62,17 @@
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
 		</dependency>
+        <dependency>
+            <groupId>net.frozenorb</groupId>
+            <artifactId>qLib</artifactId>
+            <version>LATEST</version>
+        </dependency>
 
 		<!-- Misc. Jars -->
-		<dependency>
-			<groupId>com.bugsnag</groupId>
-			<artifactId>bugsnag</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>LATEST</version>
-		</dependency>
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>3.6.3-SNAPSHOT</version>
+            <version>LATEST</version>
         </dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

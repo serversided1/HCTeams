@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import org.bukkit.*;

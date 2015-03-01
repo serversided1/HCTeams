@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.dtr.bitmask.DTRBitmaskType;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InvUtils;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ public class KOTHRewardKeyListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !DTRBitmaskType.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation()) || !InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
+        if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !DTRBitmask.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation()) || !InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
             return;
         }
 
