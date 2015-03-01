@@ -39,7 +39,7 @@ public final class FoxConstants {
 
         chat.then(ChatColor.GOLD + highRollerString + customPrefixString).then();
         ClickableUtils.appendClickableName(player.getName(), chat);
-        chat.then(ChatColor.WHITE + ": " + message);
+        chat.text(ChatColor.WHITE + ": " + message);
 
         return (chat);
     }
