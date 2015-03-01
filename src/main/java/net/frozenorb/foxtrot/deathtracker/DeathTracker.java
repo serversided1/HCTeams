@@ -122,38 +122,40 @@ public class DeathTracker {
             BasicDBList damageRecord = new BasicDBList();
             List<Damage> records = DeathMessageHandler.getDamage(player);
 
-            for (Damage record : records) {
-                if (System.currentTimeMillis() - record.getTime() > 30_000L) {
-                    continue;
+            if (records != null) {
+                for (Damage record : records) {
+                    if (System.currentTimeMillis() - record.getTime() > 30_000L) {
+                        continue;
+                    }
+
+                    BasicDBObject recordDBObject = new BasicDBObject();
+
+                    recordDBObject.put("Class", record.getClass().getSimpleName());
+                    recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
+                    recordDBObject.put("Damage", record.getDamage());
+                    recordDBObject.put("Description", record.getDeathMessage().toOldMessageFormat());
+
+                    if (record instanceof PlayerDamage) {
+                        recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());
+                    } else if (record instanceof MobDamage) {
+                        recordDBObject.put("EntityType", ((MobDamage) record).getMobType().name());
+                    }
+
+                    if (record instanceof ArrowTracker.ArrowDamageByPlayer) {
+                        ArrowTracker.ArrowDamageByPlayer damage = (ArrowTracker.ArrowDamageByPlayer) record;
+                        BasicDBObject locationData2 = new BasicDBObject();
+
+                        locationData2.put("World", damage.getShotFrom().getWorld().getName());
+                        locationData2.put("X", damage.getShotFrom().getX());
+                        locationData2.put("Y", damage.getShotFrom().getY());
+                        locationData2.put("Z", damage.getShotFrom().getZ());
+
+                        recordDBObject.put("Distance", damage.getDistance());
+                        recordDBObject.put("ShotFrom", locationData2);
+                    }
+
+                    damageRecord.add(recordDBObject);
                 }
-
-                BasicDBObject recordDBObject = new BasicDBObject();
-
-                recordDBObject.put("Class", record.getClass().getSimpleName());
-                recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
-                recordDBObject.put("Damage", record.getDamage());
-                recordDBObject.put("Description", record.getDeathMessage().toOldMessageFormat());
-
-                if (record instanceof PlayerDamage) {
-                    recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());
-                } else if (record instanceof MobDamage) {
-                    recordDBObject.put("EntityType", ((MobDamage) record).getMobType().name());
-                }
-
-                if (record instanceof ArrowTracker.ArrowDamageByPlayer) {
-                    ArrowTracker.ArrowDamageByPlayer damage = (ArrowTracker.ArrowDamageByPlayer) record;
-                    BasicDBObject locationData2 = new BasicDBObject();
-
-                    locationData2.put("World", damage.getShotFrom().getWorld().getName());
-                    locationData2.put("X", damage.getShotFrom().getX());
-                    locationData2.put("Y", damage.getShotFrom().getY());
-                    locationData2.put("Z", damage.getShotFrom().getZ());
-
-                    recordDBObject.put("Distance", damage.getDistance());
-                    recordDBObject.put("ShotFrom", locationData2);
-                }
-
-                damageRecord.add(recordDBObject);
             }
 
             playerData.put("DamageRecord", damageRecord);
