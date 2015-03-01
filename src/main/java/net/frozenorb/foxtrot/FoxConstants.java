@@ -29,15 +29,15 @@ public final class FoxConstants {
     }
 
     public static FancyMessage publicChatFormat(Team team, String highRollerString, String customPrefixString, ChatColor teamColor, Player player, String message) {
-        FancyMessage chat = new FancyMessage(ChatColor.GOLD + "[");
+        FancyMessage chat = new FancyMessage(ChatColor.GOLD + "[").then();
 
         if (team == null) {
-            chat.then().text(teamColor + "-");
+            chat.text(teamColor + "-").then();
         } else {
             ClickableUtils.appendClickableTeam(teamColor + team.getName(), chat);
         }
 
-        chat.then(ChatColor.GOLD + "]" + highRollerString + customPrefixString).then();
+        chat.text(ChatColor.GOLD + "]" + highRollerString + customPrefixString).then();
         ClickableUtils.appendClickableName(player.getName(), chat);
         chat.text(ChatColor.WHITE + ": " + message);
 
