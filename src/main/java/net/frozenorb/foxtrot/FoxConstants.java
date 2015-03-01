@@ -38,7 +38,7 @@ public final class FoxConstants {
         }
 
         chat.text(ChatColor.GOLD + "]" + highRollerString + customPrefixString).then();
-        ClickableUtils.appendClickableName(player.getName(), chat);
+        ClickableUtils.appendClickableName(player.getDisplayName(), chat);
         chat.text(ChatColor.WHITE + ": " + message);
 
         return (chat);
