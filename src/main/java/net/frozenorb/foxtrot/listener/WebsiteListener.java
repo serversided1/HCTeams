@@ -18,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Date;
+
 public class WebsiteListener implements Listener {
 
     @EventHandler
@@ -97,7 +99,7 @@ public class WebsiteListener implements Listener {
         playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", event.getEntity().getName());
         playerDeath.append("type", "death");
-        playerDeath.append("when", Utilities.getInstance().getTime(System.currentTimeMillis()));
+        playerDeath.append("when", new Date());
 
         new BukkitRunnable() {
 

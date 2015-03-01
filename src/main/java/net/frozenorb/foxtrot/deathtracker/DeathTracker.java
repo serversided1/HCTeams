@@ -56,7 +56,7 @@ public class DeathTracker {
     public static BasicDBObject generateDeathData(Player player, Player killer) {
         BasicDBObject deathData = new BasicDBObject();
 
-        deathData.put("Date", (new Date()).toString());
+        deathData.put("Date", new Date());
         deathData.put("Killer", killer == null ? "N/A" : generatePlayerData(killer, false));
         deathData.put("Player", generatePlayerData(player, true));
         deathData.put("Server", generateServerData());
@@ -132,8 +132,7 @@ public class DeathTracker {
                 recordDBObject.put("Class", record.getClass().getSimpleName());
                 recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
                 recordDBObject.put("Damage", record.getDamage());
-                recordDBObject.put("Description", record.getDescription());
-                recordDBObject.put("Health", record.getHealthAfter());
+                recordDBObject.put("Description", record.getDeathMessage().toOldMessageFormat());
 
                 if (record instanceof PlayerDamage) {
                     recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());
