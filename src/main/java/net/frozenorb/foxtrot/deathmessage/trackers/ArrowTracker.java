@@ -81,7 +81,7 @@ public class ArrowTracker implements Listener {
         public FancyMessage getDeathMessage() {
             FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-            deathMessage.then(ChatColor.YELLOW + " was shot by ");
+            deathMessage.then(ChatColor.YELLOW + " was shot by ").then();
             ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
             deathMessage.then(ChatColor.YELLOW + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
 
@@ -97,7 +97,7 @@ public class ArrowTracker implements Listener {
         }
 
         public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot by a " + getMobType().getName() + "."));
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + "."));
         }
 
     }

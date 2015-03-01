@@ -68,7 +68,7 @@ public class FallTracker implements Listener {
         public FancyMessage getDeathMessage() {
             FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-            deathMessage.then(ChatColor.YELLOW + " hit the ground too hard thanks to ");
+            deathMessage.then(ChatColor.YELLOW + " hit the ground too hard thanks to ").then();
             ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
             deathMessage.then(ChatColor.YELLOW + ".");
 

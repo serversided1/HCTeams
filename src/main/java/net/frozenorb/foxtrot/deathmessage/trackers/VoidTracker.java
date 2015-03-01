@@ -68,7 +68,7 @@ public class VoidTracker implements Listener {
         public FancyMessage getDeathMessage() {
             FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-            deathMessage.then(ChatColor.YELLOW + " fell into the void thanks to ");
+            deathMessage.then(ChatColor.YELLOW + " fell into the void thanks to ").then();
             ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
             deathMessage.then(ChatColor.YELLOW + ".");
 

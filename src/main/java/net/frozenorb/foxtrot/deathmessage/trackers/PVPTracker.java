@@ -49,7 +49,7 @@ public class PVPTracker implements Listener {
         public FancyMessage getDeathMessage() {
             FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
 
-            deathMessage.then(ChatColor.YELLOW + " was slain by ");
+            deathMessage.then(ChatColor.YELLOW + " was slain by ").then();
             ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
             deathMessage.then(ChatColor.YELLOW + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
 

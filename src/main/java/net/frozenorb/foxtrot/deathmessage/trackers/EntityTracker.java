@@ -34,7 +34,7 @@ public class EntityTracker implements Listener {
         }
 
         public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + "was slain by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + "."));
+            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was slain by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + "."));
         }
 
     }
