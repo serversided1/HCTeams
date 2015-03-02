@@ -6,7 +6,7 @@
 	<version>1.0-SNAPSHOT</version>
 
     <properties>
-        <access-level>medium</access-level>
+        <access-level>high</access-level>
     </properties>
 
 	<build>
