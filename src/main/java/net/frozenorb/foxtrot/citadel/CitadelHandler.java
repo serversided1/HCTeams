@@ -132,7 +132,7 @@ public class CitadelHandler {
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.
     private Date generateLootableDate() {
         Calendar date = Calendar.getInstance();
-        int diff = Calendar.FRIDAY  - date.get(Calendar.DAY_OF_WEEK);
+        int diff = Calendar.TUESDAY  - date.get(Calendar.DAY_OF_WEEK);
 
         if (diff <= 0) {
             diff += 7;
