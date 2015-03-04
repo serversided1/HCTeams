@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -19,7 +20,7 @@ public class HelpCommand {
                 "§9§lHCTeams Help §7- §eInformation on HCTeams",
                 "§7§m-----------------------------------------------------",
                 "§9Map Information:",
-                "§eCurrent Map: §7Map 3 - Started January 31, 2015", // We should add this as a String in the mapInfo.json, I don't know how.
+                "§eCurrent Map: §7" + FoxtrotPlugin.getInstance().getMapHandler().getMapStartedString(),
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + sharp + ", " + prot,

@@ -18,6 +18,7 @@ public class MapHandler {
 
     @Getter private boolean kitMap;
     @Getter private String scoreboardTitle;
+    @Getter private String mapStartedString;
     @Getter private double baseLootingMultiplier;
     @Getter private double level1LootingMultiplier;
     @Getter private double level2LootingMultiplier;
@@ -39,8 +40,8 @@ public class MapHandler {
                 dbo.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
                 dbo.put("warzone", 1000);
                 dbo.put("border", 3000);
-                dbo.put("scoreboardTimersEnabled", true);
                 dbo.put("tradingSpawnShopMod", 1.2D);
+                dbo.put("mapStartedString", "Map 3 - Started January 31, 2015");
 
                 looting.put("base", 1D);
                 looting.put("level1", 1.2D);
@@ -61,6 +62,7 @@ public class MapHandler {
                 ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbo.getInt("border", 3000);
                 this.tradingSpawnShopMultiplier = dbo.getDouble("tradingSpawnShopMod");
+                this.mapStartedString = dbo.getString("mapStartedString");
 
                 BasicDBObject looting = (BasicDBObject) dbo.get("looting");
 
