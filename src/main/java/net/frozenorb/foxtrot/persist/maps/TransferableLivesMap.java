@@ -1,8 +1,10 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
-public class TransferableLivesMap extends RedisPersistMap<Integer> {
+import java.util.UUID;
+
+public class TransferableLivesMap extends PersistMap<Integer> {
 
     public TransferableLivesMap() {
         super("TransferableLives", "Lives.Transferable");
@@ -23,12 +25,12 @@ public class TransferableLivesMap extends RedisPersistMap<Integer> {
         return (lives);
     }
 
-    public int getLives(String player) {
-        return (contains(player) ? getValue(player) : 0);
+    public int getLives(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0);
     }
 
-    public void setLives(String player, int lives) {
-        updateValue(player, lives);
+    public void setLives(UUID update, int lives) {
+        updateValue(update.toString(), lives);
     }
 
 }

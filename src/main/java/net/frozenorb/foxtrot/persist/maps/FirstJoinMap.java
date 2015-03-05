@@ -1,10 +1,11 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
 import java.util.Date;
+import java.util.UUID;
 
-public class FirstJoinMap extends RedisPersistMap<Long> {
+public class FirstJoinMap extends PersistMap<Long> {
 
     public FirstJoinMap() {
         super("FirstJoin", "FirstJoined");
@@ -25,12 +26,12 @@ public class FirstJoinMap extends RedisPersistMap<Long> {
         return (new Date(time));
     }
 
-    public void setFirstJoin(String player) {
-        updateValueAsync(player, System.currentTimeMillis());
+    public void setFirstJoin(UUID update) {
+        updateValueAsync(update.toString(), System.currentTimeMillis());
     }
 
-    public long getFirstJoin(String player) {
-        return (contains(player) ? getValue(player) : 0L);
+    public long getFirstJoin(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0L);
     }
 
 }

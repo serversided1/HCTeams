@@ -6,9 +6,9 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
-import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,7 +17,10 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class KOTHHandler {
     

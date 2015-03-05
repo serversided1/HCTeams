@@ -11,19 +11,26 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class SubclaimType implements ParameterType<Subclaim> {
 
     public Subclaim transform(CommandSender sender, String source) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "Sorry, players online. :/");
+            return (null);
+        }
+
+        Player player = (Player) sender;
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
             return (null);
         }
 
-        if (sender instanceof Player && source.equals("location")) {
-            Subclaim subclaim = team.getSubclaim(((Player) sender).getLocation());
+        if (source.equals("location")) {
+            Subclaim subclaim = team.getSubclaim(player.getLocation());
 
             if (subclaim == null) {
                 sender.sendMessage(ChatColor.RED + "You are not inside of a subclaim.");
@@ -43,9 +50,9 @@ public class SubclaimType implements ParameterType<Subclaim> {
         return (subclaim);
     }
 
-    public List<String> tabComplete(Player sender, String source) {
+    public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             return (completions);

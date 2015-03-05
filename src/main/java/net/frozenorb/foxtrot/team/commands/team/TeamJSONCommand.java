@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.command.CommandSender;
 
 public class TeamJSONCommand {

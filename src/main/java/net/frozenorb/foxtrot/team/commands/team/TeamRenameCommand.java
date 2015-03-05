@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -11,14 +11,14 @@ public class TeamRenameCommand {
 
     @Command(names={ "team rename", "t rename", "f rename", "faction rename", "fac rename" }, permissionNode="")
     public static void teamRename(Player sender, @Parameter(name="player") String name) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if (!team.isOwner(sender.getName())) {
+        if (!team.isOwner(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Only team owners can use this command!");
             return;
         }

@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.util;
 
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 
 public class ClickableUtils {
@@ -16,7 +15,7 @@ public class ClickableUtils {
     }
 
     public static void appendDeathMessageName(String player, FancyMessage appendTo) {
-        appendTo.text(ChatColor.RED + player).link("http://www.hcteams.com/player/" + ChatColor.stripColor(player)).tooltip(ChatColor.GREEN + "Click to view " + player + ChatColor.GREEN + "'s profile").then().text(ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(player) + "]");
+        appendTo.text(ChatColor.RED + player).link("http://www.hcteams.com/player/" + ChatColor.stripColor(player)).tooltip(ChatColor.GREEN + "Click to view " + player + ChatColor.GREEN + "'s profile").then().text(ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player)) + "]");
     }
 
     public static FancyMessage clickableName(String player) {

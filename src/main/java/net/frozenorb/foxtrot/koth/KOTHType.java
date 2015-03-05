@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class KOTHType implements ParameterType<KOTH> {
 
@@ -23,7 +24,7 @@ public class KOTHType implements ParameterType<KOTH> {
         return (koth);
     }
 
-    public List<String> tabComplete(Player sender, String source) {
+    public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
 
         for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {

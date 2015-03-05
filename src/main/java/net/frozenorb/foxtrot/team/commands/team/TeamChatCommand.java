@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.chat.enums.ChatMode;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,7 @@ public class TeamChatCommand {
 
     @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permissionNode="")
     public static void teamChat(Player sender, @Parameter(name="chat mode", defaultValue="toggle") String params) {
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) == null) {
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender) == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
             return;
         }
@@ -54,11 +54,11 @@ public class TeamChatCommand {
                     break;
             }
 
-            FoxtrotPlugin.getInstance().getChatModeMap().setChatMode(player.getName(), chatMode);
+            FoxtrotPlugin.getInstance().getChatModeMap().setChatMode(player.getUniqueId(), chatMode);
         } else {
-            switch (FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(player.getName())) {
+            switch (FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(player.getUniqueId())) {
                 case PUBLIC:
-                    Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+                    Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
                     boolean teamHasAllies = team != null && team.getAllies().size() > 0;
 
                     setChat(player, teamHasAllies ? ChatMode.ALLIANCE : ChatMode.TEAM);

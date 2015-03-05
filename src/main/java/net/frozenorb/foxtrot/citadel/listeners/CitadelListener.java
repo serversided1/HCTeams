@@ -28,7 +28,7 @@ public class CitadelListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onKOTHCaptured(KOTHCapturedEvent event) {
         if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
-            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
             if (playerTeam != null) {
                 FoxtrotPlugin.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId());
@@ -48,7 +48,7 @@ public class CitadelListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR) // The monitor is here so we get called 'after' most join events.
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
         Object capper = FoxtrotPlugin.getInstance().getCitadelHandler().getCapper();
 
         if (playerTeam != null && capper == playerTeam.getUniqueId()) {

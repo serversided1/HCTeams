@@ -9,11 +9,11 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
-import net.frozenorb.foxtrot.serialization.ItemStackSerializer;
-import net.frozenorb.foxtrot.serialization.LocationSerializer;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.serialization.ItemStackSerializer;
+import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -125,7 +125,7 @@ public class CitadelHandler {
     }
 
     public boolean canLootCitadel(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
         return ((team != null && team.getUniqueId().equals(capper)) || System.currentTimeMillis() > lootable.getTime());
     }
 

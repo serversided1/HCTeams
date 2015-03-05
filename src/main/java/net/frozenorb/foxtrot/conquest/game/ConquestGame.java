@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -76,7 +77,7 @@ public class ConquestGame implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
         ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
 
         if (team == null) {
@@ -112,7 +113,7 @@ public class ConquestGame implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getKOTH().getCurrentCapper());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(event.getKOTH().getCurrentCapper()));
         ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
 
         if (team == null) {
@@ -120,7 +121,7 @@ public class ConquestGame implements Listener {
         }
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player)) {
+            if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " " + event.getKOTH().getCurrentCapper() + " was knocked off of " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!");
             }
         }
@@ -142,7 +143,7 @@ public class ConquestGame implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity());
 
         if (team == null || !teamPoints.containsKey(team.getUniqueId())) {
             return;
@@ -151,7 +152,7 @@ public class ConquestGame implements Listener {
         teamPoints.put(team.getUniqueId(), Math.max(0, teamPoints.get(team.getUniqueId()) - ConquestHandler.POINTS_DEATH_PENALTY));
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player)) {
+            if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
             }
         }

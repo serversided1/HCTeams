@@ -1,9 +1,11 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
-public class ChatModeMap extends RedisPersistMap<ChatMode> {
+import java.util.UUID;
+
+public class ChatModeMap extends PersistMap<ChatMode> {
 
     public ChatModeMap() {
         super("ChatModes", "ChatMode");
@@ -24,12 +26,12 @@ public class ChatModeMap extends RedisPersistMap<ChatMode> {
         return (chatMode.name());
     }
 
-    public ChatMode getChatMode(String player) {
-        return (contains(player) ? getValue(player) : ChatMode.PUBLIC);
+    public ChatMode getChatMode(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : ChatMode.PUBLIC);
     }
 
-    public void setChatMode(String player, ChatMode chatMode) {
-        updateValueAsync(player, chatMode);
+    public void setChatMode(UUID update, ChatMode chatMode) {
+        updateValueAsync(update.toString(), chatMode);
     }
 
 }

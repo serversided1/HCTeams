@@ -49,8 +49,8 @@ public abstract class ScoreGetter {
 
         @Override
         public String getValue(Player player) {
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
-                float diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) - System.currentTimeMillis();
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                float diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) - System.currentTimeMillis();
 
                 if (diff >= 0) {
                     return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));

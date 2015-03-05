@@ -28,11 +28,11 @@ public class DeathbanListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getName())) {
-            long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getName());
+        if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getUniqueId())) {
+            long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());
             long left = unbannedOn - System.currentTimeMillis();
 
-            if (event.getPlayer().isOp() && !event.getPlayer().getName().equals("Stimpay")) {
+            if (event.getPlayer().isOp()) {
                 return;
             }
 
@@ -41,9 +41,9 @@ public class DeathbanListener implements Listener {
                 return;
             }
 
-            int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getName());
-            int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getName());
-            int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getName());
+            int soulboundLives = FoxtrotPlugin.getInstance().getSoulboundLivesMap().getLives(event.getPlayer().getUniqueId());
+            int friendLives = FoxtrotPlugin.getInstance().getFriendLivesMap().getLives(event.getPlayer().getUniqueId());
+            int transferableLives = FoxtrotPlugin.getInstance().getTransferableLivesMap().getLives(event.getPlayer().getUniqueId());
             int totalLives = soulboundLives + friendLives + transferableLives;
 
             if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
@@ -53,19 +53,19 @@ public class DeathbanListener implements Listener {
 
             if (lastJoinedRevive.containsKey(event.getPlayer().getName()) && (System.currentTimeMillis() - lastJoinedRevive.get(event.getPlayer().getName())) < 1000 * 20) {
                 if (totalLives > 0) {
-                    FoxtrotPlugin.getInstance().getDeathbanMap().revive(event.getPlayer().getName());
+                    FoxtrotPlugin.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
 
                     if (soulboundLives == 0) {
                         if (friendLives == 0) {
                             // Use a transferable life.
-                            FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(event.getPlayer().getName(), transferableLives - 1);
+                            FoxtrotPlugin.getInstance().getTransferableLivesMap().setLives(event.getPlayer().getUniqueId(), transferableLives - 1);
                         } else {
                             // Use a friend life.
-                            FoxtrotPlugin.getInstance().getFriendLivesMap().setLives(event.getPlayer().getName(), friendLives - 1);
+                            FoxtrotPlugin.getInstance().getFriendLivesMap().setLives(event.getPlayer().getUniqueId(), friendLives - 1);
                         }
                     } else {
                         // Use a soulbound life.
-                        FoxtrotPlugin.getInstance().getSoulboundLivesMap().setLives(event.getPlayer().getName(), soulboundLives - 1);
+                        FoxtrotPlugin.getInstance().getSoulboundLivesMap().setLives(event.getPlayer().getUniqueId(), soulboundLives - 1);
                     }
 
                     totalLives--;
@@ -88,19 +88,16 @@ public class DeathbanListener implements Listener {
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
         int seconds = (int) FoxtrotPlugin.getInstance().getServerHandler().getDeathban(event.getEntity());
-        FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getName(), seconds);
+        FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getUniqueId(), seconds);
 
         final String time = TimeUtils.getDurationBreakdown(seconds * 1000);
 
-        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
 
-            @Override
-            public void run() {
-                if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
-                } else {
-                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
-                }
+            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+                event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
+            } else {
+                event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
             }
 
         }, 5);

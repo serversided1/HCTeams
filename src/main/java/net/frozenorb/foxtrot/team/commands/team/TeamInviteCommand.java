@@ -1,11 +1,11 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ public class TeamInviteCommand {
 
     @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
     public static void teamInvite(Player sender, @Parameter(name="player") OfflinePlayer target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -26,17 +26,17 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getName()) || team.isCaptain(sender.getName()))) {
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }
 
-        if (team.isMember(target.getName())) {
+        if (team.isMember(target.getUniqueId())) {
             sender.sendMessage(ChatColor.DARK_AQUA + target.getName() + " is already on your team.");
             return;
         }
 
-        if (team.getInvitations().contains(target.getName())) {
+        if (team.getInvitations().contains(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "That player has already been invited.");
             return;
         }
@@ -47,7 +47,7 @@ public class TeamInviteCommand {
         }*/
 
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + target.getName() + " [Invited by: " + sender.getName() + "]");
-        team.getInvitations().add(target.getName());
+        team.getInvitations().add(target.getUniqueId());
         team.flagForSave();
 
         if (target.isOnline()) {
@@ -57,7 +57,7 @@ public class TeamInviteCommand {
         }
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player)) {
+            if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.YELLOW + target.getName() + " has been invited to the team!");
             }
         }

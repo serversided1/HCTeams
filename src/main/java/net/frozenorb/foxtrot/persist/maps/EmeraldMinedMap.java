@@ -1,8 +1,10 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
-public class EmeraldMinedMap extends RedisPersistMap<Integer> {
+import java.util.UUID;
+
+public class EmeraldMinedMap extends PersistMap<Integer> {
 
     public EmeraldMinedMap() {
         super("EmeraldMined", "MiningStats.Emerald");
@@ -23,12 +25,12 @@ public class EmeraldMinedMap extends RedisPersistMap<Integer> {
         return (mined);
     }
 
-    public int getMined(String player) {
-        return (contains(player) ? getValue(player) : 0);
+    public int getMined(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0);
     }
 
-    public void setMined(String player, int mined) {
-        updateValueAsync(player, mined);
+    public void setMined(UUID update, int mined) {
+        updateValueAsync(update.toString(), mined);
     }
 
 }

@@ -11,7 +11,7 @@ public class TeamChatSpyClearCommand {
 
     @Command(names={ "team chatspy clear", "t chatspy clear", "f chatspy clear", "faction chatspy clear", "fac chatspy clear" }, permissionNode="foxtrot.chatspy")
     public static void teamChatSpyClear(Player sender) {
-        FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getName(), new ArrayList<>());
+        FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getUniqueId(), new ArrayList<>());
         sender.sendMessage(ChatColor.GREEN + "You are no longer spying on any teams.");
     }
 

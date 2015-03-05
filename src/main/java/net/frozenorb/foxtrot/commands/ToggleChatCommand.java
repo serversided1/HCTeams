@@ -9,10 +9,10 @@ public class ToggleChatCommand {
 
     @Command(names={ "ToggleChat", "ToggleGlobalChat", "TGC" }, permissionNode="")
     public static void toggleChat(Player sender) {
-        boolean val = !FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(sender.getName());
+        boolean val = !FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(sender.getUniqueId());
 
         sender.sendMessage(ChatColor.YELLOW + "You are now " + (!val ? ChatColor.RED + "unable" : ChatColor.GREEN + "able") + ChatColor.YELLOW + " to see global chat!");
-        FoxtrotPlugin.getInstance().getToggleGlobalChatMap().setGlobalChatToggled(sender.getName(), val);
+        FoxtrotPlugin.getInstance().getToggleGlobalChatMap().setGlobalChatToggled(sender.getUniqueId(), val);
     }
 
 }

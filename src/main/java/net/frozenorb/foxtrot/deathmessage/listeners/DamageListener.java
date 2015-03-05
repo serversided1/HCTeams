@@ -8,7 +8,7 @@ import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import net.frozenorb.foxtrot.deathtracker.DeathTracker;
-import org.bukkit.ChatColor;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 public class DamageListener implements Listener {
 
@@ -50,7 +51,8 @@ public class DamageListener implements Listener {
                 }
 
                 // TODO: Should this be here?
-                FoxtrotPlugin.getInstance().getKillsMap().setKills(killerName, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerName) + 1);
+                UUID killerUUID = UUIDUtils.uuid(killerName);
+                FoxtrotPlugin.getInstance().getKillsMap().setKills(killerUUID, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerUUID) + 1);
             }
 
             deathMessage = deathCause.getDeathMessage();

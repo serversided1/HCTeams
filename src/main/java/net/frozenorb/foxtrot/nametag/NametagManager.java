@@ -48,16 +48,14 @@ public class NametagManager {
     }
 
     public static void reloadPlayer0(Player toRefresh, Player refreshFor) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(toRefresh.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(toRefresh);
         TeamInfo teamInfo = getOrCreate(ChatColor.YELLOW.toString(), "");
 
         if (team != null) {
-            if (team.isMember(refreshFor.getName())) {
+            if (team.isMember(refreshFor.getUniqueId())) {
                 teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
-            } else if (team.isAlly(refreshFor.getName())) {
+            } else if (team.isAlly(refreshFor.getUniqueId())) {
                 teamInfo = getOrCreate(Team.ALLY_COLOR.toString(), "");
-            } else if (team.isTrading()) {
-                teamInfo = getOrCreate(Team.TRADING_COLOR.toString(), "");
             } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
                 teamInfo = getOrCreate(ChatColor.RED.toString(), "");
             }

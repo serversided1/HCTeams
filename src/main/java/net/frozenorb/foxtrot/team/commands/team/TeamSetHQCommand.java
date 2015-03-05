@@ -1,10 +1,9 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Bukkit;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,14 +12,14 @@ public class TeamSetHQCommand {
 
     @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome", "sethq" }, permissionNode="")
     public static void teamSetHQ(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             if (LandBoard.getInstance().getTeam(sender.getLocation()) != team) {
                 if (!sender.isOp()) {
                     sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
@@ -32,8 +31,8 @@ public class TeamSetHQCommand {
 
             team.setHQ(sender.getLocation());
 
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (team.isMember(player)) {
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
                 }
             }

@@ -3,8 +3,8 @@ package net.frozenorb.foxtrot.listener;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
 import net.frozenorb.foxtrot.nametag.NametagManager;
+import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -79,8 +79,8 @@ public class FoxListener implements Listener {
 
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getName())) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getName());
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
+            FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
         }
 
         Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
@@ -95,8 +95,8 @@ public class FoxListener implements Listener {
 
             // PVP Timer
             if (from.getRegionType() == RegionType.SPAWN) {
-                if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
-                    FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getName(), 30 * 60);
+                if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getUniqueId()) == PvPTimerMap.PENDING_USE) {
+                    FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
                 }
             }
 
@@ -117,7 +117,7 @@ public class FoxListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getName(), true);
+        FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getUniqueId(), true);
 
         NametagManager.getTeamMap().remove(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getScoreboardHandler().remove(event.getPlayer());
@@ -133,21 +133,21 @@ public class FoxListener implements Listener {
 
         event.setJoinMessage(null);
 
-        FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getName());
-        FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getName());
+        FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getUniqueId());
+        FoxtrotPlugin.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getUniqueId());
 
         if (!event.getPlayer().hasPlayedBefore()) {
-            FoxtrotPlugin.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getName());
+            FoxtrotPlugin.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
             event.getPlayer().teleport(FoxtrotPlugin.getInstance().getServerHandler().getSpawnLocation());
         }
 
         // PVP timer
-        if (!FoxtrotPlugin.getInstance().getPvPTimerMap().contains(event.getPlayer().getName())) {
-            FoxtrotPlugin.getInstance().getPvPTimerMap().pendingTimer(event.getPlayer().getName());
+        if (!FoxtrotPlugin.getInstance().getPvPTimerMap().contains(event.getPlayer().getUniqueId())) {
+            FoxtrotPlugin.getInstance().getPvPTimerMap().pendingTimer(event.getPlayer().getUniqueId());
         }
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getName()) == PvPTimerMap.PENDING_USE) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getUniqueId()) == PvPTimerMap.PENDING_USE) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
     }
@@ -179,7 +179,7 @@ public class FoxListener implements Listener {
                         Potion pot = Potion.fromItemStack(i);
 
                         if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                                 event.setCancelled(true);
@@ -223,7 +223,7 @@ public class FoxListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
-        if (team != null && !team.isMember(event.getPlayer())) {
+        if (team != null && !team.isMember(event.getPlayer().getUniqueId())) {
             if (NO_INTERACT.contains(event.getClickedBlock().getType()) || NO_INTERACT_WITH.contains(event.getMaterial())) {
                 if (event.getClickedBlock().getType() == Material.CHEST || event.getClickedBlock().getType().name().contains("DOOR")) {
                     CitadelHandler citadelHandler = FoxtrotPlugin.getInstance().getCitadelHandler();
@@ -247,15 +247,15 @@ public class FoxListener implements Listener {
                 event.setCancelled(true);
             }
         } else if (event.getMaterial() == Material.LAVA_BUCKET) {
-            if (team == null || !team.isMember(event.getPlayer())) {
+            if (team == null || !team.isMember(event.getPlayer().getUniqueId())) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "You can only do this in your own claims!");
             }
         } else {
-            if (team != null && !team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+            if (team != null && !team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
                 Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
-                if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+                if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {
                     if (NO_INTERACT.contains(event.getClickedBlock().getType()) || NO_INTERACT_WITH.contains(event.getMaterial())) {
                         event.setCancelled(true);
                         event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
@@ -276,8 +276,6 @@ public class FoxListener implements Listener {
                         FoxtrotPlugin.getInstance().getServerHandler().handleKitSign(s, event.getPlayer());
                     } else if (s.getLine(0).contains("Buy") || s.getLine(0).contains("Sell")) {
                         FoxtrotPlugin.getInstance().getServerHandler().handleShopSign(s, event.getPlayer());
-                    } else if (s.getLine(0).contains("DTR Regen")) {
-                        FoxtrotPlugin.getInstance().getServerHandler().handleDTRRegenSign(s, event.getPlayer());
                     }
 
                     event.setCancelled(true);
@@ -293,12 +291,10 @@ public class FoxListener implements Listener {
                     if (event.getClickedBlock() != null) {
                         event.getClickedBlock().getRelative(event.getBlockFace()).getState().setMetadata("noSignPacket", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
 
-                        Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+                        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
 
-                            @Override
-                            public void run() {
-                                event.getClickedBlock().getRelative(event.getBlockFace()).getState().removeMetadata("noSignPacket", FoxtrotPlugin.getInstance());
-                            }
+                            event.getClickedBlock().getRelative(event.getBlockFace()).getState().removeMetadata("noSignPacket", FoxtrotPlugin.getInstance());
+
                         }, 20);
                     }
                 }
@@ -384,10 +380,10 @@ public class FoxListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         SpawnTagHandler.removeTag(event.getEntity());
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity());
 
         if (event.getEntity().getKiller() != null) {
-            Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
+            Team killerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
 
             if (killerTeam != null) {
                 TeamActionTracker.logActionAsync(killerTeam, TeamActionType.KILLS, "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName() + " [X: " + event.getEntity().getLocation().getBlockX() + ", Y: " + event.getEntity().getLocation().getBlockY() + ", Z: " + event.getEntity().getLocation().getBlockZ() + "]");
@@ -444,7 +440,7 @@ public class FoxListener implements Listener {
                 continue;
             }
 
-            if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getName())) {
+            if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getUniqueId())) {
                 online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10000F, 0.8F + FoxtrotPlugin.RANDOM.nextFloat() * 0.2F);
                 ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
             }

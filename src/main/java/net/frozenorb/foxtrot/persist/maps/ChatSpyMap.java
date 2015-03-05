@@ -1,12 +1,13 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
+public class ChatSpyMap extends PersistMap<List<ObjectId>> {
 
     public ChatSpyMap() {
         super("ChatSpy", "ChatSpy");
@@ -47,12 +48,12 @@ public class ChatSpyMap extends RedisPersistMap<List<ObjectId>> {
         return (teams);
     }
 
-    public List<ObjectId> getChatSpy(String player) {
-        return (contains(player) ? getValue(player) : new ArrayList<>());
+    public List<ObjectId> getChatSpy(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : new ArrayList<>());
     }
 
-    public void setChatSpy(String player, List<ObjectId> teams) {
-        updateValueAsync(player, teams);
+    public void setChatSpy(UUID update, List<ObjectId> teams) {
+        updateValueAsync(update.toString(), teams);
     }
 
 }

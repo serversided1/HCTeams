@@ -1,8 +1,10 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
-public class FishingKitMap extends RedisPersistMap<Integer> {
+import java.util.UUID;
+
+public class FishingKitMap extends PersistMap<Integer> {
 
     public FishingKitMap() {
         super("FishingKitUses", "FishingKitUses");
@@ -23,12 +25,12 @@ public class FishingKitMap extends RedisPersistMap<Integer> {
         return (uses);
     }
 
-    public int getUses(String player) {
-        return (contains(player) ? getValue(player) : 0);
+    public int getUses(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0);
     }
 
-    public void setUses(String player, int uses) {
-        updateValueAsync(player, uses);
+    public void setUses(UUID update, int uses) {
+        updateValueAsync(update.toString(), uses);
     }
 
 }

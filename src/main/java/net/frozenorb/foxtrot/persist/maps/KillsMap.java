@@ -1,8 +1,10 @@
-package net.frozenorb.foxtrot.jedis.persist;
+package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.jedis.RedisPersistMap;
+import net.frozenorb.foxtrot.persist.PersistMap;
 
-public class KillsMap extends RedisPersistMap<Integer> {
+import java.util.UUID;
+
+public class KillsMap extends PersistMap<Integer> {
 
     public KillsMap() {
         super("Kills", "Kills");
@@ -23,12 +25,12 @@ public class KillsMap extends RedisPersistMap<Integer> {
         return (kills);
     }
 
-    public int getKills(String player) {
-        return (contains(player) ? getValue(player) : 0);
+    public int getKills(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0);
     }
 
-    public void setKills(String player, int kills) {
-        updateValueAsync(player, kills);
+    public void setKills(UUID update, int kills) {
+        updateValueAsync(update.toString(), kills);
     }
 
 }

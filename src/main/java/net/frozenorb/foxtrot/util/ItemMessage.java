@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.util;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 
 public class ItemMessage {
 
@@ -83,7 +81,7 @@ public class ItemMessage {
                 return (null);
             }
 
-            ItemMeta meta = Bukkit.getItemFactory().getItemMeta(stack.getType());
+            ItemMeta meta = FoxtrotPlugin.getInstance().getServer().getItemFactory().getItemMeta(stack.getType());
             // fool the client into thinking the item name has changed, so it actually (re)displays it
             meta.setDisplayName(String.format(FORMATS[iterations % FORMATS.length], message.getMessage(player)));
             stack.setItemMeta(meta);

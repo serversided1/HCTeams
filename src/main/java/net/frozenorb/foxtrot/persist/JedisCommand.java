@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.jedis;
+package net.frozenorb.foxtrot.persist;
 
 import redis.clients.jedis.Jedis;
 

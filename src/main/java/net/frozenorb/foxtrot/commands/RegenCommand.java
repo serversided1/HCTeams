@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.annotations.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,7 +13,7 @@ public class RegenCommand {
     @Command(names={ "Regen", "DTR" }, permissionNode="")
     public static void regen(Player sender, @Parameter(name="target", defaultValue="self") Team target) {
         if (!sender.isOp()) {
-            target = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+            target = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
         }
 
         if (target == null) {

@@ -31,7 +31,7 @@ public class CrowbarListener implements Listener {
         if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
-            if (team != null && !team.isMember(event.getPlayer())) {
+            if (team != null && !team.isMember(event.getPlayer().getUniqueId())) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
                 return;
             }

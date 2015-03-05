@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.minecraft.server.v1_7_R4.EntityHuman;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
@@ -44,12 +45,13 @@ public class CombatLoggerListener implements Listener {
         if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
             combatLoggers.remove(event.getEntity());
             String playerName = event.getEntity().getCustomName().substring(2);
+            UUID playerUUID = UUIDUtils.uuid(playerName);
 
             FoxtrotPlugin.getInstance().getLogger().info(playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
 
             // Deathban the player
-            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDeathban(playerName, event.getEntity().getLocation()));
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
+            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerUUID, FoxtrotPlugin.getInstance().getServerHandler().getDeathban(playerName, event.getEntity().getLocation()));
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(playerUUID);
 
             // Take away DTR.
             if (team != null) {
@@ -69,7 +71,7 @@ public class CombatLoggerListener implements Listener {
                 event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(playerName, event.getEntity().getKiller().getName()));
 
                 // and give them the kill
-                FoxtrotPlugin.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getName(), FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getName()) + 1);
+                FoxtrotPlugin.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
             }
 
             Player target = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName);
@@ -77,7 +79,7 @@ public class CombatLoggerListener implements Listener {
             if (target == null) {
                 // Create an entity to load the player data
                 MinecraftServer server = ((CraftServer) FoxtrotPlugin.getInstance().getServer()).getServer();
-                EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(playerName).getUniqueId()), new PlayerInteractManager(server.getWorldServer(0)));
+                EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, playerUUID), new PlayerInteractManager(server.getWorldServer(0)));
                 target = entity.getBukkitEntity();
 
                 if (target != null) {
@@ -171,14 +173,14 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getName())) {
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
                 event.setCancelled(true);
                 return;
             }
 
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(playerName);
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(playerName));
 
-            if (team != null && team.isMember(damager.getName())) {
+            if (team != null && team.isMember(damager.getUniqueId())) {
                 event.setCancelled(true);
             }
         }
@@ -199,7 +201,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If they have a PvP timer.
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
             return;
         }
 
@@ -229,7 +231,7 @@ public class CombatLoggerListener implements Listener {
                     continue;
                 }
 
-                if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(other.getName()) != FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName())) {
+                if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(other) != FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer())) {
                     enemyWithinRange = true;
                 }
             }
@@ -260,13 +262,11 @@ public class CombatLoggerListener implements Listener {
 
             combatLoggers.add(villager);
 
-            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
+            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
 
-                public void run() {
-                    if (!villager.isDead() && villager.isValid()) {
-                        combatLoggers.remove(villager);
-                        villager.remove();
-                    }
+                if (!villager.isDead() && villager.isValid()) {
+                    combatLoggers.remove(villager);
+                    villager.remove();
                 }
 
             }, 30 * 20L);

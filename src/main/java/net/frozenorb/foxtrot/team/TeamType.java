@@ -9,12 +9,13 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TeamType implements ParameterType<Team> {
 
     public Team transform(CommandSender sender, String source) {
         if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(((Player) sender).getUniqueId());
 
             if (team == null) {
                 sender.sendMessage(ChatColor.GRAY + "You're not on a team!");
@@ -30,13 +31,14 @@ public class TeamType implements ParameterType<Team> {
             Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(source);
 
             if (bukkitPlayer != null) {
-                source = bukkitPlayer.getName();
-            }
+                team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(bukkitPlayer);
 
-            team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(source);
-
-            if (team == null) {
-                sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
+                if (team == null) {
+                    sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
+                    return (null);
+                }
+            } else {
+                // There's no player or no team. Not much we can do.
                 return (null);
             }
         }
@@ -44,7 +46,7 @@ public class TeamType implements ParameterType<Team> {
         return (team);
     }
 
-    public List<String> tabComplete(Player sender, String source) {
+    public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {

@@ -1,15 +1,12 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RecachePlayerTeamsCommand {
 
@@ -23,11 +20,11 @@ public class RecachePlayerTeamsCommand {
     @Command(names={ "playerteamcache check" }, permissionNode="op")
     public static void recachePlayerTeams(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Checking player team cache...");
-        Map<String, String> dealtWith = new HashMap<>();
-        Set<String> errors = new HashSet<>();
+        Map<UUID, String> dealtWith = new HashMap<>();
+        Set<UUID> errors = new HashSet<>();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            for (String member : team.getMembers()) {
+            for (UUID member : team.getMembers()) {
                 if (dealtWith.containsKey(member) && !errors.contains(member)) {
                     errors.add(member);
                     sender.sendMessage(ChatColor.RED + " - " + member + " (Team: " + team.getName() + ", Expected: " + dealtWith.get(member) + ")");

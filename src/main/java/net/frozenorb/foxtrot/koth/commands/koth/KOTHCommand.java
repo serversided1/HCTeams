@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

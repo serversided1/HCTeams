@@ -57,7 +57,7 @@ public class DTRHandler extends BukkitRunnable {
                 continue;
             }
 
-            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
             if (playerTeam != null) {
                 if (playerOnlineMap.containsKey(playerTeam)) {

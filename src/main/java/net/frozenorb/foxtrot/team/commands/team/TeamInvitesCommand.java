@@ -1,10 +1,13 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.UUIDUtils;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class TeamInvitesCommand {
 
@@ -13,7 +16,7 @@ public class TeamInvitesCommand {
         StringBuilder yourInvites = new StringBuilder();
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            if (team.getInvitations().contains(sender.getName())) {
+            if (team.getInvitations().contains(sender.getUniqueId())) {
                 yourInvites.append(ChatColor.GRAY).append(team.getName()).append(ChatColor.YELLOW).append(", ");
             }
         }
@@ -26,13 +29,13 @@ public class TeamInvitesCommand {
 
         sender.sendMessage(ChatColor.YELLOW + "Your Invites: " + yourInvites.toString());
 
-        Team current = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team current = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (current != null) {
             StringBuilder invitedToYourTeam = new StringBuilder();
 
-            for (String invites : current.getInvitations()) {
-                invitedToYourTeam.append(ChatColor.GRAY).append(invites).append(ChatColor.YELLOW).append(", ");
+            for (UUID invited : current.getInvitations()) {
+                invitedToYourTeam.append(ChatColor.GRAY).append(UUIDUtils.name(invited)).append(ChatColor.YELLOW).append(", ");
             }
 
             if (invitedToYourTeam.length() > 2) {

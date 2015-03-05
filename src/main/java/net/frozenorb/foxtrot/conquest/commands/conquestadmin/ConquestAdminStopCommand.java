@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.conquest.commands.conquestadmin;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

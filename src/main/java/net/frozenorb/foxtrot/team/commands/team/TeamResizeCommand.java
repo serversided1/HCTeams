@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,14 +42,14 @@ public class TeamResizeCommand {
     //TODO: Remove permission node to deploy
     @Command(names={ "team resize", "t resize", "f resize", "faction resize", "fac resize" }, permissionNode="op")
     public static void teamResize(final Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if (team.isOwner(sender.getName()) || team.isCaptain(sender.getName())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             sender.getInventory().remove(SELECTION_WAND);
 
             if (team.isRaidable()) {

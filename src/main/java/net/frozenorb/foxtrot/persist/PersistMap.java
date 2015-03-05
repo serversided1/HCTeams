@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.jedis;
+package net.frozenorb.foxtrot.persist;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
-public abstract class RedisPersistMap<T> {
+public abstract class PersistMap<T> {
 
     private Map<String, T> wrappedMap = new ConcurrentHashMap<>();
 
@@ -124,7 +124,7 @@ public abstract class RedisPersistMap<T> {
         return (wrappedMap.get(key.toLowerCase()));
     }
 
-    public boolean contains(String key) {
+    protected boolean contains(String key) {
         return (wrappedMap.containsKey(key.toLowerCase()));
     }
 

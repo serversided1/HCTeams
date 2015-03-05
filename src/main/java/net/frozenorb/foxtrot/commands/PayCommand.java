@@ -1,10 +1,11 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.mBasic.Basic;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.text.NumberFormat;
@@ -12,22 +13,17 @@ import java.text.NumberFormat;
 public class PayCommand {
 
     @Command(names={ "Pay", "P2P" }, permissionNode="")
-    public static void pay(Player sender, @Parameter(name="Target") String target, @Parameter(name="Amount") float value) {
+    public static void pay(Player sender, @Parameter(name="Target") OfflinePlayer target, @Parameter(name="Amount") float value) {
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
 
-        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target)) {
+        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return;
         }
 
-        // Format online players name
-        Player pTarget = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = target.getPlayer();
 
-        if (pTarget != null) {
-            target = pTarget.getName();
-        }
-
-        if (target.equalsIgnoreCase(sender.getName())) {
+        if (sender.equals(bukkitPlayer)) {
             sender.sendMessage(ChatColor.RED + "You cannot send money to yourself!");
             return;
         }
@@ -42,13 +38,13 @@ public class PayCommand {
             return;
         }
 
-        Basic.get().getEconomyManager().depositPlayer(target, value);
+        Basic.get().getEconomyManager().depositPlayer(target.getName(), value);
         Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), value);
 
-        sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + target + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + ".");
 
-        if (pTarget != null) {
-            pTarget.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + ".");
+        if (bukkitPlayer != null) {
+            bukkitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + ".");
         }
     }
 

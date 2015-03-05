@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.qlib.command.annotations.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -11,7 +11,7 @@ public class TeamSubclaimListCommand {
 
     @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list", "team sub list", "t sub list", "f sub list", "faction sub list", "fac sub list" }, permissionNode="")
     public static void teamSubclaimList(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
@@ -21,13 +21,13 @@ public class TeamSubclaimListCommand {
         StringBuilder access = new StringBuilder();
         StringBuilder other = new StringBuilder();
 
-        for (Subclaim scs : team.getSubclaims()) {
-            if (scs.isMember(sender.getName()) || team.getOwner().equalsIgnoreCase(sender.getName()) || team.isCaptain(sender.getName())) {
-                access.append(scs.getName()).append(", ");
+        for (Subclaim subclaim : team.getSubclaims()) {
+            if (subclaim.isMember(sender.getUniqueId()) || team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+                access.append(subclaim.getName()).append(", ");
                 continue;
             }
 
-            other.append(scs).append(", ");
+            other.append(subclaim).append(", ");
         }
 
         if (access.length() > 2) {

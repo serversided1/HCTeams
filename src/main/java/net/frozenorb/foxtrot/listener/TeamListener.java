@@ -28,13 +28,13 @@ public class TeamListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (team != null) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player)) {
+                if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
-                } else if (team.getAllies().size() != 0 && team.isAlly(player)) {
+                } else if (team.getAllies().size() != 0 && team.isAlly(player.getUniqueId())) {
                     player.sendMessage(Team.ALLY_COLOR + "Ally Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
@@ -48,7 +48,7 @@ public class TeamListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (team != null) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
@@ -56,9 +56,9 @@ public class TeamListener implements Listener {
                     continue;
                 }
 
-                if (team.isMember(player)) {
+                if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "Member Offline: " + ChatColor.WHITE + event.getPlayer().getName());
-                } else if (team.isAlly(player)) {
+                } else if (team.isAlly(player.getUniqueId())) {
                     player.sendMessage(Team.ALLY_COLOR + "Ally Offline: " + ChatColor.WHITE + event.getPlayer().getName());
                 }
             }
@@ -82,7 +82,7 @@ public class TeamListener implements Listener {
         if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null) {
             Team owner = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-            if (event.getCause() == BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL && owner.isMember(event.getPlayer())) {
+            if (event.getCause() == BlockIgniteEvent.IgniteCause.FLINT_AND_STEEL && owner.isMember(event.getPlayer().getUniqueId())) {
                 return;
             }
 
@@ -98,16 +98,16 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-        if (!team.isMember(event.getPlayer())) {
+        if (!team.isMember(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
             event.setCancelled(true);
             return;
         }
 
-        if (!team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+        if (!team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
             Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
 
-            if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+            if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
             }
@@ -122,7 +122,7 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-        if (!team.isMember(event.getPlayer())) {
+        if (!team.isMember(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
             event.setCancelled(true);
 
@@ -137,10 +137,10 @@ public class TeamListener implements Listener {
             return;
         }
 
-        if (!team.isCaptain(event.getPlayer().getName()) && !team.isOwner(event.getPlayer().getName())) {
+        if (!team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
             Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
 
-            if (subclaim != null && !subclaim.isMember(event.getPlayer().getName())) {
+            if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You do not have access to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW  + "!");
             }
@@ -202,7 +202,7 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
-        if (!team.isMember(event.getPlayer())) {
+        if (!team.isMember(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -219,7 +219,7 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
-        if (!team.isMember((Player) event.getRemover())) {
+        if (!team.isMember(event.getRemover().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -236,7 +236,7 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getRightClicked().getLocation());
 
-        if (!team.isMember(event.getPlayer())) {
+        if (!team.isMember(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -254,7 +254,7 @@ public class TeamListener implements Listener {
 
         Team team = LandBoard.getInstance().getTeam(event.getEntity().getLocation());
 
-        if (!team.isMember((Player) event.getDamager())) {
+        if (!team.isMember(event.getDamager().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -278,14 +278,14 @@ public class TeamListener implements Listener {
         }
 
         if (damager != null) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(damager.getName());
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(damager);
             Player victim = (Player) event.getEntity();
 
             if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-                if (team.isMember(victim.getName())) {
+                if (team.isMember(victim.getUniqueId())) {
                     damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.YELLOW + ".");
                     event.setCancelled(true);
-                } else if (team.isAlly(victim.getName())) {
+                } else if (team.isAlly(victim.getUniqueId())) {
                     damager.sendMessage(ChatColor.YELLOW + "Be careful, that's your ally " + Team.ALLY_COLOR + victim.getName() + ChatColor.YELLOW + ".");
                 }
             }
@@ -302,7 +302,7 @@ public class TeamListener implements Listener {
 
         Team owner = LandBoard.getInstance().getTeam(checkLocation);
 
-        if (!owner.isMember(event.getPlayer())) {
+        if (!owner.isMember(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
             event.setItemStack(new ItemStack(event.getBucket()));
@@ -320,7 +320,7 @@ public class TeamListener implements Listener {
 
         Team owner = LandBoard.getInstance().getTeam(checkLocation);
 
-        if (!owner.isMember(event.getPlayer())) {
+        if (!owner.isMember(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
         }

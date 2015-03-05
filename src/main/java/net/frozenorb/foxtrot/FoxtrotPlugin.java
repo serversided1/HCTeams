@@ -5,23 +5,22 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.base.Joiner;
 import com.mongodb.MongoClient;
 import lombok.Getter;
-import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.events.HourEvent;
-import net.frozenorb.foxtrot.jedis.JedisCommand;
-import net.frozenorb.foxtrot.jedis.RedisSaveTask;
-import net.frozenorb.foxtrot.jedis.persist.*;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.nametag.NametagThread;
+import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
+import net.frozenorb.foxtrot.persist.JedisCommand;
+import net.frozenorb.foxtrot.persist.RedisSaveTask;
+import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
@@ -35,12 +34,8 @@ import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.entity.Player;
@@ -158,7 +153,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         (new NametagThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
-            getPlaytimeMap().playerJoined(player.getName());
+            getPlaytimeMap().playerJoined(player.getUniqueId());
             NametagManager.reloadPlayer(player);
             player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
         }
@@ -202,7 +197,7 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            getPlaytimeMap().playerQuit(player.getName(), false);
+            getPlaytimeMap().playerQuit(player.getUniqueId(), false);
             NametagManager.getTeamMap().remove(player.getName());
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));
         }
