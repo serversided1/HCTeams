@@ -48,11 +48,8 @@ public class DamageListener implements Listener {
 
                 if (killer != null) {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
+                    FoxtrotPlugin.getInstance().getKillsMap().setKills(killer.getUniqueId(), FoxtrotPlugin.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
                 }
-
-                // TODO: Should this be here?
-                UUID killerUUID = UUIDUtils.uuid(killerName);
-                FoxtrotPlugin.getInstance().getKillsMap().setKills(killerUUID, FoxtrotPlugin.getInstance().getKillsMap().getKills(killerUUID) + 1);
             }
 
             deathMessage = deathCause.getDeathMessage();
