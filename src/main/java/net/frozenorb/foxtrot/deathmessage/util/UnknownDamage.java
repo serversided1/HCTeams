@@ -1,9 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.util;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
-import net.frozenorb.foxtrot.util.ClickableUtils;
-import org.bukkit.ChatColor;
 
 public class UnknownDamage extends Damage {
 
@@ -11,8 +8,8 @@ public class UnknownDamage extends Damage {
         super(damaged, damage);
     }
 
-    public FancyMessage getDeathMessage() {
-        return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " died."));
+    public String getDeathMessage() {
+        return (wrapName(getDamaged()) + " died.");
     }
 
 }

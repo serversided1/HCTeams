@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
@@ -34,7 +33,6 @@ public class DamageListener implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         List<Damage> record = DeathMessageHandler.getDamage(event.getEntity());
-        FancyMessage deathMessage;
 
         if (record != null) {
             Damage deathCause = record.get(record.size() - 1);
@@ -50,15 +48,10 @@ public class DamageListener implements Listener {
                 }
             }
 
-            deathMessage = deathCause.getDeathMessage();
+            event.setDeathMessage(deathCause.getDeathMessage());
         } else {
-            deathMessage = (new UnknownDamage(event.getEntity().getName(), 1)).getDeathMessage();
+            event.setDeathMessage((new UnknownDamage(event.getEntity().getName(), 1)).getDeathMessage());
         }
-
-        // Use our custom clickable deathmessage
-        event.setDeathMessage(null);
-        deathMessage.send(FoxtrotPlugin.getInstance().getServer().getOnlinePlayers());
-        deathMessage.send(FoxtrotPlugin.getInstance().getServer().getConsoleSender());
 
         DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         DeathMessageHandler.clearDamage(event.getEntity());

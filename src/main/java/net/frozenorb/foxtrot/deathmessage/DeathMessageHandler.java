@@ -35,7 +35,13 @@ public class DeathMessageHandler {
             damage.put(player.getName(), new ArrayList<>());
         }
 
-        damage.get(player.getName()).add(addedDamage);
+        List<Damage> damageList = damage.get(player.getName());
+
+        while (damageList.size() > 30) {
+            damageList.remove(0);
+        }
+
+        damageList.add(addedDamage);
     }
 
     public static void clearDamage(Player player) {

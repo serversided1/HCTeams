@@ -8,16 +8,6 @@ public class ClickableUtils {
 
     private ClickableUtils() {}
 
-    public static FancyMessage deathMessageName(String player) {
-        FancyMessage appendTo = new FancyMessage();
-        appendDeathMessageName(player, appendTo);
-        return (appendTo);
-    }
-
-    public static void appendDeathMessageName(String player, FancyMessage appendTo) {
-        appendTo.text(ChatColor.RED + player).link("http://www.hcteams.com/player/" + ChatColor.stripColor(player)).tooltip(ChatColor.GREEN + "Click to view " + player + ChatColor.GREEN + "'s profile").then().text(ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player)) + "]");
-    }
-
     public static FancyMessage clickableName(String player) {
         FancyMessage appendTo = new FancyMessage();
         appendClickableName(player, appendTo);

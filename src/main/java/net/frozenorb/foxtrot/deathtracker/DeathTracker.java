@@ -18,6 +18,7 @@ import net.frozenorb.mBasic.Utilities.Lag;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
@@ -133,7 +134,7 @@ public class DeathTracker {
                     recordDBObject.put("Class", record.getClass().getSimpleName());
                     recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
                     recordDBObject.put("Damage", record.getDamage());
-                    recordDBObject.put("Description", record.getDeathMessage().toOldMessageFormat());
+                    recordDBObject.put("Description", ChatColor.stripColor(record.getDeathMessage()));
 
                     if (record instanceof PlayerDamage) {
                         recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());

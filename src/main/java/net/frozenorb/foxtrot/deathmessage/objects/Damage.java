@@ -2,6 +2,9 @@ package net.frozenorb.foxtrot.deathmessage.objects;
 
 import lombok.Getter;
 import mkremins.fanciful.FancyMessage;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.util.UUIDUtils;
+import org.bukkit.ChatColor;
 
 public abstract class Damage {
 
@@ -15,6 +18,10 @@ public abstract class Damage {
         this.time = System.currentTimeMillis();
     }
 
-    public abstract FancyMessage getDeathMessage();
+    public abstract String getDeathMessage();
+
+    public String wrapName(String player) {
+        return (ChatColor.RED + player + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player)) + "]" + ChatColor.YELLOW);
+    }
 
 }

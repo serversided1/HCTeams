@@ -1,10 +1,8 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.MobUtil;
-import net.frozenorb.foxtrot.util.ClickableUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,14 +43,8 @@ public class PVPTracker implements Listener {
             }
         }
 
-        public FancyMessage getDeathMessage() {
-            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
-
-            deathMessage.then(ChatColor.YELLOW + " was slain by ").then();
-            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
-            deathMessage.then(ChatColor.YELLOW + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
-
-            return (deathMessage);
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " was slain by " + wrapName(getDamager()) + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
         }
 
     }

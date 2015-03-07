@@ -8,6 +8,7 @@ import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.util.ClickableUtils;
+import net.frozenorb.qlib.util.EntityUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -61,8 +62,8 @@ public class ArrowTracker implements Listener {
             super(damaged, damage);
         }
 
-        public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot."));
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " was shot.");
         }
 
     }
@@ -78,14 +79,8 @@ public class ArrowTracker implements Listener {
             this.distance = distance;
         }
 
-        public FancyMessage getDeathMessage() {
-            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
-
-            deathMessage.then(ChatColor.YELLOW + " was shot by ").then();
-            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
-            deathMessage.then(ChatColor.YELLOW + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
-
-            return (deathMessage);
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " was shot by " + wrapName(getDamager()) + " from " + ChatColor.BLUE + (int) distance + " blocks" + ChatColor.YELLOW + ".");
         }
 
     }
@@ -96,8 +91,8 @@ public class ArrowTracker implements Listener {
             super(damaged, damage, damager.getType());
         }
 
-        public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was shot by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + "."));
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " was shot by a " + ChatColor.RED + EntityUtils.getName(getMobType()) + ChatColor.YELLOW + ".");
         }
 
     }

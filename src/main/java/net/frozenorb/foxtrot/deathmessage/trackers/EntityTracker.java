@@ -1,9 +1,8 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
-import net.frozenorb.foxtrot.util.ClickableUtils;
+import net.frozenorb.qlib.util.EntityUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -32,8 +31,8 @@ public class EntityTracker implements Listener {
             super(damaged, damage, entity.getType());
         }
 
-        public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " was slain by a " + ChatColor.RED + getMobType().getName() + ChatColor.YELLOW + "."));
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " was slain by a " + ChatColor.RED + EntityUtils.getName(getMobType()) + ChatColor.YELLOW + ".");
         }
 
     }
