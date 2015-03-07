@@ -117,14 +117,10 @@ public class FoxListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getUniqueId(), true);
-
-        FoxtrotPlugin.getInstance().getScoreboardHandler().remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        FoxtrotPlugin.getInstance().getScoreboardHandler().create(event.getPlayer());
-
         event.setJoinMessage(null);
 
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerJoined(event.getPlayer().getUniqueId());

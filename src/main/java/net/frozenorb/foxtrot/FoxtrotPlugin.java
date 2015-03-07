@@ -16,14 +16,14 @@ import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
+import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
-import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
+import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -32,12 +32,13 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.nametag.NametagInfo;
 import net.frozenorb.qlib.nametag.NametagProvider;
+import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
+import net.frozenorb.qlib.scoreboard.ScoreboardConfiguration;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -75,7 +76,6 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private TeamHandler teamHandler;
     @Getter private ServerHandler serverHandler;
     @Getter private MapHandler mapHandler;
-    @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
@@ -115,34 +115,8 @@ public class FoxtrotPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        FrozenNametagHandler.registerProvider(new NametagProvider("Foxtrot Provider", 5) {
-
-            @Override
-            public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
-                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(toRefresh);
-                NametagInfo nametagInfo = createNametag(ChatColor.YELLOW.toString(), "");
-
-                if (team != null) {
-                    if (team.isMember(refreshFor.getUniqueId())) {
-                        nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
-                    } else if (team.isAlly(refreshFor.getUniqueId())) {
-                        nametagInfo = createNametag(Team.ALLY_COLOR.toString(), "");
-                    } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                        nametagInfo = createNametag(ChatColor.RED.toString(), "");
-                    }
-                } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                    nametagInfo = createNametag(ChatColor.RED.toString(), "");
-                }
-
-                // You always see yourself as green, even if you're not on a team.
-                if (refreshFor == toRefresh) {
-                    nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
-                }
-
-                return (nametagInfo);
-            }
-
-        });
+        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
+        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
 
         Shared.get().getProfileManager().setNametagsEnabled(false);
 
@@ -177,7 +151,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
         (new PacketBorderThread()).start();
-        (new ScoreboardThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getUniqueId());
@@ -273,7 +246,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         LandBoard.getInstance().loadFromTeams();
 
         serverHandler = new ServerHandler();
-        scoreboardHandler = new ScoreboardHandler();
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
