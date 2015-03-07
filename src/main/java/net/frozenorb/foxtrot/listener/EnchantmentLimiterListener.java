@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
@@ -36,7 +36,7 @@ public class EnchantmentLimiterListener implements Listener {
             boolean fixed = false;
 
             for (ItemStack armorItem : armor) {
-                if (InvUtils.conformEnchants(armorItem)) {
+                if (InventoryUtils.conformEnchants(armorItem)) {
                     fixed = true;
                 }
             }
@@ -53,7 +53,7 @@ public class EnchantmentLimiterListener implements Listener {
             Player player = (Player) event.getDamager();
             ItemStack hand = player.getItemInHand();
 
-            if (InvUtils.conformEnchants(hand)) {
+            if (InventoryUtils.conformEnchants(hand)) {
                 player.setItemInHand(hand);
                 player.sendMessage(ChatColor.YELLOW + "We detected that your sword had some illegal enchantments, and have reduced the invalid enchantments.");
             }
@@ -65,7 +65,7 @@ public class EnchantmentLimiterListener implements Listener {
         if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && !event.isCancelled() && event.getItem() != null && event.getItem().getType() == Material.BOW) {
             ItemStack hand = event.getPlayer().getItemInHand();
 
-            if (InvUtils.conformEnchants(hand)) {
+            if (InventoryUtils.conformEnchants(hand)) {
                 event.getPlayer().setItemInHand(hand);
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "We detected that your bow had some illegal enchantments, and have reduced the invalid enchantments.");
             }
@@ -77,7 +77,7 @@ public class EnchantmentLimiterListener implements Listener {
         if (event.getInventory() instanceof MerchantInventory) {
             for (ItemStack item : event.getInventory()) {
                 if (item != null) {
-                    InvUtils.conformEnchants(item);
+                    InventoryUtils.conformEnchants(item);
                 }
             }
         } else if (event.getInventory() instanceof AnvilInventory) {
@@ -124,14 +124,14 @@ public class EnchantmentLimiterListener implements Listener {
     @EventHandler
     public void onEntityDeathEvent(EntityDeathEvent event) {
         for (ItemStack drop : event.getDrops()) {
-            InvUtils.conformEnchants(drop);
+            InventoryUtils.conformEnchants(drop);
         }
     }
 
     @EventHandler
     public void onPlayerFishEvent(PlayerFishEvent event) {
         if (event.getCaught() instanceof Item) {
-            InvUtils.conformEnchants(((Item) event.getCaught()).getItemStack());
+            InventoryUtils.conformEnchants(((Item) event.getCaught()).getItemStack());
         }
     }
 

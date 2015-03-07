@@ -16,10 +16,10 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.serialization.LocationSerializer;
+import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -755,7 +755,7 @@ public class Team {
         player.sendMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
 
         if (DTRHandler.isOnCooldown(this)) {
-            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
         }
 
         player.sendMessage(GRAY_LINE);

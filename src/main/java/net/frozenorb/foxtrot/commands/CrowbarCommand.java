@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -15,7 +15,7 @@ public class CrowbarCommand {
             return;
         }
 
-        sender.setItemInHand(InvUtils.CROWBAR);
+        sender.setItemInHand(InventoryUtils.CROWBAR);
         sender.sendMessage(ChatColor.YELLOW + "Gave you a crowbar.");
     }
 

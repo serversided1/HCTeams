@@ -6,9 +6,9 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.serialization.LocationSerializer;
+import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -56,7 +56,7 @@ public class KOTHHandler {
 
                         if (updateFor != null) {
                             sign.setLine(0, sign.getLine(0));
-                            sign.setLine(1, updateFor.isActive() ? ChatColor.GREEN + TimeUtils.getMMSS(updateFor.getRemainingCapTime()) : ChatColor.DARK_RED + TimeUtils.getMMSS(updateFor.getCapTime()));
+                            sign.setLine(1, updateFor.isActive() ? ChatColor.GREEN + TimeUtils.formatIntoMMSS(updateFor.getRemainingCapTime()) : ChatColor.DARK_RED + TimeUtils.formatIntoMMSS(updateFor.getCapTime()));
                             sign.setLine(2, "");
                             sign.setLine(3, ChatColor.AQUA.toString() + updateFor.getCapLocation().getBlockX() + ", " + updateFor.getCapLocation().getBlockZ());
 

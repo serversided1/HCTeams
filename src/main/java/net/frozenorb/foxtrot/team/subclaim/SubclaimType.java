@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.subclaim;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.qlib.command.interfaces.ParameterType;
+import net.frozenorb.qlib.command.ParameterType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +17,7 @@ public class SubclaimType implements ParameterType<Subclaim> {
 
     public Subclaim transform(CommandSender sender, String source) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Sorry, players online. :/");
+            sender.sendMessage(ChatColor.RED + "Sorry, players only. :/");
             return (null);
         }
 

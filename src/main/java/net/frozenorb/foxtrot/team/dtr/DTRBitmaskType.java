@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.dtr;
 
-import net.frozenorb.qlib.command.interfaces.ParameterType;
+import net.frozenorb.qlib.command.ParameterType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

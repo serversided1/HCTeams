@@ -14,7 +14,7 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.server.v1_7_R4.EntityLightning;
 import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityWeather;
@@ -389,11 +389,11 @@ public class FoxListener implements Listener {
         }
 
         // Add deaths to armor
-        String deathMsg = ChatColor.YELLOW + event.getEntity().getName() + ChatColor.RESET + " " + (event.getEntity().getKiller() != null ? "killed by " + ChatColor.YELLOW + event.getEntity().getKiller().getName() : "died") + " " + ChatColor.GOLD + InvUtils.DEATH_TIME_FORMAT.format(new Date());
+        String deathMsg = ChatColor.YELLOW + event.getEntity().getName() + ChatColor.RESET + " " + (event.getEntity().getKiller() != null ? "killed by " + ChatColor.YELLOW + event.getEntity().getKiller().getName() : "died") + " " + ChatColor.GOLD + InventoryUtils.DEATH_TIME_FORMAT.format(new Date());
 
         for (ItemStack armor : event.getEntity().getInventory().getArmorContents()) {
             if (armor != null && armor.getType() != Material.AIR) {
-                InvUtils.addDeath(armor, deathMsg);
+                InventoryUtils.addDeath(armor, deathMsg);
             }
         }
 
@@ -403,7 +403,7 @@ public class FoxListener implements Listener {
 
             // Add kills to sword lore
             if (hand.getType().name().contains("SWORD") || hand.getType() == Material.BOW) {
-                InvUtils.addKill(hand, killer.getDisplayName() + ChatColor.YELLOW + " " + (hand.getType() == Material.BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
+                InventoryUtils.addKill(hand, killer.getDisplayName() + ChatColor.YELLOW + " " + (hand.getType() == Material.BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
             }
 
             // Add player head to item drops

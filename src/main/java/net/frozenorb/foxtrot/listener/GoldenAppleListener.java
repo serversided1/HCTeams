@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -22,8 +22,7 @@ public class GoldenAppleListener implements Listener {
 
         if (cooldownUntil > System.currentTimeMillis()) {
             long millisLeft = cooldownUntil - System.currentTimeMillis();
-
-            String msg = TimeUtils.getDurationBreakdown(millisLeft);
+            String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");

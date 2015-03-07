@@ -44,24 +44,4 @@ public final class FoxConstants {
         return (chat);
     }
 
-            /*Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(toRefresh);
-        TeamInfo teamInfo = getOrCreate(ChatColor.YELLOW.toString(), "");
-
-        if (team != null) {
-            if (team.isMember(refreshFor.getUniqueId())) {
-                teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
-            } else if (team.isAlly(refreshFor.getUniqueId())) {
-                teamInfo = getOrCreate(Team.ALLY_COLOR.toString(), "");
-            } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                teamInfo = getOrCreate(ChatColor.RED.toString(), "");
-            }
-        } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-            teamInfo = getOrCreate(ChatColor.RED.toString(), "");
-        }
-
-        // You always see yourself as green, even if you're not on a team.
-        if (refreshFor == toRefresh) {
-            teamInfo = getOrCreate(ChatColor.DARK_GREEN.toString(), "");
-        }*/
-
 }

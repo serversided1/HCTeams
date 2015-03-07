@@ -4,10 +4,10 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -111,12 +111,12 @@ public class ArcherClass extends PvPClass {
 
                 getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
 
-                NametagManager.reloadPlayer(player);
+                FrozenNametagHandler.reloadPlayer(player);
 
                 new BukkitRunnable() {
 
                     public void run() {
-                        NametagManager.reloadPlayer(player);
+                        FrozenNametagHandler.reloadPlayer(player);
                     }
 
                 }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 5);
@@ -146,8 +146,8 @@ public class ArcherClass extends PvPClass {
     @Override
     public boolean itemConsumed(Player player, Material material) {
         if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
-            Long millisLeft = ((lastSpeedUsage.get(player.getName()) - System.currentTimeMillis()) / 1000L) * 1000L;
-            String msg = TimeUtils.getDurationBreakdown(millisLeft);
+            long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
+            String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
             player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
             return (false);

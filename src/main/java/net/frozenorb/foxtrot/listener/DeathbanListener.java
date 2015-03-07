@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,7 +47,7 @@ public class DeathbanListener implements Listener {
             int totalLives = soulboundLives + friendLives + transferableLives;
 
             if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". Lives cannot be used on kit maps.");
+                event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.formatIntoDetailedString((int) left / 1000) + ". Lives cannot be used on kit maps.");
                 return;
             }
 
@@ -76,10 +76,10 @@ public class DeathbanListener implements Listener {
                 }
             } else {
                 if (totalLives > 0) {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.formatIntoDetailedString((int) left / 1000) + ". You have " + totalLives + " total " + (totalLives == 1 ? "life" : "lives") + ". To use a life, reconnect within 20 seconds.");
                     lastJoinedRevive.put(event.getPlayer().getName(), System.currentTimeMillis());
                 } else {
-                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.getDurationBreakdown(left) + ". You have no lives. To buy a life, go to MineHQ.com/store.");
+                    event.disallow(PlayerLoginEvent.Result.KICK_BANNED, ChatColor.YELLOW + "You have died, and are deathbanned. Your deathban will expire in " + TimeUtils.formatIntoDetailedString((int) left / 1000) + ". You have no lives. To buy a life, go to MineHQ.com/store.");
                 }
             }
         }
@@ -90,7 +90,7 @@ public class DeathbanListener implements Listener {
         int seconds = (int) FoxtrotPlugin.getInstance().getServerHandler().getDeathban(event.getEntity());
         FoxtrotPlugin.getInstance().getDeathbanMap().deathban(event.getEntity().getUniqueId(), seconds);
 
-        final String time = TimeUtils.getDurationBreakdown(seconds * 1000);
+        final String time = TimeUtils.formatIntoDetailedString(seconds);
 
         FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
 

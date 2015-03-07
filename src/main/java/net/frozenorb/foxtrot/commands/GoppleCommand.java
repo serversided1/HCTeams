@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,7 @@ public class GoppleCommand {
     public static void gopple(Player sender) {
         if (FoxtrotPlugin.getInstance().getOppleMap().isOnCooldown(sender.getUniqueId())) {
             long millisLeft = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(sender.getUniqueId()) - System.currentTimeMillis();
-            sender.sendMessage(ChatColor.GOLD + "Gopple cooldown: " + ChatColor.WHITE + TimeUtils.getDurationBreakdown(millisLeft));
+            sender.sendMessage(ChatColor.GOLD + "Gopple cooldown: " + ChatColor.WHITE + TimeUtils.formatIntoDetailedString((int) millisLeft / 1000));
         } else {
             sender.sendMessage(ChatColor.RED + "No current gopple cooldown!");
         }

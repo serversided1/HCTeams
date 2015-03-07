@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.mongodb.MongoClient;
 import lombok.Getter;
+import net.frozenorb.NametagSystem.TeamInfo;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -20,9 +21,11 @@ import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
 import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
@@ -32,6 +35,10 @@ import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.nametag.NametagInfo;
+import net.frozenorb.qlib.nametag.NametagProvider;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
@@ -100,19 +107,42 @@ public class FoxtrotPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        Basic.get();
-
-        // Redis fucking dies without this here. I honestly don't even know.
-        Thread.currentThread().setContextClassLoader(getClassLoader());
-
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
             bugSnag = new Client("424ef6646404116dd57cf0178863fcf6");
-            //bugSnag.notify(new RuntimeException("Non-fatal"));
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        FrozenNametagHandler.registerProvider(new NametagProvider("Foxtrot Provider", 5) {
+
+            @Override
+            public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
+                Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(toRefresh);
+                NametagInfo nametagInfo = createNametag(ChatColor.YELLOW.toString(), "");
+
+                if (team != null) {
+                    if (team.isMember(refreshFor.getUniqueId())) {
+                        nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
+                    } else if (team.isAlly(refreshFor.getUniqueId())) {
+                        nametagInfo = createNametag(Team.ALLY_COLOR.toString(), "");
+                    } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+                        nametagInfo = createNametag(ChatColor.RED.toString(), "");
+                    }
+                } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+                    nametagInfo = createNametag(ChatColor.RED.toString(), "");
+                }
+
+                // You always see yourself as green, even if you're not on a team.
+                if (refreshFor == toRefresh) {
+                    nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
+                }
+
+                return (nametagInfo);
+            }
+
+        });
 
         Shared.get().getProfileManager().setNametagsEnabled(false);
 

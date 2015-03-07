@@ -13,9 +13,9 @@ import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
+import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
@@ -73,7 +73,7 @@ public class DeathTracker {
 
             potionEffectDBObject.put("Type", potionEffect.getType().getName());
             potionEffectDBObject.put("Tier", potionEffect.getAmplifier() + 1);
-            potionEffectDBObject.put("Duration", potionEffect.getAmplifier() > 1_000_000L ? "Infinite" : TimeUtils.getMMSS(potionEffect.getAmplifier() / 20));
+            potionEffectDBObject.put("Duration", potionEffect.getAmplifier() > 1_000_000L ? "Infinite" : TimeUtils.formatIntoMMSS(potionEffect.getAmplifier() / 20));
 
             potionEffects.add(potionEffectDBObject);
         }
@@ -100,7 +100,7 @@ public class DeathTracker {
         if (playerTeam != null) {
             teamData = new BasicDBObject();
 
-            teamData.put("RegenTime", TimeUtils.getConvertedTime(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            teamData.put("RegenTime", TimeUtils.formatIntoMMSS(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000));
             teamData.put("Name", playerTeam.getName());
             teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
