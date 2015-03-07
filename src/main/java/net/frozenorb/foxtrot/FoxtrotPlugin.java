@@ -97,9 +97,6 @@ public class FoxtrotPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
-        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
-
         Shared.get().getProfileManager().setNametagsEnabled(false);
 
         new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
@@ -109,6 +106,8 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupPersistence();
         setupListeners();
 
+        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
+        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         itemMessage = new ItemMessage();
 
         (new PacketBorderThread()).start();
