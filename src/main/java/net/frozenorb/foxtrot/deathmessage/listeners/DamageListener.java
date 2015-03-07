@@ -8,7 +8,6 @@ import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import net.frozenorb.foxtrot.deathtracker.DeathTracker;
-import net.frozenorb.foxtrot.util.UUIDUtils;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.List;
-import java.util.UUID;
 
 public class DamageListener implements Listener {
 

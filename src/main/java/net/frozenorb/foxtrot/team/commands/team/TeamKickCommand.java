@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.NametagSystem.NametagManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
