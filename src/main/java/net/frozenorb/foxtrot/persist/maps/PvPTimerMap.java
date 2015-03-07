@@ -38,6 +38,10 @@ public class PvPTimerMap extends PersistMap<Long> {
     }
 
     public boolean hasTimer(UUID check) {
+        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+            return (false);
+        }
+
         if (contains(check.toString())) {
             return (getValue(check.toString()) != PENDING_USE && getValue(check.toString()) > System.currentTimeMillis());
         }

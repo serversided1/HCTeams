@@ -18,6 +18,7 @@ public class EOTWCommand {
         }
 
         FoxtrotPlugin.getInstance().getServerHandler().setEOTW(!FoxtrotPlugin.getInstance().getServerHandler().isEOTW());
+
         EndListener.endActive = !FoxtrotPlugin.getInstance().getServerHandler().isEOTW();
 
         if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
@@ -45,6 +46,8 @@ public class EOTWCommand {
         }
 
         FoxtrotPlugin.getInstance().getServerHandler().setPreEOTW(!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW());
+
+        FoxtrotPlugin.getInstance().getDeathbanMap().wipeDeathbans();
 
         if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {

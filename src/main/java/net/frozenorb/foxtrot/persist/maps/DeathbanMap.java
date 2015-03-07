@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.persist.PersistMap;
 
 import java.util.Date;
@@ -29,12 +28,7 @@ public class DeathbanMap extends PersistMap<Long> {
 
     public boolean isDeathbanned(UUID check) {
         if (getValue(check.toString()) != null) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                // Ignore deathbans less than 5 days (at EOTW we deathban for 10 days)
-                return ((getValue(check.toString()) - System.currentTimeMillis()) > (1000L * 60 * 60 * 24 * 5));
-            } else {
-                return (getValue(check.toString()) > System.currentTimeMillis());
-            }
+            return (getValue(check.toString()) > System.currentTimeMillis());
         }
 
         return (false);

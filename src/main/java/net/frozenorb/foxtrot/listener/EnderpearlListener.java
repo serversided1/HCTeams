@@ -70,7 +70,7 @@ public class EnderpearlListener implements Listener {
         Location target = event.getTo();
         Location from = event.getFrom();
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(target)) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(target)) {
             if (!DTRBitmask.SAFE_ZONE.appliesAt(from)) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into spawn!");

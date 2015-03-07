@@ -194,7 +194,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If the player is in spawn
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             return;
         }
 

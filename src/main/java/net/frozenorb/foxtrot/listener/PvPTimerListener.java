@@ -107,14 +107,14 @@ public class PvPTimerListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             damager.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             event.setCancelled(true);
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
             event.setCancelled(true);
         }

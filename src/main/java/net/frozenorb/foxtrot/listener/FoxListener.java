@@ -103,12 +103,6 @@ public class FoxListener implements Listener {
             boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
 
-            // Don't display non-deathbans during EOTW.
-            if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-                fromReduceDeathban = false;
-                toReduceDeathban = false;
-            }
-
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now leaving: " + from.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (fromReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
         }
@@ -170,14 +164,14 @@ public class FoxListener implements Listener {
                         Potion pot = Potion.fromItemStack(i);
 
                         if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                                 event.setCancelled(true);
                                 return;
                             }
 
-                            if (!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+                            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
                                 event.setCancelled(true);
                                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot launch debuffs from inside spawn!");
                                 event.getPlayer().updateInventory();

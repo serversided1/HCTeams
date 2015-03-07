@@ -88,7 +88,7 @@ public class BaseBardClass extends PvPClass {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + getName() + " effects cannot be used while in spawn.");
             return;
         }
@@ -160,7 +160,7 @@ public class BaseBardClass extends PvPClass {
 
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
             }
 

@@ -35,7 +35,7 @@ public class BasicPreventionListener implements Listener {
             event.setCancelled(true);
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -72,7 +72,7 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
             event.setCancelled(true);
             return;
         }
