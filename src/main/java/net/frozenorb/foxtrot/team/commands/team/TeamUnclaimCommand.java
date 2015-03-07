@@ -7,8 +7,8 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

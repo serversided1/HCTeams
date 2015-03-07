@@ -1,12 +1,13 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import net.frozenorb.NametagSystem.NametagManager;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -62,8 +63,8 @@ public class TeamKickCommand {
         FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target.getUniqueId(), null);
 
         if (target.isOnline()) {
-            NametagManager.reloadPlayer(target.getPlayer());
-            NametagManager.sendTeamsToPlayer(target.getPlayer());
+            FrozenNametagHandler.reloadPlayer(target.getPlayer());
+            FrozenNametagHandler.reloadOthersFor(target.getPlayer());
         }
     }
 

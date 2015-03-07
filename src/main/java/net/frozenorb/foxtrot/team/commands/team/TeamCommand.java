@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.entity.Player;
 
 public class TeamCommand {

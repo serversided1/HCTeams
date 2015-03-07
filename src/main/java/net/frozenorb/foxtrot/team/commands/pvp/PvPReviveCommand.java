@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

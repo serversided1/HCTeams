@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.scoreboard;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.nametag.ScoreboardTeamPacketMod;
+import net.frozenorb.qlib.packet.ScoreboardTeamPacketMod;
 import net.minecraft.server.v1_7_R4.Packet;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
 import org.bukkit.ChatColor;

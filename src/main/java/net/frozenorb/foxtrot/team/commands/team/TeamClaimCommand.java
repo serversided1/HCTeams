@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

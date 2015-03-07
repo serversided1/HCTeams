@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
@@ -119,16 +118,11 @@ public class FoxListener implements Listener {
         event.setQuitMessage(null);
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getUniqueId(), true);
 
-        NametagManager.getTeamMap().remove(event.getPlayer().getName());
         FoxtrotPlugin.getInstance().getScoreboardHandler().remove(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        NametagManager.initPlayer(event.getPlayer());
-        NametagManager.sendTeamsToPlayer(event.getPlayer());
-        NametagManager.reloadPlayer(event.getPlayer());
-
         FoxtrotPlugin.getInstance().getScoreboardHandler().create(event.getPlayer());
 
         event.setJoinMessage(null);

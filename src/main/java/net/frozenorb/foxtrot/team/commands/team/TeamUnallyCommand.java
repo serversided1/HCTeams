@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -43,7 +43,8 @@ public class TeamUnallyCommand {
             }
 
             if (targetTeam.isMember(player.getUniqueId()) || senderTeam.isMember(player.getUniqueId())) {
-                NametagManager.reloadPlayer(player);
+                FrozenNametagHandler.reloadPlayer(sender);
+                FrozenNametagHandler.reloadOthersFor(sender);
             }
         }
     }

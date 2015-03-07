@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.pvp;
 
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.entity.Player;
 
 public class PvPCommand {

@@ -15,8 +15,6 @@ import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
-import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.nametag.NametagThread;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
@@ -150,11 +148,9 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         (new PacketBorderThread()).start();
         (new ScoreboardThread()).start();
-        (new NametagThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getUniqueId());
-            NametagManager.reloadPlayer(player);
             player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
         }
 
@@ -198,7 +194,6 @@ public class FoxtrotPlugin extends JavaPlugin {
     public void onDisable() {
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerQuit(player.getUniqueId(), false);
-            NametagManager.getTeamMap().remove(player.getName());
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));
         }
 

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

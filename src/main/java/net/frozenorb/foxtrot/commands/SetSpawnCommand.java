@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.conversations.*;

@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.koth.commands.koth;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.util.TimeUtils;
-import net.frozenorb.qlib.command.annotations.Command;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
