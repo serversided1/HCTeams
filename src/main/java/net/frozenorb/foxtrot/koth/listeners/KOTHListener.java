@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.koth.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
@@ -9,6 +8,7 @@ import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.event.HourEvent;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

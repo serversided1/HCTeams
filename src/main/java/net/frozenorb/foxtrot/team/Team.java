@@ -175,7 +175,6 @@ public class Team {
                 Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(owner), balance);
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 
@@ -297,7 +296,6 @@ public class Team {
                 }
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 

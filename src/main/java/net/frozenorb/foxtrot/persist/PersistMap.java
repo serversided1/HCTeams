@@ -136,7 +136,6 @@ public abstract class PersistMap<T> {
         try {
             return (getJavaObject(redisValue));
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             System.out.println("Error parsing Redis result.");
             System.out.println(" - Prefix: " + keyPrefix);
             System.out.println(" - Key: " + key);

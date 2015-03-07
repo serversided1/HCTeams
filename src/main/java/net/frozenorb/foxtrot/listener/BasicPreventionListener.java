@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -78,7 +79,7 @@ public class BasicPreventionListener implements Listener {
 
         if (event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
             // Make food drop 1/2 as fast if you have PvP protection
-            if (FoxtrotPlugin.RANDOM.nextInt(100) > (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId()) ? 10 : 30)) {
+            if (qLib.RANDOM.nextInt(100) > (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId()) ? 10 : 30)) {
                 event.setCancelled(true);
             }
         }

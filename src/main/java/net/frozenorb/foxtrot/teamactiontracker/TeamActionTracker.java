@@ -38,7 +38,6 @@ public class TeamActionTracker {
 
             Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + message + "\n", logTo, Charset.defaultCharset());
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

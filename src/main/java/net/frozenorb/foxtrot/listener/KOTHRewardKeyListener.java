@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -61,7 +62,7 @@ public class KOTHRewardKeyListener implements Listener {
         while (given < 5 && tries < 100) {
             tries++;
 
-            ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
+            ItemStack chosenItem = lootTables[qLib.RANDOM.nextInt(lootTables.length)];
 
             if (chosenItem == null || chosenItem.getType() == Material.AIR || chosenItem.getAmount() == 0) {
                 continue;

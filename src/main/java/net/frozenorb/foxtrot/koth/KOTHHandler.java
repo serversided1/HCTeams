@@ -7,6 +7,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -80,11 +81,10 @@ public class KOTHHandler {
 
             for (File kothFile : kothsBase.listFiles()) {
                 if (kothFile.getName().endsWith(".json")) {
-                    KOTHs.add(FoxtrotPlugin.GSON.fromJson(FileUtils.readFileToString(kothFile), KOTH.class));
+                    KOTHs.add(qLib.GSON.fromJson(FileUtils.readFileToString(kothFile), KOTH.class));
                 }
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -97,7 +97,7 @@ public class KOTHHandler {
 
             if (!kothSchedule.exists()) {
                 kothSchedule.createNewFile();
-                FileUtils.write(kothSchedule, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(new BasicDBObject().toString())));
+                FileUtils.write(kothSchedule, qLib.GSON.toJson(new JsonParser().parse(new BasicDBObject().toString())));
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(kothSchedule));
@@ -108,7 +108,6 @@ public class KOTHHandler {
                 }
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -121,7 +120,7 @@ public class KOTHHandler {
 
             if (!kothSigns.exists()) {
                 kothSigns.createNewFile();
-                FileUtils.write(kothSigns, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(new BasicDBObject().toString())));
+                FileUtils.write(kothSigns, qLib.GSON.toJson(new JsonParser().parse(new BasicDBObject().toString())));
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(kothSigns));
@@ -134,7 +133,6 @@ public class KOTHHandler {
                 }
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -153,10 +151,9 @@ public class KOTHHandler {
 
             for (KOTH koth : KOTHs) {
                 File kothFile = new File(kothsBase, koth.getName() + ".json");
-                FileUtils.write(kothFile, FoxtrotPlugin.GSON.toJson(koth));
+                FileUtils.write(kothFile, qLib.GSON.toJson(koth));
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }
@@ -173,9 +170,8 @@ public class KOTHHandler {
 
             dbo.put("signs", signs);
             kothSigns.delete();
-            FileUtils.write(kothSigns, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(dbo.toString())));
+            FileUtils.write(kothSigns, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

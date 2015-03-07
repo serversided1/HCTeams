@@ -7,12 +7,10 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.mongodb.MongoClient;
 import lombok.Getter;
-import net.frozenorb.NametagSystem.TeamInfo;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
@@ -22,10 +20,8 @@ import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
@@ -35,11 +31,7 @@ import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
-import net.frozenorb.qlib.nametag.NametagInfo;
-import net.frozenorb.qlib.nametag.NametagProvider;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
-import net.frozenorb.qlib.scoreboard.ScoreboardConfiguration;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
@@ -50,27 +42,21 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 
     private static FoxtrotPlugin instance;
 
-    public static final Random RANDOM = new Random();
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     @Getter private ItemMessage itemMessage;
 
     @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
-    @Getter private Client bugSnag;
 
     @Getter private PvPClassHandler pvpClassHandler;
     @Getter private TeamHandler teamHandler;
@@ -110,7 +96,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
-            bugSnag = new Client("424ef6646404116dd57cf0178863fcf6");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,27 +113,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupListeners();
 
         itemMessage = new ItemMessage();
-
-        Calendar date = Calendar.getInstance();
-
-        date.set(Calendar.MINUTE, 60);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-
-        (new Timer("Hourly Scheduler")).schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                new BukkitRunnable() {
-
-                    public void run() {
-                        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new HourEvent(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)));
-                    }
-
-                }.runTask(FoxtrotPlugin.getInstance());
-            }
-
-        }, date.getTime(), TimeUnit.HOURS.toMillis(1));
 
         (new PacketBorderThread()).start();
 
@@ -217,7 +181,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             result = jedisCommand.execute(jedis);
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
 
             if (jedis != null) {

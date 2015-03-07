@@ -15,6 +15,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
@@ -43,9 +44,8 @@ public class DeathTracker {
                 try {
                     logTo.getParentFile().mkdirs();
                     logTo.createNewFile();
-                    FileUtils.write(logTo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(data.toString())));
+                    FileUtils.write(logTo, qLib.GSON.toJson(new JsonParser().parse(data.toString())));
                 } catch (Exception e) {
-                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }

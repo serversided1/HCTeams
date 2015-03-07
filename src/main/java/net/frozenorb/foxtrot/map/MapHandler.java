@@ -66,7 +66,6 @@ public class MapHandler {
                 this.level3LootingMultiplier = looting.getDouble("level3");
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

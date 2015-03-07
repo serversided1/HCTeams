@@ -13,6 +13,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Utilities.ItemDb;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -431,7 +432,7 @@ public class VisualClaim implements Listener {
                 return;
             }
 
-            claim.setName(playerTeam.getName() + "_" + (100 + FoxtrotPlugin.RANDOM.nextInt(800)));
+            claim.setName(playerTeam.getName() + "_" + (100 + qLib.RANDOM.nextInt(800)));
             claim.setY1(0);
             claim.setY2(256);
 

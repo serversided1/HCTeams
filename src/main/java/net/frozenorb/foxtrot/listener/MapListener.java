@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.enchantments.Enchantment;
@@ -34,7 +35,7 @@ public class MapListener implements Listener {
 
     @EventHandler
     public void onFurnaceBurn(FurnaceBurnEvent event) {
-        startUpdate((Furnace) event.getBlock().getState(), FoxtrotPlugin.RANDOM.nextBoolean() ? 1 : 2); // Averages to 1.5
+        startUpdate((Furnace) event.getBlock().getState(), qLib.RANDOM.nextBoolean() ? 1 : 2); // Averages to 1.5
     }
 
     @EventHandler

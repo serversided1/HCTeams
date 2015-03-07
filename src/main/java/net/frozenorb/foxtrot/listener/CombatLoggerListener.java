@@ -94,8 +94,6 @@ public class CombatLoggerListener implements Listener {
                 target.getInventory().setArmorContents(null);
                 humanTarget.setHealth(0);
                 target.saveData();
-            } else {
-                FoxtrotPlugin.getInstance().getBugSnag().notify(new NullPointerException("Target is null"));
             }
         }
     }

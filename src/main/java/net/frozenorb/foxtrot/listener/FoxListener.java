@@ -16,6 +16,7 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.qLib;
 import net.minecraft.server.v1_7_R4.EntityLightning;
 import net.minecraft.server.v1_7_R4.PacketPlayOutSpawnEntityWeather;
 import org.bukkit.*;
@@ -184,7 +185,6 @@ public class FoxListener implements Listener {
                         }
                     }
                 } catch (Exception e) {
-                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }
@@ -431,7 +431,7 @@ public class FoxListener implements Listener {
             }
 
             if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getUniqueId())) {
-                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10000F, 0.8F + FoxtrotPlugin.RANDOM.nextFloat() * 0.2F);
+                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10000F, 0.8F + qLib.RANDOM.nextFloat() * 0.2F);
                 ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
             }
         }

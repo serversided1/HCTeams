@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,14 +34,14 @@ public class CannonCommand {
             return;
         }
 
-        int x = FoxtrotPlugin.RANDOM.nextInt(SPAWN_CANNON_MAX_DISTANCE - SPAWN_CANNON_MIN_DISTANCE) + SPAWN_CANNON_MIN_DISTANCE;
-        int z = FoxtrotPlugin.RANDOM.nextInt(SPAWN_CANNON_MAX_DISTANCE - SPAWN_CANNON_MIN_DISTANCE) + SPAWN_CANNON_MIN_DISTANCE;
+        int x = qLib.RANDOM.nextInt(SPAWN_CANNON_MAX_DISTANCE - SPAWN_CANNON_MIN_DISTANCE) + SPAWN_CANNON_MIN_DISTANCE;
+        int z = qLib.RANDOM.nextInt(SPAWN_CANNON_MAX_DISTANCE - SPAWN_CANNON_MIN_DISTANCE) + SPAWN_CANNON_MIN_DISTANCE;
 
-        if (FoxtrotPlugin.RANDOM.nextBoolean()) {
+        if (qLib.RANDOM.nextBoolean()) {
             x = -x;
         }
 
-        if (FoxtrotPlugin.RANDOM.nextBoolean()) {
+        if (qLib.RANDOM.nextBoolean()) {
             z = -z;
         }
 
