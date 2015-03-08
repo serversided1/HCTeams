@@ -413,22 +413,7 @@ public class FoxListener implements Listener {
             }
         }
 
-        // Lightning
-        Location loc = event.getEntity().getLocation();
-
-        EntityLightning entity = new EntityLightning(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY(), loc.getZ(), true, false);
-        PacketPlayOutSpawnEntityWeather packet = new PacketPlayOutSpawnEntityWeather(entity);
-
-        for (Player online : event.getEntity().getWorld().getPlayers()) {
-            if (online.equals(event.getEntity())) {
-                continue;
-            }
-
-            if (FoxtrotPlugin.getInstance().getToggleLightningMap().isLightningToggled(online.getUniqueId())) {
-                online.playSound(online.getLocation(), Sound.AMBIENCE_THUNDER, 10000F, 0.8F + qLib.RANDOM.nextFloat() * 0.2F);
-                ((CraftPlayer) online).getHandle().playerConnection.sendPacket(packet);
-            }
-        }
+        event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
 
         // Transfer money
         double bal = Basic.get().getEconomyManager().getBalance(event.getEntity().getName());

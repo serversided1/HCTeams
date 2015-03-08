@@ -69,7 +69,6 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private PvPTimerMap PvPTimerMap;
     @Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
-    @Getter private ToggleLightningMap toggleLightningMap;
     @Getter private FishingKitMap fishingKitMap;
     @Getter private ToggleGlobalChatMap toggleGlobalChatMap;
     @Getter private ChatSpyMap chatSpyMap;
@@ -259,7 +258,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
         (killsMap = new KillsMap()).loadFromRedis();
         (chatModeMap = new ChatModeMap()).loadFromRedis();
-        (toggleLightningMap = new ToggleLightningMap()).loadFromRedis();
         (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
         (fishingKitMap = new FishingKitMap()).loadFromRedis();
         (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();
