@@ -5,12 +5,12 @@ import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import net.frozenorb.foxtrot.serialization.LocationSerializer;
+import net.frozenorb.qlib.serialization.LocationSerializer;
 import org.bukkit.Location;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper=false)
 @Data
@@ -18,32 +18,18 @@ public class Subclaim {
 
     @NonNull private Location loc1, loc2;
     @NonNull private String name;
-    private List<String> members = new ArrayList<>();
+    private List<UUID> members = new ArrayList<>();
 
-    public void addMember(String name) {
-        members.add(name);
+    public void addMember(UUID member) {
+        members.add(member);
     }
 
-    public boolean isMember(String name) {
-        for (String str : members) {
-            if (str.equalsIgnoreCase(name)) {
-                return (true);
-            }
-        }
-
-        return (false);
+    public boolean isMember(UUID check) {
+        return (members.contains(check));
     }
 
-    public void removeMember(String name) {
-        Iterator<String> iterator = members.iterator();
-
-        while (iterator.hasNext()) {
-            String member = iterator.next();
-
-            if (member.equalsIgnoreCase(name)) {
-                iterator.remove();
-            }
-        }
+    public void removeMember(UUID member) {
+        members.remove(member);
     }
 
     public BasicDBObject json() {
@@ -59,7 +45,7 @@ public class Subclaim {
 
     @Override
     public String toString() {
-        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + Joiner.on(",").join(members));
+        return (loc1.getBlockX() + ":" + loc1.getBlockY() + ":" + loc1.getBlockZ() + ":" + loc2.getBlockX() + ":" + loc2.getBlockY() + ":" + loc2.getBlockZ() + ":" + name + ":" + Joiner.on(", ").join(members));
     }
 
 }

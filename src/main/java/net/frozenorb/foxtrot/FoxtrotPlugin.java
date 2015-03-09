@@ -1,30 +1,25 @@
 package net.frozenorb.foxtrot;
 
-import com.bugsnag.Client;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.base.Joiner;
 import com.mongodb.MongoClient;
 import lombok.Getter;
-import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.events.HourEvent;
-import net.frozenorb.foxtrot.jedis.JedisCommand;
-import net.frozenorb.foxtrot.jedis.RedisSaveTask;
-import net.frozenorb.foxtrot.jedis.persist.*;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
-import net.frozenorb.foxtrot.nametag.NametagManager;
-import net.frozenorb.foxtrot.nametag.NametagThread;
+import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
+import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
+import net.frozenorb.foxtrot.persist.JedisCommand;
+import net.frozenorb.foxtrot.persist.RedisSaveTask;
+import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.scoreboard.ScoreboardHandler;
-import net.frozenorb.foxtrot.scoreboard.ScoreboardThread;
+import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -32,50 +27,38 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
-import org.bukkit.ChatColor;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Iterator;
 
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 
     private static FoxtrotPlugin instance;
 
-    public static final Random RANDOM = new Random();
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     @Getter private ItemMessage itemMessage;
 
     @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
-    @Getter private Client bugSnag;
 
     @Getter private PvPClassHandler pvpClassHandler;
     @Getter private TeamHandler teamHandler;
     @Getter private ServerHandler serverHandler;
     @Getter private MapHandler mapHandler;
-    @Getter private ScoreboardHandler scoreboardHandler;
     @Getter private CitadelHandler citadelHandler;
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
@@ -86,7 +69,6 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private PvPTimerMap PvPTimerMap;
     @Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
-    @Getter private ToggleLightningMap toggleLightningMap;
     @Getter private FishingKitMap fishingKitMap;
     @Getter private ToggleGlobalChatMap toggleGlobalChatMap;
     @Getter private ChatSpyMap chatSpyMap;
@@ -107,16 +89,9 @@ public class FoxtrotPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        Basic.get();
-
-        // Redis fucking dies without this here. I honestly don't even know.
-        Thread.currentThread().setContextClassLoader(getClassLoader());
-
         try {
             jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
-            bugSnag = new Client("424ef6646404116dd57cf0178863fcf6");
-            //bugSnag.notify(new RuntimeException("Non-fatal"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,36 +105,14 @@ public class FoxtrotPlugin extends JavaPlugin {
         setupPersistence();
         setupListeners();
 
+        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
+        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         itemMessage = new ItemMessage();
 
-        Calendar date = Calendar.getInstance();
-
-        date.set(Calendar.MINUTE, 60);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-
-        (new Timer("Hourly Scheduler")).schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                new BukkitRunnable() {
-
-                    public void run() {
-                        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new HourEvent(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)));
-                    }
-
-                }.runTask(FoxtrotPlugin.getInstance());
-            }
-
-        }, date.getTime(), TimeUnit.HOURS.toMillis(1));
-
         (new PacketBorderThread()).start();
-        (new ScoreboardThread()).start();
-        (new NametagThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
-            getPlaytimeMap().playerJoined(player.getName());
-            NametagManager.reloadPlayer(player);
+            getPlaytimeMap().playerJoined(player.getUniqueId());
             player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
         }
 
@@ -202,8 +155,7 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            getPlaytimeMap().playerQuit(player.getName(), false);
-            NametagManager.getTeamMap().remove(player.getName());
+            getPlaytimeMap().playerQuit(player.getUniqueId(), false);
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));
         }
 
@@ -224,7 +176,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         try {
             result = jedisCommand.execute(jedis);
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
 
             if (jedis != null) {
@@ -253,7 +204,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         LandBoard.getInstance().loadFromTeams();
 
         serverHandler = new ServerHandler();
-        scoreboardHandler = new ScoreboardHandler();
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
@@ -308,7 +258,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
         (killsMap = new KillsMap()).loadFromRedis();
         (chatModeMap = new ChatModeMap()).loadFromRedis();
-        (toggleLightningMap = new ToggleLightningMap()).loadFromRedis();
         (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
         (fishingKitMap = new FishingKitMap()).loadFromRedis();
         (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();

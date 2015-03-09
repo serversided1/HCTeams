@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.foxtrot.nametag.NametagManager;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,14 +12,14 @@ public class TeamUnallyCommand {
 
     @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="")
     public static void teamUnally(Player sender, @Parameter(name="team") Team targetTeam) {
-        Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (senderTeam == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if (!(senderTeam.isOwner(sender.getName()) || senderTeam.isCaptain(sender.getName()))) {
+        if (!(senderTeam.isOwner(sender.getUniqueId()) || senderTeam.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }
@@ -36,14 +36,15 @@ public class TeamUnallyCommand {
         targetTeam.flagForSave();
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (targetTeam.isMember(player)) {
+            if (targetTeam.isMember(player.getUniqueId())) {
                 player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has dropped their alliance with your team.");
-            } else if (senderTeam.isMember(player)) {
+            } else if (senderTeam.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.YELLOW + "Your team has dropped its alliance with " + targetTeam.getName(sender) + ChatColor.YELLOW + ".");
             }
 
-            if (targetTeam.isMember(player) || senderTeam.isMember(player)) {
-                NametagManager.reloadPlayer(player);
+            if (targetTeam.isMember(player.getUniqueId()) || senderTeam.isMember(player.getUniqueId())) {
+                FrozenNametagHandler.reloadPlayer(sender);
+                FrozenNametagHandler.reloadOthersFor(sender);
             }
         }
     }

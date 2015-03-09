@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team.chatspy;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ public class TeamChatSpyListCommand {
     public static void teamChatSpyList(Player sender) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (ObjectId team : FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getName())) {
+        for (ObjectId team : FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getUniqueId())) {
             Team teamObj = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(team);
 
             if (teamObj != null) {

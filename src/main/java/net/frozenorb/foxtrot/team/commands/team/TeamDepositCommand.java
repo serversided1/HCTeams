@@ -1,12 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,7 @@ public class TeamDepositCommand {
 
     @Command(names={ "team deposit", "t deposit", "f deposit", "faction deposit", "fac deposit", "team d", "t d", "f d", "faction d", "fac d", "team m d", "t m d", "f m d", "faction m d", "fac m d" }, permissionNode="")
     public static void teamDeposit(Player sender, @Parameter(name="amount") float amount) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -38,7 +38,7 @@ public class TeamDepositCommand {
         team.setBalance(team.getBalance() + amount);
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player)) {
+            if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.YELLOW + sender.getName() + " deposited " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " into the team balance.");
             }
         }

@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,7 @@ public class TeamSubclaimStartCommand {
 
     @Command(names={ "team subclaim start", "t subclaim start", "f subclaim start", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub start", "faction sub start", "fac sub start" }, permissionNode="")
     public static void teamSubclaimStart(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");

@@ -1,11 +1,14 @@
 package net.frozenorb.foxtrot.team.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.UUIDUtils;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class ForceLeaderCommand {
 
@@ -17,15 +20,17 @@ public class ForceLeaderCommand {
             target = null;
         }
 
-        if (target != null && !FoxtrotPlugin.getInstance().getPlaytimeMap().contains(target)) {
+        UUID targetUUID = UUIDUtils.uuid(target);
+
+        if (target != null && !FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(targetUUID)) {
             sender.sendMessage(ChatColor.RED + "That player has never played here!");
         } else {
-            if (target != null && !team.isMember(target)) {
+            if (target != null && !team.isMember(targetUUID)) {
                 sender.sendMessage(ChatColor.RED + "That player is not a member of " + team.getName() + ".");
                 return;
             }
 
-            team.setOwner(target);
+            team.setOwner(targetUUID);
             sender.sendMessage(ChatColor.LIGHT_PURPLE + target + ChatColor.YELLOW + " is now the owner of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
         }
     }

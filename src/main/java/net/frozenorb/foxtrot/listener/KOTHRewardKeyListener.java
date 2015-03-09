@@ -2,7 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +24,7 @@ public class KOTHRewardKeyListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !DTRBitmask.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation()) || !InvUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
+        if (event.getClickedBlock() == null || event.getItem() == null || event.getClickedBlock().getType() != Material.ENDER_CHEST || !DTRBitmask.SAFE_ZONE.appliesAt(event.getClickedBlock().getLocation()) || !InventoryUtils.isSimilar(event.getItem(), ChatColor.RED + "KOTH Reward Key")) {
             return;
         }
 
@@ -42,7 +43,7 @@ public class KOTHRewardKeyListener implements Listener {
             return;
         }
 
-        final int tier = InvUtils.getKOTHRewardKeyTier(event.getItem());
+        final int tier = InventoryUtils.getKOTHRewardKeyTier(event.getItem());
         Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, tier + 3);
 
         if (block.getType() != Material.CHEST) {
@@ -61,7 +62,7 @@ public class KOTHRewardKeyListener implements Listener {
         while (given < 5 && tries < 100) {
             tries++;
 
-            ItemStack chosenItem = lootTables[FoxtrotPlugin.RANDOM.nextInt(lootTables.length)];
+            ItemStack chosenItem = lootTables[qLib.RANDOM.nextInt(lootTables.length)];
 
             if (chosenItem == null || chosenItem.getType() == Material.AIR || chosenItem.getAmount() == 0) {
                 continue;
@@ -97,7 +98,7 @@ public class KOTHRewardKeyListener implements Listener {
             builder.setLength(builder.length() - 2);
         }
 
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InvUtils.getLoreData(event.getItem(), 3) + ChatColor.YELLOW + ".");
+        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 3) + ChatColor.YELLOW + ".");
 
         new BukkitRunnable() {
 

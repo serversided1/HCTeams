@@ -110,7 +110,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -128,13 +128,9 @@ public class  SpawnListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
-            return;
-        }
-
-        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+        if ((event.getEntity() instanceof Player || event.getEntity() instanceof Horse) && DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -160,7 +156,7 @@ public class  SpawnListener implements Listener {
         if (damager != null) {
             Player victim = (Player) event.getEntity();
 
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && (DTRBitmask.SAFE_ZONE.appliesAt(victim.getLocation()) || DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation()))) {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(victim.getLocation()) || DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation())) {
                 event.setCancelled(true);
             }
         }

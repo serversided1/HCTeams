@@ -1,13 +1,9 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
-import mkremins.fanciful.FancyMessage;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
-import net.frozenorb.foxtrot.util.ClickableUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -53,8 +49,8 @@ public class VoidTracker implements Listener {
             super(damaged, damage);
         }
 
-        public FancyMessage getDeathMessage() {
-            return (ClickableUtils.deathMessageName(getDamaged()).then(ChatColor.YELLOW + " fell into the void."));
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " fell into the void.");
         }
 
     }
@@ -65,14 +61,8 @@ public class VoidTracker implements Listener {
             super(damaged, damage, damager);
         }
 
-        public FancyMessage getDeathMessage() {
-            FancyMessage deathMessage = ClickableUtils.deathMessageName(getDamaged());
-
-            deathMessage.then(ChatColor.YELLOW + " fell into the void thanks to ").then();
-            ClickableUtils.appendDeathMessageName(getDamager(), deathMessage);
-            deathMessage.then(ChatColor.YELLOW + ".");
-
-            return (deathMessage);
+        public String getDeathMessage() {
+            return (wrapName(getDamaged()) + " fell into the void thanks to " + wrapName(getDamager()) + ".");
         }
 
     }

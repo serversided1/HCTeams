@@ -33,7 +33,7 @@ public class EndListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof EnderDragon) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getEntity().getKiller().getName());
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
             String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
             if (team != null) {
@@ -41,17 +41,17 @@ public class EndListener implements Listener {
             }
 
             for (int i = 0; i < 6; i++) {
-                Bukkit.broadcastMessage("");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage("");
             }
 
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.GOLD + " [Enderdragon]");
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.YELLOW + " killed by");
-            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.BLACK + "██" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + " " + teamName);
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████" + " " + event.getEntity().getKiller().getDisplayName());
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
-            Bukkit.broadcastMessage(ChatColor.BLACK + "████████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.GOLD + " [Enderdragon]");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.YELLOW + " killed by");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.BLACK + "██" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + " " + teamName);
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + " " + event.getEntity().getKiller().getDisplayName());
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
 
             ItemStack dragonEgg = new ItemStack(Material.DRAGON_EGG);
             ItemMeta itemMeta = dragonEgg.getItemMeta();
@@ -177,7 +177,7 @@ public class EndListener implements Listener {
             event.setTo(new Location(event.getTo().getWorld(), 0.6, 64, 125.5));
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {

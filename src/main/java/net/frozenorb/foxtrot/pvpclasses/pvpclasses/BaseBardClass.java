@@ -9,7 +9,6 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.util.ItemMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -46,7 +45,7 @@ public class BaseBardClass extends PvPClass {
 
             public void run() {
                 for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this) || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this) || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         continue;
                     }
 
@@ -73,7 +72,7 @@ public class BaseBardClass extends PvPClass {
 
     @Override
     public void apply(Player player) {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
         }
     }
@@ -89,12 +88,12 @@ public class BaseBardClass extends PvPClass {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(event.getPlayer().getLocation())) {
             event.getPlayer().sendMessage(ChatColor.RED + getName() + " effects cannot be used while in spawn.");
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getName())) {
+        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
             return;
         }
@@ -144,18 +143,16 @@ public class BaseBardClass extends PvPClass {
 
         final BardEffect bardEffect = BARD_CLICK_EFFECTS.get(held.getType());
 
-        FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), new ItemMessage.ItemMessageGetter() {
+        FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), (player) -> {
 
-            public String getMessage(Player player) {
-                if (!getEnergy().containsKey(player.getName())) {
-                    return (ChatColor.RED + "Processing...");
-                }
+            if (!getEnergy().containsKey(player.getName())) {
+                return (ChatColor.RED + "Processing...");
+            }
 
-                if (getEnergy().get(player.getName()) >= bardEffect.getEnergy()) {
-                    return (ChatColor.GREEN.toString() + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
-                } else {
-                    return (ChatColor.RED.toString() + getEnergy().get(player.getName()).intValue() + "/" + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
-                }
+            if (getEnergy().get(player.getName()) >= bardEffect.getEnergy()) {
+                return (ChatColor.GREEN.toString() + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
+            } else {
+                return (ChatColor.RED.toString() + getEnergy().get(player.getName()).intValue() + "/" + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
             }
 
         }, event.getNewSlot());
@@ -163,7 +160,7 @@ public class BaseBardClass extends PvPClass {
 
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
                 continue;
             }
 
@@ -182,7 +179,7 @@ public class BaseBardClass extends PvPClass {
 
     public List<Player> getNearbyPlayers(Player player, boolean friendly) {
         List<Player> valid = new ArrayList<>();
-        Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         // We divide by 2 so that the range isn't as much on the Y level (and can't be abused by standing on top of / under events)
         for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE / 2, BARD_RANGE)) {
@@ -197,8 +194,8 @@ public class BaseBardClass extends PvPClass {
                     continue;
                 }
 
-                boolean isFriendly = sourceTeam.isMember(nearbyPlayer.getName());
-                boolean isAlly = sourceTeam.isAlly(nearbyPlayer.getName());
+                boolean isFriendly = sourceTeam.isMember(nearbyPlayer.getUniqueId());
+                boolean isAlly = sourceTeam.isAlly(nearbyPlayer.getUniqueId());
 
                 if (friendly && isFriendly) {
                     valid.add(nearbyPlayer);

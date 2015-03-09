@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 

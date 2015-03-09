@@ -1,15 +1,15 @@
 package net.frozenorb.foxtrot.koth.listeners;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.events.HourEvent;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.util.InvUtils;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.event.HourEvent;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Sign;
@@ -92,7 +92,7 @@ public class KOTHListener implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
         if (team != null) {
@@ -119,7 +119,7 @@ public class KOTHListener implements Listener {
                     ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Awarded" + ChatColor.BLUE + " Level " + event.getKOTH().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "."
             };
 
-            ItemStack rewardKey = InvUtils.generateKOTHRewardKey(event.getKOTH().getName() + " KOTH", event.getKOTH().getLevel());
+            ItemStack rewardKey = InventoryUtils.generateKOTHRewardKey(event.getKOTH().getName() + " KOTH", event.getKOTH().getLevel());
             ItemStack kothSign = FoxtrotPlugin.getInstance().getServerHandler().generateKOTHSign(event.getKOTH().getName(), team == null ? event.getPlayer().getName() : team.getName());
 
             event.getPlayer().getInventory().addItem(rewardKey);
@@ -157,7 +157,7 @@ public class KOTHListener implements Listener {
     public void onKOTHControlTick(KOTHControlTickEvent event) {
         if (event.getKOTH().getRemainingCapTime() % 180 == 0 && event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
             FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " is trying to be controlled.");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.getMMSS(event.getKOTH().getRemainingCapTime()));
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.GOLD + " - Time left: " + ChatColor.BLUE + TimeUtils.formatIntoMMSS(event.getKOTH().getRemainingCapTime()));
         }
     }
 

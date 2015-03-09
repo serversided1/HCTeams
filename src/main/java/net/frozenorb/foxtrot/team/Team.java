@@ -7,18 +7,19 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.jedis.JedisCommand;
-import net.frozenorb.foxtrot.jedis.persist.KillsMap;
-import net.frozenorb.foxtrot.serialization.LocationSerializer;
+import net.frozenorb.foxtrot.persist.JedisCommand;
+import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.serialization.LocationSerializer;
+import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -41,11 +42,11 @@ public class Team {
 
     // Configurable values //
 
-    public static final int MAX_TEAM_SIZE = 20;
+    public static final int MAX_TEAM_SIZE = 30;
     public static final int MAX_CLAIMS = 2;
     public static final int MAX_ALLIES = 0;
-    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
-    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(45);
+    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
+    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
 
     // End configurable values //
 
@@ -56,19 +57,17 @@ public class Team {
     @Getter private boolean loading = false;
 
     @Getter private Location HQ;
-    @Getter private String owner = null;
     @Getter private double balance;
     @Getter private double DTR;
     @Getter private long DTRCooldown;
     @Getter private List<Claim> claims = new ArrayList<>();
     @Getter private List<Subclaim> subclaims = new ArrayList<>();
-    @Getter private Set<String> members = new HashSet<>();
-    @Getter private Set<String> captains = new HashSet<>();
-    @Getter private Set<String> invitations = new HashSet<>();
+    @Getter private UUID owner = null;
+    @Getter private Set<UUID> members = new HashSet<>();
+    @Getter private Set<UUID> captains = new HashSet<>();
+    @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
-    @Getter private boolean trading = false;
-    @Getter @Setter private float DTRRegenMultiplier = 1F; // We're safe to use a @Setter here as this value isn't persisted.
 
     public Team(String name) {
         this.name = name;
@@ -81,17 +80,6 @@ public class Team {
 
         if (DTR <= 0 && newDTR > 0) {
             TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team no longer raidable.");
-        }
-
-        if (DTRRegenMultiplier != 1F && newDTR == getMaxDTR()) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as team is max DTR. [DTR Regen Multiplier: " + DTRRegenMultiplier + ", DTR: " + newDTR + "]");
-            DTRRegenMultiplier = 1F;
-
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + "Your team's DTR regen multiplier has been deactivated as your team has reached max DTR.");
-                }
-            }
         }
 
         if (!isLoading()) {
@@ -125,28 +113,24 @@ public class Team {
             }
         }
 
-        if (isMember(player)) {
+        if (isMember(player.getUniqueId())) {
             return (ChatColor.GREEN + getName());
-        } else if (isAlly(player)) {
+        } else if (isAlly(player.getUniqueId())) {
             return (Team.ALLY_COLOR + getName());
         } else {
             return (ChatColor.RED + getName());
         }
     }
 
-    public void addMember(String member) {
-        if (member.equalsIgnoreCase("null")) {
-            return;
-        }
-
+    public void addMember(UUID member) {
         members.add(member);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + member);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + UUIDUtils.formatPretty(member));
         flagForSave();
     }
 
-    public void addCaptain(String captain) {
+    public void addCaptain(UUID captain) {
         captains.add(captain);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + captain);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + UUIDUtils.formatPretty(captain));
         flagForSave();
     }
 
@@ -160,33 +144,20 @@ public class Team {
         flagForSave();
     }
 
-    public void setTrading(boolean trading) {
-        this.trading = trading;
+    public void removeCaptain(UUID captain) {
+        captains.remove(captain);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + UUIDUtils.formatPretty(captain));
         flagForSave();
     }
 
-    public void removeCaptain(String name) {
-        Iterator<String> iterator = captains.iterator();
-
-        while (iterator.hasNext()) {
-            if (iterator.next().equalsIgnoreCase(name)) {
-                iterator.remove();
-            }
-        }
-
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + name);
-        flagForSave();
-    }
-
-    public void setOwner(String owner) {
-        String oldOwner = this.owner;
+    public void setOwner(UUID owner) {
         this.owner = owner;
 
-        if (owner != null && !owner.equals("null")) {
+        if (owner != null) {
             members.add(owner);
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + oldOwner + " -> " + owner);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
         flagForSave();
     }
 
@@ -201,10 +172,9 @@ public class Team {
     public void disband() {
         try {
             if (owner != null) {
-                Basic.get().getEconomyManager().depositPlayer(owner, balance);
+                Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(owner), balance);
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 
@@ -268,27 +238,13 @@ public class Team {
         needsSave = true;
     }
 
-    public boolean isOwner(String name) {
-        return (owner != null && owner.equalsIgnoreCase(name));
+    public boolean isOwner(UUID check) {
+        return (check.equals(owner));
     }
 
-    public String getActualPlayerName(String pName) {
-        for (String str : members) {
-            if (pName.equalsIgnoreCase(str)) {
-                return (str);
-            }
-        }
-
-        return (null);
-    }
-
-    public boolean isMember(Player player) {
-        return (isMember(player.getName()));
-    }
-
-    public boolean isMember(String name) {
-        for (String member : members) {
-            if (name.equalsIgnoreCase(member)) {
+    public boolean isMember(UUID check) {
+        for (UUID member : members) {
+            if (check.equals(member)) {
                 return (true);
             }
         }
@@ -296,9 +252,9 @@ public class Team {
         return (false);
     }
 
-    public boolean isCaptain(String name) {
-        for (String member : captains) {
-            if (name.equalsIgnoreCase(member)) {
+    public boolean isCaptain(UUID check) {
+        for (UUID captain : captains) {
+            if (check.equals(captain)) {
                 return (true);
             }
         }
@@ -306,20 +262,9 @@ public class Team {
         return (false);
     }
 
-    public boolean isAlly(Player player) {
-        return (isAlly(player.getName()));
-    }
-
-    public boolean isAlly(String name) {
-        for (ObjectId ally : getAllies()) {
-            Team allyTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(ally);
-
-            if (allyTeam != null && allyTeam.isMember(name)) {
-                return (true);
-            }
-        }
-
-        return (false);
+    public boolean isAlly(UUID check) {
+        Team checkTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(check);
+        return (checkTeam != null && isAlly(checkTeam));
     }
 
     public boolean isAlly(Team team) {
@@ -334,38 +279,23 @@ public class Team {
         return (claims.contains(claim));
     }
 
-    public boolean removeMember(String name) {
-        Iterator<String> membersIterator = members.iterator();
+    public boolean removeMember(UUID member) {
+        members.remove(member);
+        captains.remove(member);
 
-        while (membersIterator.hasNext()) {
-            String member = membersIterator.next();
-
-            if (member.equalsIgnoreCase(name)) {
-                membersIterator.remove();
-                break;
-            }
-        }
-
-        removeCaptain(name);
-
-        if (isOwner(name)) {
-            membersIterator = members.iterator();
-
-            if (membersIterator.hasNext()) {
-                this.owner = membersIterator.next();
-            } else {
-                this.owner = null;
-            }
+        // If the owner leaves (somehow)
+        if (isOwner(member)) {
+            Iterator<UUID> membersIterator = members.iterator();
+            this.owner = membersIterator.hasNext() ? membersIterator.next() : null;
         }
 
         try {
             for (Subclaim subclaim : subclaims) {
-                if (subclaim.isMember(name)) {
-                    subclaim.removeMember(name);
+                if (subclaim.isMember(member)) {
+                    subclaim.removeMember(member);
                 }
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
 
@@ -373,7 +303,7 @@ public class Team {
             DTR = getMaxDTR();
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + name);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + UUIDUtils.formatPretty(member));
         flagForSave();
         return (owner == null || members.size() == 0);
     }
@@ -390,8 +320,8 @@ public class Team {
     public int getOnlineMemberAmount() {
         int amt = 0;
 
-        for (String members : getMembers()) {
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(members);
+        for (UUID member : getMembers()) {
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 amt++;
@@ -401,15 +331,11 @@ public class Team {
         return (amt);
     }
 
-    public List<Player> getOnlineMembers() {
+    public Collection<Player> getOnlineMembers() {
         List<Player> players = new ArrayList<>();
 
-        for (String member : getMembers()) {
-            if (member == null) {
-                continue;
-            }
-
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(member);
+        for (UUID member : getMembers()) {
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 players.add(exactPlayer);
@@ -419,15 +345,11 @@ public class Team {
         return (players);
     }
 
-    public List<String> getOfflineMembers() {
-        List<String> players = new ArrayList<>();
+    public Collection<UUID> getOfflineMembers() {
+        List<UUID> players = new ArrayList<>();
 
-        for (String member : getMembers()) {
-            if (member == null) {
-                continue;
-            }
-
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(member);
+        for (UUID member : getMembers()) {
+            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
                 players.add(member);
@@ -438,9 +360,9 @@ public class Team {
     }
 
     public Subclaim getSubclaim(String name) {
-        for (Subclaim sc : subclaims) {
-            if (sc.getName().equalsIgnoreCase(name)) {
-                return (sc);
+        for (Subclaim subclaim : subclaims) {
+            if (subclaim.getName().equalsIgnoreCase(name)) {
+                return (subclaim);
             }
         }
 
@@ -470,20 +392,9 @@ public class Team {
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (isMember(player)) {
+            if (isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
                 player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
-            }
-        }
-
-        if (DTRRegenMultiplier != 1F) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "DTR Regen Multiplier: Deactivated as " + p + " died. [DTR Regen Multiplier: " + DTRRegenMultiplier + "]");
-            DTRRegenMultiplier = 1F;
-
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (isMember(player)) {
-                    player.sendMessage(ChatColor.YELLOW + "Your team's DTR regen multiplier has been deactivated as a member has died.");
-                }
             }
         }
 
@@ -506,7 +417,6 @@ public class Team {
 
     public double getDTRIncrement(int playersOnline) {
         double dtrPerHour = DTRHandler.getBaseDTRIncrement(getSize()) * playersOnline;
-        dtrPerHour *= DTRRegenMultiplier;
         return (dtrPerHour / 60);
     }
 
@@ -524,26 +434,26 @@ public class Team {
 
             if (identifier.equalsIgnoreCase("Owner")) {
                 if (!lineParts[0].equals("null")) {
-                    setOwner(lineParts[0]);
+                    setOwner(UUID.fromString(lineParts[0].trim()));
                 }
             } else if (identifier.equalsIgnoreCase("UUID")) {
                 uniqueId = new ObjectId(lineParts[0].trim());
             } else if (identifier.equalsIgnoreCase("Members")) {
                 for (String name : lineParts) {
-                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
-                        addMember(name.trim());
+                    if (name.length() >= 2) {
+                        addMember(UUID.fromString(name.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Captains")) {
                 for (String name : lineParts) {
-                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
-                        addCaptain(name.trim());
+                    if (name.length() >= 2) {
+                        addCaptain(UUID.fromString(name.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Invited")) {
                 for (String name : lineParts) {
-                    if (name.length() >= 2 && !name.equalsIgnoreCase("null")) {
-                        getInvitations().add(name);
+                    if (name.length() >= 2) {
+                        getInvitations().add(UUID.fromString(name.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("HQ")) {
@@ -608,23 +518,26 @@ public class Team {
                         int y2 = Integer.parseInt(split[4].trim());
                         int z2 = Integer.parseInt(split[5].trim());
                         String name = split[6].trim();
-                        String members = "";
+                        String membersRaw = "";
 
                         if (split.length >= 8) {
-                            members = split[7].trim();
+                            membersRaw = split[7].trim();
                         }
 
-                        Location loc1 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x1, y1, z1);
-                        Location loc2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
+                        Location location1 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x1, y1, z1);
+                        Location location2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
+                        List<UUID> members = new ArrayList<>();
 
-                        Subclaim subclaimObj = new Subclaim(loc1, loc2, name);
-                        subclaimObj.setMembers(new ArrayList<>(Arrays.asList(members.split(","))));
+                        for (String uuidString : membersRaw.split(", ")) {
+                            members.add(UUID.fromString(uuidString.trim()));
+                        }
+
+                        Subclaim subclaimObj = new Subclaim(location1, location2, name);
+                        subclaimObj.setMembers(members);
 
                         getSubclaims().add(subclaimObj);
                     }
                 }
-            } else if (identifier.equalsIgnoreCase("Trading")) {
-                setTrading(Boolean.valueOf(lineParts[0]));
             }
         }
 
@@ -652,16 +565,16 @@ public class Team {
         StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
 
-        for (String member : getMembers()) {
-            members.append(member.trim()).append(", ");
+        for (UUID member : getMembers()) {
+            members.append(member.toString()).append(", ");
         }
 
-        for (String captain : getCaptains()) {
-            captains.append(captain.trim()).append(", ");
+        for (UUID captain : getCaptains()) {
+            captains.append(captain.toString()).append(", ");
         }
 
-        for (String invite : getInvitations()) {
-            invites.append(invite.trim()).append(", ");
+        for (UUID invite : getInvitations()) {
+            invites.append(invite.toString()).append(", ");
         }
 
         if (members.length() > 2) {
@@ -677,9 +590,9 @@ public class Team {
         }
 
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
-        teamString.append("Owner:").append(getOwner().replace("\n", "")).append('\n');
-        teamString.append("Captains:").append(captains.toString().replace("\n", "")).append('\n');
-        teamString.append("Members:").append(members.toString().replace("\n", "")).append('\n');
+        teamString.append("Owner:").append(getOwner()).append('\n');
+        teamString.append("Captains:").append(captains.toString()).append('\n');
+        teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString().replace("\n", "")).append('\n');
         teamString.append("Subclaims:").append(getSubclaims().toString().replace("\n", "")).append('\n');
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
@@ -689,7 +602,6 @@ public class Team {
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
-        teamString.append("Trading:").append(isTrading()).append('\n');
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -714,7 +626,6 @@ public class Team {
         dbObject.put("Balance", getBalance());
         dbObject.put("Name", getName());
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
-        dbObject.put("Trading", isTrading());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
@@ -755,7 +666,7 @@ public class Team {
     public void sendTeamInfo(Player player) {
         // Don't make our null teams have DTR....
         // @HCFactions
-        if (getOwner() == null || getOwner().equals("null")) {
+        if (getOwner() == null) {
             player.sendMessage(GRAY_LINE);
 
             if (hasDTRBitmask(DTRBitmask.KOTH)) {
@@ -772,7 +683,7 @@ public class Team {
         }
 
         KillsMap killsMap = FoxtrotPlugin.getInstance().getKillsMap();
-        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayerExact(getOwner());
+        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
@@ -789,25 +700,26 @@ public class Team {
         for (Player onlineMember : getOnlineMembers()) {
             onlineMembers++;
 
-            if (isOwner(onlineMember.getName())) {
+            // There can only be one owner, so we special case it.
+            if (isOwner(onlineMember.getUniqueId())) {
                 continue;
             }
 
-            String memberString = ChatColor.GREEN + onlineMember.getName() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(onlineMember.getName()) + ChatColor.YELLOW + "]";
+            String memberString = ChatColor.GREEN + onlineMember.getName() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(onlineMember.getUniqueId()) + ChatColor.YELLOW + "]";
 
-            if (isCaptain(onlineMember.getName())) {
+            if (isCaptain(onlineMember.getUniqueId())) {
                 captains.append(memberString).append(ChatColor.GRAY).append(", ");
             } else {
                 members.append(memberString).append(ChatColor.GRAY).append(", ");
             }
         }
 
-        for (String offlineMember : getOfflineMembers()) {
+        for (UUID offlineMember : getOfflineMembers()) {
             if (isOwner(offlineMember)) {
                 continue;
             }
 
-            String memberString = ChatColor.GRAY + offlineMember + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
+            String memberString = ChatColor.GRAY + UUIDUtils.name(offlineMember) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
 
             if (isCaptain(offlineMember)) {
                 captains.append(memberString).append(ChatColor.GRAY).append(", ");
@@ -825,11 +737,7 @@ public class Team {
             player.sendMessage(ChatColor.YELLOW + "Allies: " + allies.toString());
         }
 
-        if (DTRRegenMultiplier != 1F) {
-            player.sendMessage(ChatColor.YELLOW + "DTR Regen Multiplier: " + ChatColor.GRAY + DTRRegenMultiplier + "x");
-        }
-
-        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + getOwner() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
+        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
 
         if (captains.length() > 2) {
             captains.setLength(captains.length() - 2);
@@ -845,7 +753,7 @@ public class Team {
         player.sendMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
 
         if (DTRHandler.isOnCooldown(this)) {
-            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.getConvertedTime(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
         }
 
         player.sendMessage(GRAY_LINE);

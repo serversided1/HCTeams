@@ -1,20 +1,24 @@
 package net.frozenorb.foxtrot.server;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.jedis.persist.PvPTimerMap;
+import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
@@ -48,14 +52,14 @@ public class ServerHandler {
 
     // NEXT MAP //
     // http://minecraft.gamepedia.com/Potion#Data_value_table
-    public static final Set<Integer> DISALLOWED_POTIONS = Sets.newHashSet(
-        8193, 8225, 8257, 16385, 16417, 16449, // Regeneration Potions
-        8200, 8232, 8264, 16392, 16424, 16456, // Weakness Potions
-        8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
-        8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
-        8238, 8270, 16430, 16398, 8238, // Invisibility Potions
-        8228, 8260, 16420, 16452, // Poison Potions
-        8234, 8266, 16426, 16458 // Slowness Potions
+    public static final Set<Integer> DISALLOWED_POTIONS = ImmutableSet.of(
+            8193, 8225, 8257, 16385, 16417, 16449, // Regeneration Potions
+            8200, 8232, 8264, 16392, 16424, 16456, // Weakness Potions
+            8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
+            8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
+            8238, 8270, 16430, 16398, 8238, // Invisibility Potions
+            8228, 8260, 16420, 16452, // Poison Potions
+            8234, 8266, 16426, 16458 // Slowness Potions
     );
 
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
@@ -196,7 +200,7 @@ public class ServerHandler {
         }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
 
         if (tasks.containsKey(player.getName())) {
-            Bukkit.getScheduler().cancelTask(tasks.remove(player.getName()));
+            FoxtrotPlugin.getInstance().getServer().getScheduler().cancelTask(tasks.remove(player.getName()));
         }
 
         tasks.put(player.getName(), taskid.getTaskId());
@@ -226,7 +230,7 @@ public class ServerHandler {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (inClaim != null) {
-            if (inClaim.getOwner() != null && !inClaim.isMember(player.getName())) {
+            if (inClaim.getOwner() != null && !inClaim.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
                 return;
             }
@@ -265,8 +269,8 @@ public class ServerHandler {
 
                 if (time == 0) {
                     // Remove their PvP timer.
-                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getName()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getName()) == PvPTimerMap.PENDING_USE) {
-                        FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getName());
+                    if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) == PvPTimerMap.PENDING_USE) {
+                        FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
@@ -287,7 +291,7 @@ public class ServerHandler {
     }
 
     public Location getSpawnLocation() {
-        return (Bukkit.getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
+        return (FoxtrotPlugin.getInstance().getServer().getWorld("world").getSpawnLocation().add(new Vector(0.5, 1, 0.5)));
     }
 
     public boolean isUnclaimedOrRaidable(Location loc) {
@@ -360,10 +364,11 @@ public class ServerHandler {
         }
 
         // Actually calculate their ban.
-        long ban = FoxtrotPlugin.getInstance().getPlaytimeMap().getPlaytime(playerName);
+        UUID playerUUID = UUIDUtils.uuid(playerName);
+        long ban = FoxtrotPlugin.getInstance().getPlaytimeMap().getPlaytime(playerUUID);
 
-        if (player != null && FoxtrotPlugin.getInstance().getPlaytimeMap().contains(playerName)) {
-            ban += FoxtrotPlugin.getInstance().getPlaytimeMap().getCurrentSession(playerName) / 1000L;
+        if (player != null && FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(playerUUID)) {
+            ban += FoxtrotPlugin.getInstance().getPlaytimeMap().getCurrentSession(playerUUID) / 1000L;
         }
 
         return (Math.min(max, ban));
@@ -387,12 +392,8 @@ public class ServerHandler {
 
         };
 
-        Bukkit.getPluginManager().registerEvents(listener, FoxtrotPlugin.getInstance());
-        Bukkit.getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), new Runnable() {
-            public void run() {
-                HandlerList.unregisterAll(listener);
-            }
-        }, seconds * 20L);
+        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(listener, FoxtrotPlugin.getInstance());
+        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> HandlerList.unregisterAll(listener), seconds * 20L);
     }
 
     public boolean isSpawnBufferZone(Location loc) {
@@ -420,7 +421,7 @@ public class ServerHandler {
     }
 
     public void handleShopSign(Sign sign, Player player) {
-        ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InvUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
+        ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
         if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
@@ -493,9 +494,6 @@ public class ServerHandler {
             } else {
                 int totalPrice = (int) (amountInInventory * pricePerItem);
 
-                // Trading factions get more money for their items at spawn.
-                totalPrice *= FoxtrotPlugin.getInstance().getMapHandler().getTradingSpawnShopMultiplier();
-
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 
@@ -511,83 +509,11 @@ public class ServerHandler {
         }
     }
 
-    public void handleDTRRegenSign(Sign sign, Player player) {
-        float mult = Float.valueOf(sign.getLine(1).toLowerCase().replace("x", ""));
-        int price = Integer.parseInt(sign.getLine(3).replace("$", "").replace(",", ""));
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
-
-        if (playerTeam == null) {
-            showSignPacket(player, sign,
-                    "§c§lError",
-                    "",
-                    "Not on",
-                    "a team"
-            );
-
-            return;
-        }
-
-        if (playerTeam.getBalance() >= price) {
-            if (playerTeam.isRaidable()) {
-                showSignPacket(player, sign,
-                        "§c§lError",
-                        "",
-                        "Team is",
-                        "raidable"
-                );
-
-                return;
-            }
-
-            if (playerTeam.getDTR() == playerTeam.getMaxDTR()) {
-                showSignPacket(player, sign,
-                        "§c§lError",
-                        "",
-                        "Team is",
-                        "at max DTR"
-                );
-
-                return;
-            }
-
-            if (playerTeam.getDTRRegenMultiplier() != 1F) {
-                showSignPacket(player, sign,
-                        "§c§lError",
-                        "",
-                        "Team already",
-                        "has multiplier"
-                );
-
-                return;
-            }
-
-            playerTeam.setBalance(playerTeam.getBalance() - price);
-            playerTeam.setDTRRegenMultiplier(mult);
-            playerTeam.setDTRCooldown(System.currentTimeMillis());
-
-            showSignPacket(player, sign,
-                    "§aStarted DTR",
-                    "regen (" + mult + "x)",
-                    "New Balance:",
-                    "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
-            );
-
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLUE + playerTeam.getName() + ChatColor.YELLOW + " has spent " + ChatColor.GOLD + "$" + price + ChatColor.YELLOW + " and started DTR regeneration at a rate of " + ChatColor.GOLD + mult + "x" + ChatColor.YELLOW + "!");
-        } else {
-            showSignPacket(player, sign,
-                    "§cInsufficient",
-                    "§cfunds for",
-                    sign.getLine(1) + " DTR",
-                    "regen mult."
-            );
-        }
-    }
-
     public void handleKitSign(Sign sign, Player player) {
         String kit = ChatColor.stripColor(sign.getLine(1));
 
         if (kit.equalsIgnoreCase("Fishing")){
-            int uses = FoxtrotPlugin.getInstance().getFishingKitMap().getUses(player.getName());
+            int uses = FoxtrotPlugin.getInstance().getFishingKitMap().getUses(player.getUniqueId());
 
             if (uses == 3){
                 showSignPacket(player, sign, "§aFishing Kit:", "", "§cAlready used", "§c3/3 times!");
@@ -598,7 +524,7 @@ public class ServerHandler {
                 player.getInventory().addItem(rod);
                 player.updateInventory();
                 player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
-                FoxtrotPlugin.getInstance().getFishingKitMap().setUses(player.getName(), uses + 1);
+                FoxtrotPlugin.getInstance().getFishingKitMap().setUses(player.getUniqueId(), uses + 1);
                 showSignPacket(player, sign, "§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3");
             }
         }

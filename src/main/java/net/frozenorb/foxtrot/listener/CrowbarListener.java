@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.CreatureSpawner;
@@ -24,14 +24,14 @@ public class CrowbarListener implements Listener {
             return;
         }
 
-        if (event.getItem() == null || !InvUtils.isSimilar(event.getItem(), InvUtils.CROWBAR_NAME) || !(event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if (event.getItem() == null || !InventoryUtils.isSimilar(event.getItem(), InventoryUtils.CROWBAR_NAME) || !(event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             return;
         }
 
         if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
-            if (team != null && !team.isMember(event.getPlayer())) {
+            if (team != null && !team.isMember(event.getPlayer().getUniqueId())) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot crowbar in " + ChatColor.RED + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
                 return;
             }
@@ -91,7 +91,7 @@ public class CrowbarListener implements Listener {
             event.getPlayer().setItemInHand(event.getItem());*/
         } else if (event.getClickedBlock().getType() == Material.MOB_SPAWNER) {
             CreatureSpawner spawner = (CreatureSpawner) event.getClickedBlock().getState();
-            int spawners = InvUtils.getCrowbarUsesSpawner(event.getItem());
+            int spawners = InventoryUtils.getCrowbarUsesSpawner(event.getItem());
 
             if (spawners == 0) {
                 event.getPlayer().sendMessage(ChatColor.RED + "This crowbar has no more uses on mob spawners!");
@@ -133,12 +133,12 @@ public class CrowbarListener implements Listener {
 
             meta = event.getItem().getItemMeta();
 
-            meta.setLore(InvUtils.getCrowbarLore(0, spawners));
+            meta.setLore(InventoryUtils.getCrowbarLore(0, spawners));
 
             event.getItem().setItemMeta(meta);
 
             double max = Material.DIAMOND_HOE.getMaxDurability();
-            double dura = (max / (double) InvUtils.CROWBAR_SPAWNERS) * spawners;
+            double dura = (max / (double) InventoryUtils.CROWBAR_SPAWNERS) * spawners;
 
             event.getItem().setDurability((short) (max - dura));
             event.getPlayer().setItemInHand(event.getItem());

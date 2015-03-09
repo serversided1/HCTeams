@@ -16,7 +16,6 @@ public class PacketBorderThread extends Thread {
                 try {
                     checkPlayer(player);
                 } catch (Exception e) {
-                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }
@@ -41,7 +40,6 @@ public class PacketBorderThread extends Thread {
                 packetBorder.sendToPlayer(player);
             }
         } catch (Exception e) {
-            FoxtrotPlugin.getInstance().getBugSnag().notify(e);
             e.printStackTrace();
         }
     }

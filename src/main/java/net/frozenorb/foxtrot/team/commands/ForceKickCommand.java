@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.team.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ public class ForceKickCommand {
 
     @Command(names={ "forcekick" }, permissionNode="op")
     public static void forceKick(Player sender, @Parameter(name="player") OfflinePlayer player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player.getUniqueId());
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + player.getName() + " is not on a team!");
@@ -24,8 +24,8 @@ public class ForceKickCommand {
             return;
         }
 
-        team.removeMember(player.getName());
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(player.getName(), null);
+        team.removeMember(player.getUniqueId());
+        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(player.getUniqueId(), null);
 
         sender.sendMessage(ChatColor.YELLOW + "Force kicked " + ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.YELLOW + " from their team, " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
     }

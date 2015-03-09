@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

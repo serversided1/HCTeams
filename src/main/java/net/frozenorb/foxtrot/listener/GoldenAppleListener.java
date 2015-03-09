@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -18,19 +18,18 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getName());
+        long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId());
 
         if (cooldownUntil > System.currentTimeMillis()) {
             long millisLeft = cooldownUntil - System.currentTimeMillis();
-
-            String msg = TimeUtils.getDurationBreakdown(millisLeft);
+            String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
             return;
         }
 
-        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getName(), TimeUnit.HOURS.toSeconds(4));
+        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getUniqueId(), TimeUnit.HOURS.toSeconds(4));
 
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "██" + ChatColor.DARK_GREEN + "███");
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "█" + ChatColor.DARK_GREEN + "████");

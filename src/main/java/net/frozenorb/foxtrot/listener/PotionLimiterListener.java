@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -25,7 +24,7 @@ public class PotionLimiterListener implements Listener {
         ItemStack potion = event.getPotion().getItem();
 
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
-            if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(livingEntity.getLocation())) {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(livingEntity.getLocation())) {
                 event.setIntensity(livingEntity, 0D);
             }
         }

@@ -1,11 +1,11 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ public class TeamCreateCommand {
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Parameter(name="team") String name) {
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName()) != null) {
+        if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender) != null) {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
             return;
         }
@@ -50,7 +50,7 @@ public class TeamCreateCommand {
 
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Team created. [Created by: " + sender.getName() + "]");
 
-        team.setOwner(sender.getName());
+        team.setOwner(sender.getUniqueId());
         team.setName(name);
         team.setDTR(1);
         team.setUniqueId(new ObjectId());

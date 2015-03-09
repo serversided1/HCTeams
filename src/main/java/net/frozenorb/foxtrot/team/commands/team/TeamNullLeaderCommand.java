@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,7 +13,7 @@ public class TeamNullLeaderCommand {
         int nullLeaders = 0;
 
         for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            if (team.getOwner() == null || team.getOwner().equals("null")) {
+            if (team.getOwner() == null) {
                 nullLeaders++;
                 sender.sendMessage(ChatColor.RED + "- " + team.getName());
             }

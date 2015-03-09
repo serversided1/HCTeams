@@ -2,9 +2,9 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.Lists;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.util.TimeUtils;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -20,10 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author Connor Hollasch
- * @since 10/14/14
- */
 public class TeamStuckCommand implements Listener {
 
     private static final double MAX_DISTANCE = 5;
@@ -132,7 +128,7 @@ public class TeamStuckCommand implements Listener {
                 }
 
                 if (warn.contains(seconds)) {
-                    sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED.toString() + ChatColor.BOLD + TimeUtils.getMMSS(seconds) + ChatColor.YELLOW + "!");
+                    sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED.toString() + ChatColor.BOLD + TimeUtils.formatIntoMMSS(seconds) + ChatColor.YELLOW + "!");
                 }
 
                 seconds--;

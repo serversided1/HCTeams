@@ -1,9 +1,8 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.listener.EndListener;
-import org.bukkit.Bukkit;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -19,6 +18,7 @@ public class EOTWCommand {
         }
 
         FoxtrotPlugin.getInstance().getServerHandler().setEOTW(!FoxtrotPlugin.getInstance().getServerHandler().isEOTW());
+
         EndListener.endActive = !FoxtrotPlugin.getInstance().getServerHandler().isEOTW();
 
         if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
@@ -26,13 +26,13 @@ public class EOTWCommand {
                 player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1F, 1F);
             }
 
-            Bukkit.broadcastMessage(ChatColor.RED + "███████");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.DARK_RED + "[EOTW]");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED.toString() + ChatColor.BOLD + "EOTW has commenced.");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "████" + ChatColor.RED + "██" + " " + ChatColor.RED + "All SafeZones are now Deathban.");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED + "The world border has moved");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.RED + "to 1000.");
-            Bukkit.broadcastMessage(ChatColor.RED + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.DARK_RED + "[EOTW]");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED.toString() + ChatColor.BOLD + "EOTW has commenced.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "████" + ChatColor.RED + "██" + " " + ChatColor.RED + "All SafeZones are now Deathban.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED + "The world border has moved");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.RED + "to 1000.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "███████");
         } else {
             sender.sendMessage(ChatColor.RED + "The server is no longer in EOTW mode.");
         }
@@ -47,18 +47,20 @@ public class EOTWCommand {
 
         FoxtrotPlugin.getInstance().getServerHandler().setPreEOTW(!FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW());
 
+        FoxtrotPlugin.getInstance().getDeathbanMap().wipeDeathbans();
+
         if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
                 player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1F, 1F);
             }
 
-            Bukkit.broadcastMessage(ChatColor.RED + "███████");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.DARK_RED + "[Pre-EOTW]");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED.toString() + ChatColor.BOLD + "EOTW is about to commence.");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "████" + ChatColor.RED + "██" + " " + ChatColor.RED + "PvP Protection is disabled.");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED + "All players have been un-deathbanned.");
-            Bukkit.broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.RED + "All deathbans are now permanent.");
-            Bukkit.broadcastMessage(ChatColor.RED + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "███████");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.DARK_RED + "[Pre-EOTW]");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED.toString() + ChatColor.BOLD + "EOTW is about to commence.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "████" + ChatColor.RED + "██" + " " + ChatColor.RED + "PvP Protection is disabled.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█" + ChatColor.RED + "█████" + " " + ChatColor.RED + "All players have been un-deathbanned.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "█" + ChatColor.DARK_RED + "█████" + ChatColor.RED + "█" + " " + ChatColor.RED + "All deathbans are now permanent.");
+            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + "███████");
         } else {
             sender.sendMessage(ChatColor.RED + "The server is no longer in Pre-EOTW mode.");
         }

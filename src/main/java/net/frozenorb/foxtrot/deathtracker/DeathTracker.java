@@ -13,10 +13,12 @@ import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.util.TimeUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
+import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.entity.Player;
@@ -43,9 +45,8 @@ public class DeathTracker {
                 try {
                     logTo.getParentFile().mkdirs();
                     logTo.createNewFile();
-                    FileUtils.write(logTo, FoxtrotPlugin.GSON.toJson(new JsonParser().parse(data.toString())));
+                    FileUtils.write(logTo, qLib.GSON.toJson(new JsonParser().parse(data.toString())));
                 } catch (Exception e) {
-                    FoxtrotPlugin.getInstance().getBugSnag().notify(e);
                     e.printStackTrace();
                 }
             }
@@ -73,7 +74,7 @@ public class DeathTracker {
 
             potionEffectDBObject.put("Type", potionEffect.getType().getName());
             potionEffectDBObject.put("Tier", potionEffect.getAmplifier() + 1);
-            potionEffectDBObject.put("Duration", potionEffect.getAmplifier() > 1_000_000L ? "Infinite" : TimeUtils.getMMSS(potionEffect.getAmplifier() / 20));
+            potionEffectDBObject.put("Duration", potionEffect.getAmplifier() > 1_000_000L ? "Infinite" : TimeUtils.formatIntoMMSS(potionEffect.getAmplifier() / 20));
 
             potionEffects.add(potionEffectDBObject);
         }
@@ -95,12 +96,12 @@ public class DeathTracker {
 
         BasicDBObject teamData = null;
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam != null) {
             teamData = new BasicDBObject();
 
-            teamData.put("RegenTime", TimeUtils.getConvertedTime(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            teamData.put("RegenTime", TimeUtils.formatIntoMMSS(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000));
             teamData.put("Name", playerTeam.getName());
             teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
@@ -133,7 +134,7 @@ public class DeathTracker {
                     recordDBObject.put("Class", record.getClass().getSimpleName());
                     recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
                     recordDBObject.put("Damage", record.getDamage());
-                    recordDBObject.put("Description", record.getDeathMessage().toOldMessageFormat());
+                    recordDBObject.put("Description", ChatColor.stripColor(record.getDeathMessage()));
 
                     if (record instanceof PlayerDamage) {
                         recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());
@@ -165,7 +166,7 @@ public class DeathTracker {
         playerData.put("Team", teamData == null ? "N/A" : teamData);
         playerData.put("PotionEffects", potionEffects);
         playerData.put("Balance", Basic.get().getEconomyManager().getBalance(player.getName()));
-        playerData.put("GoppleCooldown", FoxtrotPlugin.getInstance().getOppleMap().getCooldown(player.getName()) > System.currentTimeMillis());
+        playerData.put("GoppleCooldown", FoxtrotPlugin.getInstance().getOppleMap().getCooldown(player.getUniqueId()) > System.currentTimeMillis());
         playerData.put("PvPClass", PvPClassHandler.getEquippedKits().containsKey(player.getName()) ? PvPClassHandler.getEquippedKits().get(player.getName()).getName() : "N/A");
         playerData.put("HeldItem", player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR ? "N/A" : player.getItemInHand().getType().name());
         playerData.put("Location", locationData);

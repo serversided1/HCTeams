@@ -1,0 +1,36 @@
+package net.frozenorb.foxtrot.persist.maps;
+
+import net.frozenorb.foxtrot.persist.PersistMap;
+
+import java.util.UUID;
+
+public class SoulboundLivesMap extends PersistMap<Integer> {
+
+    public SoulboundLivesMap() {
+        super("SoulboundLives", "Lives.Soulbound");
+    }
+
+    @Override
+    public String getRedisValue(Integer lives) {
+        return (String.valueOf(lives));
+    }
+
+    @Override
+    public Integer getJavaObject(String str) {
+        return (Integer.parseInt(str));
+    }
+
+    @Override
+    public Object getMongoValue(Integer lives) {
+        return (lives);
+    }
+
+    public int getLives(UUID check) {
+        return (contains(check.toString()) ? getValue(check.toString()) : 0);
+    }
+
+    public void setLives(UUID update, int lives) {
+        updateValue(update.toString(), lives);
+    }
+
+}

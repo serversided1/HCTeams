@@ -33,7 +33,7 @@ public class SignSubclaimListener implements Listener {
             return;
         }
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(event.getPlayer().getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
         Sign sign = (Sign) event.getBlock().getState();
 
         if (playerTeam == null) {
@@ -106,7 +106,7 @@ public class SignSubclaimListener implements Listener {
 
         subclaimSigns(event.getBlock()).forEach(sign -> {
 
-            if (!(owningTeam.isOwner(event.getPlayer().getName()) || owningTeam.isCaptain(event.getPlayer().getName()))) {
+            if (!(owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId()))) {
                 event.getPlayer().sendMessage(NO_ACCESS);
                 event.setCancelled(true);
             }
@@ -124,7 +124,7 @@ public class SignSubclaimListener implements Listener {
         Sign sign = (Sign) event.getBlock().getState();
 
         if (sign.getLine(0).equals(SUBCLAIM_IDENTIFIER)) {
-            boolean canAccess = owningTeam.isOwner(event.getPlayer().getName()) || owningTeam.isCaptain(event.getPlayer().getName());
+            boolean canAccess = owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId());
 
             for (int i = 0; i <= 3; i++) {
                 if (sign.getLine(i) != null && sign.getLine(i).equalsIgnoreCase(event.getPlayer().getName())) {
@@ -151,7 +151,7 @@ public class SignSubclaimListener implements Listener {
 
         subclaimSigns(event.getClickedBlock()).forEach(sign -> {
 
-            boolean canAccess = owningTeam.isOwner(event.getPlayer().getName()) || owningTeam.isCaptain(event.getPlayer().getName());
+            boolean canAccess = owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId());
 
             for (int i = 0; i <= 3; i++) {
                 if (sign.getLine(i) != null && sign.getLine(i).equalsIgnoreCase(event.getPlayer().getName())) {

@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,7 +12,7 @@ public class PvPCreateCommand {
 
     @Command(names={ "pvptimer create", "timer create", "pvp create" }, permissionNode="op")
     public static void pvpCreate(Player sender, @Parameter(name="target", defaultValue="self") Player target) {
-        FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(target.getName(), (int) TimeUnit.MINUTES.toSeconds(30));
+        FoxtrotPlugin.getInstance().getPvPTimerMap().createTimer(target.getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
         target.sendMessage(ChatColor.YELLOW + "You have 30 minutes of PVP Timer!");
 
         if (sender != target) {

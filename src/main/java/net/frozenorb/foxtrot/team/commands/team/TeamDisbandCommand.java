@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -12,14 +12,14 @@ public class TeamDisbandCommand {
 
     @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permissionNode="")
     public static void teamDisband(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null){
             player.sendMessage(ChatColor.RED + "You are not on a team!");
             return;
         }
 
-        if (!team.isOwner(player.getName())) {
+        if (!team.isOwner(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You must be the leader of the team to disband it!");
             return;
         }

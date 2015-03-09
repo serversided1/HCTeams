@@ -1,14 +1,14 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,14 +18,14 @@ public class TeamUnclaimCommand {
 
     @Command(names={ "team unclaim", "t unclaim", "f unclaim", "faction unclaim", "fac unclaim" }, permissionNode="")
     public static void teamUnclaim(Player sender, @Parameter(name="all?", defaultValue="f") String all) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(sender.getName());
+        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;
         }
 
-        if (!(team.isOwner(sender.getName()) || team.isCaptain(sender.getName()))) {
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }
@@ -36,7 +36,7 @@ public class TeamUnclaimCommand {
         }
 
         if (all.equalsIgnoreCase("all")) {
-            if (!team.isOwner(sender.getName())) {
+            if (!team.isOwner(sender.getUniqueId())) {
                 sender.sendMessage(ChatColor.RED + "Only team owners may unclaim all land.");
                 return;
             }
@@ -62,7 +62,7 @@ public class TeamUnclaimCommand {
             team.flagForSave();
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player)) {
+                if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed all of your team's claims. (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.YELLOW + ")");
                 }
             }
@@ -91,7 +91,7 @@ public class TeamUnclaimCommand {
             TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
 
             for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player)) {
+                if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
                 }
             }

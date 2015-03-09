@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.team.claims;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.Location;
@@ -13,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LandBoard {
 
     private static LandBoard instance;
+    @Getter @Setter private boolean claimsEnabled = true;
     private final Map<String, Multimap<CoordinateSet, Map.Entry<Claim, Team>>> buckets = new ConcurrentHashMap<>();
 
     public LandBoard() {
@@ -37,6 +40,8 @@ public class LandBoard {
     }
 
     public Set<Map.Entry<Claim, Team>> getRegionData(Location min, Location max) {
+        if (!claimsEnabled) { return (new HashSet<>()); }
+
         Set<Map.Entry<Claim, Team>> regions = new HashSet<>();
         int step = 1 << CoordinateSet.BITS;
 
@@ -63,6 +68,8 @@ public class LandBoard {
     }
 
     public Map.Entry<Claim, Team> getRegionData(Location location) {
+        if (!claimsEnabled) { return (null); }
+
         for (Map.Entry<Claim, Team> data : buckets.get(location.getWorld().getName()).get(new CoordinateSet(location.getBlockX(), location.getBlockZ()))) {
             if (data.getKey().contains(location)) {
                 return (data);

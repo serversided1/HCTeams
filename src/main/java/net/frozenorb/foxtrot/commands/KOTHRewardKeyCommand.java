@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.qlib.command.annotations.Command;
-import net.frozenorb.qlib.command.annotations.Parameter;
-import net.frozenorb.foxtrot.util.InvUtils;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ public class KOTHRewardKeyCommand {
             return;
         }
 
-        sender.setItemInHand(InvUtils.generateKOTHRewardKey(koth, tier));
+        sender.setItemInHand(InventoryUtils.generateKOTHRewardKey(koth, tier));
         sender.sendMessage(ChatColor.YELLOW + "Gave you a KOTH reward key.");
     }
 

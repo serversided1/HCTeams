@@ -13,6 +13,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Utilities.ItemDb;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -152,7 +153,7 @@ public class VisualClaim implements Listener {
 
                 break;
             case SUBCLAIM_MAP:
-                Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+                Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
                 if (bypass) {
                     senderTeam = LandBoard.getInstance().getTeam(player.getLocation());
@@ -204,13 +205,13 @@ public class VisualClaim implements Listener {
     public boolean containsOtherClaim(Claim claim) {
         Team maxTeam = LandBoard.getInstance().getTeam(claim.getMaximumPoint());
 
-        if (maxTeam != null && (type != VisualClaimType.RESIZE || !maxTeam.isMember(player))) {
+        if (maxTeam != null && (type != VisualClaimType.RESIZE || !maxTeam.isMember(player.getUniqueId()))) {
             return (true);
         }
 
         Team minTeam = LandBoard.getInstance().getTeam(claim.getMinimumPoint());
 
-        if (minTeam != null && (type != VisualClaimType.RESIZE || !minTeam.isMember(player))) {
+        if (minTeam != null && (type != VisualClaimType.RESIZE || !minTeam.isMember(player.getUniqueId()))) {
             return (true);
         }
 
@@ -223,7 +224,7 @@ public class VisualClaim implements Listener {
             Location at = new Location(FoxtrotPlugin.getInstance().getServer().getWorld(claim.getWorld()), location.getX(), 80, location.getZ());
             Team teamAt = LandBoard.getInstance().getTeam(at);
 
-            if (teamAt != null && (type != VisualClaimType.RESIZE || !teamAt.isMember(player))) {
+            if (teamAt != null && (type != VisualClaimType.RESIZE || !teamAt.isMember(player.getUniqueId()))) {
                 return (true);
             }
         }
@@ -247,7 +248,7 @@ public class VisualClaim implements Listener {
     }
 
     public void setLoc(int locationId, final Location clicked) {
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam == null) {
             player.sendMessage(ChatColor.RED + "You have to be on a team to " + type.name().toLowerCase() + " land!");
@@ -304,7 +305,7 @@ public class VisualClaim implements Listener {
             Map.Entry<Claim, Team> teamAtLocation = LandBoard.getInstance().getRegionData(clicked);
 
             if (locationId == 1) {
-                if (teamAtLocation == null || !teamAtLocation.getValue().isMember(player)) {
+                if (teamAtLocation == null || !teamAtLocation.getValue().isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + "To resize your claim, please left click in the claim you'd like to resize.");
                     return;
                 }
@@ -392,7 +393,7 @@ public class VisualClaim implements Listener {
     }
 
     public void purchaseClaim() {
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam == null) {
             player.sendMessage(ChatColor.RED + "You have to be on a team to claim land!");
@@ -409,7 +410,7 @@ public class VisualClaim implements Listener {
                     return;
                 }
 
-                if (!playerTeam.isCaptain(player.getName()) && !playerTeam.isOwner(player.getName())) {
+                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "Only team captains can claim land.");
                     return;
                 }
@@ -431,7 +432,7 @@ public class VisualClaim implements Listener {
                 return;
             }
 
-            claim.setName(playerTeam.getName() + "_" + (100 + FoxtrotPlugin.RANDOM.nextInt(800)));
+            claim.setName(playerTeam.getName() + "_" + (100 + qLib.RANDOM.nextInt(800)));
             claim.setY1(0);
             claim.setY2(256);
 
@@ -467,7 +468,7 @@ public class VisualClaim implements Listener {
     }
 
     public void resizeClaim() {
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam == null) {
             player.sendMessage(ChatColor.RED + "You have to be on a team to resize land!");
@@ -485,7 +486,7 @@ public class VisualClaim implements Listener {
             int cost = newPrice - oldPrice;
 
             if (!bypass) {
-                if (!playerTeam.isCaptain(player.getName()) && !playerTeam.isOwner(player.getName())) {
+                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "Only team captains can resize land.");
                     return;
                 }
@@ -626,7 +627,7 @@ public class VisualClaim implements Listener {
             return (false);
         }
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getPlayerTeam(player.getName());
+        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
 
         if (containsOtherClaim(claim)) {
             player.sendMessage(ChatColor.RED + "This claim contains unclaimable land!");

@@ -21,7 +21,7 @@ public class SpawnTagHandler {
     }
 
     public static void addSeconds(Player player, int seconds) {
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isEOTW() && DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+        if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
             return;
         }
 
