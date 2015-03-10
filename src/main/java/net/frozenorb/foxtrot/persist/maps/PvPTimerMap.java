@@ -58,7 +58,7 @@ public class PvPTimerMap extends PersistMap<Long> {
     }
 
     public boolean contains(UUID check) {
-        return (contains(check));
+        return (super.contains(check));
     }
 
     @Override
