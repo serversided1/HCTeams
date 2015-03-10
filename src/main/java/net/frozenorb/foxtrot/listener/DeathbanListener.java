@@ -18,15 +18,6 @@ public class DeathbanListener implements Listener {
     private Map<String, Long> lastJoinedRevive = new HashMap<>();
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onAsyncPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            return;
-        }
-
-        FoxtrotPlugin.getInstance().getDeathbanMap().reloadValue(event.getName());
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getUniqueId())) {
             long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());

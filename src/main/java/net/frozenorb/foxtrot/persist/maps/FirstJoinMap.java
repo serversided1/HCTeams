@@ -27,11 +27,11 @@ public class FirstJoinMap extends PersistMap<Long> {
     }
 
     public void setFirstJoin(UUID update) {
-        updateValueAsync(update.toString(), System.currentTimeMillis());
+        updateValueAsync(update, System.currentTimeMillis());
     }
 
     public long getFirstJoin(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0L);
+        return (contains(check) ? getValue(check) : 0L);
     }
 
 }

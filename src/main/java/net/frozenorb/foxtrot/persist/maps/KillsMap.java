@@ -26,11 +26,11 @@ public class KillsMap extends PersistMap<Integer> {
     }
 
     public int getKills(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0);
+        return (contains(check) ? getValue(check) : 0);
     }
 
     public void setKills(UUID update, int kills) {
-        updateValueAsync(update.toString(), kills);
+        updateValueAsync(update, kills);
     }
 
 }

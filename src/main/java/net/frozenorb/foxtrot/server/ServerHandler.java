@@ -328,10 +328,10 @@ public class ServerHandler {
     }
 
     public long getDeathban(Player player) {
-        return (getDeathban(player.getName(), player.getLocation()));
+        return (getDeathban(player.getUniqueId(), player.getLocation()));
     }
 
-    public long getDeathban(String playerName, Location location) {
+    public long getDeathban(UUID playerUUID, Location location) {
         // Things we already know and can easily eliminate.
         if (isPreEOTW()) {
             return (TimeUnit.DAYS.toSeconds(1000));
@@ -340,7 +340,7 @@ public class ServerHandler {
         }
 
         Team ownerTo = LandBoard.getInstance().getTeam(location);
-        Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName); // Used in various checks down below.
+        Player player = FoxtrotPlugin.getInstance().getServer().getPlayer(playerUUID); // Used in various checks down below.
 
         // Check DTR flags, which will also take priority over playtime.
         if (ownerTo != null && ownerTo.getOwner() == null) {
@@ -363,8 +363,6 @@ public class ServerHandler {
             }
         }
 
-        // Actually calculate their ban.
-        UUID playerUUID = UUIDUtils.uuid(playerName);
         long ban = FoxtrotPlugin.getInstance().getPlaytimeMap().getPlaytime(playerUUID);
 
         if (player != null && FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(playerUUID)) {

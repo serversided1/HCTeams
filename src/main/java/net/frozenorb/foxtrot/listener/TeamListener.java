@@ -23,6 +23,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TeamListener implements Listener {
 
@@ -40,7 +41,14 @@ public class TeamListener implements Listener {
             }
 
             TeamActionTracker.logActionAsync(team, TeamActionType.CONNECTIONS, "Member Online: " + event.getPlayer().getName());
-            team.sendTeamInfo(event.getPlayer());
+
+            new BukkitRunnable() {
+
+                public void run() {
+                    team.sendTeamInfo(event.getPlayer());
+                }
+
+            }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
         } else {
             event.getPlayer().sendMessage(ChatColor.GRAY + "You are not on a team!");
         }

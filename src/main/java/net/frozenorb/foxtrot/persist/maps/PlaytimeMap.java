@@ -32,16 +32,16 @@ public class PlaytimeMap extends PersistMap<Long> {
     public void playerJoined(UUID update) {
         joinDate.put(update, System.currentTimeMillis());
 
-        if (!contains(update.toString())) {
-            updateValueAsync(update.toString(), 0L);
+        if (!contains(update)) {
+            updateValueAsync(update, 0L);
         }
     }
 
     public void playerQuit(UUID update, boolean async) {
         if (async) {
-            updateValueAsync(update.toString(), getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
+            updateValueAsync(update, getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
         } else {
-            updateValue(update.toString(), getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
+            updateValue(update, getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
         }
     }
 
@@ -54,15 +54,15 @@ public class PlaytimeMap extends PersistMap<Long> {
     }
 
     public long getPlaytime(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0L);
+        return (contains(check) ? getValue(check) : 0L);
     }
 
     public boolean hasPlayed(UUID check) {
-        return (contains(check.toString()));
+        return (contains(check));
     }
 
     public void setPlaytime(UUID update, long playtime) {
-        updateValue(update.toString(), playtime);
+        updateValue(update, playtime);
     }
 
 }

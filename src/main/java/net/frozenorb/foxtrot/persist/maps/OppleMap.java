@@ -27,19 +27,19 @@ public class OppleMap extends PersistMap<Long> {
     }
 
     public boolean isOnCooldown(UUID check) {
-        return (getValue(check.toString()) != null && getValue(check.toString()) > System.currentTimeMillis());
+        return (getValue(check) != null && getValue(check) > System.currentTimeMillis());
     }
 
     public void useGoldenApple(UUID update, long seconds) {
-        updateValueAsync(update.toString(), System.currentTimeMillis() + (seconds * 1000));
+        updateValueAsync(update, System.currentTimeMillis() + (seconds * 1000));
     }
 
     public void resetCooldown(UUID update) {
-        updateValueAsync(update.toString(), 0L);
+        updateValueAsync(update, 0L);
     }
 
     public long getCooldown(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : -1L);
+        return (contains(check) ? getValue(check) : -1L);
     }
 
 }
