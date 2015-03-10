@@ -26,11 +26,11 @@ public class FriendLivesMap extends PersistMap<Integer> {
     }
 
     public int getLives(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0);
+        return (contains(check) ? getValue(check) : 0);
     }
 
     public void setLives(UUID update, int lives) {
-        updateValue(update.toString(), lives);
+        updateValue(update, lives);
     }
 
 }

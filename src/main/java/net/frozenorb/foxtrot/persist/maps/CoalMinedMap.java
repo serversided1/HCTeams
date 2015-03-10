@@ -26,11 +26,11 @@ public class CoalMinedMap extends PersistMap<Integer> {
     }
 
     public int getMined(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0);
+        return (contains(check) ? getValue(check) : 0);
     }
 
     public void setMined(UUID update, int mined) {
-        updateValueAsync(update.toString(), mined);
+        updateValueAsync(update, mined);
     }
 
 }

@@ -27,11 +27,11 @@ public class ChatModeMap extends PersistMap<ChatMode> {
     }
 
     public ChatMode getChatMode(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : ChatMode.PUBLIC);
+        return (contains(check) ? getValue(check) : ChatMode.PUBLIC);
     }
 
     public void setChatMode(UUID update, ChatMode chatMode) {
-        updateValueAsync(update.toString(), chatMode);
+        updateValueAsync(update, chatMode);
     }
 
 }

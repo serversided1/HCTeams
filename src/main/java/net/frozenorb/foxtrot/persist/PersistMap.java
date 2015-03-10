@@ -9,18 +9,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 public abstract class PersistMap<T> {
 
-    private Map<String, T> wrappedMap = new ConcurrentHashMap<>();
+    private Map<UUID, T> wrappedMap = new ConcurrentHashMap<>();
 
     @NonNull private String keyPrefix;
     @NonNull private String mongoKeyPrefix;
 
     public void loadFromRedis() {
-        JedisCommand<Object> jdc = new JedisCommand<Object>() {
+        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
 
             public Object execute(Jedis jedis) {
                 Map<String, String> results = jedis.hgetAll(keyPrefix);
@@ -29,16 +30,14 @@ public abstract class PersistMap<T> {
                     T object = getJavaObjectSafe(resultEntry.getKey(), resultEntry.getValue());
 
                     if (object != null) {
-                        wrappedMap.put(resultEntry.getKey(), object);
+                        wrappedMap.put(UUID.fromString(resultEntry.getKey()), object);
                     }
                 }
 
                 return (null);
             }
 
-        };
-
-        FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+        });
     }
 
     protected void wipeValues() {
@@ -54,39 +53,17 @@ public abstract class PersistMap<T> {
         });
     }
 
-    public void reloadValue(final String key) {
-        JedisCommand<Object> jdc = new JedisCommand<Object>() {
-
-            public Object execute(Jedis jedis) {
-                String result = jedis.hget(keyPrefix, key);
-
-                if (result != null) {
-                    T object = getJavaObjectSafe(key, result);
-
-                    if (object != null) {
-                        wrappedMap.put(key, object);
-                    }
-                }
-
-                return (null);
-            }
-
-        };
-
-        FoxtrotPlugin.getInstance().runJedisCommand(jdc);
-    }
-
-    protected void updateValue(final String key, final T value) {
-        wrappedMap.put(key.toLowerCase(), value);
+    protected void updateValue(final UUID key, final T value) {
+        wrappedMap.put(key, value);
 
         JedisCommand<Object> jdc = new JedisCommand<Object>() {
 
             @Override
             public Object execute(Jedis jedis) {
-                jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
+                jedis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
                 DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
 
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
+                playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
 
                 return (null);
             }
@@ -95,37 +72,35 @@ public abstract class PersistMap<T> {
         FoxtrotPlugin.getInstance().runJedisCommand(jdc);
     }
 
-    protected void updateValueAsync(final String key, T value) {
-        wrappedMap.put(key.toLowerCase(), value);
-
-        final JedisCommand<Object> jdc = new JedisCommand<Object>() {
-
-            @Override
-            public Object execute(Jedis jedis) {
-                jedis.hset(keyPrefix, key.toLowerCase(), getRedisValue(getValue(key)));
-                DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-
-                playersCollection.update(new BasicDBObject("_id", key), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
-
-                return (null);
-            }
-        };
+    protected void updateValueAsync(final UUID key, T value) {
+        wrappedMap.put(key, value);
 
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+                    @Override
+                    public Object execute(Jedis jedis) {
+                        jedis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
+                        DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+
+                        playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
+
+                        return (null);
+                    }
+                });
             }
 
         }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
     }
 
-    protected T getValue(String key) {
-        return (wrappedMap.get(key.toLowerCase()));
+    protected T getValue(UUID key) {
+        return (wrappedMap.get(key));
     }
 
-    protected boolean contains(String key) {
-        return (wrappedMap.containsKey(key.toLowerCase()));
+    protected boolean contains(UUID key) {
+        return (wrappedMap.containsKey(key));
     }
 
     public abstract String getRedisValue(T t);

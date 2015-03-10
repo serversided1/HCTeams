@@ -26,11 +26,11 @@ public class ToggleGlobalChatMap extends PersistMap<Boolean> {
     }
 
     public void setGlobalChatToggled(UUID update, boolean toggled) {
-        updateValueAsync(update.toString(), toggled);
+        updateValueAsync(update, toggled);
     }
 
     public boolean isGlobalChatToggled(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : true);
+        return (contains(check) ? getValue(check) : true);
     }
 
 }

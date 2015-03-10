@@ -26,11 +26,11 @@ public class FishingKitMap extends PersistMap<Integer> {
     }
 
     public int getUses(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : 0);
+        return (contains(check) ? getValue(check) : 0);
     }
 
     public void setUses(UUID update, int uses) {
-        updateValueAsync(update.toString(), uses);
+        updateValueAsync(update, uses);
     }
 
 }

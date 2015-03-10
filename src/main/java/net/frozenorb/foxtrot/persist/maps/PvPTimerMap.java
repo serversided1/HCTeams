@@ -30,11 +30,11 @@ public class PvPTimerMap extends PersistMap<Long> {
     }
 
     public void pendingTimer(UUID update){
-        updateValueAsync(update.toString(), PENDING_USE);
+        updateValueAsync(update, PENDING_USE);
     }
 
     public void createTimer(UUID update, int seconds) {
-        updateValueAsync(update.toString(), System.currentTimeMillis() + (seconds * 1000));
+        updateValueAsync(update, System.currentTimeMillis() + (seconds * 1000));
     }
 
     public boolean hasTimer(UUID check) {
@@ -42,32 +42,32 @@ public class PvPTimerMap extends PersistMap<Long> {
             return (false);
         }
 
-        if (contains(check.toString())) {
-            return (getValue(check.toString()) != PENDING_USE && getValue(check.toString()) > System.currentTimeMillis());
+        if (contains(check)) {
+            return (getValue(check) != PENDING_USE && getValue(check) > System.currentTimeMillis());
         }
 
         return (false);
     }
 
     public long getTimer(UUID check) {
-        return (contains(check.toString()) ? getValue(check.toString()) : -1L);
+        return (contains(check) ? getValue(check) : -1L);
     }
 
     public void removeTimer(UUID update) {
-        updateValueAsync(update.toString(), -1L);
+        updateValueAsync(update, -1L);
     }
 
     public boolean contains(UUID check) {
-        return (contains(check.toString()));
+        return (contains(check));
     }
 
     @Override
-    public Long getValue(String string) {
+    public Long getValue(UUID check) {
         if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() || FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
             return (-1L);
         }
 
-        return (super.getValue(string));
+        return (super.getValue(check));
     }
 
 }
