@@ -34,11 +34,13 @@ public class TeamType implements ParameterType<Team> {
                 team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(bukkitPlayer);
 
                 if (team == null) {
+                    // There's no player or no team. Not much we can do.
                     sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
                     return (null);
                 }
             } else {
                 // There's no player or no team. Not much we can do.
+                sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
                 return (null);
             }
         }
