@@ -44,42 +44,45 @@ public class CombatLoggerListener implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
             combatLoggers.remove(event.getEntity());
-            String playerName = event.getEntity().getCustomName().substring(2);
-            UUID playerUUID = UUIDUtils.uuid(playerName);
+            CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
-            FoxtrotPlugin.getInstance().getLogger().info(playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
+            if (!metadata.playerName.equals(event.getEntity().getCustomName().substring(2))) {
+                FoxtrotPlugin.getInstance().getLogger().warning("Combat logger name doesn't match metadata for " + metadata.playerName + " (" + event.getEntity().getCustomName().substring(2) + ")");
+            }
+
+            FoxtrotPlugin.getInstance().getLogger().info(metadata.playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
 
             // Deathban the player
-            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(playerUUID, FoxtrotPlugin.getInstance().getServerHandler().getDeathban(playerName, event.getEntity().getLocation()));
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(playerUUID);
+            FoxtrotPlugin.getInstance().getDeathbanMap().deathban(metadata.playerUUID, FoxtrotPlugin.getInstance().getServerHandler().getDeathban(metadata.playerUUID, event.getEntity().getLocation()));
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(metadata.playerUUID);
 
             // Take away DTR.
             if (team != null) {
-                team.playerDeath(playerName, FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity().getLocation()));
+                team.playerDeath(metadata.playerName, FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity().getLocation()));
             }
 
             if (event.getEntity().getKiller() != null) {
                 // Death message
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".");
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".");
 
                 // Drop the player's items.
-                for (ItemStack item : (ItemStack[]) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value()) {
+                for (ItemStack item : metadata.drops) {
                     event.getDrops().add(item);
                 }
 
                 // Add the death sign.
-                event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(playerName, event.getEntity().getKiller().getName()));
+                event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
 
                 // and give them the kill
                 FoxtrotPlugin.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
             }
 
-            Player target = FoxtrotPlugin.getInstance().getServer().getPlayerExact(playerName);
+            Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(metadata.playerUUID);
 
             if (target == null) {
                 // Create an entity to load the player data
                 MinecraftServer server = ((CraftServer) FoxtrotPlugin.getInstance().getServer()).getServer();
-                EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), getGameProfile(playerName, playerUUID), new PlayerInteractManager(server.getWorldServer(0)));
+                EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), new GameProfile(metadata.playerUUID, metadata.playerName), new PlayerInteractManager(server.getWorldServer(0)));
                 target = entity.getBukkitEntity();
 
                 if (target != null) {
@@ -96,10 +99,6 @@ public class CombatLoggerListener implements Listener {
                 target.saveData();
             }
         }
-    }
-
-    public static GameProfile getGameProfile(String name, UUID id) {
-        return (new GameProfile(id, name));
     }
 
     // Prevent trading with the logger.
@@ -164,7 +163,7 @@ public class CombatLoggerListener implements Listener {
 
         if (damager != null) {
             Villager villager = (Villager) event.getEntity();
-            String playerName = villager.getCustomName().substring(2);
+            CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
             if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmask.SAFE_ZONE.appliesAt(villager.getLocation())) {
                 event.setCancelled(true);
@@ -176,7 +175,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(playerName));
+            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(metadata.playerUUID);
 
             if (team != null && team.isMember(damager.getUniqueId())) {
                 event.setCancelled(true);
@@ -214,7 +213,7 @@ public class CombatLoggerListener implements Listener {
             return;
         }
 
-        // If the player is below Y = 0
+        // If the player is below Y = 0 (aka in the void)
         if (event.getPlayer().getLocation().getBlockY() <= 0) {
             return;
         }
@@ -231,6 +230,7 @@ public class CombatLoggerListener implements Listener {
 
                 if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(other) != FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer())) {
                     enemyWithinRange = true;
+                    break;
                 }
             }
         }
@@ -250,12 +250,18 @@ public class CombatLoggerListener implements Listener {
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
             villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
-            villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(FoxtrotPlugin.getInstance(), drops));
+            CombatLoggerMetadata metadata = new CombatLoggerMetadata();
+
+            metadata.playerName = event.getPlayer().getName();
+            metadata.playerUUID = event.getPlayer().getUniqueId();
+            metadata.drops = drops;
+
+            villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(FoxtrotPlugin.getInstance(), metadata));
 
             villager.setMaxHealth(calculateCombatLoggerHealth(event.getPlayer()));
             villager.setHealth(villager.getMaxHealth());
 
-            villager.setCustomName(ChatColor.RED.toString() + event.getPlayer().getName());
+            villager.setCustomName(ChatColor.YELLOW.toString() + event.getPlayer().getName());
             villager.setCustomNameVisible(true);
 
             combatLoggers.add(villager);
@@ -290,6 +296,14 @@ public class CombatLoggerListener implements Listener {
         }
 
         return ((potions * 3.5D) + player.getHealth());
+    }
+
+    public class CombatLoggerMetadata {
+
+        private ItemStack[] drops;
+        private String playerName;
+        private UUID playerUUID;
+
     }
 
 }

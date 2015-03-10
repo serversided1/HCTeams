@@ -387,18 +387,18 @@ public class Team {
         return (DTR <= 0);
     }
 
-    public void playerDeath(String p, double dtrLoss) {
+    public void playerDeath(String playerName, double dtrLoss) {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + p + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + playerName + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + p);
+                player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + playerName);
                 player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
             }
         }
 
-        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + p + "]");
+        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + playerName + "]");
         setDTR(newDTR);
 
         if (isRaidable()) {

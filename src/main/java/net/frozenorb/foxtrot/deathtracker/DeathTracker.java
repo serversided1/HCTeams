@@ -134,7 +134,7 @@ public class DeathTracker {
                     recordDBObject.put("Class", record.getClass().getSimpleName());
                     recordDBObject.put("TimeBeforeDeath", ((float) (System.currentTimeMillis() - record.getTime())) / 1000F);
                     recordDBObject.put("Damage", record.getDamage());
-                    recordDBObject.put("Description", ChatColor.stripColor(record.getDeathMessage()));
+                    //recordDBObject.put("Description", ChatColor.stripColor(record.getDeathMessage()));
 
                     if (record instanceof PlayerDamage) {
                         recordDBObject.put("Damager", ((PlayerDamage) record).getDamager());

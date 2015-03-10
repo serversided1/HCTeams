@@ -15,7 +15,7 @@ import java.util.UUID;
 public class TeamUninviteCommand {
 
     @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
-    public static void teamInvite(Player sender, @Parameter(name="all | player") String name) {
+    public static void teamUninvite(Player sender, @Parameter(name="all | player") String name) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

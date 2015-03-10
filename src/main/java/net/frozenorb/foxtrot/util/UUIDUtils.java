@@ -15,7 +15,7 @@ public class UUIDUtils {
     }
 
     public static String formatPretty(UUID uuid) {
-        return (name(uuid) + " [" + uuid + "]");
+        return (uuid.toString());
     }
 
 }
