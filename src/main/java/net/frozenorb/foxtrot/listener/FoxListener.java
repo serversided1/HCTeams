@@ -15,6 +15,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.UUIDCache;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.server.v1_7_R4.EntityLightning;
@@ -36,10 +37,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -328,6 +326,11 @@ public class FoxListener implements Listener {
         if (e.getBlock().getState().hasMetadata("deathSign") || ((Sign) e.getBlock().getState()).getLine(1).contains("§e")) {
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        UUIDCache.update(event.getUniqueId(), event.getName(), true);
     }
 
     @EventHandler(priority=EventPriority.MONITOR)

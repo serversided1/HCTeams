@@ -16,6 +16,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.util.UUIDCache;
 import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.serialization.LocationSerializer;
@@ -546,6 +547,10 @@ public class Team {
                     }
                 }
             }
+        }
+
+        for (UUID member : members) {
+            UUIDCache.ensure(member);
         }
 
         if (uniqueId == null) {

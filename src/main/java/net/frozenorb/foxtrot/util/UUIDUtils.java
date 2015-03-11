@@ -9,11 +9,11 @@ import java.util.UUID;
 public class UUIDUtils {
 
     public static String name(UUID uuid) {
-        return (FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(uuid).getName());
+        return (UUIDCache.name(uuid));
     }
 
     public static UUID uuid(String name) {
-        return (FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(name).getUniqueId());
+        return (UUIDCache.uuid(name));
     }
 
     public static String formatPretty(UUID uuid) {

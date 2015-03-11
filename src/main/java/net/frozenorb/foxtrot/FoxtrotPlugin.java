@@ -27,6 +27,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
+import net.frozenorb.foxtrot.util.UUIDCache;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -109,6 +110,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         itemMessage = new ItemMessage();
+        UUIDCache.load();
 
         (new PacketBorderThread()).start();
 
