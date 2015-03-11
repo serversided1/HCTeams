@@ -239,6 +239,17 @@ public class ServerHandler {
                 player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from inside of events!");
                 return;
             }
+
+            if (inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
+                // Remove their PvP timer.
+                if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId()) || FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) == PvPTimerMap.PENDING_USE) {
+                    FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
+                }
+
+                player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
+                player.teleport(team.getHQ());
+                return;
+            }
         }
 
         if (SpawnTagHandler.isTagged(player)) {
