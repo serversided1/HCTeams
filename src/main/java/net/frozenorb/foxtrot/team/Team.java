@@ -615,10 +615,10 @@ public class Team {
         BasicDBObject dbObject = new BasicDBObject();
 
         dbObject.put("_id", getUniqueId());
-        dbObject.put("Owner", getOwner());
-        dbObject.put("Captains", getCaptains());
-        dbObject.put("Members", getMembers());
-        dbObject.put("Invitations", getInvitations());
+        dbObject.put("Owner", getOwner() == null ? null : getOwner().toString());
+        dbObject.put("Captains", UUIDUtils.uuidsToStrings(getCaptains()));
+        dbObject.put("Members", UUIDUtils.uuidsToStrings(getMembers()));
+        dbObject.put("Invitations", UUIDUtils.uuidsToStrings(getInvitations()));
         dbObject.put("Allies", getAllies());
         dbObject.put("RequestedAllies", getRequestedAllies());
         dbObject.put("DTR", getDTR());
