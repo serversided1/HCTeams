@@ -26,6 +26,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
@@ -189,19 +190,25 @@ public class Team {
         FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(this);
         LandBoard.getInstance().clear(this);
 
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+        new BukkitRunnable() {
 
-            @Override
-            public Object execute(Jedis jedis) {
-                jedis.del("fox_teams." + name.toLowerCase());
-                return (null);
+            public void run() {
+                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+
+                    @Override
+                    public Object execute(Jedis jedis) {
+                        jedis.del("fox_teams." + name.toLowerCase());
+                        return (null);
+                    }
+
+                });
+
+                DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
+
+                teamsCollection.remove(getJSONIdentifier());
             }
 
-        });
-
-        DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
-
-        teamsCollection.remove(getJSONIdentifier());
+        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
 
         needsSave = false;
     }
