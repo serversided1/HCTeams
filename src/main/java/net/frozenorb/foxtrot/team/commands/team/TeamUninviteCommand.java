@@ -9,6 +9,7 @@ import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
@@ -28,16 +29,28 @@ public class TeamUninviteCommand {
                 team.getInvitations().clear();
                 sender.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
             } else {
-                UUID nameUUID = UUIDUtils.uuid(name);
+                new BukkitRunnable() {
 
-                if (team.getInvitations().remove(nameUUID)) {
-                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
-                    team.getInvitations().remove(nameUUID);
-                    team.flagForSave();
-                    sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + name + "!");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "No pending invitation for '" + name + "'!");
-                }
+                    public void run() {
+                        UUID nameUUID = UUIDUtils.uuid(name);
+
+                        new BukkitRunnable() {
+
+                            public void run() {
+                                if (team.getInvitations().remove(nameUUID)) {
+                                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
+                                    team.getInvitations().remove(nameUUID);
+                                    team.flagForSave();
+                                    sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + name + "!");
+                                } else {
+                                    sender.sendMessage(ChatColor.RED + "No pending invitation for '" + name + "'!");
+                                }
+                            }
+
+                        }.runTask(FoxtrotPlugin.getInstance());
+                    }
+
+                }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
             }
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
