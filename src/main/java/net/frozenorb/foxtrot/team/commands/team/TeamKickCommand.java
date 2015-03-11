@@ -4,18 +4,20 @@ import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class TeamKickCommand {
 
     @Command(names={ "team kick", "t kick", "f kick", "faction kick", "fac kick" }, permissionNode="")
-    public static void teamKick(Player sender, @Parameter(name="player") OfflinePlayer target) {
+    public static void teamKick(Player sender, @Parameter(name="player") UUID target) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -28,17 +30,17 @@ public class TeamKickCommand {
             return;
         }
 
-        if (!team.isMember(target.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + target.getName() + " isn't on your team!");
+        if (!team.isMember(target)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " isn't on your team!");
             return;
         }
 
-        if (team.isOwner(target.getUniqueId())) {
+        if (team.isOwner(target)) {
             sender.sendMessage(ChatColor.RED + "You cannot kick the team leader!");
             return;
         }
 
-        if (team.isCaptain(target.getUniqueId())) {
+        if (team.isCaptain(target)) {
             if (team.isCaptain(sender.getUniqueId())) {
                 sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
                 return;
@@ -47,23 +49,24 @@ public class TeamKickCommand {
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.DARK_AQUA + target.getName() + " was kicked by " + sender.getName() + "!");
+                player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " was kicked by " + sender.getName() + "!");
             }
         }
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + target.getName() + " [Kicked by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(target) + " [Kicked by: " + sender.getName() + "]");
 
-        if (team.removeMember(target.getUniqueId())) {
+        if (team.removeMember(target)) {
             team.disband();
         } else {
             team.flagForSave();
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target.getUniqueId(), null);
+        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, null);
+        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
 
-        if (target.isOnline()) {
-            FrozenNametagHandler.reloadPlayer(target.getPlayer());
-            FrozenNametagHandler.reloadOthersFor(target.getPlayer());
+        if (bukkitPlayer != null) {
+            FrozenNametagHandler.reloadPlayer(bukkitPlayer);
+            FrozenNametagHandler.reloadOthersFor(bukkitPlayer);
         }
     }
 

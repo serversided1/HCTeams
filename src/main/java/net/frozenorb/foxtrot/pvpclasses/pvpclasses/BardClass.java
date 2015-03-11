@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.Material;

@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.util;
 
 import com.mongodb.BasicDBList;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 
 import java.util.Collection;
 import java.util.UUID;

@@ -2,17 +2,19 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class TeamLeaderCommand {
 
     @Command(names={ "team newleader", "t newleader", "f newleader", "faction newleader", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" }, permissionNode="")
-    public static void teamLeader(Player sender, @Parameter(name="player") OfflinePlayer target) {
+    public static void teamLeader(Player sender, @Parameter(name="player") UUID target) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -25,18 +27,18 @@ public class TeamLeaderCommand {
             return;
         }
 
-        if (!team.isMember(target.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + target.getName() + " is not on your team.");
+        if (!team.isMember(target)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is not on your team.");
             return;
         }
 
         for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.DARK_AQUA + target.getName() + " has been given ownership of " + team.getName() + ".");
+                player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been given ownership of " + team.getName() + ".");
             }
         }
 
-        team.setOwner(target.getUniqueId());
+        team.setOwner(target);
         team.addCaptain(sender.getUniqueId());
     }
 

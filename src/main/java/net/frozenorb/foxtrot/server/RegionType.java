@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.event.player.PlayerMoveEvent;

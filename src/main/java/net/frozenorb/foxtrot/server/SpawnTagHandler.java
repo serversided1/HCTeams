@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.server;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

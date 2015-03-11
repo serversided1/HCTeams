@@ -3,16 +3,18 @@ package net.frozenorb.foxtrot.team.commands.team.subclaim;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class TeamSubclaimAddPlayerCommand {
 
     @Command(names={ "team subclaim addplayer", "t subclaim addplayer", "f subclaim addplayer", "faction subclaim addplayer", "fac subclaim addplayer", "team sub addplayer", "t sub addplayer", "f sub addplayer", "faction sub addplayer", "fac sub addplayer", "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team sub grant", "t sub grant", "f sub grant", "faction sub grant", "fac sub grant" }, permissionNode="")
-    public static void teamSubclaimAddPlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") OfflinePlayer player) {
+    public static void teamSubclaimAddPlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") UUID target) {
         Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
@@ -20,18 +22,18 @@ public class TeamSubclaimAddPlayerCommand {
             return;
         }
 
-        if (!team.isMember(player.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + player.getName() + " is not on your team!");
+        if (!team.isMember(target)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is not on your team!");
             return;
         }
 
-        if (subclaim.isMember(player.getUniqueId())) {
+        if (subclaim.isMember(target)) {
             sender.sendMessage(ChatColor.RED + "The player already has access to that subclaim!");
             return;
         }
 
-        sender.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.YELLOW + " has been added to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
-        subclaim.addMember(player.getUniqueId());
+        sender.sendMessage(ChatColor.GREEN + UUIDUtils.name(target) + ChatColor.YELLOW + " has been added to the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
+        subclaim.addMember(target);
         team.flagForSave();
     }
 

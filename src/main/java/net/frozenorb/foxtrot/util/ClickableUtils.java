@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.util;
 
 import mkremins.fanciful.FancyMessage;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
 import org.bukkit.ChatColor;
 
 public class ClickableUtils {

@@ -1,13 +1,11 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
 import lombok.Getter;
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
-import net.frozenorb.foxtrot.util.ClickableUtils;
 import net.frozenorb.qlib.util.EntityUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

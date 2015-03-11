@@ -1,22 +1,26 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class HighrollerAddCommand {
 
     @Command(names={ "highroller add", "highrollers add" }, permissionNode="op")
-    public static void highrollerAdd(Player sender, @Parameter(name="Player") OfflinePlayer player) {
-        if (!FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(player.getName())) {
-            FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().add(player.getName());
+    public static void highrollerAdd(Player sender, @Parameter(name="Player") UUID target) {
+        String name = UUIDUtils.name(target);
+
+        if (!FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(name)) {
+            FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().add(name);
             FoxtrotPlugin.getInstance().getServerHandler().save();
-            sender.sendMessage(ChatColor.GREEN + "Added " + player.getName() + "'s HighRoller tag.");
+            sender.sendMessage(ChatColor.GREEN + "Added " + name + "'s HighRoller tag.");
         } else {
-            sender.sendMessage(ChatColor.RED + player.getName() + " is already a HighRoller.");
+            sender.sendMessage(ChatColor.RED + name + " is already a HighRoller.");
         }
     }
 

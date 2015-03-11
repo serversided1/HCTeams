@@ -2,11 +2,16 @@ package net.frozenorb.foxtrot.util;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.persist.JedisCommand;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.command.ParameterType;
+import net.frozenorb.qlib.qLib;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class UUIDCache {
@@ -15,6 +20,10 @@ public final class UUIDCache {
     private static Map<String, UUID> nameToUuid = new ConcurrentHashMap<>();
 
     private UUIDCache() {}
+
+    static {
+        FrozenCommandHandler.registerParameterType(UUID.class, new UUIDParameterType());
+    }
 
     public static void load() {
         FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Void>() {
@@ -72,6 +81,30 @@ public final class UUIDCache {
 
             }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
         }
+    }
+
+    public static class UUIDParameterType implements ParameterType<UUID> {
+
+        public UUID transform(CommandSender sender, String source) {
+            if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
+                return (((Player) sender).getUniqueId());
+            }
+
+            return (uuid(source));
+        }
+
+        public List<String> tabComplete(Player sender, Set<String> flags, String source) {
+            List<String> completions = new ArrayList<>();
+
+            for (Player player : qLib.getInstance().getServer().getOnlinePlayers()) {
+                if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
+                    completions.add(player.getName());
+                }
+            }
+
+            return (completions);
+        }
+
     }
 
 }

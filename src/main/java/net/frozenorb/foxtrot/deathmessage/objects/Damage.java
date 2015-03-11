@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.objects;
 
 import lombok.Getter;
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.util.UUIDUtils;
 import org.bukkit.ChatColor;
