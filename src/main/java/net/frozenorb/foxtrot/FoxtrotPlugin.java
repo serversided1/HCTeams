@@ -84,6 +84,7 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private SoulboundLivesMap soulboundLivesMap;
     @Getter private FriendLivesMap friendLivesMap;
     @Getter private TransferableLivesMap transferableLivesMap;
+    @Getter private StatisticsMap statisticsMap;
 
     @Override
     public void onEnable() {
@@ -273,6 +274,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
         (firstJoinMap = new FirstJoinMap()).loadFromRedis();
         (lastJoinMap = new LastJoinMap()).loadFromRedis();
+        (statisticsMap = new StatisticsMap()).loadFromRedis();
     }
 
     public static FoxtrotPlugin getInstance() {
