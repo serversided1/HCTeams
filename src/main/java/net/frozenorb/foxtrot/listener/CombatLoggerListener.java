@@ -110,7 +110,7 @@ public class CombatLoggerListener implements Listener {
 
     // Don't let the chunk holding a logger unload.
     @EventHandler
-    public void onEntityDespawn(ChunkUnloadEvent event) {
+    public void onChunkUnload(ChunkUnloadEvent event) {
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity.hasMetadata(COMBAT_LOGGER_METADATA) && !entity.isDead()) {
                 event.setCancelled(true);
@@ -247,7 +247,7 @@ public class CombatLoggerListener implements Listener {
             final Villager villager = (Villager) event.getPlayer().getWorld().spawnEntity(event.getPlayer().getLocation(), EntityType.VILLAGER);
 
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
-            villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
+            //villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
             CombatLoggerMetadata metadata = new CombatLoggerMetadata();
 
@@ -262,6 +262,9 @@ public class CombatLoggerListener implements Listener {
 
             villager.setCustomName(ChatColor.YELLOW.toString() + event.getPlayer().getName());
             villager.setCustomNameVisible(true);
+
+            villager.setFallDistance(event.getPlayer().getFallDistance());
+            villager.setRemoveWhenFarAway(false);
 
             combatLoggers.add(villager);
 
