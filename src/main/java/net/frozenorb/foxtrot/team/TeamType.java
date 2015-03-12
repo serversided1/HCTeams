@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.qlib.command.ParameterType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -25,27 +26,20 @@ public class TeamType implements ParameterType<Team> {
             return (team);
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(source);
+        Team byName = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(source);
 
-        if (team == null) {
-            Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(source);
-
-            if (bukkitPlayer != null) {
-                team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(bukkitPlayer);
-
-                if (team == null) {
-                    // There's no player or no team. Not much we can do.
-                    sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
-                    return (null);
-                }
-            } else {
-                // There's no player or no team. Not much we can do.
-                sender.sendMessage(ChatColor.RED + "No team with the name or member " + source + " found.");
-                return (null);
-            }
+        if (byName != null) {
+            return (byName);
         }
 
-        return (team);
+        Team byMember = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(source));
+
+        if (byMember != null) {
+            return (byMember);
+        }
+
+        sender.sendMessage(ChatColor.RED + "No team or member with the name " + source + " found.");
+        return (null);
     }
 
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
