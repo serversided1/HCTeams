@@ -6,6 +6,7 @@ import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.ParameterType;
 import net.frozenorb.qlib.qLib;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -90,7 +91,14 @@ public final class UUIDCache {
                 return (((Player) sender).getUniqueId());
             }
 
-            return (uuid(source));
+            UUID uuid = uuid(source);
+
+            if (uuid == null) {
+                sender.sendMessage(ChatColor.RED + "No player with the name " + source + " found.");
+                return (null);
+            }
+
+            return (uuid);
         }
 
         public List<String> tabComplete(Player sender, Set<String> flags, String source) {
