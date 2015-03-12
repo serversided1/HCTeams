@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.ParameterType;
 import net.frozenorb.qlib.qLib;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -53,8 +54,10 @@ public final class UUIDCache {
     }
 
     public static void ensure(UUID uuid) {
+        FoxtrotPlugin.getInstance().getLogger().warning(uuid + " didn't have a cached name.");
+
         if (String.valueOf(name(uuid)).equals("null")) {
-            update(uuid, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(uuid).getName(), true);
+            //update(uuid, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(uuid).getName(), true);
         }
     }
 
