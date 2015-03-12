@@ -53,7 +53,8 @@ public final class UUIDCache {
     }
 
     public static void ensure(UUID uuid) {
-        if (name(uuid) != null) {
+        if (!name(uuid).equals("null")) {
+            FoxtrotPlugin.getInstance().getLogger().warning(uuid + " didn't have a cached Redis name.");
             update(uuid, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(uuid).getName(), true);
         }
     }
