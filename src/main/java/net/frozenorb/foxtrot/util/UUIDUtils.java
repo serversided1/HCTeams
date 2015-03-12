@@ -16,7 +16,7 @@ public class UUIDUtils {
     }
 
     public static String formatPretty(UUID uuid) {
-        return (uuid.toString());
+        return (uuid == null ? "null" : uuid.toString());
     }
 
     public static BasicDBList uuidsToStrings(Collection<UUID> toConvert) {
