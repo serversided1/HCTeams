@@ -101,7 +101,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         Shared.get().getProfileManager().setNametagsEnabled(false);
 
         new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
-        new RedisSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L); // Runs every 5 minutes
+        new RedisSaveTask().runTaskTimerAsynchronously(this, 1200L, 1200L); // Runs every minute
 
         setupHandlers();
         setupPersistence();
