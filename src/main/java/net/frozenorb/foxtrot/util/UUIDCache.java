@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.ParameterType;
 import net.frozenorb.qlib.qLib;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -46,7 +45,7 @@ public final class UUIDCache {
     }
 
     public static UUID uuid(String name) {
-        return (nameToUuid.get(name));
+        return (nameToUuid.get(name.toLowerCase()));
     }
 
     public static String name(UUID uuid) {
@@ -54,9 +53,8 @@ public final class UUIDCache {
     }
 
     public static void ensure(UUID uuid) {
-        FoxtrotPlugin.getInstance().getLogger().warning(uuid + " didn't have a cached name.");
-
         if (String.valueOf(name(uuid)).equals("null")) {
+            FoxtrotPlugin.getInstance().getLogger().warning(uuid + " didn't have a cached name.");
             //update(uuid, FoxtrotPlugin.getInstance().getServer().getOfflinePlayer(uuid).getName(), true);
         }
     }
@@ -66,7 +64,7 @@ public final class UUIDCache {
 
         // Flush any old entries out of the cache.
         nameToUuid.entrySet().removeIf(entry -> entry.getValue().equals(uuid));
-        nameToUuid.put(name, uuid);
+        nameToUuid.put(name.toLowerCase(), uuid);
 
         if (redis) {
             new BukkitRunnable() {
@@ -97,7 +95,7 @@ public final class UUIDCache {
             UUID uuid = uuid(source);
 
             if (uuid == null) {
-                sender.sendMessage(ChatColor.RED + "No player with the name " + source + " found.");
+                sender.sendMessage(ChatColor.RED + source + " has never joined the server.");
                 return (null);
             }
 
