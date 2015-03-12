@@ -9,12 +9,18 @@ import net.frozenorb.qlib.command.Parameter;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.spigotmc.CustomTimingsHandler;
 
 import java.util.regex.Pattern;
 
 public class TeamCreateCommand {
 
     public static final Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
+
+    private static CustomTimingsHandler timings1 = new CustomTimingsHandler("Team Creation - Part 1");
+    private static CustomTimingsHandler timings2 = new CustomTimingsHandler("Team Creation - Part 2");
+    private static CustomTimingsHandler timings3 = new CustomTimingsHandler("Team Creation - Part 3");
+    private static CustomTimingsHandler timings4 = new CustomTimingsHandler("Team Creation - Part 4");
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Parameter(name="team") String name) {
@@ -38,13 +44,22 @@ public class TeamCreateCommand {
             return;
         }
 
+        timings1.startTiming();
+
         if (ALPHA_NUMERIC.matcher(name).find()) {
             sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
+            timings1.stopTiming();
             return;
         }
 
+        timings1.stopTiming();
+        timings2.startTiming();
+
         sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
         sender.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
+
+        timings2.stopTiming();
+        timings3.startTiming();
 
         Team team = new Team(name);
 
@@ -55,8 +70,13 @@ public class TeamCreateCommand {
         team.setDTR(1);
         team.setUniqueId(new ObjectId());
 
+        timings3.stopTiming();
+        timings4.startTiming();
+
         FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(team);
         FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + team.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+
+        timings4.stopTiming();
     }
 
 }
