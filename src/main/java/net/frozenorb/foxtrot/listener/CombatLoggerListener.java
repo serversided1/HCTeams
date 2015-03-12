@@ -297,7 +297,7 @@ public class CombatLoggerListener implements Listener {
         return ((potions * 3.5D) + player.getHealth());
     }
 
-    public class CombatLoggerMetadata {
+    public static class CombatLoggerMetadata {
 
         private ItemStack[] drops;
         private String playerName;
