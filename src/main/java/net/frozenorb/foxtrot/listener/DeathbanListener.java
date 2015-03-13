@@ -84,13 +84,17 @@ public class DeathbanListener implements Listener {
 
         FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> {
 
+            if (!event.getEntity().isOnline()) {
+                return;
+            }
+
             if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
                 event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
             } else {
                 event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
             }
 
-        }, 5);
+        }, 5 * 20L);
     }
 
 }
