@@ -5,12 +5,14 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class MapHandler {
 
@@ -23,6 +25,7 @@ public class MapHandler {
     @Getter private double level3LootingMultiplier;
     @Getter private boolean craftingGopple;
     @Getter private boolean craftingReducedMelon;
+    @Getter private int goppleCooldown;
 
     public MapHandler() {
         try {
@@ -40,6 +43,7 @@ public class MapHandler {
                 dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
                 dbObject.put("warzone", 1000);
                 dbObject.put("border", 3000);
+                dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
 
                 looting.put("base", 1D);
                 looting.put("level1", 1.2D);
@@ -53,7 +57,7 @@ public class MapHandler {
 
                 dbObject.put("crafting", crafting);
 
-                FileUtils.write(mapInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbObject.toString())));
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString())));
             }
 
             BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
@@ -64,6 +68,7 @@ public class MapHandler {
                 this.mapStartedString = dbObject.getString("mapStartedString");
                 ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbObject.getInt("border", 3000);
+                this.goppleCooldown = dbObject.getInt("goppleCooldown");
 
                 BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
 
