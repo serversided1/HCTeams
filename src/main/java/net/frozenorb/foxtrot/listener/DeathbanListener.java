@@ -23,6 +23,7 @@ public class DeathbanListener implements Listener {
             long left = unbannedOn - System.currentTimeMillis();
 
             if (event.getPlayer().isOp()) {
+                FoxtrotPlugin.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
                 return;
             }
 
