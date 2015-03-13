@@ -45,15 +45,21 @@ public class TeamType implements ParameterType<Team> {
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
-            if (StringUtils.startsWithIgnoreCase(team.getName(), source)) {
-                completions.add(team.getName());
+        // Teams being included in the completion is ENABLED by default.
+        if (!flags.contains("noteams")) {
+            for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+                if (StringUtils.startsWithIgnoreCase(team.getName(), source)) {
+                    completions.add(team.getName());
+                }
             }
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
-                completions.add(player.getName());
+        // Players being included in the completion is DISABLED by default.
+        if (flags.contains("players")) {
+            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
+                    completions.add(player.getName());
+                }
             }
         }
 
