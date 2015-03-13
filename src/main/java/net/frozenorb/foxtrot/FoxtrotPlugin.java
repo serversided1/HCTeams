@@ -43,6 +43,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -146,15 +147,21 @@ public class FoxtrotPlugin extends JavaPlugin {
                         return;
                     }
 
-                    long unbannedOn = FoxtrotPlugin.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());
+                    long unbannedOn = getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());
                     long left = unbannedOn - System.currentTimeMillis();
                     final String time = TimeUtils.formatIntoDetailedString((int) left / 1000);
 
-                    if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                        event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
-                    } else {
-                        event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
-                    }
+                    new BukkitRunnable() {
+
+                        public void run() {
+                            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+                                event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
+                            } else {
+                                event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
+                            }
+                        }
+
+                    }.runTask(FoxtrotPlugin.getInstance());
                 }
             }
 
