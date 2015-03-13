@@ -21,6 +21,8 @@ public class MapHandler {
     @Getter private double level1LootingMultiplier;
     @Getter private double level2LootingMultiplier;
     @Getter private double level3LootingMultiplier;
+    @Getter private boolean craftingGopple;
+    @Getter private boolean craftingReducedMelon;
 
     public MapHandler() {
         try {
@@ -29,40 +31,51 @@ public class MapHandler {
             if (!mapInfo.exists()) {
                 mapInfo.createNewFile();
 
-                BasicDBObject dbo = new BasicDBObject();
+                BasicDBObject dbObject = new BasicDBObject();
                 BasicDBObject looting = new BasicDBObject();
+                BasicDBObject crafting = new BasicDBObject();
 
-                dbo.put("kitMap", false);
-                dbo.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
-                dbo.put("mapStartedString", "Map 3 - Started January 31, 2015");
-                dbo.put("warzone", 1000);
-                dbo.put("border", 3000);
+                dbObject.put("kitMap", false);
+                dbObject.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
+                dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
+                dbObject.put("warzone", 1000);
+                dbObject.put("border", 3000);
 
                 looting.put("base", 1D);
                 looting.put("level1", 1.2D);
                 looting.put("level2", 1.4D);
                 looting.put("level3", 2D);
 
-                dbo.put("looting", looting);
+                dbObject.put("looting", looting);
 
-                FileUtils.write(mapInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbo.toString())));
+                crafting.put("gopple", true);
+                crafting.put("reducedMelon", true);
+
+                dbObject.put("crafting", crafting);
+
+                FileUtils.write(mapInfo, new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(dbObject.toString())));
             }
 
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
 
-            if (dbo != null) {
-                this.kitMap = dbo.getBoolean("kitMap", false);
-                this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbo.getString("scoreboardTitle"));
-                this.mapStartedString = dbo.getString("mapStartedString");
-                ServerHandler.WARZONE_RADIUS = dbo.getInt("warzone", 1000);
-                BorderListener.BORDER_SIZE = dbo.getInt("border", 3000);
+            if (dbObject != null) {
+                this.kitMap = dbObject.getBoolean("kitMap", false);
+                this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbObject.getString("scoreboardTitle"));
+                this.mapStartedString = dbObject.getString("mapStartedString");
+                ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);
+                BorderListener.BORDER_SIZE = dbObject.getInt("border", 3000);
 
-                BasicDBObject looting = (BasicDBObject) dbo.get("looting");
+                BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
 
                 this.baseLootingMultiplier = looting.getDouble("base");
                 this.level1LootingMultiplier = looting.getDouble("level1");
                 this.level2LootingMultiplier = looting.getDouble("level2");
                 this.level3LootingMultiplier = looting.getDouble("level3");
+
+                BasicDBObject crafting = (BasicDBObject) dbObject.get("crafting");
+
+                this.craftingGopple = crafting.getBoolean("gopple");
+                this.craftingReducedMelon = crafting.getBoolean("reducedMelon");
             }
         } catch (Exception e) {
             e.printStackTrace();

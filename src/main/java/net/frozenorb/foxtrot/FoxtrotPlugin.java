@@ -167,25 +167,26 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         });
 
-        // NEXT MAP
         Iterator<Recipe> recipeIterator = getServer().recipeIterator();
 
         while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
 
             // Disallow the crafting of gopples.
-            if (recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
+            if (!getMapHandler().isCraftingGopple() && recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
                 recipeIterator.remove();
             }
 
             // Remove vanilla glistering melon recipe
-            if (recipe.getResult().getType() == Material.SPECKLED_MELON) {
+            if (getMapHandler().isCraftingReducedMelon() && recipe.getResult().getType() == Material.SPECKLED_MELON) {
                 recipeIterator.remove();
             }
         }
 
         // add our glistering melon recipe
-        getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
+        if (getMapHandler().isCraftingReducedMelon()) {
+            getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
+        }
     }
 
 
