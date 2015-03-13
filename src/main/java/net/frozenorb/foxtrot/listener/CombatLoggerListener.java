@@ -265,6 +265,7 @@ public class CombatLoggerListener implements Listener {
 
             villager.setFallDistance(event.getPlayer().getFallDistance());
             villager.setRemoveWhenFarAway(false);
+            villager.setVelocity(event.getPlayer().getVelocity());
 
             combatLoggers.add(villager);
 
