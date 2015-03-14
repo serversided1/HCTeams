@@ -1,8 +1,5 @@
-name: ${artifactId}
+name: ${name}
 version: ${version}
 author: MineHQ Development Team
 main: net.frozenorb.foxtrot.FoxtrotPlugin
-depend: [ProtocolLib, mBasic]
-softdepend: [mShared, mCommon]
-commands:
-  eval:
+depend: [ProtocolLib, qLib]
