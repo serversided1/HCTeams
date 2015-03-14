@@ -16,7 +16,6 @@ import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
-import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
@@ -28,7 +27,6 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.ItemMessage;
-import net.frozenorb.foxtrot.util.UUIDCache;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -44,9 +42,6 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Iterator;
 
@@ -57,7 +52,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     @Getter private ItemMessage itemMessage;
 
-    @Getter private JedisPool jedisPool;
     @Getter private MongoClient mongoPool;
 
     @Getter private PvPClassHandler pvpClassHandler;
@@ -96,7 +90,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         instance = this;
 
         try {
-            jedisPool = new JedisPool(new JedisPoolConfig(), "localhost");
             mongoPool = new MongoClient();
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +107,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         itemMessage = new ItemMessage();
-        UUIDCache.load();
 
         (new PacketBorderThread()).start();
 
@@ -204,29 +196,6 @@ public class FoxtrotPlugin extends JavaPlugin {
 
         RedisSaveTask.save(false);
         FoxtrotPlugin.getInstance().getServerHandler().save();
-        jedisPool.destroy();
-    }
-
-    public <T> T runJedisCommand(JedisCommand<T> jedisCommand) {
-        Jedis jedis = jedisPool.getResource();
-        T result = null;
-
-        try {
-            result = jedisCommand.execute(jedis);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            if (jedis != null) {
-                jedisPool.returnBrokenResource(jedis);
-                jedis = null;
-            }
-        } finally {
-            if (jedis != null) {
-                jedisPool.returnResource(jedis);
-            }
-        }
-
-        return (result);
     }
 
     public void sendOPMessage(String message) {
@@ -247,6 +216,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         pvpClassHandler = new PvPClassHandler();
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
+
 
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");

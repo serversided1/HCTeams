@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.util.UUIDUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;

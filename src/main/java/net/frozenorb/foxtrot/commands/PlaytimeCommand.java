@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
-import net.frozenorb.foxtrot.util.UUIDUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.TimeUtils;

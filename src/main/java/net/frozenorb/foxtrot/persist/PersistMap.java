@@ -5,8 +5,8 @@ import com.mongodb.DBCollection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.scheduler.BukkitRunnable;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.UUID;
@@ -21,55 +21,41 @@ public abstract class PersistMap<T> {
     @NonNull private String mongoKeyPrefix;
 
     public void loadFromRedis() {
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+        qLib.getInstance().runRedisCommand(redis -> {
+            Map<String, String> results = redis.hgetAll(keyPrefix);
 
-            public Object execute(Jedis jedis) {
-                Map<String, String> results = jedis.hgetAll(keyPrefix);
+            for (Map.Entry<String, String> resultEntry : results.entrySet()) {
+                T object = getJavaObjectSafe(resultEntry.getKey(), resultEntry.getValue());
 
-                for (Map.Entry<String, String> resultEntry : results.entrySet()) {
-                    T object = getJavaObjectSafe(resultEntry.getKey(), resultEntry.getValue());
-
-                    if (object != null) {
-                        wrappedMap.put(UUID.fromString(resultEntry.getKey()), object);
-                    }
+                if (object != null) {
+                    wrappedMap.put(UUID.fromString(resultEntry.getKey()), object);
                 }
-
-                return (null);
             }
 
+            return (null);
         });
     }
 
     protected void wipeValues() {
         wrappedMap.clear();
 
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-            public Object execute(Jedis jedis) {
-                jedis.del(keyPrefix);
-                return (null);
-            }
-
+        qLib.getInstance().runRedisCommand(redis -> {
+            redis.del(keyPrefix);
+            return (null);
         });
     }
 
     protected void updateValue(final UUID key, final T value) {
         wrappedMap.put(key, value);
 
-        JedisCommand<Object> jdc = new JedisCommand<Object>() {
+        qLib.getInstance().runRedisCommand(redis -> {
+            redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-            @Override
-            public Object execute(Jedis jedis) {
-                jedis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
-                DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+            DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+            playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
 
-                playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
-
-                return (null);
-            }
-        };
-
-        FoxtrotPlugin.getInstance().runJedisCommand(jdc);
+            return (null);
+        });
     }
 
     protected void updateValueAsync(final UUID key, T value) {
@@ -78,17 +64,13 @@ public abstract class PersistMap<T> {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+                qLib.getInstance().runRedisCommand(redis -> {
+                    redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-                    @Override
-                    public Object execute(Jedis jedis) {
-                        jedis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
-                        DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+                    DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+                    playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
 
-                        playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
-
-                        return (null);
-                    }
+                    return (null);
                 });
             }
 

@@ -1,15 +1,14 @@
 package net.frozenorb.foxtrot.team;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.subclaim.SubclaimType;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.qLib;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
-import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,22 +28,17 @@ public class TeamHandler {
         FrozenCommandHandler.registerParameterType(Subclaim.class, new SubclaimType());
 
         // Load teams from Redis.
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
+        qLib.getInstance().runRedisCommand(redis -> {
+            for (String key : redis.keys("fox_teams.*")) {
+                String loadString = redis.get(key);
 
-            @Override
-            public Object execute(Jedis jedis) {
-                for (String key : jedis.keys("fox_teams.*")) {
-                    String loadString = jedis.get(key);
+                Team team = new Team(key.split("\\.")[1]);
+                team.load(loadString);
 
-                    Team team = new Team(key.split("\\.")[1]);
-                    team.load(loadString);
-
-                    setupTeam(team);
-                }
-
-                return (null);
+                setupTeam(team);
             }
 
+            return (null);
         });
     }
 

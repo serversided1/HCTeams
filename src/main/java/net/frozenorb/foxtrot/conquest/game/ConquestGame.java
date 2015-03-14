@@ -9,7 +9,7 @@ import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.util.UUIDUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

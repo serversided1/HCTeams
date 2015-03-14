@@ -15,7 +15,6 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
-import net.frozenorb.foxtrot.util.UUIDCache;
 import net.frozenorb.mBasic.Basic;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -323,11 +322,6 @@ public class FoxListener implements Listener {
         if (e.getBlock().getState().hasMetadata("deathSign") || ((Sign) e.getBlock().getState()).getLine(1).contains("§e")) {
             e.setCancelled(true);
         }
-    }
-
-    @EventHandler
-    public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        UUIDCache.update(event.getUniqueId(), event.getName(), true);
     }
 
     @EventHandler(priority=EventPriority.MONITOR)

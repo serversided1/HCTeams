@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
-import net.frozenorb.foxtrot.persist.JedisCommand;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -16,11 +15,12 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.foxtrot.util.UUIDCache;
-import net.frozenorb.foxtrot.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
+import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -28,7 +28,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -194,18 +193,12 @@ public class Team {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-                    @Override
-                    public Object execute(Jedis jedis) {
-                        jedis.del("fox_teams." + name.toLowerCase());
-                        return (null);
-                    }
-
+                qLib.getInstance().runRedisCommand(redis -> {
+                    redis.del("fox_teams." + name.toLowerCase());
+                    return (null);
                 });
 
                 DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
-
                 teamsCollection.remove(getJSONIdentifier());
             }
 
@@ -223,13 +216,9 @@ public class Team {
 
         FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(this);
 
-        FoxtrotPlugin.getInstance().runJedisCommand(new JedisCommand<Object>() {
-
-            public Object execute(Jedis jedis) {
-                jedis.del("fox_teams." + oldName.toLowerCase());
-                return (null);
-            }
-
+        qLib.getInstance().runRedisCommand(redis -> {
+            redis.del("fox_teams." + oldName.toLowerCase());
+            return (null);
         });
 
         // We don't need to do anything here as all we're doing is changing the name, not the Unique ID (which is what Mongo uses)
@@ -550,7 +539,7 @@ public class Team {
         }
 
         for (UUID member : members) {
-            UUIDCache.ensure(member);
+            FrozenUUIDCache.ensure(member);
         }
 
         if (uniqueId == null) {
