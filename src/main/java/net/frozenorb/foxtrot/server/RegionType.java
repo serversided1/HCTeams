@@ -11,6 +11,7 @@ public enum RegionType {
 
     WARZONE(RegionMoveHandler.ALWAYS_TRUE),
     WILDNERNESS(RegionMoveHandler.ALWAYS_TRUE),
+    ROAD(RegionMoveHandler.ALWAYS_TRUE),
 
     KOTH(RegionMoveHandler.PVP_TIMER),
     CITADEL(RegionMoveHandler.PVP_TIMER),
