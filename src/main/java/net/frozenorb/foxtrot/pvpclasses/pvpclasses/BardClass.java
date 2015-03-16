@@ -25,7 +25,7 @@ public class BardClass extends BaseBardClass implements Listener {
         BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, new BardEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 45, 0), 40));
 
         // Click debuffs
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new BardEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 25));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new BardEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 45));
 
         // Passive buffs
         BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0)));
