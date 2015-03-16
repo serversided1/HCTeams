@@ -424,6 +424,7 @@ public class Team {
     public void load(String str) {
         loading = true;
         String[] lines = str.split("\n");
+        System.out.println(str);
 
         for (String line : lines) {
             String identifier = line.substring(0, line.indexOf(':'));
@@ -526,7 +527,7 @@ public class Team {
                         List<UUID> members = new ArrayList<>();
 
                         for (String uuidString : membersRaw.split(", ")) {
-                            members.add(UUID.fromString(uuidString.trim()));
+                           // members.add(UUID.fromString(uuidString.trim()));
                         }
 
                         Subclaim subclaimObj = new Subclaim(location1, location2, name);
