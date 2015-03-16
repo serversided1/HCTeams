@@ -123,13 +123,11 @@ public class BaseBardClass extends PvPClass {
         SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 60 : 30);
         giveBardEffect(event.getPlayer(), bardEffect, !negative, true);
 
-        if (event.getItem().getType() != Material.FEATHER) {
-            if (event.getPlayer().getItemInHand().getAmount() == 1) {
-                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
-                event.getPlayer().updateInventory();
-            } else {
-                event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
-            }
+        if (event.getPlayer().getItemInHand().getAmount() == 1) {
+            event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+            event.getPlayer().updateInventory();
+        } else {
+            event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
         }
     }
 
