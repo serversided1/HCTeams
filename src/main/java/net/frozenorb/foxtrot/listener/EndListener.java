@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
@@ -182,6 +183,16 @@ public class EndListener implements Listener {
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you have pvp protection.");
+                    msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
+                }
+            }
+
+            // Don't let players enter the end while they're spawn tagged
+            if (SpawnTagHandler.isTagged(event.getPlayer())) {
+                event.setCancelled(true);
+
+                if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you are spawn tagged.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
             }
