@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -28,7 +28,7 @@ public class CrowbarListener implements Listener {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (!Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) && !Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             Team team = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
             if (team != null && !team.isMember(event.getPlayer().getUniqueId())) {

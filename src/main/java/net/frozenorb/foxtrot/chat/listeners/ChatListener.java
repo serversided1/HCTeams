@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.chat.listeners;
 
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxConstants;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
@@ -21,10 +21,10 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        String highRollerString = FoxtrotPlugin.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? FoxConstants.highRollerPrefix() : "";
-        String customPrefixString = FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
-        ChatMode chatMode = FoxtrotPlugin.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        String highRollerString = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? FoxConstants.highRollerPrefix() : "";
+        String customPrefixString = Foxtrot.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? Foxtrot.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
+        ChatMode chatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
 
         // Determine if we're using one of our custom
         // chat channel prefixes.
@@ -84,7 +84,7 @@ public class ChatListener implements Listener {
 
                         // If their chat is enabled (which it is by default) or the sender is op, send them the message
                         // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
-                        if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
+                        if (event.getPlayer().isOp() || Foxtrot.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
                             publicChatFormatGeneric.send(player);
                         }
                     } else {
@@ -103,14 +103,14 @@ public class ChatListener implements Listener {
 
                             // If their chat is enabled (which it is by default) or the sender is op, send them the message
                             // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
-                            if (event.getPlayer().isOp() || FoxtrotPlugin.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
+                            if (event.getPlayer().isOp() || Foxtrot.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
                                 publicChatFormatGeneric.send(player);
                             }
                         }
                     }
                 }
 
-                publicChatFormatGeneric.send(FoxtrotPlugin.getInstance().getServer().getConsoleSender());
+                publicChatFormatGeneric.send(Foxtrot.getInstance().getServer().getConsoleSender());
                 break;
             case ALLIANCE:
                 String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
@@ -118,17 +118,17 @@ public class ChatListener implements Listener {
 
                 // Loop online players and not recipients just in case you're weird and
                 // /ignore your teammates/allies
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (team.isMember(player.getUniqueId()) || team.isAlly(player.getUniqueId())) {
                         player.sendMessage(allyChatFormat);
-                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
+                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
                         player.sendMessage(allyChatSpyFormat);
                     }
                 }
 
                 // Log to ally's allychat log.
                 for (ObjectId allyId : team.getAllies()) {
-                    Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
+                    Team ally = Foxtrot.getInstance().getTeamHandler().getTeam(allyId);
 
                     if (ally != null) {
                         TeamActionTracker.logAction(ally, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
@@ -137,7 +137,7 @@ public class ChatListener implements Listener {
 
                 // Log to our own allychat log.
                 TeamActionTracker.logAction(team, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
-                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                Foxtrot.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case TEAM:
                 String teamChatFormat = FoxConstants.teamChatFormat(event.getPlayer(), event.getMessage());
@@ -145,17 +145,17 @@ public class ChatListener implements Listener {
 
                 // Loop online players and not recipients just in case you're weird and
                 // /ignore your teammates
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (team.isMember(player.getUniqueId())) {
                         player.sendMessage(teamChatFormat);
-                    } else if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
+                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
                         player.sendMessage(teamChatSpyFormat);
                     }
                 }
 
                 // Log to our teamchat log.
                 TeamActionTracker.logAction(team, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
-                FoxtrotPlugin.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                Foxtrot.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
         }
     }

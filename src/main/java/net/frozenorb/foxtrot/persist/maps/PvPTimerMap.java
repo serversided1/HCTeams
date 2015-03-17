@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 
 import java.util.Date;
@@ -38,7 +38,7 @@ public class PvPTimerMap extends PersistMap<Long> {
     }
 
     public boolean hasTimer(UUID check) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
             return (false);
         }
 
@@ -63,7 +63,7 @@ public class PvPTimerMap extends PersistMap<Long> {
 
     @Override
     public Long getValue(UUID check) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW() || FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return (-1L);
         }
 

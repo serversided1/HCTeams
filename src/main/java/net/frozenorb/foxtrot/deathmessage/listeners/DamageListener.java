@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
@@ -25,7 +25,7 @@ public class DamageListener implements Listener {
             Player player = (Player) event.getEntity();
             CustomPlayerDamageEvent customEvent = new CustomPlayerDamageEvent(event, new UnknownDamage(player.getName(), event.getDamage()));
 
-            FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(customEvent);
+            Foxtrot.getInstance().getServer().getPluginManager().callEvent(customEvent);
             DeathMessageHandler.addDamage(player, customEvent.getTrackerDamage());
         }
     }
@@ -40,11 +40,11 @@ public class DamageListener implements Listener {
             // Hacky NMS to change the player's killer
             if (deathCause instanceof PlayerDamage) {
                 String killerName = ((PlayerDamage) deathCause).getDamager();
-                Player killer = FoxtrotPlugin.getInstance().getServer().getPlayerExact(killerName);
+                Player killer = Foxtrot.getInstance().getServer().getPlayerExact(killerName);
 
                 if (killer != null) {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
-                    FoxtrotPlugin.getInstance().getKillsMap().setKills(killer.getUniqueId(), FoxtrotPlugin.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
+                    Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
                 }
             }
 

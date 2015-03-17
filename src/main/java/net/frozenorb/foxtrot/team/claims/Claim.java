@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import org.bukkit.Location;
@@ -59,7 +59,7 @@ public class Claim implements Iterable<Coordinate> {
 
         dbObject.put("Name", name);
 
-        World world = FoxtrotPlugin.getInstance().getServer().getWorld(getWorld());
+        World world = Foxtrot.getInstance().getServer().getWorld(getWorld());
         dbObject.put("Location1", LocationSerializer.serialize(new Location(world, x1, y1, z1)));
         dbObject.put("Location2", LocationSerializer.serialize(new Location(world, x2, y2, z2)));
 
@@ -107,11 +107,11 @@ public class Claim implements Iterable<Coordinate> {
     }
 
     public Location getMinimumPoint() {
-        return (new Location(FoxtrotPlugin.getInstance().getServer().getWorld(world), Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)));
+        return (new Location(Foxtrot.getInstance().getServer().getWorld(world), Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2)));
     }
 
     public Location getMaximumPoint() {
-        return (new Location(FoxtrotPlugin.getInstance().getServer().getWorld(world), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)));
+        return (new Location(Foxtrot.getInstance().getServer().getWorld(world), Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2)));
     }
 
     public boolean contains(int x, int y, int z, String world) {
@@ -141,7 +141,7 @@ public class Claim implements Iterable<Coordinate> {
     public Set<Player> getPlayers() {
         Set<Player> players = new HashSet<>();
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (contains(player)) {
                 players.add(player);
             }
@@ -220,7 +220,7 @@ public class Claim implements Iterable<Coordinate> {
     }
 
     public Location[] getCornerLocations() {
-        World world = FoxtrotPlugin.getInstance().getServer().getWorld(this.world);
+        World world = Foxtrot.getInstance().getServer().getWorld(this.world);
 
         return new Location[] {
                 new Location(world, x1, y1, z1),

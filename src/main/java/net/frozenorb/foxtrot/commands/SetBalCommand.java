@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -21,7 +21,7 @@ public class SetBalCommand {
             return;
         }
 
-        Player targetPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Player targetPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
         Basic.get().getEconomyManager().setBalance(target, value);
 
         if (sender != targetPlayer) {

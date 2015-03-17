@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
@@ -91,7 +91,7 @@ public class TeamHandler {
     public void recachePlayerTeams() {
         playerTeamMap.clear();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             for (UUID member : team.getMembers()) {
                 setTeam(member, team);
             }

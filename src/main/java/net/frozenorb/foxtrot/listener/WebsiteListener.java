@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.mShared.Shared;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -103,10 +103,10 @@ public class WebsiteListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
+                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
@@ -120,7 +120,7 @@ public class WebsiteListener implements Listener {
             case GLOWING_REDSTONE_ORE:
             case LAPIS_ORE:
             case EMERALD_ORE:
-                event.getBlock().setMetadata("PlacedByPlayer", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                event.getBlock().setMetadata("PlacedByPlayer", new FixedMetadataValue(Foxtrot.getInstance(), true));
                 break;
         }
     }
@@ -133,26 +133,26 @@ public class WebsiteListener implements Listener {
 
         switch (event.getBlock().getType()) {
             case DIAMOND_ORE:
-                FoxtrotPlugin.getInstance().getDiamondMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getDiamondMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case GOLD_ORE:
-                FoxtrotPlugin.getInstance().getGoldMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getGoldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getGoldMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getGoldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case IRON_ORE:
-                FoxtrotPlugin.getInstance().getIronMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getIronMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getIronMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getIronMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case COAL_ORE:
-                FoxtrotPlugin.getInstance().getCoalMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getCoalMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getCoalMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getCoalMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case REDSTONE_ORE:
             case GLOWING_REDSTONE_ORE:
-                FoxtrotPlugin.getInstance().getRedstoneMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getRedstoneMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getRedstoneMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getRedstoneMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case LAPIS_ORE:
-                FoxtrotPlugin.getInstance().getLapisMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getLapisMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getLapisMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getLapisMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case EMERALD_ORE:
-                FoxtrotPlugin.getInstance().getEmeraldMinedMap().setMined(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getEmeraldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getEmeraldMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getEmeraldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
         }
     }

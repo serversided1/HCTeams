@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -28,7 +28,7 @@ public class TeamMuteCommand {
         for (UUID player : target.getMembers()) {
             teamMutes.put(player, target.getName());
 
-            Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(player);
+            Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
             if (bukkitPlayer != null) {
                 bukkitPlayer.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team has been muted for " + TimeUtils.formatIntoMMSS(timeSeconds) + " for " + reason + ".");
@@ -53,7 +53,7 @@ public class TeamMuteCommand {
                 }
             }
 
-        }.runTaskLater(FoxtrotPlugin.getInstance(), timeSeconds * 20L);
+        }.runTaskLater(Foxtrot.getInstance(), timeSeconds * 20L);
 
         sender.sendMessage(ChatColor.YELLOW + "Muted the team " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.formatIntoMMSS(timeSeconds) + " for " + reason + ".");
     }

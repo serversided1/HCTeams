@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -18,8 +18,8 @@ public class KOTHScheduleCommand {
     public static void kothSchedule(Player sender) {
         int sent = 0;
 
-        for (Map.Entry<Integer, String> entry : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
-            KOTH resolved = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH(entry.getValue());
+        for (Map.Entry<Integer, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
+            KOTH resolved = Foxtrot.getInstance().getKOTHHandler().getKOTH(entry.getValue());
 
             if (resolved == null || resolved.isHidden()) {
                 continue;

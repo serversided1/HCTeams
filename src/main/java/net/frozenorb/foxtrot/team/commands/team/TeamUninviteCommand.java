@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -17,7 +17,7 @@ public class TeamUninviteCommand {
 
     @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
     public static void teamUninvite(Player sender, @Parameter(name="all | player") String name) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -47,10 +47,10 @@ public class TeamUninviteCommand {
                                 }
                             }
 
-                        }.runTask(FoxtrotPlugin.getInstance());
+                        }.runTask(Foxtrot.getInstance());
                     }
 
-                }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+                }.runTaskAsynchronously(Foxtrot.getInstance());
             }
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");

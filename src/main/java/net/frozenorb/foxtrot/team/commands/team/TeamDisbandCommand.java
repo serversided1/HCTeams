@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -12,7 +12,7 @@ public class TeamDisbandCommand {
 
     @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permissionNode="")
     public static void teamDisband(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null){
             player.sendMessage(ChatColor.RED + "You are not on a team!");

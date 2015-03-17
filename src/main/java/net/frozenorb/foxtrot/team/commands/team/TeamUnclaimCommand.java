@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -18,7 +18,7 @@ public class TeamUnclaimCommand {
 
     @Command(names={ "team unclaim", "t unclaim", "f unclaim", "faction unclaim", "fac unclaim" }, permissionNode="")
     public static void teamUnclaim(Player sender, @Parameter(name="all?", defaultValue="f") String all) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -61,7 +61,7 @@ public class TeamUnclaimCommand {
             team.setHQ(null);
             team.flagForSave();
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed all of your team's claims. (" + ChatColor.LIGHT_PURPLE + claims + " total" + ChatColor.YELLOW + ")");
                 }
@@ -90,7 +90,7 @@ public class TeamUnclaimCommand {
 
             TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
                 }

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -15,7 +15,7 @@ public class TeamSubclaimAddPlayerCommand {
 
     @Command(names={ "team subclaim addplayer", "t subclaim addplayer", "f subclaim addplayer", "faction subclaim addplayer", "fac subclaim addplayer", "team sub addplayer", "t sub addplayer", "f sub addplayer", "faction sub addplayer", "fac sub addplayer", "team subclaim grant", "t subclaim grant", "f subclaim grant", "faction subclaim grant", "fac subclaim grant", "team sub grant", "t sub grant", "f sub grant", "faction sub grant", "fac sub grant" }, permissionNode="")
     public static void teamSubclaimAddPlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") UUID target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Only the team captains can do this.");

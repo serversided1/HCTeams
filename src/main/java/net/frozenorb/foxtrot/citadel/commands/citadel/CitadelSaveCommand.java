@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.citadel.commands.citadel;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ public class CitadelSaveCommand {
 
     @Command(names={"citadel save"}, permissionNode="op")
     public static void citadelSave(Player sender) {
-        FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
+        Foxtrot.getInstance().getCitadelHandler().saveCitadelInfo();
         sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Saved Citadel info to file.");
     }
 

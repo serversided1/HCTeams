@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.conquest.commands.conquestadmin;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.team.Team;
@@ -13,7 +13,7 @@ public class ConquestAdminSetScoreCommand {
 
     @Command(names={ "conquestadmin setscore" }, permissionNode="op")
     public static void conquestAdminSetScore(Player sender, @Parameter(name="team") Team target, @Parameter(name="score") int score) {
-        ConquestGame game = FoxtrotPlugin.getInstance().getConquestHandler().getGame();
+        ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game == null) {
             sender.sendMessage(ChatColor.RED + "Conquest is not active.");

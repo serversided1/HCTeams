@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.nametag;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.nametag.NametagInfo;
@@ -16,7 +16,7 @@ public class FoxtrotNametagProvider extends NametagProvider {
 
     @Override
     public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(toRefresh);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(toRefresh);
         NametagInfo nametagInfo = createNametag(ChatColor.YELLOW.toString(), "");
 
         if (team != null) {

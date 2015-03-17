@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.deathtracker;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
@@ -36,7 +36,7 @@ public class DeathTracker {
         new BukkitRunnable() {
 
             public void run() {
-                FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("DetailedKills").insert(data);
+                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("DetailedKills").insert(data);
 
                 File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
                 File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
@@ -50,7 +50,7 @@ public class DeathTracker {
                 }
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     public static BasicDBObject generateDeathData(Player player, Player killer) {
@@ -95,7 +95,7 @@ public class DeathTracker {
 
         BasicDBObject teamData = null;
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam != null) {
             teamData = new BasicDBObject();
@@ -165,7 +165,7 @@ public class DeathTracker {
         playerData.put("Team", teamData == null ? "N/A" : teamData);
         playerData.put("PotionEffects", potionEffects);
         playerData.put("Balance", Basic.get().getEconomyManager().getBalance(player.getName()));
-        playerData.put("GoppleCooldown", FoxtrotPlugin.getInstance().getOppleMap().getCooldown(player.getUniqueId()) > System.currentTimeMillis());
+        playerData.put("GoppleCooldown", Foxtrot.getInstance().getOppleMap().getCooldown(player.getUniqueId()) > System.currentTimeMillis());
         playerData.put("PvPClass", PvPClassHandler.getEquippedKits().containsKey(player.getName()) ? PvPClassHandler.getEquippedKits().get(player.getName()).getName() : "N/A");
         playerData.put("HeldItem", player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR ? "N/A" : player.getItemInHand().getType().name());
         playerData.put("Location", locationData);
@@ -179,7 +179,7 @@ public class DeathTracker {
     public static BasicDBObject generateServerData() {
         BasicDBObject serverData = new BasicDBObject();
 
-        serverData.put("Playercount", FoxtrotPlugin.getInstance().getServer().getOnlinePlayers().size());
+        serverData.put("Playercount", Foxtrot.getInstance().getServer().getOnlinePlayers().size());
         serverData.put("TPS", Lag.getTPS());
 
         return (serverData);

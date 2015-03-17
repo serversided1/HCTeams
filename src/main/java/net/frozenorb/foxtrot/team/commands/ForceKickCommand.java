@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -14,7 +14,7 @@ public class ForceKickCommand {
 
     @Command(names={ "forcekick" }, permissionNode="op")
     public static void forceKick(Player sender, @Parameter(name="player") UUID target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(target);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(target);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is not on a team!");
@@ -27,7 +27,7 @@ public class ForceKickCommand {
         }
 
         team.removeMember(target);
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, null);
+        Foxtrot.getInstance().getTeamHandler().setTeam(target, null);
 
         sender.sendMessage(ChatColor.YELLOW + "Force kicked " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(target) + ChatColor.YELLOW + " from their team, " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
     }

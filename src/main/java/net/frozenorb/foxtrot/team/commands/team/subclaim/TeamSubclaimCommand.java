@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team.subclaim;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -60,7 +60,7 @@ public class TeamSubclaimCommand implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (event.getItem() != null && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) && event.getItem().getType() == SELECTION_WAND.getType()) {
             if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().getDisplayName() != null && event.getItem().getItemMeta().getDisplayName().contains("Subclaim")) {

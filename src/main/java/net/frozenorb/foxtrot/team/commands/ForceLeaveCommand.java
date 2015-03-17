@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ public class ForceLeaveCommand {
 
     @Command(names={ "forceleave" }, permissionNode="op")
     public static void forceLeave(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null) {
             player.sendMessage(ChatColor.RED + "You are not on a team!");
@@ -18,7 +18,7 @@ public class ForceLeaveCommand {
         }
 
         team.removeMember(player.getUniqueId());
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(player.getUniqueId(), null);
+        Foxtrot.getInstance().getTeamHandler().setTeam(player.getUniqueId(), null);
         player.sendMessage(ChatColor.YELLOW + "Force left your team.");
     }
 

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -86,9 +86,9 @@ public class EnderpearlListener implements Listener {
 
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null) {
             if (ownerTo.isMember(event.getPlayer().getUniqueId())) {
-                FoxtrotPlugin.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+                Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
             } else if (ownerTo.getOwner() != null) {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Invalid Pearl! " + ChatColor.YELLOW + "You cannot Enderpearl into claims while having a PvP Timer!");

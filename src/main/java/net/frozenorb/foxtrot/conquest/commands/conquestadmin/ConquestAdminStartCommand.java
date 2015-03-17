@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.conquest.commands.conquestadmin;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ public class ConquestAdminStartCommand {
 
     @Command(names={ "conquestadmin start" }, permissionNode="op")
     public static void conquestAdminStart(Player sender) {
-        ConquestGame game = FoxtrotPlugin.getInstance().getConquestHandler().getGame();
+        ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game != null) {
             sender.sendMessage(ChatColor.RED + "Conquest is already active.");

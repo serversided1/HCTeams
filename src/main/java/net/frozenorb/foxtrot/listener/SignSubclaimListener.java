@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import com.google.common.collect.ImmutableSet;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.ChatColor;
@@ -33,7 +33,7 @@ public class SignSubclaimListener implements Listener {
             return;
         }
 
-        Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
         Sign sign = (Sign) event.getBlock().getState();
 
         if (playerTeam == null) {
@@ -98,7 +98,7 @@ public class SignSubclaimListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockBreakChest(BlockBreakEvent event) {
-        if (!(event.getBlock().getState() instanceof Chest) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (!(event.getBlock().getState() instanceof Chest) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -116,7 +116,7 @@ public class SignSubclaimListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockBreakSign(BlockBreakEvent event) {
-        if (!(event.getBlock().getState() instanceof Sign) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (!(event.getBlock().getState() instanceof Sign) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -142,7 +142,7 @@ public class SignSubclaimListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !(event.getClickedBlock().getState() instanceof Chest) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !(event.getClickedBlock().getState() instanceof Chest) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getClickedBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 

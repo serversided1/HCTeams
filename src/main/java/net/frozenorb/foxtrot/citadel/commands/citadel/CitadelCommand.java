@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.citadel.commands.citadel;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.team.Team;
@@ -16,10 +16,10 @@ public class CitadelCommand {
     // Make this pretty.
     @Command(names={ "citadel" }, permissionNode="")
     public static void citadel(Player sender) {
-        Team capper = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(FoxtrotPlugin.getInstance().getCitadelHandler().getCapper());
+        Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
 
         if (capper == null) {
-            KOTH citadel = FoxtrotPlugin.getInstance().getKOTHHandler().getKOTH("Citadel");
+            KOTH citadel = Foxtrot.getInstance().getKOTHHandler().getKOTH("Citadel");
 
             if (citadel != null && citadel.isActive()) {
                 sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel can be captured now.");
@@ -30,7 +30,7 @@ public class CitadelCommand {
             sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + capper.getName() + ChatColor.YELLOW + ".");
         }
 
-        Date lootable = FoxtrotPlugin.getInstance().getCitadelHandler().getLootable();
+        Date lootable = Foxtrot.getInstance().getCitadelHandler().getLootable();
         sender.sendMessage(ChatColor.GOLD + "Citadel: " + ChatColor.WHITE + "Lootable " + (lootable.before(new Date()) ? "now" : "at " + (new SimpleDateFormat()).format(lootable) + (capper == null ? "." : ", and lootable now by " + capper.getName() + ".")));
     }
 

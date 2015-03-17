@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -13,7 +13,7 @@ public class TeamLeaveCommand {
 
     @Command(names={ "team leave", "t leave", "f leave", "faction leave", "fac leave" }, permissionNode="")
     public static void teamLeave(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -32,13 +32,13 @@ public class TeamLeaveCommand {
 
         if (team.removeMember(sender.getUniqueId())) {
             team.disband();
-            FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
+            Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left and disbanded team!");
         } else {
-            FoxtrotPlugin.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
+            Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
             team.flagForSave();
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
                 }

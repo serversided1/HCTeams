@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
@@ -15,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -44,8 +43,8 @@ public class BaseBardClass extends PvPClass {
         new BukkitRunnable() {
 
             public void run() {
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this) || FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    if (!PvPClassHandler.hasKitOn(player, BaseBardClass.this) || Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         continue;
                     }
 
@@ -67,12 +66,12 @@ public class BaseBardClass extends PvPClass {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 15L, 20L);
+        }.runTaskTimer(Foxtrot.getInstance(), 15L, 20L);
     }
 
     @Override
     public void apply(Player player) {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
         }
     }
@@ -93,7 +92,7 @@ public class BaseBardClass extends PvPClass {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
             return;
         }
@@ -152,7 +151,7 @@ public class BaseBardClass extends PvPClass {
 
     public List<Player> getNearbyPlayers(Player player, boolean friendly) {
         List<Player> valid = new ArrayList<>();
-        Team sourceTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team sourceTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         // We divide by 2 so that the range isn't as much on the Y level (and can't be abused by standing on top of / under events)
         for (Entity entity : player.getNearbyEntities(BARD_RANGE, BARD_RANGE / 2, BARD_RANGE)) {

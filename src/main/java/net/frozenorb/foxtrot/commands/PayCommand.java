@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
@@ -17,12 +17,12 @@ public class PayCommand {
     public static void pay(Player sender, @Parameter(name="Target") UUID target, @Parameter(name="Amount") float value) {
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
 
-        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(target)) {
+        if (!Foxtrot.getInstance().getPlaytimeMap().hasPlayed(target)) {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return;
         }
 
-        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
 
         if (sender.equals(bukkitPlayer)) {
             sender.sendMessage(ChatColor.RED + "You cannot send money to yourself!");

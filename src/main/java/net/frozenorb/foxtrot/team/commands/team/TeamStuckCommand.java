@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.Lists;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.util.TimeUtils;
@@ -44,7 +44,7 @@ public class TeamStuckCommand implements Listener {
         warn.add(2);
         warn.add(1);
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new TeamStuckCommand(), FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new TeamStuckCommand(), Foxtrot.getInstance());
     }
 
     private static List<String> warping = Lists.newArrayList();
@@ -101,7 +101,7 @@ public class TeamStuckCommand implements Listener {
                             nearest = nearestSafeLocation(sender.getLocation());
                         }
 
-                    }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+                    }.runTaskAsynchronously(Foxtrot.getInstance());
                 }
 
                 if (seconds <= 0) {
@@ -134,7 +134,7 @@ public class TeamStuckCommand implements Listener {
                 seconds--;
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 20L);
+        }.runTaskTimer(Foxtrot.getInstance(), 0L, 20L);
     }
 
     private static Location nearestSafeLocation(Location origin) {
@@ -183,7 +183,7 @@ public class TeamStuckCommand implements Listener {
     }
 
     private static void kick(Player player){
-        player.setMetadata("loggedout", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+        player.setMetadata("loggedout", new FixedMetadataValue(Foxtrot.getInstance(), true));
         player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
     }
 

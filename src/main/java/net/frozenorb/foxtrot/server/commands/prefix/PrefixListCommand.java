@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.server.commands.prefix;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ public class PrefixListCommand {
 
     @Command(names={ "prefix list" }, permissionNode="op")
     public static void prefixList(Player sender) {
-        for (Map.Entry<String, String> prefixEntry : FoxtrotPlugin.getInstance().getServerHandler().getCustomPrefixes().entrySet()) {
+        for (Map.Entry<String, String> prefixEntry : Foxtrot.getInstance().getServerHandler().getCustomPrefixes().entrySet()) {
             sender.sendMessage(ChatColor.YELLOW + prefixEntry.getKey() + ": " + ChatColor.RESET + prefixEntry.getValue());
         }
     }

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -20,7 +20,7 @@ public class LocationCommand {
             return;
         }
 
-        if (!FoxtrotPlugin.getInstance().getServerHandler().isWarzone(loc)) {
+        if (!Foxtrot.getInstance().getServerHandler().isWarzone(loc)) {
             sender.sendMessage(ChatColor.YELLOW + "You are in " + ChatColor.GRAY + "The Wilderness" + ChatColor.YELLOW + "!");
         } else {
             sender.sendMessage(ChatColor.YELLOW + "You are in the " + ChatColor.RED + "Warzone" + ChatColor.YELLOW + "!");

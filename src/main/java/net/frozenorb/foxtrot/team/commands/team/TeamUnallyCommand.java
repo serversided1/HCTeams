@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -12,7 +12,7 @@ public class TeamUnallyCommand {
 
     @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="")
     public static void teamUnally(Player sender, @Parameter(name="team") Team targetTeam) {
-        Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (senderTeam == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -35,7 +35,7 @@ public class TeamUnallyCommand {
         senderTeam.flagForSave();
         targetTeam.flagForSave();
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (targetTeam.isMember(player.getUniqueId())) {
                 player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has dropped their alliance with your team.");
             } else if (senderTeam.isMember(player.getUniqueId())) {

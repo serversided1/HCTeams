@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -13,7 +13,7 @@ public class RecachePlayerTeamsCommand {
     @Command(names={ "playerteamcache rebuild" }, permissionNode="op")
     public static void recachePlayerTeamsRebuild(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Rebuilding player team cache...");
-        FoxtrotPlugin.getInstance().getTeamHandler().recachePlayerTeams();
+        Foxtrot.getInstance().getTeamHandler().recachePlayerTeams();
         sender.sendMessage(ChatColor.DARK_PURPLE + "The player death cache has been rebuilt.");
     }
 
@@ -23,7 +23,7 @@ public class RecachePlayerTeamsCommand {
         Map<UUID, String> dealtWith = new HashMap<>();
         Set<UUID> errors = new HashSet<>();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             for (UUID member : team.getMembers()) {
                 if (dealtWith.containsKey(member) && !errors.contains(member)) {
                     errors.add(member);

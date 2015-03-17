@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.subclaim;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.qlib.command.ParameterType;
@@ -22,7 +22,7 @@ public class SubclaimType implements ParameterType<Subclaim> {
         }
 
         Player player = (Player) sender;
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");
@@ -52,7 +52,7 @@ public class SubclaimType implements ParameterType<Subclaim> {
 
     public List<String> tabComplete(Player sender, Set<String> flags, String source) {
         List<String> completions = new ArrayList<>();
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             return (completions);

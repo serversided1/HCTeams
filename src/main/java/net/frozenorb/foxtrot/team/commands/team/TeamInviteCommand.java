@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -16,7 +16,7 @@ public class TeamInviteCommand {
 
     @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
     public static void teamInvite(Player sender, @Parameter(name="player") UUID target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -52,14 +52,14 @@ public class TeamInviteCommand {
         team.getInvitations().add(target);
         team.flagForSave();
 
-        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null) {
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getName() + ChatColor.DARK_AQUA + "'.");
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/team join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(target) + " has been invited to the team!");
             }

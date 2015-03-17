@@ -28,19 +28,13 @@ import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Iterator;
+public class Foxtrot extends JavaPlugin {
 
-public class FoxtrotPlugin extends JavaPlugin {
-
-    @Getter private static FoxtrotPlugin instance;
+    @Getter private static Foxtrot instance;
 
     @Getter private MongoClient mongoPool;
 
@@ -106,7 +100,7 @@ public class FoxtrotPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerQuit(player.getUniqueId(), false);
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));
         }
@@ -116,7 +110,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         }
 
         RedisSaveTask.save(false);
-        FoxtrotPlugin.getInstance().getServerHandler().save();
+        Foxtrot.getInstance().getServerHandler().save();
     }
 
     private void setupHandlers() {

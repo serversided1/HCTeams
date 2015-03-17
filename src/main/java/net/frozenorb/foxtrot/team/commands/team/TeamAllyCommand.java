@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -12,7 +12,7 @@ public class TeamAllyCommand {
 
     @Command(names={ "team ally", "t ally", "f ally", "faction ally", "fac ally" }, permissionNode="")
     public static void teamAlly(Player sender, @Parameter(name="team") Team targetTeam) {
-        Team senderTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (senderTeam == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -53,7 +53,7 @@ public class TeamAllyCommand {
             targetTeam.flagForSave();
             senderTeam.flagForSave();
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player.getUniqueId())) {
                     player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + Team.ALLY_COLOR + targetTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
                 } else if (senderTeam.isMember(player.getUniqueId())) {
@@ -74,7 +74,7 @@ public class TeamAllyCommand {
             targetTeam.getRequestedAllies().add(senderTeam.getUniqueId());
             targetTeam.flagForSave();
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (targetTeam.isMember(player.getUniqueId())) {
                     player.sendMessage(senderTeam.getName(player.getPlayer()) + ChatColor.YELLOW + " has requested to be your ally. Type " + Team.ALLY_COLOR + "/team ally " + senderTeam.getName() + ChatColor.YELLOW + " to accept.");
                 } else if (senderTeam.isMember(player.getUniqueId())) {

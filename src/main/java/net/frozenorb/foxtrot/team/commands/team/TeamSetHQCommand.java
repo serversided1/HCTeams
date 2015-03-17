@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -12,7 +12,7 @@ public class TeamSetHQCommand {
 
     @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome", "sethq" }, permissionNode="")
     public static void teamSetHQ(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -31,7 +31,7 @@ public class TeamSetHQCommand {
 
             team.setHQ(sender.getLocation());
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
                 }

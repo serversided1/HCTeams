@@ -5,7 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
 import net.frozenorb.foxtrot.citadel.listeners.CitadelListener;
 import net.frozenorb.foxtrot.citadel.tasks.CitadelSaveTask;
@@ -41,9 +41,9 @@ public class CitadelHandler {
 
     public CitadelHandler() {
         loadCitadelInfo();
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), Foxtrot.getInstance());
 
-        (new CitadelSaveTask()).runTaskTimerAsynchronously(FoxtrotPlugin.getInstance(), 0L, 20 * 60 * 5);
+        (new CitadelSaveTask()).runTaskTimerAsynchronously(Foxtrot.getInstance(), 0L, 20 * 60 * 5);
     }
 
     public void loadCitadelInfo() {
@@ -119,12 +119,12 @@ public class CitadelHandler {
         this.capper = capper;
         this.lootable = generateLootableDate();
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper));
+        Foxtrot.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper));
         saveCitadelInfo();
     }
 
     public boolean canLootCitadel(Player player) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
         return ((team != null && team.getUniqueId().equals(capper)) || System.currentTimeMillis() > lootable.getTime());
     }
 
@@ -150,7 +150,7 @@ public class CitadelHandler {
     public void scanLoot() {
         citadelChests.clear();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             if (team.getOwner() != null) {
                 continue;
             }
@@ -180,7 +180,7 @@ public class CitadelHandler {
             chest.getBlockInventory().clear();
             chest.getBlockInventory().addItem(citadelLoot.get(qLib.RANDOM.nextInt(citadelLoot.size())));
         } else {
-            FoxtrotPlugin.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
+            Foxtrot.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
         }
     }
 

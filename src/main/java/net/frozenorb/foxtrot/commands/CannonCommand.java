@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -24,7 +24,7 @@ public class CannonCommand {
 
     @Command(names={ "cannon launch", "spawncannon launch" }, permissionNode="")
     public static void cannonLaunch(Player sender) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+        if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
             sender.sendMessage(ChatColor.RED + "Spawn cannon disabled: Server is in EOTW mode.");
             return;
         }
@@ -50,7 +50,7 @@ public class CannonCommand {
 
     @Command(names={ "cannon aim", "spawncannon aim" }, permissionNode="foxtrot.spawncannon.aim")
     public static void cannonAim(Player sender, @Parameter(name="x") int x, @Parameter(name="z") int z) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isEOTW()) {
+        if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
             sender.sendMessage(ChatColor.RED + "Spawn cannon disabled: Server is in EOTW mode.");
             return;
         }
@@ -108,7 +108,7 @@ public class CannonCommand {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
+        }.runTaskTimer(Foxtrot.getInstance(), 1L, 1L);
     }
 
     public static int getMaxCannonDistance(Player player) {

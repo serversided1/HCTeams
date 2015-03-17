@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.packetborder;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
@@ -52,12 +52,12 @@ public class PacketBorder {
                 } else if (team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && SpawnTagHandler.isTagged(player)) {
                     // If the team is a SAFE_ZONE (IE spawn), they're not inside of it, and they're spawn tagged
                     addClaim(claim);
-                } else if ((team.hasDTRBitmask(DTRBitmask.KOTH) || team.hasDTRBitmask(DTRBitmask.CITADEL)) && FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                } else if ((team.hasDTRBitmask(DTRBitmask.KOTH) || team.hasDTRBitmask(DTRBitmask.CITADEL)) && Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                     // If it's an event zone (KOTH or Citadel) and they have a PvP Timer
                     addClaim(claim);
                 }
             } else {
-                if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                     // If it's an actual claim and the player has a PvP Timer
                     addClaim(claim);
                 }

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,7 +18,7 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        long cooldownUntil = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId());
+        long cooldownUntil = Foxtrot.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId());
 
         if (cooldownUntil > System.currentTimeMillis()) {
             long millisLeft = cooldownUntil - System.currentTimeMillis();
@@ -29,8 +29,8 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        FoxtrotPlugin.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getUniqueId(), FoxtrotPlugin.getInstance().getMapHandler().isKitMap() ? TimeUnit.MINUTES.toSeconds(5) : FoxtrotPlugin.getInstance().getMapHandler().getGoppleCooldown());
-        long millisLeft = FoxtrotPlugin.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId()) - System.currentTimeMillis();
+        Foxtrot.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getMapHandler().isKitMap() ? TimeUnit.MINUTES.toSeconds(5) : Foxtrot.getInstance().getMapHandler().getGoppleCooldown());
+        long millisLeft = Foxtrot.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId()) - System.currentTimeMillis();
 
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "██" + ChatColor.DARK_GREEN + "███");
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "█" + ChatColor.DARK_GREEN + "████");

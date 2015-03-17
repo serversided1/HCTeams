@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.commands;
 
 import com.google.common.io.Files;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -23,7 +23,7 @@ public class ReviveCommand {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getDeathbanMap().isDeathbanned(target)) {
+        if (Foxtrot.getInstance().getDeathbanMap().isDeathbanned(target)) {
             File logTo = new File(new File("foxlogs"), "adminrevives.log");
 
             try {
@@ -33,7 +33,7 @@ public class ReviveCommand {
                 e.printStackTrace();
             }
 
-            FoxtrotPlugin.getInstance().getDeathbanMap().revive(target);
+            Foxtrot.getInstance().getDeathbanMap().revive(target);
             sender.sendMessage(ChatColor.GREEN + "Revived " + UUIDUtils.name(target) + "!");
         } else {
             sender.sendMessage(ChatColor.RED + "That player is not deathbanned!");

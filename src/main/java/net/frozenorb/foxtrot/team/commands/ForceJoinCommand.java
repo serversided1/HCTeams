@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -11,7 +11,7 @@ public class ForceJoinCommand {
 
     @Command(names={ "ForceJoin" }, permissionNode="foxtrot.forcejoin")
     public static void forceJoin(Player sender, @Parameter(name="Team") Team team,  @Parameter(name="Target", defaultValue="self") Player target) {
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(target) != null) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(target) != null) {
             if (target == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");
             } else {
@@ -22,7 +22,7 @@ public class ForceJoinCommand {
         }
 
         team.addMember(target.getUniqueId());
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target.getUniqueId(), team);
+        Foxtrot.getInstance().getTeamHandler().setTeam(target.getUniqueId(), team);
         target.sendMessage(ChatColor.YELLOW + "You are now a member of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
 
         if (target != sender) {

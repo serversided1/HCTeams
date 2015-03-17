@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.*;
@@ -34,7 +34,7 @@ public class EndListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof EnderDragon) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
+            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
             String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
             if (team != null) {
@@ -42,17 +42,17 @@ public class EndListener implements Listener {
             }
 
             for (int i = 0; i < 6; i++) {
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage("");
+                Foxtrot.getInstance().getServer().broadcastMessage("");
             }
 
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.GOLD + " [Enderdragon]");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.YELLOW + " killed by");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.BLACK + "██" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + " " + teamName);
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + " " + event.getEntity().getKiller().getDisplayName());
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.GOLD + " [Enderdragon]");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + ChatColor.YELLOW + " killed by");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.BLACK + "██" + ChatColor.LIGHT_PURPLE + "█" + ChatColor.DARK_PURPLE + "█" + ChatColor.LIGHT_PURPLE + "█" + " " + teamName);
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████" + " " + event.getEntity().getKiller().getDisplayName());
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.BLACK + "████████");
 
             ItemStack dragonEgg = new ItemStack(Material.DRAGON_EGG);
             ItemMeta itemMeta = dragonEgg.getItemMeta();
@@ -178,7 +178,7 @@ public class EndListener implements Listener {
             event.setTo(new Location(event.getTo().getWorld(), 0.6, 64, 125.5));
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {

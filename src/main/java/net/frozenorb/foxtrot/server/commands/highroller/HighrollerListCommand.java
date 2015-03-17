@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ public class HighrollerListCommand {
     public static void highrollerList(Player sender) {
         StringBuilder highRollers = new StringBuilder();
 
-        for (String highRoller : FoxtrotPlugin.getInstance().getServerHandler().getHighRollers()) {
+        for (String highRoller : Foxtrot.getInstance().getServerHandler().getHighRollers()) {
             highRollers.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
         }
 

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -28,7 +28,7 @@ public abstract class PvPClass implements Listener {
         this.consumables = consumables;
 
         // Reduce warmup on kit maps
-        if (FoxtrotPlugin.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             this.warmup = 5;
         }
     }
@@ -105,7 +105,7 @@ public abstract class PvPClass implements Listener {
                         player.addPotionEffect(activePotionEffect);
                     }
 
-                }.runTaskLater(FoxtrotPlugin.getInstance(), potionEffect.getDuration() + 1);
+                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);
             }
         }
 

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,7 +11,7 @@ public class SetSpawnCommand {
 
     @Command(names={ "SetSpawn" }, permissionNode="op")
     public static void setSpawn(Player sender) {
-        ConversationFactory factory = new ConversationFactory(FoxtrotPlugin.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
+        ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
             public String getPromptText(ConversationContext context) {
                 return "§aAre you sure you want to set spawn here? Type §byes§a to confirm or §cno§a to quit.";

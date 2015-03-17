@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.qlib.command.Command;
@@ -11,7 +11,7 @@ public class TeamSubclaimListCommand {
 
     @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list", "team sub list", "t sub list", "f sub list", "faction sub list", "fac sub list" }, permissionNode="")
     public static void teamSubclaimList(Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");

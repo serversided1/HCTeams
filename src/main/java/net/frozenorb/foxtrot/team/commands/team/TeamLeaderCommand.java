@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -15,7 +15,7 @@ public class TeamLeaderCommand {
 
     @Command(names={ "team newleader", "t newleader", "f newleader", "faction newleader", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" }, permissionNode="")
     public static void teamLeader(Player sender, @Parameter(name="player") UUID target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -32,7 +32,7 @@ public class TeamLeaderCommand {
             return;
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been given ownership of " + team.getName() + ".");
             }

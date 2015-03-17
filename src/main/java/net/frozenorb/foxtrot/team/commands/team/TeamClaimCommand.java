@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
@@ -47,7 +47,7 @@ public class TeamClaimCommand implements Listener {
 
     @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permissionNode="")
     public static void teamClaim(final Player sender) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -68,7 +68,7 @@ public class TeamClaimCommand implements Listener {
                     sender.getInventory().addItem(SELECTION_WAND.clone());
                 }
 
-            }.runTaskLater(FoxtrotPlugin.getInstance(), 1L);
+            }.runTaskLater(Foxtrot.getInstance(), 1L);
 
             new VisualClaim(sender, VisualClaimType.CREATE, false).draw(false);
 

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
@@ -30,7 +30,7 @@ public class MapListener implements Listener {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 1L, 1L);
+        }.runTaskTimer(Foxtrot.getInstance(), 1L, 1L);
     }
 
     @EventHandler
@@ -40,7 +40,7 @@ public class MapListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        double multiplier = FoxtrotPlugin.getInstance().getMapHandler().getBaseLootingMultiplier();
+        double multiplier = Foxtrot.getInstance().getMapHandler().getBaseLootingMultiplier();
 
         if (event.getEntity().getKiller() != null) {
             Player player = event.getEntity().getKiller();
@@ -48,13 +48,13 @@ public class MapListener implements Listener {
             if (player.getItemInHand() != null && player.getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)) {
                 switch (player.getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)) {
                     case 1:
-                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel1LootingMultiplier();
+                        multiplier = Foxtrot.getInstance().getMapHandler().getLevel1LootingMultiplier();
                         break;
                     case 2:
-                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel2LootingMultiplier();
+                        multiplier = Foxtrot.getInstance().getMapHandler().getLevel2LootingMultiplier();
                         break;
                     case 3:
-                        multiplier = FoxtrotPlugin.getInstance().getMapHandler().getLevel3LootingMultiplier();
+                        multiplier = Foxtrot.getInstance().getMapHandler().getLevel3LootingMultiplier();
                         break;
                     default:
                         break;

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -24,7 +24,7 @@ public class TeamCreateCommand {
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Parameter(name="team") String name) {
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender) != null) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(sender) != null) {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
             return;
         }
@@ -39,7 +39,7 @@ public class TeamCreateCommand {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) != null) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(name) != null) {
             sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             return;
         }
@@ -73,8 +73,8 @@ public class TeamCreateCommand {
         timings3.stopTiming();
         timings4.startTiming();
 
-        FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(team);
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + team.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+        Foxtrot.getInstance().getTeamHandler().setupTeam(team);
+        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + team.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
 
         timings4.stopTiming();
     }

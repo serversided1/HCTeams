@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.scoreboard;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
@@ -17,7 +17,7 @@ public class FoxtrotScoreboardConfiguration {
     public static ScoreboardConfiguration create() {
         ScoreboardConfiguration configuration = new ScoreboardConfiguration();
 
-        configuration.setTitle(FoxtrotPlugin.getInstance().getMapHandler().getScoreboardTitle());
+        configuration.setTitle(Foxtrot.getInstance().getMapHandler().getScoreboardTitle());
         configuration.setScores(new ScoreGetter[] {
 
                 new ScoreGetter(ChatColor.RED.toString() + ChatColor.BOLD + "Spawn Tag") {
@@ -58,8 +58,8 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
-                            float diff = FoxtrotPlugin.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) - System.currentTimeMillis();
+                        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                            float diff = Foxtrot.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) - System.currentTimeMillis();
 
                             if (diff >= 0) {
                                 return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
@@ -82,7 +82,7 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+                        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
                             if (koth.isHidden() || !koth.isActive()) {
                                 continue;
                             }

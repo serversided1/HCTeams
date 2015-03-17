@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.koth;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.events.*;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,19 +36,19 @@ public class KOTH {
         this.capTime = 60 * 15;
         this.level = 2;
 
-        FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs().add(this);
-        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+        Foxtrot.getInstance().getKOTHHandler().getKOTHs().add(this);
+        Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setLocation(Location location) {
         this.capLocation = location.toVector().toBlockVector();
         this.world = location.getWorld().getName();
-        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+        Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setCapDistance(int capDistance) {
         this.capDistance = capDistance;
-        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+        Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setCapTime(int capTime) {
@@ -58,12 +58,12 @@ public class KOTH {
             this.capTime = capTime;
         }
 
-        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+        Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
-        FoxtrotPlugin.getInstance().getKOTHHandler().saveKOTHs();
+        Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
     }
 
     public boolean activate() {
@@ -71,7 +71,7 @@ public class KOTH {
             return (false);
         }
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHActivatedEvent(this));
+        Foxtrot.getInstance().getServer().getPluginManager().callEvent(new KOTHActivatedEvent(this));
 
         this.active = true;
         this.currentCapper = null;
@@ -86,7 +86,7 @@ public class KOTH {
             return (false);
         }
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHDeactivatedEvent(this));
+        Foxtrot.getInstance().getServer().getPluginManager().callEvent(new KOTHDeactivatedEvent(this));
 
         this.active = false;
         this.currentCapper = null;
@@ -106,7 +106,7 @@ public class KOTH {
     }
 
     public boolean finishCapping() {
-        Player capper = FoxtrotPlugin.getInstance().getServer().getPlayerExact(currentCapper);
+        Player capper = Foxtrot.getInstance().getServer().getPlayerExact(currentCapper);
 
         if (capper == null) {
             resetCapTime();
@@ -114,7 +114,7 @@ public class KOTH {
         }
 
         KOTHCapturedEvent event = new KOTHCapturedEvent(this, capper);
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(event);
+        Foxtrot.getInstance().getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             resetCapTime();
@@ -126,7 +126,7 @@ public class KOTH {
     }
 
     public void resetCapTime() {
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlLostEvent(this));
+        Foxtrot.getInstance().getServer().getPluginManager().callEvent(new KOTHControlLostEvent(this));
 
         this.currentCapper = null;
         this.remainingCapTime = capTime;
@@ -134,7 +134,7 @@ public class KOTH {
 
     protected void tick() {
         if (currentCapper != null) {
-            Player capper = FoxtrotPlugin.getInstance().getServer().getPlayerExact(currentCapper);
+            Player capper = Foxtrot.getInstance().getServer().getPlayerExact(currentCapper);
 
             if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL) {
                 resetCapTime();
@@ -146,7 +146,7 @@ public class KOTH {
                 if (remainingCapTime <= 0) {
                     finishCapping();
                 } else {
-                    FoxtrotPlugin.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
+                    Foxtrot.getInstance().getServer().getPluginManager().callEvent(new KOTHControlTickEvent(this));
                 }
 
                 this.remainingCapTime--;
@@ -154,7 +154,7 @@ public class KOTH {
         } else {
             List<Player> onCap = new ArrayList<>();
 
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
                     onCap.add(player);
                 }

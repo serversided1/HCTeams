@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.packetborder;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.entity.Player;
 
 public class PacketBorderThread extends Thread {
@@ -12,7 +12,7 @@ public class PacketBorderThread extends Thread {
     public void run() {
         //noinspection InfiniteLoopStatement
         while (true) {
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 try {
                     checkPlayer(player);
                 } catch (Exception e) {

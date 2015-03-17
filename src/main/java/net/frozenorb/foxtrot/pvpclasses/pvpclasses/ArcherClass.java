@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
@@ -119,7 +119,7 @@ public class ArcherClass extends PvPClass {
                         FrozenNametagHandler.reloadPlayer(player);
                     }
 
-                }.runTaskLater(FoxtrotPlugin.getInstance(), (MARK_SECONDS * 20) + 5);
+                }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
             } else {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + (damage == 2 ? "" : "s") + ")");
             }
@@ -140,7 +140,7 @@ public class ArcherClass extends PvPClass {
 
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
-        event.getProjectile().setMetadata("Pullback", new FixedMetadataValue(FoxtrotPlugin.getInstance(), event.getForce()));
+        event.getProjectile().setMetadata("Pullback", new FixedMetadataValue(Foxtrot.getInstance(), event.getForce()));
     }
 
     @Override

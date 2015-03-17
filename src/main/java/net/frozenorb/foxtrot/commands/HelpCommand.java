@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
@@ -20,7 +20,7 @@ public class HelpCommand {
                 "§9§lHCTeams Help §7- §eInformation on HCTeams",
                 "§7§m-----------------------------------------------------",
                 "§9Map Information:",
-                "§eCurrent Map: §7" + FoxtrotPlugin.getInstance().getMapHandler().getMapStartedString(),
+                "§eCurrent Map: §7" + Foxtrot.getInstance().getMapHandler().getMapStartedString(),
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + sharp + ", " + prot,

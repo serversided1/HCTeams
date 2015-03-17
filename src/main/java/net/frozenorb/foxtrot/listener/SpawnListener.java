@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -27,7 +27,7 @@ public class  SpawnListener implements Listener {
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockIgnite(BlockIgniteEvent event) {
         if (event.getPlayer() != null) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
                 return;
             }
         }
@@ -39,14 +39,14 @@ public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
         if (DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
-        } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
+        } else if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build this close to spawn!");
         }
@@ -54,14 +54,14 @@ public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
         if (DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
-        } else if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || FoxtrotPlugin.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
+        } else if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
             event.setCancelled(true);
 
             if (event.getBlock().getType() != Material.LONG_GRASS && event.getBlock().getType() != Material.GRASS) {
@@ -72,7 +72,7 @@ public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onHangingPlace(HangingPlaceEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -83,7 +83,7 @@ public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-        if (!(event.getRemover() instanceof Player) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getRemover())) {
+        if (!(event.getRemover() instanceof Player) || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getRemover())) {
             return;
         }
 
@@ -94,7 +94,7 @@ public class  SpawnListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -106,7 +106,7 @@ public class  SpawnListener implements Listener {
     // Used for item frames
     @EventHandler(priority=EventPriority.HIGH)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
             return;
         }
 
@@ -117,11 +117,11 @@ public class  SpawnListener implements Listener {
 
     @EventHandler
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isSpawnBufferZone(event.getBlockClicked().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlockClicked().getLocation())) {
             event.setCancelled(true);
             event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
             event.setItemStack(new ItemStack(event.getBucket()));

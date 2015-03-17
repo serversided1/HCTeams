@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.persist;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,7 +55,7 @@ public abstract class PersistMap<T> {
         qLib.getInstance().runRedisCommand(redis -> {
             redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-            DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
             playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
 
             return (null);
@@ -71,14 +71,14 @@ public abstract class PersistMap<T> {
                 qLib.getInstance().runRedisCommand(redis -> {
                     redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-                    DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+                    DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
                     playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
 
                     return (null);
                 });
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     protected T getValue(UUID key) {

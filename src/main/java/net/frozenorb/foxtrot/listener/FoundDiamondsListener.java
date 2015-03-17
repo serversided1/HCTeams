@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,7 +16,7 @@ public class FoundDiamondsListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (!event.isCancelled() && event.getBlock().getType() == Material.DIAMOND_ORE) {
-            event.getBlock().setMetadata("DiamondPlaced", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+            event.getBlock().setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
         }
     }
 
@@ -32,13 +32,13 @@ public class FoundDiamondsListener implements Listener {
 
                         if (block.getType() == Material.DIAMOND_ORE && !block.hasMetadata("DiamondPlaced")) {
                             diamonds++;
-                            block.setMetadata("DiamondPlaced", new FixedMetadataValue(FoxtrotPlugin.getInstance(), true));
+                            block.setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
                         }
                     }
                 }
             }
 
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage("[FD] " + ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
+            Foxtrot.getInstance().getServer().broadcastMessage("[FD] " + ChatColor.AQUA + event.getPlayer().getName() + " found " + diamonds + " diamond" + (diamonds == 1 ? "" : "s") + ".");
         }
     }
 

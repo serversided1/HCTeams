@@ -1,12 +1,12 @@
 package net.frozenorb.foxtrot.citadel.tasks;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class CitadelSaveTask extends BukkitRunnable {
 
     public void run() {
-        FoxtrotPlugin.getInstance().getCitadelHandler().saveCitadelInfo();
+        Foxtrot.getInstance().getCitadelHandler().saveCitadelInfo();
     }
 
 }

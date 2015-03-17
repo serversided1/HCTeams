@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.ParameterType;
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +16,7 @@ public class TeamType implements ParameterType<Team> {
 
     public Team transform(CommandSender sender, String source) {
         if (sender instanceof Player && (source.equalsIgnoreCase("self") || source.equals(""))) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(((Player) sender).getUniqueId());
+            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(((Player) sender).getUniqueId());
 
             if (team == null) {
                 sender.sendMessage(ChatColor.GRAY + "You're not on a team!");
@@ -26,13 +26,13 @@ public class TeamType implements ParameterType<Team> {
             return (team);
         }
 
-        Team byName = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(source);
+        Team byName = Foxtrot.getInstance().getTeamHandler().getTeam(source);
 
         if (byName != null) {
             return (byName);
         }
 
-        Team byMember = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(source));
+        Team byMember = Foxtrot.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(source));
 
         if (byMember != null) {
             return (byMember);
@@ -47,7 +47,7 @@ public class TeamType implements ParameterType<Team> {
 
         // Teams being included in the completion is ENABLED by default.
         if (!flags.contains("noteams")) {
-            for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+            for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
                 if (StringUtils.startsWithIgnoreCase(team.getName(), source)) {
                     completions.add(team.getName());
                 }
@@ -56,7 +56,7 @@ public class TeamType implements ParameterType<Team> {
 
         // Players being included in the completion is DISABLED by default.
         if (flags.contains("players")) {
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (StringUtils.startsWithIgnoreCase(player.getName(), source)) {
                     completions.add(player.getName());
                 }

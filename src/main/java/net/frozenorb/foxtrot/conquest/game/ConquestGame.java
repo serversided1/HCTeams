@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.conquest.game;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.conquest.enums.ConquestCapzone;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -27,9 +27,9 @@ public class ConquestGame implements Listener {
     @Getter private Map<ObjectId, Integer> teamPoints = new HashMap<>();
 
     public ConquestGame() {
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(this, Foxtrot.getInstance());
 
-        for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
                 if (!koth.isHidden()) {
                     koth.setHidden(true);
@@ -43,13 +43,13 @@ public class ConquestGame implements Listener {
             }
         }
 
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has started! Use /conquest for more information.");
-        FoxtrotPlugin.getInstance().getConquestHandler().setGame(this);
+        Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has started! Use /conquest for more information.");
+        Foxtrot.getInstance().getConquestHandler().setGame(this);
     }
 
     public void endGame(final Team winner) {
         if (winner == null) {
-            FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has ended.");
+            Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has ended.");
         } else {
             new BukkitRunnable() {
 
@@ -61,14 +61,14 @@ public class ConquestGame implements Listener {
                         return;
                     }
 
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
+                    Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
                 }
 
-            }.runTaskTimer(FoxtrotPlugin.getInstance(), 0L, 120L);
+            }.runTaskTimer(Foxtrot.getInstance(), 0L, 120L);
         }
 
         HandlerList.unregisterAll(this);
-        FoxtrotPlugin.getInstance().getConquestHandler().setGame(null);
+        Foxtrot.getInstance().getConquestHandler().setGame(null);
     }
 
     @EventHandler
@@ -77,7 +77,7 @@ public class ConquestGame implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
         ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
 
         if (team == null) {
@@ -90,7 +90,7 @@ public class ConquestGame implements Listener {
             teamPoints.put(team.getUniqueId(), 1);
         }
 
-        FoxtrotPlugin.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + team.getName() + ChatColor.GOLD + " captured " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + " and earned a point!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
+        Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + team.getName() + ChatColor.GOLD + " captured " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + " and earned a point!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
 
         if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.POINTS_TO_WIN) {
             endGame(team);
@@ -98,12 +98,12 @@ public class ConquestGame implements Listener {
             new BukkitRunnable() {
 
                 public void run() {
-                    if (FoxtrotPlugin.getInstance().getConquestHandler().getGame() != null) {
+                    if (Foxtrot.getInstance().getConquestHandler().getGame() != null) {
                         event.getKOTH().activate();
                     }
                 }
 
-            }.runTaskLater(FoxtrotPlugin.getInstance(), 10L);
+            }.runTaskLater(Foxtrot.getInstance(), 10L);
         }
     }
 
@@ -113,14 +113,14 @@ public class ConquestGame implements Listener {
             return;
         }
 
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(event.getKOTH().getCurrentCapper()));
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(event.getKOTH().getCurrentCapper()));
         ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
 
         if (team == null) {
             return;
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " " + event.getKOTH().getCurrentCapper() + " was knocked off of " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!");
             }
@@ -133,7 +133,7 @@ public class ConquestGame implements Listener {
         }
 
         ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
-        Player capper = FoxtrotPlugin.getInstance().getServer().getPlayerExact(event.getKOTH().getCurrentCapper());
+        Player capper = Foxtrot.getInstance().getServer().getPlayerExact(event.getKOTH().getCurrentCapper());
 
         if (capper != null) {
             capper.sendMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Attempting to capture " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!" + ChatColor.AQUA + " (" + event.getKOTH().getRemainingCapTime() + "s)");
@@ -143,7 +143,7 @@ public class ConquestGame implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getEntity());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity());
 
         if (team == null || !teamPoints.containsKey(team.getUniqueId())) {
             return;
@@ -151,7 +151,7 @@ public class ConquestGame implements Listener {
 
         teamPoints.put(team.getUniqueId(), Math.max(0, teamPoints.get(team.getUniqueId()) - ConquestHandler.POINTS_DEATH_PENALTY));
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
             }

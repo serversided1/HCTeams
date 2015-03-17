@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ public class KOTHCommand {
     // Make this pretty.
     @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
     public static void kothSchedule(Player sender) {
-        for (KOTH koth : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHs()) {
+        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isHidden()) {
                 continue;
             }
@@ -30,7 +30,7 @@ public class KOTHCommand {
         Calendar date = Calendar.getInstance();
         int hour = date.get(Calendar.HOUR_OF_DAY);
 
-        for (Map.Entry<Integer, String> entry : FoxtrotPlugin.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
+        for (Map.Entry<Integer, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
             if (entry.getKey() > hour) {
                 Calendar activationTime = Calendar.getInstance();
 

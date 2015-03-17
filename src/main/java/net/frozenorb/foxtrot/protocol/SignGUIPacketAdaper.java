@@ -3,13 +3,13 @@ package net.frozenorb.foxtrot.protocol;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.Location;
 
 public class SignGUIPacketAdaper extends PacketAdapter {
 
     public SignGUIPacketAdaper() {
-        super(FoxtrotPlugin.getInstance(), PacketType.Play.Server.OPEN_SIGN_ENTITY);
+        super(Foxtrot.getInstance(), PacketType.Play.Server.OPEN_SIGN_ENTITY);
     }
 
     @Override

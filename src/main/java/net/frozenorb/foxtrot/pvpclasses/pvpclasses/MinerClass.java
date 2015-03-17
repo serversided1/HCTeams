@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import org.bukkit.ChatColor;
@@ -33,7 +33,7 @@ public class MinerClass extends PvPClass implements Listener {
             public void run() {
                 for (String key : new HashMap<>(noDamage).keySet()) {
                     int left = noDamage.remove(key);
-                    Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(key);
+                    Player player = Foxtrot.getInstance().getServer().getPlayerExact(key);
 
                     if (player == null) {
                         continue;
@@ -51,7 +51,7 @@ public class MinerClass extends PvPClass implements Listener {
 
                 //Manage invisibility
                 for (String key : invis.keySet()){
-                    Player player = FoxtrotPlugin.getInstance().getServer().getPlayerExact(key);
+                    Player player = Foxtrot.getInstance().getServer().getPlayerExact(key);
 
                     if (player != null) {
                         int secs = invis.get(player.getName());
@@ -70,7 +70,7 @@ public class MinerClass extends PvPClass implements Listener {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 20L, 20L);
+        }.runTaskTimer(Foxtrot.getInstance(), 20L, 20L);
     }
 
     @Override

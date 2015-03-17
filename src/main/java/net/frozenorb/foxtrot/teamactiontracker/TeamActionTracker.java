@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.teamactiontracker;
 
 import com.google.common.io.Files;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +20,7 @@ public class TeamActionTracker {
                 logAction(team, actionType, message);
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     public static void logAction(Team team, TeamActionType actionType, String message) {

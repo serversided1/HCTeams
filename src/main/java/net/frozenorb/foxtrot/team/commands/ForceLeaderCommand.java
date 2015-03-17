@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -14,7 +14,7 @@ public class ForceLeaderCommand {
 
     @Command(names={ "ForceLeader" }, permissionNode="foxtrot.forceleader")
     public static void forceLeader(Player sender, @Parameter(name="Team") Team team,  @Parameter(name="Target") UUID target) {
-        if (!FoxtrotPlugin.getInstance().getPlaytimeMap().hasPlayed(target)) {
+        if (!Foxtrot.getInstance().getPlaytimeMap().hasPlayed(target)) {
             sender.sendMessage(ChatColor.RED + "That player has never played here!");
             return;
         }

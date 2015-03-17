@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -26,7 +26,7 @@ public class PvPTimerListener implements Listener {
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
             if (droppedItems.contains(event.getItem().getEntityId())) {
                 event.setCancelled(true);
             }
@@ -51,7 +51,7 @@ public class PvPTimerListener implements Listener {
 
             droppedItems.add(id);
 
-            FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskLater(FoxtrotPlugin.getInstance(), () -> droppedItems.remove(id), 20L * 60);
+            Foxtrot.getInstance().getServer().getScheduler().runTaskLater(Foxtrot.getInstance(), () -> droppedItems.remove(id), 20L * 60);
         }
     }
 
@@ -77,7 +77,7 @@ public class PvPTimerListener implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                 event.setCancelled(true);
@@ -107,14 +107,14 @@ public class PvPTimerListener implements Listener {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             damager.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             event.setCancelled(true);
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
             event.setCancelled(true);
         }

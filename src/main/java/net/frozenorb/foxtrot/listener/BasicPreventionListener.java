@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;
@@ -79,7 +79,7 @@ public class BasicPreventionListener implements Listener {
 
         if (event.getFoodLevel() < ((Player) event.getEntity()).getFoodLevel()) {
             // Make food drop 1/2 as fast if you have PvP protection
-            if (qLib.RANDOM.nextInt(100) > (FoxtrotPlugin.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId()) ? 10 : 30)) {
+            if (qLib.RANDOM.nextInt(100) > (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId()) ? 10 : 30)) {
                 event.setCancelled(true);
             }
         }
@@ -87,13 +87,13 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        FoxtrotPlugin.getInstance().getPvPTimerMap().pendingTimer(event.getPlayer().getUniqueId());
-        event.setRespawnLocation(FoxtrotPlugin.getInstance().getServerHandler().getSpawnLocation());
+        Foxtrot.getInstance().getPvPTimerMap().pendingTimer(event.getPlayer().getUniqueId());
+        event.setRespawnLocation(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
     }
 
     @EventHandler
     public void onBlockBurn(BlockBurnEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -114,12 +114,12 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onFireBurn(BlockBurnEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
             event.setCancelled(true);
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 

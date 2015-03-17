@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
@@ -18,7 +18,7 @@ public class TeamKickCommand {
 
     @Command(names={ "team kick", "t kick", "f kick", "faction kick", "fac kick" }, permissionNode="")
     public static void teamKick(Player sender, @Parameter(name="player") UUID target) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -47,7 +47,7 @@ public class TeamKickCommand {
             }
         }
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " was kicked by " + sender.getName() + "!");
             }
@@ -61,8 +61,8 @@ public class TeamKickCommand {
             team.flagForSave();
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().setTeam(target, null);
-        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Foxtrot.getInstance().getTeamHandler().setTeam(target, null);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null) {
             FrozenNametagHandler.reloadPlayer(bukkitPlayer);

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.MobDamage;
@@ -25,7 +25,7 @@ public class ArrowTracker implements Listener {
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
-            event.getProjectile().setMetadata("ShotFromDistance", new FixedMetadataValue(FoxtrotPlugin.getInstance(), event.getProjectile().getLocation()));
+            event.getProjectile().setMetadata("ShotFromDistance", new FixedMetadataValue(Foxtrot.getInstance(), event.getProjectile().getLocation()));
         }
     }
 

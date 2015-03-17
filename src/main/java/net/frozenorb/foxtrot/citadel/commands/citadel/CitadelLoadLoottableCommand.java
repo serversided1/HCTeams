@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.citadel.commands.citadel;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ public class CitadelLoadLoottableCommand {
         sender.getInventory().clear();
         int itemIndex = 0;
 
-        for (ItemStack itemStack : FoxtrotPlugin.getInstance().getCitadelHandler().getCitadelLoot()) {
+        for (ItemStack itemStack : Foxtrot.getInstance().getCitadelHandler().getCitadelLoot()) {
             sender.getInventory().setItem(itemIndex, itemStack);
             itemIndex++;
         }

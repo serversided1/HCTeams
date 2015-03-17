@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -26,12 +26,12 @@ public class TeamListCommand {
                 Map<Team, Integer> teamPlayerCount = new HashMap<>();
 
                 // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
-                for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (player.hasMetadata("invisible")) {
                         continue;
                     }
 
-                    Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+                    Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
                     if (playerTeam != null) {
                         if (teamPlayerCount.containsKey(playerTeam)) {
@@ -72,7 +72,7 @@ public class TeamListCommand {
                 sender.sendMessage(Team.GRAY_LINE);
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     private static LinkedHashMap<Team, Integer> sortByValues(Map<Team, Integer> map) {

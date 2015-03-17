@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.dtr;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -52,12 +52,12 @@ public class DTRHandler extends BukkitRunnable {
     public void run() {
         Map<Team, Integer> playerOnlineMap = new HashMap<>();
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (player.hasMetadata("invisible")) {
                 continue;
             }
 
-            Team playerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(player);
+            Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
             if (playerTeam != null) {
                 if (playerOnlineMap.containsKey(playerTeam)) {
@@ -86,7 +86,7 @@ public class DTRHandler extends BukkitRunnable {
 
                     teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()), teamEntry.getKey().getMaxDTR()));
                 } catch (Exception e) {
-                    FoxtrotPlugin.getInstance().getLogger().warning("Error regenerating DTR for team " + teamEntry.getKey().getName() + ".");
+                    Foxtrot.getInstance().getLogger().warning("Error regenerating DTR for team " + teamEntry.getKey().getName() + ".");
                     e.printStackTrace();
                 }
             }

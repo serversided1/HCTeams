@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -14,7 +14,7 @@ public class ForceDisbandAllCommand {
 
     @Command(names={ "forcedisbandall" }, permissionNode="op")
     public static void forceDisbandAll(Player sender) {
-        ConversationFactory factory = new ConversationFactory(FoxtrotPlugin.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
+        ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
             public String getPromptText(ConversationContext context) {
                 return (ChatColor.GREEN  + "Are you sure you want to disband all teams? Type §byes§a to confirm or §cno§a to quit.");
@@ -25,7 +25,7 @@ public class ForceDisbandAllCommand {
                 if (s.equalsIgnoreCase("yes")) {
                     List<Team> teams = new ArrayList<>();
 
-                    for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+                    for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
                         teams.add(team);
                     }
 
@@ -33,7 +33,7 @@ public class ForceDisbandAllCommand {
                         team.disband();
                     }
 
-                    FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All teams have been forcibly disbanded!");
+                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All teams have been forcibly disbanded!");
                     return (Prompt.END_OF_CONVERSATION);
                 }
 

@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -16,7 +16,7 @@ public class TeamSubclaimCreateCommand {
 
     @Command(names={ "team subclaim create", "t subclaim create", "f subclaim create", "faction subclaim create", "fac subclaim create", "team sub create", "t sub create", "f sub create", "faction sub create", "fac sub create" }, permissionNode="")
     public static void teamSubclaimCreate(Player sender, @Parameter(name="subclaim") String subclaim) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.RED + "You must be on a team to execute this command!");

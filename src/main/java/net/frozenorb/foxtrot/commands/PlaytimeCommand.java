@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -15,9 +15,9 @@ public class PlaytimeCommand {
 
     @Command(names={ "Playtime", "PTime" }, permissionNode="")
     public static void playtime(Player sender, @Parameter(name="Target", defaultValue="self") UUID target) {
-        PlaytimeMap playtime = FoxtrotPlugin.getInstance().getPlaytimeMap();
+        PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
         int playtimeTime = (int) playtime.getPlaytime(target);
-        Player bukkitPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
 
         if (bukkitPlayer != null && sender.canSee(bukkitPlayer)) {
             playtimeTime += playtime.getCurrentSession(bukkitPlayer.getUniqueId()) / 1000;

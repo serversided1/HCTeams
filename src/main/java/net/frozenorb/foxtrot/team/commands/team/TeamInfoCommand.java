@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -15,7 +15,7 @@ public class TeamInfoCommand {
         new BukkitRunnable() {
 
             public void run() {
-                Team exactPlayerTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(target.getName()));
+                Team exactPlayerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(target.getName()));
 
                 if (exactPlayerTeam != null && exactPlayerTeam != target) {
                     exactPlayerTeam.sendTeamInfo(sender);
@@ -24,7 +24,7 @@ public class TeamInfoCommand {
                 target.sendTeamInfo(sender);
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
 }

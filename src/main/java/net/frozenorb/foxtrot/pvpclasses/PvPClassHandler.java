@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
@@ -36,16 +36,16 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         pvpClasses.add(new MinerClass());
 
         for (PvPClass pvpClass : pvpClasses) {
-            FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(pvpClass, FoxtrotPlugin.getInstance());
+            Foxtrot.getInstance().getServer().getPluginManager().registerEvents(pvpClass, Foxtrot.getInstance());
         }
 
-        FoxtrotPlugin.getInstance().getServer().getScheduler().runTaskTimer(FoxtrotPlugin.getInstance(), this, 2L, 2L);
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(this, FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), this, 2L, 2L);
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(this, Foxtrot.getInstance());
     }
 
     @Override
     public void run() {
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             // Remove kit if player took off armor, otherwise .tick();
             if (equippedKits.containsKey(player.getName())) {
                 PvPClass equippedPvPClass = equippedKits.get(player.getName());

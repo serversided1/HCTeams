@@ -6,7 +6,7 @@ import com.mongodb.DBCollection;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -84,7 +84,7 @@ public class Team {
         }
 
         if (!isLoading()) {
-            FoxtrotPlugin.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR);
+            Foxtrot.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR);
         }
 
         this.DTR = newDTR;
@@ -180,14 +180,14 @@ public class Team {
         }
 
         for (ObjectId allyId : getAllies()) {
-            Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
+            Team ally = Foxtrot.getInstance().getTeamHandler().getTeam(allyId);
 
             if (ally != null) {
                 ally.getAllies().remove(getUniqueId());
             }
         }
 
-        FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(this);
+        Foxtrot.getInstance().getTeamHandler().removeTeam(this);
         LandBoard.getInstance().clear(this);
 
         new BukkitRunnable() {
@@ -198,11 +198,11 @@ public class Team {
                     return (null);
                 });
 
-                DBCollection teamsCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
+                DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
                 teamsCollection.remove(getJSONIdentifier());
             }
 
-        }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+        }.runTaskAsynchronously(Foxtrot.getInstance());
 
         needsSave = false;
     }
@@ -210,11 +210,11 @@ public class Team {
     public void rename(String newName) {
         final String oldName = name;
 
-        FoxtrotPlugin.getInstance().getTeamHandler().removeTeam(this);
+        Foxtrot.getInstance().getTeamHandler().removeTeam(this);
 
         this.name = newName;
 
-        FoxtrotPlugin.getInstance().getTeamHandler().setupTeam(this);
+        Foxtrot.getInstance().getTeamHandler().setupTeam(this);
 
         qLib.getInstance().runRedisCommand(redis -> {
             redis.del("fox_teams." + oldName.toLowerCase());
@@ -260,7 +260,7 @@ public class Team {
     }
 
     public boolean isAlly(UUID check) {
-        Team checkTeam = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(check);
+        Team checkTeam = Foxtrot.getInstance().getTeamHandler().getTeam(check);
         return (checkTeam != null && isAlly(checkTeam));
     }
 
@@ -318,7 +318,7 @@ public class Team {
         int amt = 0;
 
         for (UUID member : getMembers()) {
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
+            Player exactPlayer = Foxtrot.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 amt++;
@@ -332,7 +332,7 @@ public class Team {
         List<Player> players = new ArrayList<>();
 
         for (UUID member : getMembers()) {
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
+            Player exactPlayer = Foxtrot.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer != null && !exactPlayer.hasMetadata("invisible")) {
                 players.add(exactPlayer);
@@ -346,7 +346,7 @@ public class Team {
         List<UUID> players = new ArrayList<>();
 
         for (UUID member : getMembers()) {
-            Player exactPlayer = FoxtrotPlugin.getInstance().getServer().getPlayer(member);
+            Player exactPlayer = Foxtrot.getInstance().getServer().getPlayer(member);
 
             if (exactPlayer == null || exactPlayer.hasMetadata("invisible")) {
                 players.add(member);
@@ -388,14 +388,14 @@ public class Team {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + playerName + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
 
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (isMember(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "Member Death: " + ChatColor.WHITE + playerName);
                 player.sendMessage(ChatColor.RED + "DTR: " + ChatColor.WHITE + DTR_FORMAT.format(newDTR));
             }
         }
 
-        FoxtrotPlugin.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + playerName + "]");
+        Foxtrot.getInstance().getLogger().info("[TeamDeath] " + name + " > " + "Player death: [" + playerName + "]");
         setDTR(newDTR);
 
         if (isRaidable()) {
@@ -522,8 +522,8 @@ public class Team {
                             membersRaw = split[7].trim();
                         }
 
-                        Location location1 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x1, y1, z1);
-                        Location location2 = new Location(FoxtrotPlugin.getInstance().getServer().getWorld("world"), x2, y2, z2);
+                        Location location1 = new Location(Foxtrot.getInstance().getServer().getWorld("world"), x1, y1, z1);
+                        Location location2 = new Location(Foxtrot.getInstance().getServer().getWorld("world"), x2, y2, z2);
                         List<UUID> members = new ArrayList<>();
 
                         for (String uuidString : membersRaw.split(", ")) {
@@ -545,7 +545,7 @@ public class Team {
 
         if (uniqueId == null) {
             uniqueId = new ObjectId();
-            FoxtrotPlugin.getInstance().getLogger().info("Generating UUID for team " + getName() + "...");
+            Foxtrot.getInstance().getLogger().info("Generating UUID for team " + getName() + "...");
         }
 
         loading = false;
@@ -655,7 +655,7 @@ public class Team {
             return (null);
         }
 
-        World world = FoxtrotPlugin.getInstance().getServer().getWorld(args[0]);
+        World world = Foxtrot.getInstance().getServer().getWorld(args[0]);
         double x = Double.parseDouble(args[1]);
         double y = Double.parseDouble(args[2]);
         double z = Double.parseDouble(args[3]);
@@ -684,15 +684,15 @@ public class Team {
             return;
         }
 
-        KillsMap killsMap = FoxtrotPlugin.getInstance().getKillsMap();
-        Player owner = FoxtrotPlugin.getInstance().getServer().getPlayer(getOwner());
+        KillsMap killsMap = Foxtrot.getInstance().getKillsMap();
+        Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
         int onlineMembers = 0;
 
         for (ObjectId allyId : getAllies()) {
-            Team ally = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(allyId);
+            Team ally = Foxtrot.getInstance().getTeamHandler().getTeam(allyId);
 
             if (ally != null) {
                 allies.append(ally.getName(player)).append(ChatColor.YELLOW).append("[").append(ChatColor.GREEN).append(ally.getOnlineMemberAmount()).append("/").append(ally.getSize()).append(ChatColor.YELLOW).append("]").append(ChatColor.GRAY).append(", ");

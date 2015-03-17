@@ -1,5 +1,5 @@
 name: ${name}
 version: ${version}
 author: MineHQ Development Team
-main: net.frozenorb.foxtrot.FoxtrotPlugin
+main: net.frozenorb.foxtrot.Foxtrot
 depend: [ProtocolLib, qLib]

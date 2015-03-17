@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -12,7 +12,7 @@ public class TeamNullLeaderCommand {
     public static void teamSaveString(Player sender) {
         int nullLeaders = 0;
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             if (team.getOwner() == null) {
                 nullLeaders++;
                 sender.sendMessage(ChatColor.RED + "- " + team.getName());

@@ -4,7 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.qLib;
@@ -34,7 +34,7 @@ public class KOTHHandler {
         loadSchedules();
         loadSigns();
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new KOTHListener(), FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new KOTHListener(), Foxtrot.getInstance());
         FrozenCommandHandler.registerParameterType(KOTH.class, new KOTHType());
 
         new BukkitRunnable() {
@@ -67,7 +67,7 @@ public class KOTHHandler {
                 }
             }
 
-        }.runTaskTimer(FoxtrotPlugin.getInstance(), 5L, 20L);
+        }.runTaskTimer(Foxtrot.getInstance(), 5L, 20L);
         // The initial delay of 5 ticks is to 'offset' us with the scoreboard handler.
     }
 

@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -13,7 +13,7 @@ public class RegenCommand {
     @Command(names={ "Regen", "DTR" }, permissionNode="")
     public static void regen(Player sender, @Parameter(name="target", defaultValue="self") Team target) {
         if (!sender.isOp()) {
-            target = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+            target = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
         }
 
         if (target == null) {

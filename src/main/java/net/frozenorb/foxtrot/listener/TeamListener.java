@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
@@ -29,10 +29,10 @@ public class TeamListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (team != null) {
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
                     player.sendMessage(ChatColor.GREEN + "Member Online: " + ChatColor.WHITE + event.getPlayer().getName());
                 } else if (team.getAllies().size() != 0 && team.isAlly(player.getUniqueId())) {
@@ -48,7 +48,7 @@ public class TeamListener implements Listener {
                     team.sendTeamInfo(event.getPlayer());
                 }
 
-            }.runTaskAsynchronously(FoxtrotPlugin.getInstance());
+            }.runTaskAsynchronously(Foxtrot.getInstance());
         } else {
             event.getPlayer().sendMessage(ChatColor.GRAY + "You are not on a team!");
         }
@@ -56,10 +56,10 @@ public class TeamListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (team != null) {
-            for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
+            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (player.equals(event.getPlayer())) {
                     continue;
                 }
@@ -78,12 +78,12 @@ public class TeamListener implements Listener {
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockIgnite(BlockIgniteEvent event) {
         if (event.getPlayer() != null) {
-            if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+            if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
                 return;
             }
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
@@ -100,7 +100,7 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
@@ -124,7 +124,7 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
@@ -141,7 +141,7 @@ public class TeamListener implements Listener {
             }
 
             // We disable this to prevent block glitching
-            FoxtrotPlugin.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
+            Foxtrot.getInstance().getServerHandler().disablePlayerAttacking(event.getPlayer(), 1);
             return;
         }
 
@@ -204,7 +204,7 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onHangingPlace(HangingPlaceEvent event) {
-        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
             return;
         }
 
@@ -217,11 +217,11 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
-        if (!(event.getRemover() instanceof Player) || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getRemover())) {
+        if (!(event.getRemover() instanceof Player) || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getRemover())) {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
             return;
         }
 
@@ -234,11 +234,11 @@ public class TeamListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getRightClicked().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getRightClicked().getLocation())) {
             return;
         }
 
@@ -252,11 +252,11 @@ public class TeamListener implements Listener {
     // Used for item frames
     @EventHandler(priority=EventPriority.HIGH)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
             return;
         }
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
             return;
         }
 
@@ -286,7 +286,7 @@ public class TeamListener implements Listener {
         }
 
         if (damager != null) {
-            Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(damager);
+            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
             Player victim = (Player) event.getEntity();
 
             if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
@@ -304,7 +304,7 @@ public class TeamListener implements Listener {
     public void onBucketEmpty(PlayerBucketEmptyEvent event) {
         Location checkLocation = event.getBlockClicked().getRelative(event.getBlockFace()).getLocation();
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(checkLocation)) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(checkLocation)) {
             return;
         }
 
@@ -322,7 +322,7 @@ public class TeamListener implements Listener {
     public void onBucketFill(PlayerBucketFillEvent event) {
         Location checkLocation = event.getBlockClicked().getRelative(event.getBlockFace()).getLocation();
 
-        if (FoxtrotPlugin.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || FoxtrotPlugin.getInstance().getServerHandler().isUnclaimedOrRaidable(checkLocation)) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(checkLocation)) {
             return;
         }
 

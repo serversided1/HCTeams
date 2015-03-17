@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.conquest.commands.conquest;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.team.Team;
@@ -15,7 +15,7 @@ public class ConquestCommand {
 
     @Command(names={ "conquest" }, permissionNode="")
     public static void conquest(Player sender) {
-        ConquestGame game = FoxtrotPlugin.getInstance().getConquestHandler().getGame();
+        ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game == null) {
             sender.sendMessage(ChatColor.RED + "Conquest is not active.");
@@ -28,7 +28,7 @@ public class ConquestCommand {
         boolean sent = false;
 
         for (Map.Entry<ObjectId, Integer> capEntry : caps.entrySet()) {
-            Team resolved = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(capEntry.getKey());
+            Team resolved = Foxtrot.getInstance().getTeamHandler().getTeam(capEntry.getKey());
 
             if (resolved != null) {
                 sender.sendMessage(resolved.getName(sender) + ": " + ChatColor.WHITE + capEntry.getValue() + " point" + (capEntry.getValue() == 1 ? "" : "s"));

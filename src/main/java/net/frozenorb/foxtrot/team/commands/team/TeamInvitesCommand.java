@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
@@ -15,7 +15,7 @@ public class TeamInvitesCommand {
     public static void teamInvites(Player sender) {
         StringBuilder yourInvites = new StringBuilder();
 
-        for (Team team : FoxtrotPlugin.getInstance().getTeamHandler().getTeams()) {
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             if (team.getInvitations().contains(sender.getUniqueId())) {
                 yourInvites.append(ChatColor.GRAY).append(team.getName()).append(ChatColor.YELLOW).append(", ");
             }
@@ -29,7 +29,7 @@ public class TeamInvitesCommand {
 
         sender.sendMessage(ChatColor.YELLOW + "Your Invites: " + yourInvites.toString());
 
-        Team current = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team current = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (current != null) {
             StringBuilder invitedToYourTeam = new StringBuilder();

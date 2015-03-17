@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.deathmessage.objects;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 
@@ -20,7 +20,7 @@ public abstract class Damage {
     public abstract String getDeathMessage();
 
     public String wrapName(String player) {
-        return (ChatColor.RED + player + ChatColor.DARK_RED + "[" + FoxtrotPlugin.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player)) + "]" + ChatColor.YELLOW);
+        return (ChatColor.RED + player + ChatColor.DARK_RED + "[" + Foxtrot.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player)) + "]" + ChatColor.YELLOW);
     }
 
 }

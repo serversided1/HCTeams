@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team.chatspy;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -15,16 +15,16 @@ public class TeamChatSpyAddCommand {
 
     @Command(names={ "team chatspy add", "t chatspy add", "f chatspy add", "faction chatspy add", "fac chatspy add" }, permissionNode="foxtrot.chatspy")
     public static void teamChatSpyAdd(Player sender, @Parameter(name="Team") Team target) {
-        if (FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getUniqueId()).contains(target.getUniqueId())) {
+        if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(sender.getUniqueId()).contains(target.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You are already spying on " + target.getName() + ".");
             return;
         }
 
-        List<ObjectId> teams = new ArrayList<>(FoxtrotPlugin.getInstance().getChatSpyMap().getChatSpy(sender.getUniqueId()));
+        List<ObjectId> teams = new ArrayList<>(Foxtrot.getInstance().getChatSpyMap().getChatSpy(sender.getUniqueId()));
 
         teams.add(target.getUniqueId());
 
-        FoxtrotPlugin.getInstance().getChatSpyMap().setChatSpy(sender.getUniqueId(), teams);
+        Foxtrot.getInstance().getChatSpyMap().setChatSpy(sender.getUniqueId(), teams);
         sender.sendMessage(ChatColor.GREEN + "You are now spying on the chat of " + ChatColor.YELLOW + target.getName() + ChatColor.GREEN + ".");
     }
 

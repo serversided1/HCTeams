@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -11,7 +11,7 @@ public class TeamRenameCommand {
 
     @Command(names={ "team rename", "t rename", "f rename", "faction rename", "fac rename" }, permissionNode="")
     public static void teamRename(Player sender, @Parameter(name="player") String name) {
-        Team team = FoxtrotPlugin.getInstance().getTeamHandler().getTeam(sender);
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -34,7 +34,7 @@ public class TeamRenameCommand {
         }
 
         if (!TeamCreateCommand.ALPHA_NUMERIC.matcher(name).find()) {
-            if (FoxtrotPlugin.getInstance().getTeamHandler().getTeam(name) == null) {
+            if (Foxtrot.getInstance().getTeamHandler().getTeam(name) == null) {
                 team.rename(name);
                 sender.sendMessage(ChatColor.GREEN + "Team renamed to " + name);
             } else {

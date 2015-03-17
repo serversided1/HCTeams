@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage;
 
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.listeners.DamageListener;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.trackers.*;
@@ -16,14 +16,14 @@ public class DeathMessageHandler {
     private static Map<String, List<Damage>> damage = new HashMap<>();
 
     public static void init() {
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new DamageListener(), FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new DamageListener(), Foxtrot.getInstance());
 
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new GeneralTracker(), FoxtrotPlugin.getInstance());
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new PVPTracker(), FoxtrotPlugin.getInstance());
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new EntityTracker(), FoxtrotPlugin.getInstance());
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new FallTracker(), FoxtrotPlugin.getInstance());
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new ArrowTracker(), FoxtrotPlugin.getInstance());
-        FoxtrotPlugin.getInstance().getServer().getPluginManager().registerEvents(new VoidTracker(), FoxtrotPlugin.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new GeneralTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new PVPTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new EntityTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new FallTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new ArrowTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new VoidTracker(), Foxtrot.getInstance());
     }
 
     public static List<Damage> getDamage(Player player) {

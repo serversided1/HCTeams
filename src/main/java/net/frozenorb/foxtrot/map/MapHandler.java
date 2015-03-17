@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.map;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
-import net.frozenorb.foxtrot.FoxtrotPlugin;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.qLib;
@@ -91,7 +91,7 @@ public class MapHandler {
             e.printStackTrace();
         }
 
-        Iterator<Recipe> recipeIterator = FoxtrotPlugin.getInstance().getServer().recipeIterator();
+        Iterator<Recipe> recipeIterator = Foxtrot.getInstance().getServer().recipeIterator();
 
         while (recipeIterator.hasNext()) {
             Recipe recipe = recipeIterator.next();
@@ -109,7 +109,7 @@ public class MapHandler {
 
         // add our glistering melon recipe
         if (craftingReducedMelon) {
-            FoxtrotPlugin.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
+            Foxtrot.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
         }
     }
 
