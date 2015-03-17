@@ -41,7 +41,7 @@ public class PlaytimeMap extends PersistMap<Long> {
         if (async) {
             updateValueAsync(update, getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
         } else {
-            updateValue(update, getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
+            updateValueSync(update, getPlaytime(update) + (System.currentTimeMillis() - joinDate.get(update)) / 1000);
         }
     }
 
@@ -62,7 +62,7 @@ public class PlaytimeMap extends PersistMap<Long> {
     }
 
     public void setPlaytime(UUID update, long playtime) {
-        updateValue(update, playtime);
+        updateValueSync(update, playtime);
     }
 
 }

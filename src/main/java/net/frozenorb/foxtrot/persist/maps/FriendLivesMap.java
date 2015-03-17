@@ -30,7 +30,7 @@ public class FriendLivesMap extends PersistMap<Integer> {
     }
 
     public void setLives(UUID update, int lives) {
-        updateValue(update, lives);
+        updateValueSync(update, lives);
     }
 
 }

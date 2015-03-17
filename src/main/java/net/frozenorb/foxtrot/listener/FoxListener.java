@@ -105,7 +105,6 @@ public class FoxListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        FoxtrotPlugin.getInstance().getStatisticsMap().updateBasic(event.getPlayer().getUniqueId());
         FoxtrotPlugin.getInstance().getPlaytimeMap().playerQuit(event.getPlayer().getUniqueId(), true);
     }
 

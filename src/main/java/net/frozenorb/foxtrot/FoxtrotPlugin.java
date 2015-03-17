@@ -15,9 +15,9 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
-import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
+import net.frozenorb.foxtrot.persist.maps.statistics.*;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -48,7 +48,7 @@ import java.util.Iterator;
 @SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 
-    private static FoxtrotPlugin instance;
+    @Getter private static FoxtrotPlugin instance;
 
     @Getter private ItemMessage itemMessage;
 
@@ -83,7 +83,12 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private SoulboundLivesMap soulboundLivesMap;
     @Getter private FriendLivesMap friendLivesMap;
     @Getter private TransferableLivesMap transferableLivesMap;
-    @Getter private StatisticsMap statisticsMap;
+
+    @Getter private BaseStatisticMap enderPearlsUsedMap;
+    @Getter private BaseStatisticMap expCollectedMap;
+    @Getter private BaseStatisticMap itemsRepairedMap;
+    @Getter private BaseStatisticMap splashPotionsBrewedMap;
+    @Getter private BaseStatisticMap splashPotionsUsedMap;
 
     @Override
     public void onEnable() {
@@ -217,7 +222,6 @@ public class FoxtrotPlugin extends JavaPlugin {
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
 
-
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.conquest");
@@ -281,11 +285,12 @@ public class FoxtrotPlugin extends JavaPlugin {
         (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
         (firstJoinMap = new FirstJoinMap()).loadFromRedis();
         (lastJoinMap = new LastJoinMap()).loadFromRedis();
-        (statisticsMap = new StatisticsMap()).loadFromRedis();
-    }
 
-    public static FoxtrotPlugin getInstance() {
-        return (instance);
+        (enderPearlsUsedMap = new EnderPearlsUsedMap()).loadFromRedis();
+        (expCollectedMap = new ExpCollectedMap()).loadFromRedis();
+        (itemsRepairedMap = new ItemsRepairedMap()).loadFromRedis();
+        (splashPotionsBrewedMap = new SplashPotionsBrewedMap()).loadFromRedis();
+        (splashPotionsUsedMap = new SplashPotionsUsedMap()).loadFromRedis();
     }
 
 }

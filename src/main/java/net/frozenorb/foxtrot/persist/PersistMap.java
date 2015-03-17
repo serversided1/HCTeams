@@ -45,7 +45,7 @@ public abstract class PersistMap<T> {
         });
     }
 
-    protected void updateValue(final UUID key, final T value) {
+    protected void updateValueSync(final UUID key, final T value) {
         wrappedMap.put(key, value);
 
         qLib.getInstance().runRedisCommand(redis -> {

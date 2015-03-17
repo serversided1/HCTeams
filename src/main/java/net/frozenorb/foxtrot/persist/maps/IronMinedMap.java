@@ -11,8 +11,8 @@ public class IronMinedMap extends PersistMap<Integer> {
     }
 
     @Override
-    public String getRedisValue(Integer kills) {
-        return (String.valueOf(kills));
+    public String getRedisValue(Integer mined) {
+        return (String.valueOf(mined));
     }
 
     @Override
