@@ -527,7 +527,11 @@ public class Team {
                         List<UUID> members = new ArrayList<>();
 
                         for (String uuidString : membersRaw.split(", ")) {
-                           // members.add(UUID.fromString(uuidString.trim()));
+                            if (uuidString.isEmpty()) {
+                                continue;
+                            }
+                            
+                            members.add(UUID.fromString(uuidString.trim()));
                         }
 
                         Subclaim subclaimObj = new Subclaim(location1, location2, name);
