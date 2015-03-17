@@ -52,7 +52,7 @@ public class ChatListener implements Listener {
         }
 
         // If another plugin cancelled this event before it got to us (we are on MONITOR, so it'll happen)
-        if (event.isCancelled()) {
+        if (event.isCancelled() && chatMode == ChatMode.PUBLIC) { // Only respect cancelled events if this is public chat. Who cares what their team says.
             return;
         }
 
