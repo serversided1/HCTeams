@@ -131,31 +131,6 @@ public class BaseBardClass extends PvPClass {
         }
     }
 
-    // This purposely has no @EventHandler (called by subclasses)
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        ItemStack held = event.getPlayer().getInventory().getItem(event.getNewSlot());
-
-        if (held == null || !BARD_CLICK_EFFECTS.containsKey(held.getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
-            return;
-        }
-
-        final BardEffect bardEffect = BARD_CLICK_EFFECTS.get(held.getType());
-
-        FoxtrotPlugin.getInstance().getItemMessage().sendMessage(event.getPlayer(), (player) -> {
-
-            if (!getEnergy().containsKey(player.getName())) {
-                return (ChatColor.RED + "Processing...");
-            }
-
-            if (getEnergy().get(player.getName()) >= bardEffect.getEnergy()) {
-                return (ChatColor.GREEN.toString() + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
-            } else {
-                return (ChatColor.RED.toString() + getEnergy().get(player.getName()).intValue() + "/" + bardEffect.getEnergy() + " Energy " + ChatColor.WHITE + "| " + bardEffect.getDescription());
-            }
-
-        }, event.getNewSlot());
-    }
-
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
             if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {

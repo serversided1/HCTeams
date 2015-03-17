@@ -3,14 +3,20 @@ package net.frozenorb.foxtrot.map;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapelessRecipe;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class MapHandler {
@@ -83,6 +89,27 @@ public class MapHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        Iterator<Recipe> recipeIterator = FoxtrotPlugin.getInstance().getServer().recipeIterator();
+
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+
+            // Disallow the crafting of gopples.
+            if (!craftingGopple && recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
+                recipeIterator.remove();
+            }
+
+            // Remove vanilla glistering melon recipe
+            if (craftingReducedMelon && recipe.getResult().getType() == Material.SPECKLED_MELON) {
+                recipeIterator.remove();
+            }
+        }
+
+        // add our glistering melon recipe
+        if (craftingReducedMelon) {
+            FoxtrotPlugin.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
         }
     }
 

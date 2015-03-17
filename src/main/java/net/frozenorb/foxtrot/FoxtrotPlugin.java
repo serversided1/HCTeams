@@ -1,10 +1,6 @@
 package net.frozenorb.foxtrot;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
@@ -18,6 +14,8 @@ import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.persist.maps.statistics.*;
+import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
+import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -26,14 +24,10 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
-import net.frozenorb.foxtrot.util.ItemMessage;
 import net.frozenorb.mShared.Shared;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
-import net.frozenorb.qlib.util.TimeUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -41,16 +35,12 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 
-@SuppressWarnings("deprecation")
 public class FoxtrotPlugin extends JavaPlugin {
 
     @Getter private static FoxtrotPlugin instance;
-
-    @Getter private ItemMessage itemMessage;
 
     @Getter private MongoClient mongoPool;
 
@@ -62,33 +52,32 @@ public class FoxtrotPlugin extends JavaPlugin {
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
 
-    @Getter private PlaytimeMap playtimeMap;
-    @Getter private OppleMap oppleMap;
-    @Getter private DeathbanMap deathbanMap;
-    @Getter private PvPTimerMap PvPTimerMap;
-    @Getter private KillsMap killsMap;
-    @Getter private ChatModeMap chatModeMap;
-    @Getter private FishingKitMap fishingKitMap;
-    @Getter private ToggleGlobalChatMap toggleGlobalChatMap;
-    @Getter private ChatSpyMap chatSpyMap;
-    @Getter private DiamondMinedMap diamondMinedMap;
-    @Getter private GoldMinedMap goldMinedMap;
-    @Getter private IronMinedMap ironMinedMap;
-    @Getter private CoalMinedMap coalMinedMap;
-    @Getter private RedstoneMinedMap redstoneMinedMap;
-    @Getter private LapisMinedMap lapisMinedMap;
-    @Getter private EmeraldMinedMap emeraldMinedMap;
-    @Getter private FirstJoinMap firstJoinMap;
-    @Getter private LastJoinMap lastJoinMap;
-    @Getter private SoulboundLivesMap soulboundLivesMap;
-    @Getter private FriendLivesMap friendLivesMap;
-    @Getter private TransferableLivesMap transferableLivesMap;
-
-    @Getter private BaseStatisticMap enderPearlsUsedMap;
-    @Getter private BaseStatisticMap expCollectedMap;
-    @Getter private BaseStatisticMap itemsRepairedMap;
-    @Getter private BaseStatisticMap splashPotionsBrewedMap;
-    @Getter private BaseStatisticMap splashPotionsUsedMap;
+    @Getter private PlaytimeMap playtimeMap = new PlaytimeMap();
+    @Getter private OppleMap oppleMap = new OppleMap();
+    @Getter private DeathbanMap deathbanMap = new DeathbanMap();
+    @Getter private PvPTimerMap PvPTimerMap = new PvPTimerMap();
+    @Getter private KillsMap killsMap = new KillsMap();
+    @Getter private ChatModeMap chatModeMap = new ChatModeMap();
+    @Getter private FishingKitMap fishingKitMap = new FishingKitMap();
+    @Getter private ToggleGlobalChatMap toggleGlobalChatMap = new ToggleGlobalChatMap();
+    @Getter private ChatSpyMap chatSpyMap = new ChatSpyMap();
+    @Getter private DiamondMinedMap diamondMinedMap = new DiamondMinedMap();
+    @Getter private GoldMinedMap goldMinedMap = new GoldMinedMap();
+    @Getter private IronMinedMap ironMinedMap = new IronMinedMap();
+    @Getter private CoalMinedMap coalMinedMap = new CoalMinedMap();
+    @Getter private RedstoneMinedMap redstoneMinedMap = new RedstoneMinedMap();
+    @Getter private LapisMinedMap lapisMinedMap = new LapisMinedMap();
+    @Getter private EmeraldMinedMap emeraldMinedMap = new EmeraldMinedMap();
+    @Getter private FirstJoinMap firstJoinMap = new FirstJoinMap();
+    @Getter private LastJoinMap lastJoinMap = new LastJoinMap();
+    @Getter private SoulboundLivesMap soulboundLivesMap = new SoulboundLivesMap();
+    @Getter private FriendLivesMap friendLivesMap = new FriendLivesMap();
+    @Getter private TransferableLivesMap transferableLivesMap = new TransferableLivesMap();
+    @Getter private BaseStatisticMap enderPearlsUsedMap = new EnderPearlsUsedMap();
+    @Getter private BaseStatisticMap expCollectedMap = new ExpCollectedMap();
+    @Getter private BaseStatisticMap itemsRepairedMap = new ItemsRepairedMap();
+    @Getter private BaseStatisticMap splashPotionsBrewedMap = new SplashPotionsBrewedMap();
+    @Getter private BaseStatisticMap splashPotionsUsedMap = new SplashPotionsUsedMap();
 
     @Override
     public void onEnable() {
@@ -100,92 +89,20 @@ public class FoxtrotPlugin extends JavaPlugin {
             e.printStackTrace();
         }
 
-        Shared.get().getProfileManager().setNametagsEnabled(false);
-
-        new DTRHandler().runTaskTimer(this, 20L, 1200L); // Runs every minute
-        new RedisSaveTask().runTaskTimerAsynchronously(this, 1200L, 1200L); // Runs every minute
+        (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
+        (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
+        //(new PacketBorderThread()).start();
 
         setupHandlers();
-        setupPersistence();
         setupListeners();
 
+        Shared.get().getProfileManager().setNametagsEnabled(false);
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
-        itemMessage = new ItemMessage();
 
-     // (new PacketBorderThread()).start();
-
-        for (Player player : getServer().getOnlinePlayers()) {
-            getPlaytimeMap().playerJoined(player.getUniqueId());
-            player.removeMetadata("loggedout", FoxtrotPlugin.getInstance());
-        }
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Server.OPEN_SIGN_ENTITY) {
-
-            // No sign GUI when placing death/KOTH signs.
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                Location location = new Location(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0), event.getPacket().getIntegers().read(1), event.getPacket().getIntegers().read(2));
-
-                if (location.getBlock().getState().hasMetadata("noSignPacket")) {
-                    event.setCancelled(true);
-                }
-            }
-
-        });
-
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Client.CLIENT_COMMAND) {
-
-            // Don't allow players to respawn.
-            @Override
-            public void onPacketReceiving(PacketEvent event) {
-                if (event.getPacket().getClientCommands().read(0) == EnumWrappers.ClientCommand.PERFORM_RESPAWN) {
-                    if (!getDeathbanMap().isDeathbanned(event.getPlayer().getUniqueId())) {
-                        return;
-                    }
-
-                    long unbannedOn = getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());
-                    long left = unbannedOn - System.currentTimeMillis();
-                    final String time = TimeUtils.formatIntoDetailedString((int) left / 1000);
-
-                    new BukkitRunnable() {
-
-                        public void run() {
-                            if (FoxtrotPlugin.getInstance().getServerHandler().isPreEOTW()) {
-                                event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
-                            } else {
-                                event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
-                            }
-                        }
-
-                    }.runTask(FoxtrotPlugin.getInstance());
-                }
-            }
-
-        });
-
-        Iterator<Recipe> recipeIterator = getServer().recipeIterator();
-
-        while (recipeIterator.hasNext()) {
-            Recipe recipe = recipeIterator.next();
-
-            // Disallow the crafting of gopples.
-            if (!getMapHandler().isCraftingGopple() && recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
-                recipeIterator.remove();
-            }
-
-            // Remove vanilla glistering melon recipe
-            if (getMapHandler().isCraftingReducedMelon() && recipe.getResult().getType() == Material.SPECKLED_MELON) {
-                recipeIterator.remove();
-            }
-        }
-
-        // add our glistering melon recipe
-        if (getMapHandler().isCraftingReducedMelon()) {
-            getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
-        }
+        ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
+        ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
     }
-
 
     @Override
     public void onDisable() {
@@ -194,21 +111,12 @@ public class FoxtrotPlugin extends JavaPlugin {
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));
         }
 
-        for (String str : PvPClassHandler.getEquippedKits().keySet()) {
-            Player player = getServer().getPlayerExact(str);
-            PvPClassHandler.getEquippedKits().get(str).remove(player);
+        for (String playerName : PvPClassHandler.getEquippedKits().keySet()) {
+            PvPClassHandler.getEquippedKits().get(playerName).remove(getServer().getPlayerExact(playerName));
         }
 
         RedisSaveTask.save(false);
         FoxtrotPlugin.getInstance().getServerHandler().save();
-    }
-
-    public void sendOPMessage(String message) {
-        for (Player player : FoxtrotPlugin.getInstance().getServer().getOnlinePlayers()) {
-            if (player.isOp()) {
-                player.sendMessage(message);
-            }
-        }
     }
 
     private void setupHandlers() {
@@ -258,39 +166,8 @@ public class FoxtrotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StaffUtilsListener(), this);
         getServer().getPluginManager().registerEvents(new TeamListener(), this);
         getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
-
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
-    }
-
-    private void setupPersistence() {
-        (playtimeMap = new PlaytimeMap()).loadFromRedis();
-        (oppleMap = new OppleMap()).loadFromRedis();
-        (deathbanMap = new DeathbanMap()).loadFromRedis();
-        (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
-        (killsMap = new KillsMap()).loadFromRedis();
-        (chatModeMap = new ChatModeMap()).loadFromRedis();
-        (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
-        (fishingKitMap = new FishingKitMap()).loadFromRedis();
-        (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();
-        (friendLivesMap = new FriendLivesMap()).loadFromRedis();
-        (transferableLivesMap = new TransferableLivesMap()).loadFromRedis();
-        (chatSpyMap = new ChatSpyMap()).loadFromRedis();
-        (diamondMinedMap = new DiamondMinedMap()).loadFromRedis();
-        (goldMinedMap = new GoldMinedMap()).loadFromRedis();
-        (ironMinedMap = new IronMinedMap()).loadFromRedis();
-        (coalMinedMap = new CoalMinedMap()).loadFromRedis();
-        (redstoneMinedMap = new RedstoneMinedMap()).loadFromRedis();
-        (lapisMinedMap = new LapisMinedMap()).loadFromRedis();
-        (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
-        (firstJoinMap = new FirstJoinMap()).loadFromRedis();
-        (lastJoinMap = new LastJoinMap()).loadFromRedis();
-
-        (enderPearlsUsedMap = new EnderPearlsUsedMap()).loadFromRedis();
-        (expCollectedMap = new ExpCollectedMap()).loadFromRedis();
-        (itemsRepairedMap = new ItemsRepairedMap()).loadFromRedis();
-        (splashPotionsBrewedMap = new SplashPotionsBrewedMap()).loadFromRedis();
-        (splashPotionsUsedMap = new SplashPotionsUsedMap()).loadFromRedis();
     }
 
 }

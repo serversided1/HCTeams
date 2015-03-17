@@ -67,9 +67,4 @@ public class BardClass extends BaseBardClass implements Listener {
         super.onPlayerInteract(event);
     }
 
-    @EventHandler
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        super.onPlayerItemHeld(event);
-    }
-
 }

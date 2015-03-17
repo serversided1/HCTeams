@@ -2,8 +2,6 @@ package net.frozenorb.foxtrot.persist;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.FoxtrotPlugin;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,13 +10,19 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@RequiredArgsConstructor
 public abstract class PersistMap<T> {
 
     private Map<UUID, T> wrappedMap = new ConcurrentHashMap<>();
 
-    @NonNull private String keyPrefix;
-    @NonNull private String mongoKeyPrefix;
+    private String keyPrefix;
+    private String mongoName;
+
+    public PersistMap(String keyPrefix, String mongoName) {
+        this.keyPrefix = keyPrefix;
+        this.mongoName = mongoName;
+
+        loadFromRedis();
+    }
 
     public void loadFromRedis() {
         qLib.getInstance().runRedisCommand(redis -> {
@@ -52,7 +56,7 @@ public abstract class PersistMap<T> {
             redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
             DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-            playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
+            playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
 
             return (null);
         });
@@ -68,7 +72,7 @@ public abstract class PersistMap<T> {
                     redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
                     DBCollection playersCollection = FoxtrotPlugin.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                    playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoKeyPrefix, getMongoValue(getValue(key)))), true, false);
+                    playersCollection.update(new BasicDBObject("_id", key.toString()), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
 
                     return (null);
                 });
