@@ -60,20 +60,21 @@ public class CombatLoggerListener implements Listener {
                 team.playerDeath(metadata.playerName, FoxtrotPlugin.getInstance().getServerHandler().getDTRLoss(event.getEntity().getLocation()));
             }
 
-            if (event.getEntity().getKiller() != null) {
-                // Death message
-                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".");
+            // Drop the player's items.
+            for (ItemStack item : metadata.drops) {
+                event.getDrops().add(item);
+            }
 
-                // Drop the player's items.
-                for (ItemStack item : metadata.drops) {
-                    event.getDrops().add(item);
-                }
+            if (event.getEntity().getKiller() != null) {
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".");
 
                 // Add the death sign.
                 event.getDrops().add(FoxtrotPlugin.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
 
                 // and give them the kill
                 FoxtrotPlugin.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), FoxtrotPlugin.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
+            } else {
+                FoxtrotPlugin.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.");
             }
 
             Player target = FoxtrotPlugin.getInstance().getServer().getPlayer(metadata.playerUUID);
