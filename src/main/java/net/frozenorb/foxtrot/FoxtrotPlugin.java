@@ -108,7 +108,7 @@ public class FoxtrotPlugin extends JavaPlugin {
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         itemMessage = new ItemMessage();
 
-        (new PacketBorderThread()).start();
+     // (new PacketBorderThread()).start();
 
         for (Player player : getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerJoined(player.getUniqueId());
