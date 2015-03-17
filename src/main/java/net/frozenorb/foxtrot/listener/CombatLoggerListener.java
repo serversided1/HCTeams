@@ -165,7 +165,7 @@ public class CombatLoggerListener implements Listener {
             Villager villager = (Villager) event.getEntity();
             CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
-            if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmask.SAFE_ZONE.appliesAt(villager.getLocation())) {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation())/* || DTRBitmask.SAFE_ZONE.appliesAt(villager.getLocation())*/) { // We only care about where the damager ('Combat loggers can get hit into spawn')
                 event.setCancelled(true);
                 return;
             }
