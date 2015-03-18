@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.koth.listeners;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
@@ -9,6 +11,7 @@ import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.event.HourEvent;
+import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -20,6 +23,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Date;
 
 public class KOTHListener implements Listener {
 
@@ -144,6 +150,24 @@ public class KOTHListener implements Listener {
         for (String message : messages) {
             Foxtrot.getInstance().getLogger().info(message);
         }
+
+        new BukkitRunnable() {
+
+            public void run() {
+                DBCollection kothCapturesCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("KOTHCaptures");
+                BasicDBObject dbObject = new BasicDBObject();
+
+                dbObject.put("KOTH", event.getKOTH().getName());
+                dbObject.put("Level", event.getKOTH().getLevel());
+                dbObject.put("CapturedAt", new Date());
+                dbObject.put("Capper", event.getPlayer().getUniqueId());
+                dbObject.put("CapperTeam", team == null ? null : team.getUniqueId().toString());
+                dbObject.put("KOTHLocation", LocationSerializer.serialize(event.getKOTH().getCapLocation().toLocation(event.getPlayer().getWorld())));
+
+                kothCapturesCollection.insert(dbObject);
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     @EventHandler

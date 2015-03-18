@@ -530,7 +530,7 @@ public class Team {
                             if (uuidString.isEmpty()) {
                                 continue;
                             }
-                            
+
                             members.add(UUID.fromString(uuidString.trim()));
                         }
 
