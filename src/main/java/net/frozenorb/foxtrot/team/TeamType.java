@@ -32,10 +32,20 @@ public class TeamType implements ParameterType<Team> {
             return (byName);
         }
 
-        Team byMember = Foxtrot.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(source));
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(source);
 
-        if (byMember != null) {
-            return (byMember);
+        if (bukkitPlayer != null) {
+            Team byMemberBukkitPlayer = Foxtrot.getInstance().getTeamHandler().getTeam(bukkitPlayer.getUniqueId());
+
+            if (byMemberBukkitPlayer != null) {
+                return (byMemberBukkitPlayer);
+            }
+        }
+
+        Team byMemberUUID = Foxtrot.getInstance().getTeamHandler().getTeam(UUIDUtils.uuid(source));
+
+        if (byMemberUUID != null) {
+            return (byMemberUUID);
         }
 
         sender.sendMessage(ChatColor.RED + "No team or member with the name " + source + " found.");
