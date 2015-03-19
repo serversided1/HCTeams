@@ -27,6 +27,11 @@ public class TeamWithdrawCommand {
                 return;
             }
 
+            if (team.getBalance() == Float.NaN) {
+                sender.sendMessage(ChatColor.RED + "You cannot withdraw money because your team's balance is broken!");
+                return;
+            }
+
             if (amount <= 0) {
                 sender.sendMessage(ChatColor.RED + "You can't withdraw $0.0 (or less)!");
                 return;
