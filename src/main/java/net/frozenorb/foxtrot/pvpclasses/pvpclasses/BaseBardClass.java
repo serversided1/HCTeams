@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -133,6 +134,12 @@ public class BaseBardClass extends PvPClass {
     public void giveBardEffect(Player source, BardEffect bardEffect, boolean friendly, boolean persistOldValues) {
         for (Player player : getNearbyPlayers(source, friendly)) {
             if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+                continue;
+            }
+
+            // Bards can't get Strength.
+            // Yes, that does need to use .equals. PotionEffectType is NOT an enum.
+            if (PvPClassHandler.hasKitOn(player, this) && bardEffect.getPotionEffect() != null && bardEffect.getPotionEffect().getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
                 continue;
             }
 
