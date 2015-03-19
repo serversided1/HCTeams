@@ -34,6 +34,11 @@ public class PayCommand {
             return;
         }
 
+        if (value == Float.NaN) {
+            sender.sendMessage(ChatColor.RED + "Nope.");
+            return;
+        }
+
         if (balance < value) {
             sender.sendMessage(ChatColor.RED + "You do not have $" + value + "!");
             return;
