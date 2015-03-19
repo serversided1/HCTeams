@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class TeamOpClaimCommand {
 
-    @Command(names={ "team opclaim", "t opclaim", "f opclaim", "faction opclaim", "fac opclaim" }, permissionNode="op")
+    @Command(names={ "team opclaim", "t opclaim", "f opclaim", "faction opclaim", "fac opclaim" }, permissionNode="worldedit.*")
     public static void teamOpClaim(final Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

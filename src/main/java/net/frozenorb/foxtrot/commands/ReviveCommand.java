@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ReviveCommand {
 
-    @Command(names={ "Revive" }, permissionNode="op")
+    @Command(names={ "Revive" }, permissionNode="worldedit.*")
     public static void revive(CommandSender sender, @Parameter(name="Target") UUID target, @Parameter(name="Reason", wildcard=true) String reason) {
         if (reason.equals(".")) {
             sender.sendMessage(ChatColor.RED + ". is not a good reason...");

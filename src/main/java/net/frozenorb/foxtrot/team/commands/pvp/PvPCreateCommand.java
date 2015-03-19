@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PvPCreateCommand {
 
-    @Command(names={ "pvptimer create", "timer create", "pvp create" }, permissionNode="op")
+    @Command(names={ "pvptimer create", "timer create", "pvp create" }, permissionNode="worldedit.*")
     public static void pvpCreate(Player sender, @Parameter(name="target", defaultValue="self") Player target) {
         Foxtrot.getInstance().getPvPTimerMap().createTimer(target.getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
         target.sendMessage(ChatColor.YELLOW + "You have 30 minutes of PVP Timer!");

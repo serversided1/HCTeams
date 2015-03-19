@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class TeamTPCommand {
 
-    @Command(names={ "team tp", "t tp", "f tp", "faction tp", "fac tp" }, permissionNode="op")
+    @Command(names={ "team tp", "t tp", "f tp", "faction tp", "fac tp" }, permissionNode="worldedit.*")
     public static void teamTP(Player sender, @Parameter(name="team", defaultValue="self") Team target) {
         if (target.getHQ() != null) {
             sender.sendMessage(ChatColor.YELLOW + "Teleported to " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + "'s HQ.");

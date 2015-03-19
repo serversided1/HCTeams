@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class ForceDisbandCommand {
 
-    @Command(names={ "forcedisband" }, permissionNode="op")
+    @Command(names={ "forcedisband" }, permissionNode="worldedit.*")
     public static void forceDisband(Player sender, @Parameter(name="team") Team target) {
         for (Player online : target.getOnlineMembers()) {
             online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");

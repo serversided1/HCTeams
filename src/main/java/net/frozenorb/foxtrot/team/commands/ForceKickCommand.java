@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ForceKickCommand {
 
-    @Command(names={ "forcekick" }, permissionNode="op")
+    @Command(names={ "forcekick" }, permissionNode="worldedit.*")
     public static void forceKick(Player sender, @Parameter(name="player") UUID target) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(target);
 
