@@ -34,7 +34,7 @@ public class PayCommand {
             return;
         }
 
-        if (double.isNaN(balance)) {
+        if (Double.isNaN(balance)) {
             sender.sendMessage("§cYou can't send money because your balance is fucked.");
             return;
         }

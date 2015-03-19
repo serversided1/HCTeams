@@ -433,6 +433,12 @@ public class ServerHandler {
     public void handleShopSign(Sign sign, Player player) {
         ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
+        if (Double.isNaN(Basic.get().getEconomyManager().getBalance(player.getName()))) {
+            Basic.get().getEconomyManager().setBalance(player.getName(), 0);
+            player.sendMessage("§cYour balance has been unfucked.");
+            return;
+        }
+
         if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
             return;
