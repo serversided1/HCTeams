@@ -15,10 +15,7 @@ import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
@@ -450,6 +447,13 @@ public class ServerHandler {
             }
 
             if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
+
+                if (Basic.get().getEconomyManager().getBalance(player.getName()) > 100000) {
+                    player.sendMessage("§cYour balance is too high. Please contact an admin to do this.");
+                    Bukkit.getLogger().severe("[ECONOMY] " + player.getName() + " tried to buy shit at spawn with over 100K." );
+                    return;
+                }
+
 
                 if (Double.isNaN(Basic.get().getEconomyManager().getBalance(player.getName()))) {
                     Basic.get().getEconomyManager().setBalance(player.getName(), 0);

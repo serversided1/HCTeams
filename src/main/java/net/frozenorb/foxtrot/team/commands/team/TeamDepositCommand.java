@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -23,6 +24,12 @@ public class TeamDepositCommand {
 
         if (amount <= 0) {
             sender.sendMessage(ChatColor.RED + "You can't deposit $0.0 (or less)!");
+            return;
+        }
+
+        if (Basic.get().getEconomyManager().getBalance(sender.getName()) > 100000) {
+            sender.sendMessage("§cYour balance is too high to deposit money. Please contact an admin to do this.");
+            Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to deposit " + amount + "to " + team);
             return;
         }
 

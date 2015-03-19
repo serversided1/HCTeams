@@ -5,6 +5,7 @@ import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -31,6 +32,12 @@ public class PayCommand {
 
         if (value < 5) {
             sender.sendMessage(ChatColor.RED + "You must send at least $5!");
+            return;
+        }
+
+        if (balance > 100000) {
+            sender.sendMessage("§cYour balance is too high to send money. Please contact an admin to transfer money.");
+            Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to send " + value);
             return;
         }
 
