@@ -26,7 +26,7 @@ public class TeamDepositCommand {
             return;
         }
 
-        if (amount == Float.NaN) {
+        if (Float.isNaN(amount)) {
             sender.sendMessage(ChatColor.RED + "Nope.");
             return;
         }

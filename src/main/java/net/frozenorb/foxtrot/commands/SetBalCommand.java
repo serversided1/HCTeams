@@ -16,7 +16,7 @@ public class SetBalCommand {
             return;
         }
 
-        if (value == Float.NaN) {
+        if (Float.isNaN(value)) {
             sender.sendMessage("§cWhy are you trying to do that?");
             return;
         }
