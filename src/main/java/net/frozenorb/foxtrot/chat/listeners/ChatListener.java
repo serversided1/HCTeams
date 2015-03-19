@@ -43,11 +43,11 @@ public class ChatListener implements Listener {
         // Determine our final chat mode.
         // We check if they used a custom prefix / aren't in a team,
         // otherwise, we fall back on their configuration
-        if (doGlobalChat || team == null) {
+        if (doGlobalChat) {
             chatMode = ChatMode.PUBLIC;
         } else if (doTeamChat) {
             chatMode = ChatMode.TEAM;
-        } else if (doAllyChat && team.getAllies().size() != 0) {
+        } else if (doAllyChat && team != null && team.getAllies().size() != 0) {
             chatMode = ChatMode.ALLIANCE;
         }
 
@@ -59,6 +59,13 @@ public class ChatListener implements Listener {
         // Any route we go down will cancel the event eventually.
         // Let's just do it here.
         event.setCancelled(true);
+
+        // If someone's not in a team, instead of forcing their 'channel' to public,
+        // we just tell them they can't.
+        if (chatMode != ChatMode.PUBLIC && team == null) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't speak in non-public chat if you're not in a team!");
+            return;
+        }
 
         // and here starts the big logic switch
         switch (chatMode) {
