@@ -433,6 +433,11 @@ public class ServerHandler {
     public void handleShopSign(Sign sign, Player player) {
         ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
+        if (Basic.get().getEconomyManager().getBalance(player.getName()) == Float.NaN) {
+            player.sendMessage("§cYou cannot use the shop. Contact an admin.");
+            return;
+        }
+
         if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
             return;
@@ -450,6 +455,7 @@ public class ServerHandler {
             }
 
             if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
+
                 if (player.getInventory().firstEmpty() != -1) {
                     Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
 
