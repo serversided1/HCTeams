@@ -34,7 +34,7 @@ public class PayCommand {
             return;
         }
 
-        if (value == Float.NaN) {
+        if (Float.isNaN(value)) {
             sender.sendMessage(ChatColor.RED + "Nope.");
             return;
         }
