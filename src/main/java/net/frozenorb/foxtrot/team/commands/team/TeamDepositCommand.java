@@ -26,6 +26,11 @@ public class TeamDepositCommand {
             return;
         }
 
+        if (amount == Float.NaN) {
+            sender.sendMessage(ChatColor.RED + "Nope.");
+            return;
+        }
+
         if (Basic.get().getEconomyManager().getBalance(sender.getName()) < amount) {
             sender.sendMessage(ChatColor.RED + "You don't have enough money to do this!");
             return;

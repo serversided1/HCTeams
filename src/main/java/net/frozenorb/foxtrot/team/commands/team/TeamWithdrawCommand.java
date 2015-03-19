@@ -32,6 +32,11 @@ public class TeamWithdrawCommand {
                 return;
             }
 
+            if (amount == Float.NaN) {
+                sender.sendMessage(ChatColor.RED + "Nope.");
+                return;
+            }
+
             Basic.get().getEconomyManager().depositPlayer(sender.getName(), amount);
             sender.sendMessage(ChatColor.YELLOW + "You have withdrawn " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " from the team balance!");
 
