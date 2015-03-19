@@ -46,32 +46,32 @@ public class Foxtrot extends JavaPlugin {
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
 
-    @Getter private PlaytimeMap playtimeMap = new PlaytimeMap();
-    @Getter private OppleMap oppleMap = new OppleMap();
-    @Getter private DeathbanMap deathbanMap = new DeathbanMap();
-    @Getter private PvPTimerMap PvPTimerMap = new PvPTimerMap();
-    @Getter private KillsMap killsMap = new KillsMap();
-    @Getter private ChatModeMap chatModeMap = new ChatModeMap();
-    @Getter private FishingKitMap fishingKitMap = new FishingKitMap();
-    @Getter private ToggleGlobalChatMap toggleGlobalChatMap = new ToggleGlobalChatMap();
-    @Getter private ChatSpyMap chatSpyMap = new ChatSpyMap();
-    @Getter private DiamondMinedMap diamondMinedMap = new DiamondMinedMap();
-    @Getter private GoldMinedMap goldMinedMap = new GoldMinedMap();
-    @Getter private IronMinedMap ironMinedMap = new IronMinedMap();
-    @Getter private CoalMinedMap coalMinedMap = new CoalMinedMap();
-    @Getter private RedstoneMinedMap redstoneMinedMap = new RedstoneMinedMap();
-    @Getter private LapisMinedMap lapisMinedMap = new LapisMinedMap();
-    @Getter private EmeraldMinedMap emeraldMinedMap = new EmeraldMinedMap();
-    @Getter private FirstJoinMap firstJoinMap = new FirstJoinMap();
-    @Getter private LastJoinMap lastJoinMap = new LastJoinMap();
-    @Getter private SoulboundLivesMap soulboundLivesMap = new SoulboundLivesMap();
-    @Getter private FriendLivesMap friendLivesMap = new FriendLivesMap();
-    @Getter private TransferableLivesMap transferableLivesMap = new TransferableLivesMap();
-    @Getter private BaseStatisticMap enderPearlsUsedMap = new EnderPearlsUsedMap();
-    @Getter private BaseStatisticMap expCollectedMap = new ExpCollectedMap();
-    @Getter private BaseStatisticMap itemsRepairedMap = new ItemsRepairedMap();
-    @Getter private BaseStatisticMap splashPotionsBrewedMap = new SplashPotionsBrewedMap();
-    @Getter private BaseStatisticMap splashPotionsUsedMap = new SplashPotionsUsedMap();
+    @Getter private PlaytimeMap playtimeMap;
+    @Getter private OppleMap oppleMap;
+    @Getter private DeathbanMap deathbanMap;
+    @Getter private PvPTimerMap PvPTimerMap;
+    @Getter private KillsMap killsMap;
+    @Getter private ChatModeMap chatModeMap;
+    @Getter private FishingKitMap fishingKitMap;
+    @Getter private ToggleGlobalChatMap toggleGlobalChatMap;
+    @Getter private ChatSpyMap chatSpyMap;
+    @Getter private DiamondMinedMap diamondMinedMap;
+    @Getter private GoldMinedMap goldMinedMap;
+    @Getter private IronMinedMap ironMinedMap;
+    @Getter private CoalMinedMap coalMinedMap;
+    @Getter private RedstoneMinedMap redstoneMinedMap;
+    @Getter private LapisMinedMap lapisMinedMap;
+    @Getter private EmeraldMinedMap emeraldMinedMap;
+    @Getter private FirstJoinMap firstJoinMap;
+    @Getter private LastJoinMap lastJoinMap;
+    @Getter private SoulboundLivesMap soulboundLivesMap;
+    @Getter private FriendLivesMap friendLivesMap;
+    @Getter private TransferableLivesMap transferableLivesMap;
+    @Getter private BaseStatisticMap enderPearlsUsedMap;
+    @Getter private BaseStatisticMap expCollectedMap;
+    @Getter private BaseStatisticMap itemsRepairedMap;
+    @Getter private BaseStatisticMap splashPotionsBrewedMap;
+    @Getter private BaseStatisticMap splashPotionsUsedMap;
 
     @Override
     public void onEnable() {
@@ -88,6 +88,7 @@ public class Foxtrot extends JavaPlugin {
         //(new PacketBorderThread()).start();
 
         setupHandlers();
+        setupPersistence();
         setupListeners();
 
         Shared.get().getProfileManager().setNametagsEnabled(false);
@@ -162,6 +163,36 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
+    }
+
+    private void setupPersistence() {
+        (playtimeMap = new PlaytimeMap()).loadFromRedis();
+        (oppleMap = new OppleMap()).loadFromRedis();
+        (deathbanMap = new DeathbanMap()).loadFromRedis();
+        (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
+        (killsMap = new KillsMap()).loadFromRedis();
+        (chatModeMap = new ChatModeMap()).loadFromRedis();
+        (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
+        (fishingKitMap = new FishingKitMap()).loadFromRedis();
+        (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();
+        (friendLivesMap = new FriendLivesMap()).loadFromRedis();
+        (transferableLivesMap = new TransferableLivesMap()).loadFromRedis();
+        (chatSpyMap = new ChatSpyMap()).loadFromRedis();
+        (diamondMinedMap = new DiamondMinedMap()).loadFromRedis();
+        (goldMinedMap = new GoldMinedMap()).loadFromRedis();
+        (ironMinedMap = new IronMinedMap()).loadFromRedis();
+        (coalMinedMap = new CoalMinedMap()).loadFromRedis();
+        (redstoneMinedMap = new RedstoneMinedMap()).loadFromRedis();
+        (lapisMinedMap = new LapisMinedMap()).loadFromRedis();
+        (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
+        (firstJoinMap = new FirstJoinMap()).loadFromRedis();
+        (lastJoinMap = new LastJoinMap()).loadFromRedis();
+
+        (enderPearlsUsedMap = new EnderPearlsUsedMap()).loadFromRedis();
+        (expCollectedMap = new ExpCollectedMap()).loadFromRedis();
+        (itemsRepairedMap = new ItemsRepairedMap()).loadFromRedis();
+        (splashPotionsBrewedMap = new SplashPotionsBrewedMap()).loadFromRedis();
+        (splashPotionsUsedMap = new SplashPotionsUsedMap()).loadFromRedis();
     }
 
 }
