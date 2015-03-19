@@ -16,6 +16,12 @@ public class SetBalCommand {
             return;
         }
 
+        if (value == Float.NaN) {
+            sender.sendMessage("§cWhy are you trying to do that?");
+            return;
+        }
+
+
         if (value > 250000 && sender instanceof Player) {
             sender.sendMessage("§cWhat the fuck are you trying to do?");
             return;
