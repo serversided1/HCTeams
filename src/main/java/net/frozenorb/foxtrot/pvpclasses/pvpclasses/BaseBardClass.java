@@ -120,7 +120,7 @@ public class BaseBardClass extends PvPClass {
         boolean negative = bardEffect.getPotionEffect() != null && FoxListener.DEBUFFS.contains(bardEffect.getPotionEffect().getType());
 
         getLastEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + EFFECT_COOLDOWN);
-        SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 60 : 30);
+        SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 30 : 30);
         giveBardEffect(event.getPlayer(), bardEffect, !negative, true);
 
         if (event.getPlayer().getItemInHand().getAmount() == 1) {
