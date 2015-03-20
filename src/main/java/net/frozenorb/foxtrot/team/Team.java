@@ -69,6 +69,7 @@ public class Team {
     @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
+    @Getter private String announcement;
 
     public Team(String name) {
         this.name = name;
@@ -159,6 +160,12 @@ public class Team {
         }
 
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
+        flagForSave();
+    }
+
+    public void setAnnouncement(String announcement) {
+        this.announcement = announcement;
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Announcement Changed: " + announcement);
         flagForSave();
     }
 
@@ -540,6 +547,8 @@ public class Team {
                         getSubclaims().add(subclaimObj);
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("Announcement")) {
+                setAnnouncement(lineParts[0]);
             }
         }
 
@@ -608,6 +617,7 @@ public class Team {
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
+        teamString.append("Announcement:").append(getAnnouncement().replace("\n", "")).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -632,6 +642,7 @@ public class Team {
         dbObject.put("Balance", getBalance());
         dbObject.put("Name", getName());
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
+        dbObject.put("Announcement", getAnnouncement());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
@@ -760,6 +771,11 @@ public class Team {
 
         if (DTRHandler.isOnCooldown(this)) {
             player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+        }
+
+        // Only show this if they're a member.
+        if (isMember(player.getUniqueId()) && announcement != null) {
+            player.sendMessage(ChatColor.YELLOW + "Announcement: " + ChatColor.GRAY + announcement);
         }
 
         player.sendMessage(GRAY_LINE);
