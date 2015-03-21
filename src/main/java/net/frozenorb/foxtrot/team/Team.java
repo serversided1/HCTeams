@@ -617,7 +617,7 @@ public class Team {
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
-        teamString.append("Announcement:").append(getAnnouncement().replace("\n", "")).append("\n");
+        teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
