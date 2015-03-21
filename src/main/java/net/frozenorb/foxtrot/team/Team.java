@@ -775,7 +775,7 @@ public class Team {
 
         // Only show this if they're a member.
         if (isMember(player.getUniqueId()) && announcement != null) {
-            player.sendMessage(ChatColor.YELLOW + "Announcement: " + ChatColor.GRAY + announcement);
+            player.sendMessage(ChatColor.YELLOW + "Announcement: " + ChatColor.LIGHT_PURPLE + announcement);
         }
 
         player.sendMessage(GRAY_LINE);
