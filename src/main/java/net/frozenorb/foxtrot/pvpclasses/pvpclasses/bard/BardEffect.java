@@ -22,7 +22,7 @@ public class BardEffect {
     public BardEffect(PotionEffect potionEffect, int energy, String description) {
         this.potionEffect = potionEffect;
         this.energy = energy;
-        this.description = ChatColor.YELLOW + description;
+        this.description = description;
     }
 
 }

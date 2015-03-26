@@ -131,7 +131,7 @@ public class BardClass extends PvPClass implements Listener {
 
     @EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        ItemStack newItem = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
+        ItemStack newItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
         if (newItem == null) {
             return;
