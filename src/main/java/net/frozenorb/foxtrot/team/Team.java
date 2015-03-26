@@ -127,12 +127,14 @@ public class Team {
     public void addMember(UUID member) {
         members.add(member);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + UUIDUtils.formatPretty(member));
+        pushToMongoLog(new BasicDBObject("Type", "MemberAdded").append("Member", member.toString()));
         flagForSave();
     }
 
     public void addCaptain(UUID captain) {
         captains.add(captain);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + UUIDUtils.formatPretty(captain));
+        pushToMongoLog(new BasicDBObject("Type", "CaptainAdded").append("Captain", captain.toString()));
         flagForSave();
     }
 
@@ -149,6 +151,7 @@ public class Team {
     public void removeCaptain(UUID captain) {
         captains.remove(captain);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + UUIDUtils.formatPretty(captain));
+        pushToMongoLog(new BasicDBObject("Type", "CaptainRemoved").append("Captain", captain.toString()));
         flagForSave();
     }
 
@@ -160,6 +163,7 @@ public class Team {
         }
 
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
+        pushToMongoLog(new BasicDBObject("Type", "OwnerChanged").append("NewOwner", owner == null ? "null" : owner.toString()));
         flagForSave();
     }
 
@@ -308,6 +312,7 @@ public class Team {
         }
 
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + UUIDUtils.formatPretty(member));
+        pushToMongoLog(new BasicDBObject("Type", "MemberRemoved").append("Member", member.toString()));
         flagForSave();
         return (owner == null || members.size() == 0);
     }
@@ -678,6 +683,16 @@ public class Team {
         float pitch = Float.parseFloat(args[5]);
 
         return (new Location(world, x, y, z, yaw, pitch));
+    }
+
+    public void pushToMongoLog(BasicDBObject toLog) {
+        DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("TeamLog");
+
+        toLog.put("Team", getUniqueId().toString());
+        toLog.put("TeamName", getName());
+        toLog.put("Date", new Date());
+
+        teamLogCollection.insert(toLog);
     }
 
     public void sendTeamInfo(Player player) {
