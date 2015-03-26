@@ -58,11 +58,11 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
-                            float diff = Foxtrot.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) - System.currentTimeMillis();
+                        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+                            int secondsRemaining = Foxtrot.getInstance().getPvPTimerMap().getSecondsRemaining(player.getUniqueId());
 
-                            if (diff >= 0) {
-                                return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
+                            if (secondsRemaining >= 0) {
+                                return (ScoreFunction.TIME_SIMPLE.apply((float) secondsRemaining));
                             }
                         }
 

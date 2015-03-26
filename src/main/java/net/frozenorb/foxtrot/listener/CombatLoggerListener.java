@@ -170,7 +170,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
+            if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(damager.getUniqueId())) {
                 event.setCancelled(true);
                 return;
             }
@@ -198,7 +198,7 @@ public class CombatLoggerListener implements Listener {
         }
 
         // If they have a PvP timer.
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId())) {
             return;
         }
 

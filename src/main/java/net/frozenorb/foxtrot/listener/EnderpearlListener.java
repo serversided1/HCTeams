@@ -86,7 +86,7 @@ public class EnderpearlListener implements Listener {
 
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId()) && ownerTo != null) {
             if (ownerTo.isMember(event.getPlayer().getUniqueId())) {
                 Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
             } else if (ownerTo.getOwner() != null) {

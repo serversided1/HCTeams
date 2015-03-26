@@ -7,7 +7,6 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -240,7 +239,7 @@ public class ServerHandler {
 
             if (inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 // Remove their PvP timer.
-                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) == PvPTimerMap.PENDING_USE) {
+                if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(player.getUniqueId())) {
                     Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                 }
 
@@ -278,7 +277,7 @@ public class ServerHandler {
 
                 if (time == 0) {
                     // Remove their PvP timer.
-                    if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().getTimer(player.getUniqueId()) == PvPTimerMap.PENDING_USE) {
+                    if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 

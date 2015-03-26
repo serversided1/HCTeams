@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -73,7 +72,7 @@ public class FoxListener implements Listener {
 
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
             Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
         }
 
@@ -89,8 +88,8 @@ public class FoxListener implements Listener {
 
             // PVP Timer
             if (from.getRegionType() == RegionType.SPAWN) {
-                if (Foxtrot.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getUniqueId()) == PvPTimerMap.PENDING_USE) {
-                    Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
+                if (Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(event.getPlayer().getUniqueId())) {
+                    Foxtrot.getInstance().getPvPTimerMap().createActiveTimer(event.getPlayer().getUniqueId(), 30 * 60); // 30 minutes
                 }
             }
 
@@ -121,12 +120,7 @@ public class FoxListener implements Listener {
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
         }
 
-        // PVP timer
-        if (!Foxtrot.getInstance().getPvPTimerMap().contains(event.getPlayer().getUniqueId())) {
-            Foxtrot.getInstance().getPvPTimerMap().pendingTimer(event.getPlayer().getUniqueId());
-        }
-
-        if (Foxtrot.getInstance().getPvPTimerMap().getTimer(event.getPlayer().getUniqueId()) == PvPTimerMap.PENDING_USE) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
     }
@@ -158,7 +152,7 @@ public class FoxListener implements Listener {
                         Potion pot = Potion.fromItemStack(i);
 
                         if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
-                            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                            if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
                                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                                 event.setCancelled(true);

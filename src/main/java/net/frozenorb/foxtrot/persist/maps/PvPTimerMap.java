@@ -2,16 +2,38 @@ package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Date;
 import java.util.UUID;
 
 public class PvPTimerMap extends PersistMap<Long> {
 
-    public static final long PENDING_USE = -10L;
+    // All the weird casts to int are because this is (mid map 4) stored as a long, and we can't really change that. Map 5 we'll fix this.
+    public static final int PENDING_USE = -10;
 
     public PvPTimerMap() {
         super("PvPTimers", "PvPTimer");
+
+        // This should probably use a bit smarter of a system... but for now it's fine.
+        new BukkitRunnable() {
+
+            public void run() {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    if (hasActiveTimer(player.getUniqueId())) {
+                        if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+                            continue;
+                        }
+
+                        updateValueAsync(player.getUniqueId(), getValue(player.getUniqueId()) - 20);
+                    }
+                 }
+            }
+
+        }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 20L, 20L);
     }
 
     @Override
@@ -21,7 +43,26 @@ public class PvPTimerMap extends PersistMap<Long> {
 
     @Override
     public Long getJavaObject(String str) {
-        return (Long.parseLong(str));
+        long parsed = Long.parseLong(str);
+        long parsedOrig = parsed;
+
+        // Converter
+        if (parsed == -1) {
+            parsed = 0;
+        } else if (parsed > 30 * 60) {
+            long millisLeft = parsed - System.currentTimeMillis();
+            parsed = millisLeft / 1000L;
+
+            if (parsed < 20) {
+                parsed = 0;
+            }
+        }
+
+        if (parsedOrig != parsed) {
+            Foxtrot.getInstance().getLogger().info("[PvP Timer Converter] Converted entry. Original: " + parsedOrig + ", New: " + parsed);
+        }
+
+        return (parsed);
     }
 
     @Override
@@ -29,45 +70,44 @@ public class PvPTimerMap extends PersistMap<Long> {
         return (new Date(time));
     }
 
-    public void pendingTimer(UUID update){
-        updateValueAsync(update, PENDING_USE);
+    public void removeTimer(UUID update) {
+        updateValueAsync(update, 0L);
     }
 
-    public void createTimer(UUID update, int seconds) {
-        updateValueAsync(update, System.currentTimeMillis() + (seconds * 1000));
+    public void createPendingTimer(UUID update) {
+        updateValueAsync(update, (long) PENDING_USE);
     }
 
-    public boolean hasTimer(UUID check) {
-        if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+    public boolean hasPendingTimer(UUID check) {
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            return (false);
+        }
+
+        return (getValue(check) == PENDING_USE);
+    }
+
+    public void createActiveTimer(UUID update, int seconds) {
+        updateValueAsync(update, (long) seconds);
+    }
+
+    public boolean hasActiveTimer(UUID check) {
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return (false);
         }
 
         if (contains(check)) {
-            return (getValue(check) != PENDING_USE && getValue(check) > System.currentTimeMillis());
+            return (getValue(check) > 0);
         }
 
         return (false);
     }
 
-    public long getTimer(UUID check) {
-        return (contains(check) ? getValue(check) : -1L);
-    }
-
-    public void removeTimer(UUID update) {
-        updateValueAsync(update, -1L);
-    }
-
-    public boolean contains(UUID check) {
-        return (super.contains(check));
-    }
-
-    @Override
-    public Long getValue(UUID check) {
+    public int getSecondsRemaining(UUID check) {
         if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            return (-1L);
+            return (0);
         }
 
-        return (super.getValue(check));
+        return (contains(check) ? getValue(check).intValue() : 0);
     }
 
 }

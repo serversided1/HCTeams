@@ -26,7 +26,7 @@ public class PvPTimerListener implements Listener {
 
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId())) {
             if (droppedItems.contains(event.getItem().getEntityId())) {
                 event.setCancelled(true);
             }
@@ -77,7 +77,7 @@ public class PvPTimerListener implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+            if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                 event.setCancelled(true);
@@ -107,14 +107,14 @@ public class PvPTimerListener implements Listener {
             return;
         }
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(damager.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(damager.getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
             damager.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
             event.setCancelled(true);
             return;
         }
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getEntity().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getEntity().getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
             event.setCancelled(true);
         }
