@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BaseBardClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
 import net.frozenorb.qlib.scoreboard.ScoreGetter;
@@ -111,8 +111,8 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        if (BaseBardClass.getLastEffectUsage().containsKey(player.getName()) && BaseBardClass.getLastEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
-                            float diff = BaseBardClass.getLastEffectUsage().get(player.getName()) - System.currentTimeMillis();
+                        if (BardClass.getLastEffectUsage().containsKey(player.getName()) && BardClass.getLastEffectUsage().get(player.getName()) >= System.currentTimeMillis()) {
+                            float diff = BardClass.getLastEffectUsage().get(player.getName()) - System.currentTimeMillis();
 
                             if (diff > 0) {
                                 return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
@@ -145,12 +145,12 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        if (BaseBardClass.getEnergy().containsKey(player.getName())) {
-                            float energy = BaseBardClass.getEnergy().get(player.getName());
+                        if (BardClass.getEnergy().containsKey(player.getName())) {
+                            float energy = BardClass.getEnergy().get(player.getName());
 
                             if (energy > 0) {
                                 // No function here, as it's a "raw" value.
-                                return (String.valueOf(BaseBardClass.getEnergy().get(player.getName())));
+                                return (String.valueOf(BardClass.getEnergy().get(player.getName())));
                             }
                         }
 
