@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -25,6 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EnchantmentLimiterListener implements Listener {
+
+    public static final ImmutableSet<Character> ITEM_NAME_CHARACTER_BLACKLIST = ImmutableSet.of(
+            '卍'
+    );
 
     private Map<String, Long> lastArmorCheck = new HashMap<>();
     private Map<String, Long> lastSwordCheck = new HashMap<>();
@@ -105,16 +110,21 @@ public class EnchantmentLimiterListener implements Listener {
         }
     }
 
-    private final char[] allowed = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_' ".toCharArray();
-
     private String fixName(String name) {
         StringBuilder result = new StringBuilder();
 
         for (char nameCharacter : name.toCharArray()) {
-            for (char whitelistCharacter : allowed) {
-                if (nameCharacter == whitelistCharacter) {
-                    result.append(whitelistCharacter);
+            boolean blacklisted = false;
+
+            for (char blacklistCharacter : ITEM_NAME_CHARACTER_BLACKLIST) {
+                if (nameCharacter == blacklistCharacter) {
+                    blacklisted = true;
+                    break;
                 }
+            }
+
+            if (!blacklisted) {
+                result.append(nameCharacter);
             }
         }
 
