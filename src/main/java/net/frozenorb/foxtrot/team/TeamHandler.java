@@ -32,10 +32,15 @@ public class TeamHandler {
             for (String key : redis.keys("fox_teams.*")) {
                 String loadString = redis.get(key);
 
-                Team team = new Team(key.split("\\.")[1]);
-                team.load(loadString);
+                try {
+                    Team team = new Team(key.split("\\.")[1]);
+                    team.load(loadString);
 
-                setupTeam(team);
+                    setupTeam(team);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Foxtrot.getInstance().getLogger().severe("Could not load team from raw string: " + loadString);
+                }
             }
 
             return (null);
