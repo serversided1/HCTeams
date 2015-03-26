@@ -5,11 +5,17 @@ import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BardEffect {
 
     @Getter private PotionEffect potionEffect;
     @Getter private int energy;
     @Getter private String description;
+
+    // For the message we send when you select the (de)buff in your hotbar.
+    @Getter private Map<String, Long> lastMessageSent = new HashMap<>();
 
     public BardEffect(PotionEffect potionEffect) {
         this(potionEffect, -1);

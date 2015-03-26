@@ -127,6 +127,14 @@ public class BardClass extends PvPClass implements Listener {
     @Override
     public void remove(Player player) {
         energy.remove(player.getName());
+
+        for (BardEffect bardEffect : BARD_CLICK_EFFECTS.values()) {
+            bardEffect.getLastMessageSent().remove(player.getName());
+        }
+
+        for (BardEffect bardEffect : BARD_CLICK_EFFECTS.values()) {
+            bardEffect.getLastMessageSent().remove(player.getName());
+        }
     }
 
     @EventHandler
@@ -138,31 +146,21 @@ public class BardClass extends PvPClass implements Listener {
         }
 
         BardEffect clickEffect = BARD_CLICK_EFFECTS.get(newItem.getType());
-        BardEffect passiveEffect = BARD_PASSIVE_EFFECTS.get(newItem.getType());
 
-        // Then this 100% isn't a Bard item. Oh well.
-        if (clickEffect == null && passiveEffect == null) {
+        if (clickEffect == null) {
             return;
         }
 
+        if (clickEffect.getLastMessageSent().containsKey(event.getPlayer().getName()) && clickEffect.getLastMessageSent().get(event.getPlayer().getName()) + 5000L > System.currentTimeMillis()) {
+            return;
+        }
+
+        clickEffect.getLastMessageSent().put(event.getPlayer().getName(), System.currentTimeMillis());
+
         event.getPlayer().sendMessage(Team.GRAY_LINE);
-
-        if (clickEffect != null) {
-            event.getPlayer().sendMessage(ChatColor.BLUE + "Click effect:");
-            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
-            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
-
-            // Send a spacer if this item has both 'types' of effects.
-            if (passiveEffect != null) {
-                event.getPlayer().sendMessage("");
-            }
-        }
-
-        if (passiveEffect != null) {
-            event.getPlayer().sendMessage(ChatColor.BLUE + "Passive effect:");
-            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + passiveEffect.getDescription());
-        }
-
+        event.getPlayer().sendMessage(ChatColor.BLUE + "Click effect:");
+        event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
+        event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
         event.getPlayer().sendMessage(Team.GRAY_LINE);
     }
 
