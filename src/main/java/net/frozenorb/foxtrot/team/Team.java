@@ -431,7 +431,7 @@ public class Team {
     public void load(String str) {
         loading = true;
         String[] lines = str.split("\n");
-        System.out.println(str);
+        //System.out.println(str);
 
         for (String line : lines) {
             String identifier = line.substring(0, line.indexOf(':'));
