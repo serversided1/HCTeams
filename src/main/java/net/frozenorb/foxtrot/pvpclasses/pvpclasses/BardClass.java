@@ -151,7 +151,7 @@ public class BardClass extends PvPClass implements Listener {
             return;
         }
 
-        if (clickEffect.getLastMessageSent().containsKey(event.getPlayer().getName()) && clickEffect.getLastMessageSent().get(event.getPlayer().getName()) + 5000L > System.currentTimeMillis()) {
+        if (clickEffect.getLastMessageSent().containsKey(event.getPlayer().getName()) && clickEffect.getLastMessageSent().get(event.getPlayer().getName()) + 3000L > System.currentTimeMillis()) {
             return;
         }
 
