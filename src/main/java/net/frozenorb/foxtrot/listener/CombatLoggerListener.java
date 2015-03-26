@@ -1,9 +1,13 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
+import net.frozenorb.mShared.Shared;
 import net.minecraft.server.v1_7_R4.EntityHuman;
 import net.minecraft.server.v1_7_R4.EntityPlayer;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
@@ -28,11 +32,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CombatLoggerListener implements Listener {
 
@@ -96,6 +98,8 @@ public class CombatLoggerListener implements Listener {
                 target.getInventory().clear();
                 target.getInventory().setArmorContents(null);
                 humanTarget.setHealth(0);
+
+                spoofWebsiteData(target, event.getEntity().getKiller());
                 target.saveData();
             }
         }
@@ -308,6 +312,93 @@ public class CombatLoggerListener implements Listener {
         private String playerName;
         private UUID playerUUID;
 
+    }
+
+    private void spoofWebsiteData(Player killed, Player killer) {
+        final BasicDBObject playerDeath = new BasicDBObject();
+
+        if (killer != null) {
+            playerDeath.append("soups", -1);
+            playerDeath.append("healthLeft", (int) killer.getHealth());
+            playerDeath.append("killer", killer.getName());
+            playerDeath.append("killerUUID", killer.getUniqueId().toString().replace("-", ""));
+            playerDeath.append("killerHunger", killer.getFoodLevel());
+
+            if (killer.getItemInHand() != null) {
+                playerDeath.append("item", Shared.get().getUtilities().getDatabaseRepresentation(killer.getItemInHand()));
+            } else {
+                playerDeath.append("item", "NONE");
+            }
+        } else {
+            try{
+                playerDeath.append("reason", "combat-logger");
+            } catch (NullPointerException ignored) {
+
+            }
+        }
+
+        playerDeath.append("playerHunger", killed.getFoodLevel());
+
+        BasicDBObject playerInv = new BasicDBObject();
+        BasicDBObject armor = new BasicDBObject();
+
+        armor.put("helmet", new ItemStackSerializer().serialize(killed.getInventory().getHelmet()));
+        armor.put("chestplate", new ItemStackSerializer().serialize(killed.getInventory().getChestplate()));
+        armor.put("leggings", new ItemStackSerializer().serialize(killed.getInventory().getLeggings()));
+        armor.put("boots", new ItemStackSerializer().serialize(killed.getInventory().getBoots()));
+
+        BasicDBList contents = new BasicDBList();
+
+        for (int i = 0; i < 9; i++) {
+            if (killed.getInventory().getItem(i) != null) {
+                contents.add(new ItemStackSerializer().serialize(killed.getInventory().getItem(i)));
+            } else {
+                contents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+            }
+        }
+
+        playerInv.append("armor", armor);
+        playerInv.append("items", contents);
+
+        playerDeath.append("playerInventory", playerInv);
+
+        if (killer != null) {
+            BasicDBObject killerInventory = new BasicDBObject();
+            BasicDBObject killerArmor = new BasicDBObject();
+
+            armor.put("helmet", new ItemStackSerializer().serialize(killer.getInventory().getHelmet()));
+            armor.put("chestplate", new ItemStackSerializer().serialize(killer.getInventory().getChestplate()));
+            armor.put("leggings", new ItemStackSerializer().serialize(killer.getInventory().getLeggings()));
+            armor.put("boots", new ItemStackSerializer().serialize(killer.getInventory().getBoots()));
+
+            BasicDBList killerContents = new BasicDBList();
+
+            for (int i = 0; i < 9; i++) {
+                if (killer.getInventory().getItem(i) != null) {
+                    killerContents.add(new ItemStackSerializer().serialize(killer.getInventory().getItem(i)));
+                } else {
+                    killerContents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                }
+            }
+
+            killerInventory.append("armor", killerArmor);
+            killerInventory.append("items", killerContents);
+            playerDeath.append("killerInventory", killerInventory);
+        }
+
+        playerDeath.append("ip", killed.getAddress().toString().split(":")[0].replace("/", ""));
+        playerDeath.append("uuid", killed.getUniqueId().toString());
+        playerDeath.append("player", killed.getName());
+        playerDeath.append("type", "death");
+        playerDeath.append("when", new Date());
+
+        new BukkitRunnable() {
+
+            public void run() {
+                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
 }
