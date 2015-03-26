@@ -28,7 +28,7 @@ public class PvPTimerMap extends PersistMap<Long> {
                             continue;
                         }
 
-                        updateValueAsync(player.getUniqueId(), getValue(player.getUniqueId()) - 20);
+                        updateValueAsync(player.getUniqueId(), getValue(player.getUniqueId()) - 1);
                     }
                  }
             }
