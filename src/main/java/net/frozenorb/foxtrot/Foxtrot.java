@@ -73,6 +73,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private BaseStatisticMap splashPotionsBrewedMap;
     @Getter private BaseStatisticMap splashPotionsUsedMap;
     @Getter private WrappedBalanceMap wrappedBalanceMap;
+    @Getter private ToggleFoundDiamondsMap toggleFoundDiamondsMap;
 
     @Override
     public void onEnable() {
@@ -194,6 +195,7 @@ public class Foxtrot extends JavaPlugin {
         (splashPotionsBrewedMap = new SplashPotionsBrewedMap()).loadFromRedis();
         (splashPotionsUsedMap = new SplashPotionsUsedMap()).loadFromRedis();
         (wrappedBalanceMap = new WrappedBalanceMap()).loadFromRedis();
+        (toggleFoundDiamondsMap = new ToggleFoundDiamondsMap()).loadFromRedis();
     }
 
 }
