@@ -24,6 +24,12 @@ public class TeamAnnouncementCommand {
             return;
         }
 
+        if (newAnnouncement.equalsIgnoreCase("clear")) {
+            team.setAnnouncement(null);
+            sender.sendMessage(ChatColor.YELLOW + "Team announcement cleared.");
+            return;
+        }
+
         team.setAnnouncement(newAnnouncement);
 
         for (Player onlinePlayer : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
