@@ -130,6 +130,43 @@ public class BardClass extends PvPClass implements Listener {
     }
 
     @EventHandler
+    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
+        ItemStack newItem = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
+
+        if (newItem == null) {
+            return;
+        }
+
+        BardEffect clickEffect = BARD_CLICK_EFFECTS.get(newItem.getType());
+        BardEffect passiveEffect = BARD_PASSIVE_EFFECTS.get(newItem.getType());
+
+        // Then this 100% isn't a Bard item. Oh well.
+        if (clickEffect == null && passiveEffect == null) {
+            return;
+        }
+
+        event.getPlayer().sendMessage(Team.GRAY_LINE);
+
+        if (clickEffect != null) {
+            event.getPlayer().sendMessage(ChatColor.BLUE + "Click effect:");
+            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
+            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
+
+            // Send a spacer if this item has both 'types' of effects.
+            if (passiveEffect != null) {
+                event.getPlayer().sendMessage("");
+            }
+        }
+
+        if (passiveEffect != null) {
+            event.getPlayer().sendMessage(ChatColor.BLUE + "Passive effect:");
+            event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + passiveEffect.getDescription());
+        }
+
+        event.getPlayer().sendMessage(Team.GRAY_LINE);
+    }
+
+    @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (!event.getAction().name().contains("RIGHT_") || !event.hasItem() || !BARD_CLICK_EFFECTS.containsKey(event.getItem().getType()) || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
             return;
