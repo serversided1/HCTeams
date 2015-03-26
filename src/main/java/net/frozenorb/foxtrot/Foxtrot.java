@@ -72,6 +72,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private BaseStatisticMap itemsRepairedMap;
     @Getter private BaseStatisticMap splashPotionsBrewedMap;
     @Getter private BaseStatisticMap splashPotionsUsedMap;
+    @Getter private WrappedBalanceMap wrappedBalanceMap;
 
     @Override
     public void onEnable() {
@@ -187,12 +188,12 @@ public class Foxtrot extends JavaPlugin {
         (emeraldMinedMap = new EmeraldMinedMap()).loadFromRedis();
         (firstJoinMap = new FirstJoinMap()).loadFromRedis();
         (lastJoinMap = new LastJoinMap()).loadFromRedis();
-
         (enderPearlsUsedMap = new EnderPearlsUsedMap()).loadFromRedis();
         (expCollectedMap = new ExpCollectedMap()).loadFromRedis();
         (itemsRepairedMap = new ItemsRepairedMap()).loadFromRedis();
         (splashPotionsBrewedMap = new SplashPotionsBrewedMap()).loadFromRedis();
         (splashPotionsUsedMap = new SplashPotionsUsedMap()).loadFromRedis();
+        (wrappedBalanceMap = new WrappedBalanceMap()).loadFromRedis();
     }
 
 }

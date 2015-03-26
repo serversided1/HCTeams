@@ -1,0 +1,56 @@
+package net.frozenorb.foxtrot.persist.maps;
+
+import net.frozenorb.foxtrot.persist.PersistMap;
+import net.frozenorb.mBasic.Basic;
+import net.frozenorb.mBasic.EconomySystem.EconomyListener;
+import net.frozenorb.qlib.util.UUIDUtils;
+
+import java.util.UUID;
+
+public class WrappedBalanceMap extends PersistMap<Double> {
+
+    public WrappedBalanceMap() {
+        super("WrappedBalances", "Balance");
+        Basic.get().getEconomyManager().registerListener(new FoxEconomyListener());
+    }
+
+    @Override
+    public String getRedisValue(Double balance) {
+        return (String.valueOf(balance));
+    }
+
+    @Override
+    public Double getJavaObject(String str) {
+        return (Double.parseDouble(str));
+    }
+
+    @Override
+    public Object getMongoValue(Double balance) {
+        return (balance);
+    }
+
+    public double getBalance(UUID check) {
+        return (contains(check) ? getValue(check) : 0);
+    }
+
+    public void setBalance(UUID update, double balance) {
+        updateValueAsync(update, balance);
+    }
+
+    private class FoxEconomyListener implements EconomyListener {
+
+        public void onDeposit(String var1, double var2) {
+            setBalance(UUIDUtils.uuid(var1), var2);
+        }
+
+        public void onWithdraw(String var1, double var2) {
+            setBalance(UUIDUtils.uuid(var1), var2);
+        }
+
+        public void onBalanceChanged(String var1, double var2) {
+            setBalance(UUIDUtils.uuid(var1), var2);
+        }
+
+    }
+
+}
