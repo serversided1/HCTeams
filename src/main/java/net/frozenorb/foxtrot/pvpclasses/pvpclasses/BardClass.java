@@ -249,6 +249,10 @@ public class BardClass extends PvPClass implements Listener {
             if (entity instanceof Player) {
                 Player nearbyPlayer = (Player) entity;
 
+                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(nearbyPlayer.getUniqueId())) {
+                    continue;
+                }
+
                 if (sourceTeam == null) {
                     if (!friendly) {
                         valid.add(nearbyPlayer);
