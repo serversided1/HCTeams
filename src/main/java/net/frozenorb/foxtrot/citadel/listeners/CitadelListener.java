@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.text.SimpleDateFormat;
 
@@ -61,7 +62,14 @@ public class CitadelListener implements Listener {
     public void onHour(HourEvent event) {
         // Every other hour
         if (event.getHour() % 2 == 0) {
-            Foxtrot.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
+            new BukkitRunnable() {
+
+                public void run() {
+                    Foxtrot.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
+                }
+
+            }.runTaskAsynchronously(Foxtrot.getInstance());
+
             Foxtrot.getInstance().getCitadelHandler().respawnCitadelChests();
         }
     }

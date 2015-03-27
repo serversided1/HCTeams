@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.koth.listeners;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
@@ -82,9 +83,15 @@ public class KOTHListener implements Listener {
                 break;
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            player.sendMessage(messages);
-        }
+        new BukkitRunnable() {
+
+            public void run() {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    player.sendMessage(messages);
+                }
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
 
         // Can't forget console now can we
         for (String message : messages) {
@@ -140,10 +147,16 @@ public class KOTHListener implements Listener {
             }
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            player.sendMessage(filler);
-            player.sendMessage(messages);
-        }
+        new BukkitRunnable() {
+
+            public void run() {
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    player.sendMessage(filler);
+                    player.sendMessage(messages);
+                }
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
 
         // Can't forget console now can we
         // but we don't want to give console the filler.
@@ -173,7 +186,13 @@ public class KOTHListener implements Listener {
     @EventHandler
     public void onKOTHControlLost(KOTHControlLostEvent event) {
         if (event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
-            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
+            new BukkitRunnable() {
+
+                public void run() {
+                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
+                }
+
+            }.runTaskAsynchronously(Foxtrot.getInstance());
         }
     }
 
