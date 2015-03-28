@@ -46,7 +46,7 @@ public class BardClass extends PvPClass implements Listener {
         super("Bard", 15, "GOLD_", null);
 
         // Click buffs
-        BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1), 45));
+        BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 10, 0), 35));
         BARD_CLICK_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 2), 25));
         BARD_CLICK_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 6), 25));
         BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 2), 40));
@@ -57,7 +57,6 @@ public class BardClass extends PvPClass implements Listener {
         BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new BardEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 35));
 
         // Passive buffs
-        BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0)));
         BARD_PASSIVE_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 1)));
         BARD_PASSIVE_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 6, 1)));
         BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 6, 0)));
