@@ -407,7 +407,7 @@ public class FoxListener implements Listener {
         double bal = Basic.get().getEconomyManager().getBalance(event.getEntity().getName());
         Basic.get().getEconomyManager().withdrawPlayer(event.getEntity().getName(), bal);
 
-        if (event.getEntity().getKiller() != null) {
+        if (event.getEntity().getKiller() != null && !Double.isNaN(bal)) {
             Basic.get().getEconomyManager().depositPlayer(event.getEntity().getKiller().getName(), bal);
             event.getEntity().getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + event.getEntity().getDisplayName() + ChatColor.GOLD + "!");
         }

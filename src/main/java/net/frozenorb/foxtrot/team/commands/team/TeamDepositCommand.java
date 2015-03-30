@@ -22,7 +22,7 @@ public class TeamDepositCommand {
             return;
         }
 
-        if (amount <= 0) {
+        if (amount <= 0 || Float.isNaN(amount)) {
             sender.sendMessage(ChatColor.RED + "You can't deposit $0.0 (or less)!");
             return;
         }

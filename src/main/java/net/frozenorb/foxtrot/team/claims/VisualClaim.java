@@ -428,7 +428,7 @@ public class VisualClaim implements Listener {
 
             Claim claim = new Claim(corner1, corner2);
 
-            if (isIllegalClaim(claim, null)) {
+            if (isIllegalClaim(claim, null) || Double.isNaN(playerTeam.getBalance())) {
                 return;
             }
 
