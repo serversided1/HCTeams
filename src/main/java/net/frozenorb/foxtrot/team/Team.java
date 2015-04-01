@@ -689,6 +689,7 @@ public class Team {
         new BukkitRunnable() {
 
             public void run() {
+                System.out.print("updating for " + name + ": " + isLoading());
                 if (isLoading() || getName() == null || getUniqueId() == null) {
                     return;
                 }
