@@ -17,7 +17,7 @@ public class KOTHActivateCommand {
                 return;
             }
         }
-        
+
         target.activate();
         sender.sendMessage(ChatColor.GRAY + "Activated " + target.getName() + ".");
     }

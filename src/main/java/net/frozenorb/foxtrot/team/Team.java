@@ -686,6 +686,10 @@ public class Team {
     }
 
     public void pushToMongoLog(BasicDBObject toLog) {
+        if (isLoading()) {
+            return;
+        }
+        
         DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("TeamLog");
 
         toLog.put("Team", getUniqueId().toString());
