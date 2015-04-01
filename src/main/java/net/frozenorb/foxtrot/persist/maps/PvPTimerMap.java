@@ -83,7 +83,7 @@ public class PvPTimerMap extends PersistMap<Long> {
             return (false);
         }
 
-        return (getValue(check) == PENDING_USE);
+        return (contains(check) && getValue(check) == PENDING_USE);
     }
 
     public void createActiveTimer(UUID update, int seconds) {
@@ -95,11 +95,7 @@ public class PvPTimerMap extends PersistMap<Long> {
             return (false);
         }
 
-        if (contains(check)) {
-            return (getValue(check) > 0);
-        }
-
-        return (false);
+        return (contains(check) && getValue(check) > 0);
     }
 
     public int getSecondsRemaining(UUID check) {
