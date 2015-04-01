@@ -385,8 +385,7 @@ public class CombatLoggerListener implements Listener {
             killerInventory.append("items", killerContents);
             playerDeath.append("killerInventory", killerInventory);
         }
-
-        playerDeath.append("ip", killed.getAddress().toString().split(":")[0].replace("/", ""));
+        
         playerDeath.append("uuid", killed.getUniqueId().toString());
         playerDeath.append("player", killed.getName());
         playerDeath.append("type", "death");
