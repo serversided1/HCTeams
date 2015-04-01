@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
@@ -97,8 +96,8 @@ public class Foxtrot extends JavaPlugin {
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
 
-        ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
-        ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
+        //ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
+        //ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
     }
 
     @Override
