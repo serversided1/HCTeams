@@ -800,7 +800,7 @@ public class Team {
         }
 
         // Only show this if they're a member.
-        if (isMember(player.getUniqueId()) && announcement != null) {
+        if (isMember(player.getUniqueId()) && announcement != null && !announcement.equals("null")) {
             player.sendMessage(ChatColor.YELLOW + "Announcement: " + ChatColor.LIGHT_PURPLE + announcement);
         }
 
