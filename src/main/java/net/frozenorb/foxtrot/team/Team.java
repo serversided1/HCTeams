@@ -686,17 +686,23 @@ public class Team {
     }
 
     public void pushToMongoLog(BasicDBObject toLog) {
-        if (isLoading() || getName() == null || getUniqueId() == null) {
-            return;
-        }
+        new BukkitRunnable() {
 
-        DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("TeamLog");
+            public void run() {
+                if (isLoading() || getName() == null || getUniqueId() == null) {
+                    return;
+                }
 
-        toLog.put("Team", getUniqueId().toString());
-        toLog.put("TeamName", getName());
-        toLog.put("Date", new Date());
+                DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("TeamLog");
 
-        teamLogCollection.insert(toLog);
+                toLog.put("Team", getUniqueId().toString());
+                toLog.put("TeamName", getName());
+                toLog.put("Date", new Date());
+
+                teamLogCollection.insert(toLog);
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     public void sendTeamInfo(Player player) {
