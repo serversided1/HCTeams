@@ -54,8 +54,6 @@
 			<groupId>net.frozenorb</groupId>
 			<artifactId>mSpigot-API</artifactId>
 			<version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>C:/Users/macguy8/IdeaProjects/twix/kspigot.jar</systemPath>
 		</dependency>
 		
 		<!-- MineHQ Jars -->

@@ -179,7 +179,7 @@ public class DeathTracker {
     public static BasicDBObject generateServerData() {
         BasicDBObject serverData = new BasicDBObject();
 
-        serverData.put("Playercount", Foxtrot.getInstance().getServer().getOnlinePlayers().length);
+        serverData.put("Playercount", Foxtrot.getInstance().getServer().getOnlinePlayers().size());
         serverData.put("TPS", Lag.getTPS());
 
         return (serverData);
