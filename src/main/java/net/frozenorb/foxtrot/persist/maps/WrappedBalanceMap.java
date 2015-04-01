@@ -11,7 +11,7 @@ public class WrappedBalanceMap extends PersistMap<Double> {
 
     public WrappedBalanceMap() {
         super("WrappedBalances", "Balance");
-        Basic.get().getEconomyManager().registerListener(new FoxEconomyListener());
+        //Basic.get().getEconomyManager().registerListener(new FoxEconomyListener());
     }
 
     @Override
