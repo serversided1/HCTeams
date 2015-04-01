@@ -156,11 +156,9 @@ public class BardClass extends PvPClass implements Listener {
 
         clickEffect.getLastMessageSent().put(event.getPlayer().getName(), System.currentTimeMillis());
 
-        event.getPlayer().sendMessage(Team.GRAY_LINE);
-        event.getPlayer().sendMessage(ChatColor.BLUE + "Click effect:");
+        event.getPlayer().sendMessage(ChatColor.BLUE + "Bard effect:");
         event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
         event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
-        event.getPlayer().sendMessage(Team.GRAY_LINE);
     }
 
     @EventHandler
