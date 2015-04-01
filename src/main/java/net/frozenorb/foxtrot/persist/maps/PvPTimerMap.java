@@ -58,7 +58,7 @@ public class PvPTimerMap extends PersistMap<Long> {
             }
         }
 
-        if (parsedOrig != parsed) {
+        if (parsedOrig != parsed && parsed != 0) {
             Foxtrot.getInstance().getLogger().info("[PvP Timer Converter] Converted entry. Original: " + parsedOrig + ", New: " + parsed);
         }
 
