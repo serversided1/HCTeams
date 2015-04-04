@@ -28,7 +28,8 @@ public class EcoCheckCommand {
         }
 
         try {
-            Field balancesField = Basic.get().getEconomyManager().getClass().getField("balances");
+            Field balancesField = Basic.get().getEconomyManager().getClass().getDeclaredField("balances");
+            balancesField.setAccessible(true);
             HashMap<String, Double> balances = (HashMap<String, Double>) balancesField.get(Basic.get().getEconomyManager());
 
             for (Map.Entry<String, Double> balanceEntry  : balances.entrySet()) {
