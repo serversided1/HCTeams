@@ -30,12 +30,7 @@ public class TeamSetHQCommand {
             }
 
             team.setHQ(sender.getLocation());
-
-            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
-                }
-            }
+            team.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }

@@ -36,10 +36,7 @@ public class TeamDemoteCommand {
             return;
         }
 
-        for (Player player : team.getOnlineMembers()) {
-            player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been demoted from Captain!");
-        }
-
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been demoted from Captain!");
         team.removeCaptain(target);
     }
 

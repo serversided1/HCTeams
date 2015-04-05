@@ -59,11 +59,7 @@ public class TeamInviteCommand {
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/team join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(target) + " has been invited to the team!");
-            }
-        }
+        team.sendMessage(ChatColor.YELLOW + UUIDUtils.name(target) + " has been invited to the team!");
     }
 
 }

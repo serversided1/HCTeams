@@ -31,12 +31,7 @@ public class TeamAnnouncementCommand {
         }
 
         team.setAnnouncement(newAnnouncement);
-
-        for (Player onlinePlayer : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(onlinePlayer.getUniqueId())) {
-                onlinePlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW  + " changed the team announcement to " + ChatColor.LIGHT_PURPLE + newAnnouncement);
-            }
-        }
+        team.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW  + " changed the team announcement to " + ChatColor.LIGHT_PURPLE + newAnnouncement);
     }
 
 }

@@ -34,11 +34,7 @@ public class TeamAcceptCommand {
             target.addMember(sender.getUniqueId());
             Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), target);
 
-            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (target.isMember(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has joined the team!");
-                }
-            }
+            target.sendMessage(ChatColor.YELLOW + sender.getName() + " has joined the team!");
 
             FrozenNametagHandler.reloadPlayer(sender);
             FrozenNametagHandler.reloadOthersFor(sender);

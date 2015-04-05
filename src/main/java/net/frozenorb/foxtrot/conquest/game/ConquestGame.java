@@ -120,11 +120,7 @@ public class ConquestGame implements Listener {
             return;
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " " + event.getKOTH().getCurrentCapper() + " was knocked off of " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!");
-            }
-        }
+        team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " " + event.getKOTH().getCurrentCapper() + " was knocked off of " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!");
     }
     @EventHandler
     public void onKOTHControlTick(KOTHControlTickEvent event) {
@@ -150,12 +146,7 @@ public class ConquestGame implements Listener {
         }
 
         teamPoints.put(team.getUniqueId(), Math.max(0, teamPoints.get(team.getUniqueId()) - ConquestHandler.POINTS_DEATH_PENALTY));
-
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
-            }
-        }
+        team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
     }
 
 }

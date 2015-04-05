@@ -29,10 +29,7 @@ public class TeamDisbandCommand {
             return;
         }
 
-        for (Player online : team.getOnlineMembers()) {
-            online.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + " has disbanded the team.");
-        }
-
+        team.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + player.getName() + " has disbanded the team.");
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Team disbanded. [Disbanded by: " + player.getName() + "]");
         team.disband();
     }

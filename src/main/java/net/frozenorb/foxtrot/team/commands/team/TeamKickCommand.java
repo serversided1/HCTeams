@@ -47,12 +47,7 @@ public class TeamKickCommand {
             }
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " was kicked by " + sender.getName() + "!");
-            }
-        }
-
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " was kicked by " + sender.getName() + "!");
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(target) + " [Kicked by: " + sender.getName() + "]");
 
         if (team.removeMember(target)) {

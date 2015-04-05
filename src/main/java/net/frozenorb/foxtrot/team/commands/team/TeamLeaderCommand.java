@@ -32,12 +32,7 @@ public class TeamLeaderCommand {
             return;
         }
 
-        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (team.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been given ownership of " + team.getName() + ".");
-            }
-        }
-
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been given ownership of " + team.getName() + ".");
         team.setOwner(target);
         team.addCaptain(sender.getUniqueId());
     }

@@ -37,12 +37,7 @@ public class TeamLeaveCommand {
         } else {
             Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
             team.flagForSave();
-
-            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
-                }
-            }
+            team.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
 
             sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left the team!");
         }

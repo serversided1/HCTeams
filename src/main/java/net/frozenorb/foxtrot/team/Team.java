@@ -685,6 +685,14 @@ public class Team {
         return (new Location(world, x, y, z, yaw, pitch));
     }
 
+    public void sendMessage(String message) {
+        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+            if (isMember(player.getUniqueId())) {
+                player.sendMessage(message);
+            }
+        }
+    }
+
     public void pushToMongoLog(BasicDBObject toLog) {
 //        new BukkitRunnable() {
 //

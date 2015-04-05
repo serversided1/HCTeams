@@ -78,10 +78,7 @@ public class DTRHandler extends BukkitRunnable {
 
                     if (wasOnCooldown.contains(teamEntry.getKey().getName().toLowerCase())) {
                         wasOnCooldown.remove(teamEntry.getKey().getName().toLowerCase());
-
-                        for (Player player : teamEntry.getKey().getOnlineMembers()) {
-                            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
-                        }
+                        teamEntry.getKey().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
                     }
 
                     teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()), teamEntry.getKey().getMaxDTR()));

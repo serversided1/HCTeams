@@ -84,17 +84,11 @@ public class TeamUnclaimCommand {
                 }
             }
 
+            team.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
             team.flagForSave();
 
             LandBoard.getInstance().setTeamAt(claim, null);
-
             TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
-
-            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (team.isMember(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.YELLOW + sender.getName() + " has unclaimed " + ChatColor.LIGHT_PURPLE + claim.getFriendlyName() + ChatColor.YELLOW + ".");
-                }
-            }
 
             if (team.getHQ() != null && claim.contains(team.getHQ())) {
                 team.setHQ(null);
