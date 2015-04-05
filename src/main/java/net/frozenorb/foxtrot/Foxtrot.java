@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
+import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.persist.maps.statistics.*;
@@ -87,7 +88,7 @@ public class Foxtrot extends JavaPlugin {
 
         (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
         (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
-        //(new PacketBorderThread()).start();
+        (new PacketBorderThread()).start();
 
         setupHandlers();
         setupPersistence();
