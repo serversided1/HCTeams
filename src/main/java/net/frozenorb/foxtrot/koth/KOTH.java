@@ -136,7 +136,7 @@ public class KOTH {
         if (currentCapper != null) {
             Player capper = Foxtrot.getInstance().getServer().getPlayerExact(currentCapper);
 
-            if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL) {
+            if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasPermission("invisible")) {
                 resetCapTime();
             } else {
                 if (remainingCapTime % 10 == 0 && remainingCapTime > 1 && !isHidden()) {
@@ -155,7 +155,7 @@ public class KOTH {
             List<Player> onCap = new ArrayList<>();
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL) {
+                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL && !player.hasMetadata("invisible")) {
                     onCap.add(player);
                 }
             }
