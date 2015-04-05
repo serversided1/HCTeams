@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -95,6 +96,22 @@ public class FoxListener implements Listener {
 
             boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
+
+            if (fromReduceDeathban && from.getData() != null) {
+                KOTH fromLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(from.getData().getName());
+
+                if (fromLinkedKOTH != null && !fromLinkedKOTH.isActive()) {
+                    fromReduceDeathban = false;
+                }
+            }
+
+            if (toReduceDeathban && to.getData() != null) {
+                KOTH toLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(to.getData().getName());
+
+                if (toLinkedKOTH != null && !toLinkedKOTH.isActive()) {
+                    toReduceDeathban = false;
+                }
+            }
 
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now leaving: " + from.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (fromReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");

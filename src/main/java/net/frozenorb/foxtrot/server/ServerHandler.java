@@ -7,6 +7,7 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -352,10 +353,20 @@ public class ServerHandler {
 
         // Check DTR flags, which will also take priority over playtime.
         if (ownerTo != null && ownerTo.getOwner() == null) {
-            if (ownerTo.hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN)) {
-                return (TimeUnit.MINUTES.toSeconds(5));
-            } else if (ownerTo.hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN)) {
-                return (TimeUnit.MINUTES.toSeconds(15));
+            KOTH linkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(ownerTo.getName());
+
+            // Only respect the reduced deathban if
+            // The KOTH is non-existant (in which case we're probably
+            // something like a 1v1 arena) or it is active.
+            // If it's there but not active,
+            // the null check will be false, the .isActive will be false, so we'll ignore
+            // the reduced DB check.
+            if (linkedKOTH == null || linkedKOTH.isActive()) {
+                if (ownerTo.hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN)) {
+                    return (TimeUnit.MINUTES.toSeconds(5));
+                } else if (ownerTo.hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN)) {
+                    return (TimeUnit.MINUTES.toSeconds(15));
+                }
             }
         }
 
