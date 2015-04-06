@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 @AllArgsConstructor
 public enum RegionType {

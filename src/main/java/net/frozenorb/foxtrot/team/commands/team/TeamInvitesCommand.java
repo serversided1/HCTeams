@@ -2,8 +2,8 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

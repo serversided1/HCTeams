@@ -37,9 +37,9 @@ public class  SpawnListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -52,9 +52,9 @@ public class  SpawnListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -92,9 +92,9 @@ public class  SpawnListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -104,9 +104,9 @@ public class  SpawnListener implements Listener {
     }
 
     // Used for item frames
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+        if (!(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
             return;
         }
 
@@ -135,9 +135,9 @@ public class  SpawnListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity2(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

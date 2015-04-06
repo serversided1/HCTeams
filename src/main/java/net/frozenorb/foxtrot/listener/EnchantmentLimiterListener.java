@@ -34,9 +34,9 @@ public class EnchantmentLimiterListener implements Listener {
     private Map<String, Long> lastArmorCheck = new HashMap<>();
     private Map<String, Long> lastSwordCheck = new HashMap<>();
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && !event.isCancelled() && checkArmor((Player) event.getEntity())) {
+        if (event.getEntity() instanceof Player && checkArmor((Player) event.getEntity())) {
             ItemStack[] armor = ((Player) event.getEntity()).getInventory().getArmorContents();
             boolean fixed = false;
 
@@ -52,9 +52,9 @@ public class EnchantmentLimiterListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!event.isCancelled() && event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
+        if (event.getDamager() instanceof Player && checkSword((Player) event.getDamager())) {
             Player player = (Player) event.getDamager();
             ItemStack hand = player.getItemInHand();
 
@@ -65,9 +65,9 @@ public class EnchantmentLimiterListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && !event.isCancelled() && event.getItem() != null && event.getItem().getType() == Material.BOW) {
+        if ((event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) && event.getItem() != null && event.getItem().getType() == Material.BOW) {
             ItemStack hand = event.getPlayer().getItemInHand();
 
             if (InventoryUtils.conformEnchants(hand)) {

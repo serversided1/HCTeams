@@ -26,9 +26,9 @@ public class EnderpearlListener implements Listener {
 
     @Getter private static Map<String, Long> enderpearlCooldown = new ConcurrentHashMap<>();
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if (event.isCancelled() || !(event.getEntity().getShooter() instanceof Player)) {
+        if (!(event.getEntity().getShooter() instanceof Player)) {
             return;
         }
 
@@ -61,9 +61,9 @@ public class EnderpearlListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (event.isCancelled() || event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             return;
         }
 

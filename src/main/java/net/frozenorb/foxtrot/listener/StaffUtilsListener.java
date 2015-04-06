@@ -14,9 +14,9 @@ public class StaffUtilsListener implements Listener {
 
     private Location lastDamageLocation;
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player && !event.isCancelled()) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             lastDamageLocation = event.getEntity().getLocation();
         }
     }

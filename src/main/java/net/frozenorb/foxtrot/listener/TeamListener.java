@@ -98,9 +98,9 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
@@ -122,9 +122,9 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
@@ -155,9 +155,9 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-        if (event.isCancelled() || !event.isSticky()) {
+        if (!event.isSticky()) {
             return;
         }
 
@@ -177,12 +177,8 @@ public class TeamListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Team pistonTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
         int i = 0;
 
@@ -232,9 +228,9 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
+        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer())) {
             return;
         }
 
@@ -250,9 +246,9 @@ public class TeamListener implements Listener {
     }
 
     // Used for item frames
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.isCancelled() || !(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+        if (!(event.getEntity() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
             return;
         }
 
@@ -267,9 +263,9 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity2(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

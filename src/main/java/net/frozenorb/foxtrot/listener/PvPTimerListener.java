@@ -85,9 +85,9 @@ public class PvPTimerListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

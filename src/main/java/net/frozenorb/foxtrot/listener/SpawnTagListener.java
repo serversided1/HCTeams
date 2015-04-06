@@ -10,9 +10,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class SpawnTagListener implements Listener {
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

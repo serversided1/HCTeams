@@ -2,9 +2,9 @@ package net.frozenorb.foxtrot.commands;
 
 import com.google.common.io.Files;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

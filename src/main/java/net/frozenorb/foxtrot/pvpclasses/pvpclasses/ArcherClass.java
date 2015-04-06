@@ -56,12 +56,8 @@ public class ArcherClass extends PvPClass {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityArrowHit(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) event.getDamager();
             final Player player = (Player) event.getEntity();

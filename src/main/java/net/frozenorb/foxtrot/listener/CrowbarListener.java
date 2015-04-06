@@ -18,12 +18,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CrowbarListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getItem() == null || !InventoryUtils.isSimilar(event.getItem(), InventoryUtils.CROWBAR_NAME) || !(event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             return;
         }

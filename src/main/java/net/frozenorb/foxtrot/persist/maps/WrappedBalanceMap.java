@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.EconomySystem.EconomyListener;
 import net.frozenorb.qlib.util.UUIDUtils;
 

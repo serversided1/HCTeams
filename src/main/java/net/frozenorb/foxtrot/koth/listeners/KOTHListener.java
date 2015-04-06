@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.koth.listeners;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
@@ -13,8 +12,6 @@ import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.event.HalfHourEvent;
-import net.frozenorb.qlib.event.HourEvent;
-import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -223,9 +220,9 @@ public class KOTHListener implements Listener {
         event.getPlayer().sendMessage(ChatColor.GREEN + "Created a KOTH sign!");
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || !(event.getBlock().getState() instanceof Sign)) {
+        if (!(event.getBlock().getState() instanceof Sign)) {
             return;
         }
 

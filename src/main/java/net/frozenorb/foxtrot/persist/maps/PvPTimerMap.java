@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.persist.maps;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

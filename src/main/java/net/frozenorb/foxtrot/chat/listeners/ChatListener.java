@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;

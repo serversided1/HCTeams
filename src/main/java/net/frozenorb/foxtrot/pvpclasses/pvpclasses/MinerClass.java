@@ -97,9 +97,9 @@ public class MinerClass extends PvPClass implements Listener {
         invis.remove(player.getName());
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.isCancelled()) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
@@ -118,9 +118,9 @@ public class MinerClass extends PvPClass implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player) || event.isCancelled()) {
+        if (!(event.getDamager() instanceof Player)) {
             return;
         }
 

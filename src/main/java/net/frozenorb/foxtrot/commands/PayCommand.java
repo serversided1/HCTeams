@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

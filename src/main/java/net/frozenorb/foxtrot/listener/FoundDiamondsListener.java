@@ -14,16 +14,16 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class FoundDiamondsListener implements Listener {
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (!event.isCancelled() && event.getBlock().getType() == Material.DIAMOND_ORE) {
+        if (event.getBlock().getType() == Material.DIAMOND_ORE) {
             event.getBlock().setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!event.isCancelled() && event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
+        if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
             int diamonds = 0;
 
             for (int x = -5; x < 5; x++) {
