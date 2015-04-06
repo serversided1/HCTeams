@@ -278,8 +278,8 @@ public class KOTHListener implements Listener {
 
     @EventHandler
     public void onHalfHour(HalfHourEvent event) {
-        activateKOTHs();
         terminateKOTHs();
+        activateKOTHs();
     }
 
 }
