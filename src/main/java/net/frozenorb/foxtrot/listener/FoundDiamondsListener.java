@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +14,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Set;
+
 public class FoundDiamondsListener implements Listener {
+
+    public static final Set<BlockFace> CHECK_FACES = ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN);
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -24,20 +30,7 @@ public class FoundDiamondsListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
-            int diamonds = 0;
-
-            for (int x = -5; x < 5; x++) {
-                for (int y = -5; y < 5; y++) {
-                    for (int z = -5; z < 5; z++) {
-                        Block block = event.getBlock().getLocation().add(x, y, z).getBlock();
-
-                        if (block.getType() == Material.DIAMOND_ORE && !block.hasMetadata("DiamondPlaced")) {
-                            diamonds++;
-                            block.setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
-                        }
-                    }
-                }
-            }
+            int diamonds = countRelative(event.getBlock());
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (Foxtrot.getInstance().getToggleFoundDiamondsMap().isFoundDiamondToggled(player.getUniqueId())) {
@@ -45,6 +38,22 @@ public class FoundDiamondsListener implements Listener {
                 }
             }
         }
+    }
+
+    public int countRelative(Block block) {
+        int diamonds = 1; // We start out with one because 'block' is going to be a diamond too.
+        block.setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
+
+        for (BlockFace checkFace : CHECK_FACES) {
+            Block relative = block.getRelative(checkFace);
+
+            if (relative.getType() == Material.DIAMOND_ORE && !relative.hasMetadata("DiamondPlaced")) {
+                relative.setMetadata("DiamondPlaced", new FixedMetadataValue(Foxtrot.getInstance(), true));
+                diamonds += countRelative(relative);
+            }
+        }
+
+        return (diamonds);
     }
 
 }
