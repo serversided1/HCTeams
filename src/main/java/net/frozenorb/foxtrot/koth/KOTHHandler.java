@@ -26,7 +26,7 @@ import java.util.TreeMap;
 public class KOTHHandler {
     
     @Getter private Set<KOTH> KOTHs = new HashSet<>();
-    @Getter private Map<Integer, String> KOTHSchedule = new TreeMap<>();
+    @Getter private Map<KOTHScheduledTime, String> KOTHSchedule = new TreeMap<>();
     @Getter private Set<Location> KOTHSigns = new HashSet<>();
 
     public KOTHHandler() {
@@ -104,7 +104,8 @@ public class KOTHHandler {
 
             if (dbo != null) {
                 for (Map.Entry<String, Object> entry : dbo.entrySet()) {
-                    this.KOTHSchedule.put(Integer.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+                    KOTHScheduledTime scheduledTime = KOTHScheduledTime.parse(entry.getKey());
+                    this.KOTHSchedule.put(scheduledTime, String.valueOf(entry.getValue()));
                 }
             }
         } catch (Exception e) {

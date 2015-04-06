@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.koth.commands.koth;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,7 +19,7 @@ public class KOTHScheduleCommand {
     public static void kothSchedule(Player sender) {
         int sent = 0;
 
-        for (Map.Entry<Integer, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
+        for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
             KOTH resolved = Foxtrot.getInstance().getKOTHHandler().getKOTH(entry.getValue());
 
             if (resolved == null || resolved.isHidden()) {
@@ -26,14 +27,7 @@ public class KOTHScheduleCommand {
             }
 
             sent++;
-            Calendar activationTime = Calendar.getInstance();
-
-            activationTime.set(Calendar.HOUR_OF_DAY, entry.getKey());
-            activationTime.set(Calendar.MINUTE, 0);
-            activationTime.set(Calendar.SECOND, 0);
-            activationTime.set(Calendar.MILLISECOND, 0);
-
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(activationTime.getTime()) + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
         }
 
         if (sent == 0) {

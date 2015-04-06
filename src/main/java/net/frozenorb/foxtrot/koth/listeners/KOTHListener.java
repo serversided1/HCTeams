@@ -5,13 +5,16 @@ import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.event.HalfHourEvent;
 import net.frozenorb.qlib.event.HourEvent;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -234,20 +237,18 @@ public class KOTHListener implements Listener {
     }
 
     @EventHandler
-    public void onHour(HourEvent event) {
+    public void onHalfHour(HalfHourEvent event) {
         // Don't start a KOTH if another one is active.
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (koth.isHidden()) {
-                continue;
-            }
-
-            if (koth.isActive()) {
+            if (!koth.isHidden() && koth.isActive()) {
                 return;
             }
         }
 
-        if (Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().containsKey(event.getHour())) {
-            String resolvedName = Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().get(event.getHour());
+        KOTHScheduledTime scheduledTime = KOTHScheduledTime.parse(new Date());
+
+        if (Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().containsKey(scheduledTime)) {
+            String resolvedName = Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().get(scheduledTime);
             KOTH resolved = Foxtrot.getInstance().getKOTHHandler().getKOTH(resolvedName);
 
             if (resolved == null) {
