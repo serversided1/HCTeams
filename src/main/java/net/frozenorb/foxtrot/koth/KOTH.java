@@ -27,6 +27,7 @@ public class KOTH {
     @Getter private transient String currentCapper;
     @Getter private transient int remainingCapTime;
     @Getter @Setter private transient int level;
+    @Getter @Setter private transient boolean terminate;
 
     public KOTH(String name, Location location) {
         this.name = name;
@@ -35,6 +36,7 @@ public class KOTH {
         this.capDistance = 3;
         this.capTime = 60 * 15;
         this.level = 2;
+        this.terminate = false;
 
         Foxtrot.getInstance().getKOTHHandler().getKOTHs().add(this);
         Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
@@ -77,6 +79,7 @@ public class KOTH {
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
         this.level = 2;
+        this.terminate = false;
 
         return (true);
     }
@@ -92,6 +95,7 @@ public class KOTH {
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
         this.level = 2;
+        this.terminate = false;
 
         return (true);
     }
@@ -130,6 +134,11 @@ public class KOTH {
 
         this.currentCapper = null;
         this.remainingCapTime = capTime;
+
+        if (terminate) {
+            deactivate();
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.BLUE + getName() + ChatColor.YELLOW + " has been terminated.");
+        }
     }
 
     protected void tick() {

@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class KOTHListener implements Listener {
 
@@ -236,8 +237,7 @@ public class KOTHListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onHalfHour(HalfHourEvent event) {
+    private void activateKOTHs() {
         // Don't start a KOTH if another one is active.
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (!koth.isHidden() && koth.isActive()) {
@@ -258,6 +258,31 @@ public class KOTHListener implements Listener {
 
             resolved.activate();
         }
+    }
+
+    private void terminateKOTHs() {
+        KOTHScheduledTime nextScheduledTime = KOTHScheduledTime.parse(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30)));
+
+        if (Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().containsKey(nextScheduledTime)) {
+            // We have a KOTH about to start. Prepare for it.
+            for (KOTH activeKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+                if (!activeKoth.isHidden() && activeKoth.isActive() && !activeKoth.getName().equals("Citadel") && !activeKoth.getName().equals("EOTW")) {
+                    if (activeKoth.getCurrentCapper() != null) {
+                        activeKoth.setTerminate(true);
+                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.BLUE + activeKoth.getName() + ChatColor.YELLOW + " will be terminated if knocked.");
+                    } else {
+                        activeKoth.deactivate();
+                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.BLUE + activeKoth.getName() + ChatColor.YELLOW + " has been terminated.");
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onHalfHour(HalfHourEvent event) {
+        activateKOTHs();
+        terminateKOTHs();
     }
 
 }
