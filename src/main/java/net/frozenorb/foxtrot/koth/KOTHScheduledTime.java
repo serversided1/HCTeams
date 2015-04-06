@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.koth;
 
+import com.google.common.primitives.Ints;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @AllArgsConstructor
-public class KOTHScheduledTime {
+public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
 
     @Getter private int hour;
     @Getter private int minutes;
@@ -56,6 +57,12 @@ public class KOTHScheduledTime {
     @Override
     public int hashCode() {
         return (hour ^ minutes);
+    }
+
+    @Override
+    public int compareTo(KOTHScheduledTime other) {
+        int result = Ints.compare(hour, other.hour);
+        return (result == 0 ? Ints.compare(minutes, other.minutes) : result);
     }
 
 }
