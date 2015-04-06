@@ -18,7 +18,17 @@ import java.util.Set;
 
 public class FoundDiamondsListener implements Listener {
 
-    public static final Set<BlockFace> CHECK_FACES = ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN);
+    public static final Set<BlockFace> CHECK_FACES = ImmutableSet.of(
+            BlockFace.NORTH,
+            BlockFace.SOUTH,
+            BlockFace.EAST,
+            BlockFace.WEST,
+            BlockFace.NORTH_EAST,
+            BlockFace.NORTH_WEST,
+            BlockFace.SOUTH_EAST,
+            BlockFace.SOUTH_WEST,
+            BlockFace.UP,
+            BlockFace.DOWN);
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
