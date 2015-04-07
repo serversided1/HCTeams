@@ -11,9 +11,9 @@ public class KOTHActivateCommand {
 
     @Command(names={ "KOTH Activate", "KOTH Active" }, permissionNode="foxtrot.koth")
     public static void kothActivate(Player sender, @Parameter(name="koth") KOTH koth) {
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (koth.isActive() && !koth.isHidden()) {
-                sender.sendMessage(ChatColor.RED + "Another KOTH (" + koth.getName() + ") is already active.");
+        for (KOTH activeKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+            if (activeKoth.isActive() && !activeKoth.isHidden()) {
+                sender.sendMessage(ChatColor.RED + "Another KOTH (" + activeKoth.getName() + ") is already active.");
                 return;
             }
         }
