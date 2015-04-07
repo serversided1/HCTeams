@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class TeamRenameCommand {
 
     @Command(names={ "team rename", "t rename", "f rename", "faction rename", "fac rename" }, permissionNode="")
-    public static void teamRename(Player sender, @Parameter(name="player") String name) {
+    public static void teamRename(Player sender, @Parameter(name="new name") String newName) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -23,20 +23,20 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (name.length() > 16) {
+        if (newName.length() > 16) {
             sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
             return;
         }
 
-        if (name.length() < 3) {
+        if (newName.length() < 3) {
             sender.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
             return;
         }
 
-        if (!TeamCreateCommand.ALPHA_NUMERIC.matcher(name).find()) {
-            if (Foxtrot.getInstance().getTeamHandler().getTeam(name) == null) {
-                team.rename(name);
-                sender.sendMessage(ChatColor.GREEN + "Team renamed to " + name);
+        if (!TeamCreateCommand.ALPHA_NUMERIC.matcher(newName).find()) {
+            if (Foxtrot.getInstance().getTeamHandler().getTeam(newName) == null) {
+                team.rename(newName);
+                sender.sendMessage(ChatColor.GREEN + "Team renamed to " + newName);
             } else {
                 sender.sendMessage(ChatColor.RED + "A team with that name already exists!");
             }

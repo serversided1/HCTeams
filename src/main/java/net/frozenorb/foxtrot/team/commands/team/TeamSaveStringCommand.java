@@ -9,10 +9,10 @@ import org.bukkit.command.CommandSender;
 public class TeamSaveStringCommand {
 
     @Command(names={ "team savestring", "t savestring", "f savestring", "faction savestring", "fac savestring" }, permissionNode="op")
-    public static void teamSaveString(CommandSender sender, @Parameter(name="team", defaultValue="self") Team target) {
-        String saveString = target.saveString(false);
+    public static void teamSaveString(CommandSender sender, @Parameter(name="team", defaultValue="self") Team team) {
+        String saveString = team.saveString(false);
 
-        sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + "Save String (" + target.getName() + ")");
+        sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + "Save String (" + team.getName() + ")");
         sender.sendMessage("");
 
         for (String line : saveString.split("\n")) {

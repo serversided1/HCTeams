@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 public class ForceDisbandCommand {
 
     @Command(names={ "forcedisband" }, permissionNode="worldedit.*")
-    public static void forceDisband(Player sender, @Parameter(name="team") Team target) {
-        target.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");
-        target.disband();
-        sender.sendMessage(ChatColor.YELLOW + "Force disbanded the team " + ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + ".");
+    public static void forceDisband(Player sender, @Parameter(name="team") Team team) {
+        team.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");
+        team.disband();
+        sender.sendMessage(ChatColor.YELLOW + "Force disbanded the team " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
     }
 
 }

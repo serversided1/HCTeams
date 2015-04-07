@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 public class KOTHLocCommand {
 
     @Command(names={ "KOTH loc" }, permissionNode="foxtrot.koth.admin")
-    public static void kothLoc(Player sender, @Parameter(name="KOTH") KOTH target) {
-        target.setLocation(sender.getLocation());
-        sender.sendMessage(ChatColor.GRAY + "Set cap location for the " + target.getName() + " KOTH.");
+    public static void kothLoc(Player sender, @Parameter(name="koth") KOTH koth) {
+        koth.setLocation(sender.getLocation());
+        sender.sendMessage(ChatColor.GRAY + "Set cap location for the " + koth.getName() + " KOTH.");
     }
 
 }

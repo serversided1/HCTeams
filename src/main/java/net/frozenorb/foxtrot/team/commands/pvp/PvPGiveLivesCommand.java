@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class PvPGiveLivesCommand {
 
     @Command(names={ "pvptimer givelives", "timer givelives", "pvp givelives", "pvptimer givelife", "timer givelife", "pvp givelife" }, permissionNode="")
-    public static void pvpGiveLives(Player sender, @Parameter(name="Player") Player target, @Parameter(name="Amount") int amount) {
+    public static void pvpGiveLives(Player sender, @Parameter(name="player") Player player, @Parameter(name="amount") int amount) {
         int transferableLives = Foxtrot.getInstance().getTransferableLivesMap().getLives(sender.getUniqueId());
 
         if (transferableLives < amount) {
@@ -23,10 +23,10 @@ public class PvPGiveLivesCommand {
         }
 
         Foxtrot.getInstance().getTransferableLivesMap().setLives(sender.getUniqueId(), transferableLives - amount);
-        Foxtrot.getInstance().getTransferableLivesMap().setLives(target.getUniqueId(), Foxtrot.getInstance().getTransferableLivesMap().getLives(target.getUniqueId()) + amount);
+        Foxtrot.getInstance().getTransferableLivesMap().setLives(player.getUniqueId(), Foxtrot.getInstance().getTransferableLivesMap().getLives(player.getUniqueId()) + amount);
 
-        sender.sendMessage(ChatColor.YELLOW + "Gave " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " to " + ChatColor.BLUE + target.getName() + ChatColor.YELLOW + ".");
-        target.sendMessage(ChatColor.YELLOW + "Received " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " from " + ChatColor.BLUE + sender.getName() + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "Gave " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " to " + ChatColor.BLUE + player.getName() + ChatColor.YELLOW + ".");
+        player.sendMessage(ChatColor.YELLOW + "Received " + amount + " transferable " + (amount == 1 ? "life" : "lives") + " from " + ChatColor.BLUE + sender.getName() + ChatColor.YELLOW + ".");
     }
 
 }

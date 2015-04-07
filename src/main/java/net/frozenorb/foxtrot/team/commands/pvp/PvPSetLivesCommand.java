@@ -12,16 +12,16 @@ import java.util.UUID;
 public class PvPSetLivesCommand {
 
     @Command(names={ "pvptimer setlives", "timer setlives", "pvp setlives", "pvptimer setlives", "timer setlives", "pvp setlives" }, permissionNode="op")
-    public static void pvpSetLives(Player sender, @Parameter(name="player") UUID target, @Parameter(name="Life Type") String lifeType, @Parameter(name="Amount") int amount) {
+    public static void pvpSetLives(Player sender, @Parameter(name="player") UUID player, @Parameter(name="life type") String lifeType, @Parameter(name="amount") int amount) {
         if (lifeType.equalsIgnoreCase("soulbound")) {
-            Foxtrot.getInstance().getSoulboundLivesMap().setLives(target, amount);
-            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(target) + ChatColor.YELLOW + "'s soulbound life count to " + amount + ".");
+            Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, amount);
+            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + "'s soulbound life count to " + amount + ".");
         } else if (lifeType.equalsIgnoreCase("friend")) {
-            Foxtrot.getInstance().getFriendLivesMap().setLives(target, amount);
-            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(target) + ChatColor.YELLOW + "'s friend life count to " + amount + ".");
+            Foxtrot.getInstance().getFriendLivesMap().setLives(player, amount);
+            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + "'s friend life count to " + amount + ".");
         } else if (lifeType.equalsIgnoreCase("transferable")) {
-            Foxtrot.getInstance().getTransferableLivesMap().setLives(target, amount);
-            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(target) + ChatColor.YELLOW + "'s transferable life count to " + amount + ".");
+            Foxtrot.getInstance().getTransferableLivesMap().setLives(player, amount);
+            sender.sendMessage(ChatColor.YELLOW + "Set " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + "'s transferable life count to " + amount + ".");
         } else {
             sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound, friend, or transferable.");
         }

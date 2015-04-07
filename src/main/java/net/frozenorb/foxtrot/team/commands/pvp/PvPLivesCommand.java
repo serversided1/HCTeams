@@ -12,12 +12,12 @@ import java.util.UUID;
 public class PvPLivesCommand {
 
     @Command(names={ "pvptimer lives", "timer lives", "pvp lives" }, permissionNode="")
-    public static void pvpLives(CommandSender sender, @Parameter(name="Player", defaultValue="self") UUID target) {
-        String name = UUIDUtils.name(target);
+    public static void pvpLives(CommandSender sender, @Parameter(name="player", defaultValue="self") UUID player) {
+        String name = UUIDUtils.name(player);
 
-        sender.sendMessage(ChatColor.GOLD + name + "'s Soulbound Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getSoulboundLivesMap().getLives(target));
-        sender.sendMessage(ChatColor.GOLD + name + "'s Friend Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getFriendLivesMap().getLives(target));
-        sender.sendMessage(ChatColor.GOLD + name + "'s Transferable Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getTransferableLivesMap().getLives(target));
+        sender.sendMessage(ChatColor.GOLD + name + "'s Soulbound Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getSoulboundLivesMap().getLives(player));
+        sender.sendMessage(ChatColor.GOLD + name + "'s Friend Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getFriendLivesMap().getLives(player));
+        sender.sendMessage(ChatColor.GOLD + name + "'s Transferable Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getTransferableLivesMap().getLives(player));
     }
 
 }

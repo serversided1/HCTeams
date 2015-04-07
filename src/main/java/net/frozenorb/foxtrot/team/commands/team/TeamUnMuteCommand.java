@@ -15,19 +15,19 @@ import java.util.UUID;
 public class TeamUnMuteCommand {
 
     @Command(names={ "team unmute", "t unmute", "f unmute", "faction unmute", "fac unmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamUnmute(Player sender, @Parameter(name="team") Team target) {
-        TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team mute removed. [Unmuted by: " + sender.getName() + "]");
+    public static void teamUnMute(Player sender, @Parameter(name = "team") Team team) {
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team mute removed. [Unmuted by: " + sender.getName() + "]");
         Iterator<Map.Entry<UUID, String>> mutesIterator = TeamMuteCommand.getTeamMutes().entrySet().iterator();
 
         while (mutesIterator.hasNext()) {
             Map.Entry<UUID, String> mute = mutesIterator.next();
 
-            if (mute.getValue().equalsIgnoreCase(target.getName())) {
+            if (mute.getValue().equalsIgnoreCase(team.getName())) {
                 mutesIterator.remove();
             }
         }
 
-        sender.sendMessage(ChatColor.GRAY + "Unmuted the team " + target.getName() + ChatColor.GRAY  + ".");
+        sender.sendMessage(ChatColor.GRAY + "Unmuted the team " + team.getName() + ChatColor.GRAY  + ".");
     }
 
 }

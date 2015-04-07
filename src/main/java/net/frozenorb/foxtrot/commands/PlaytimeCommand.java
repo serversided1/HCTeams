@@ -14,16 +14,16 @@ import java.util.UUID;
 public class PlaytimeCommand {
 
     @Command(names={ "Playtime", "PTime" }, permissionNode="")
-    public static void playtime(Player sender, @Parameter(name="Target", defaultValue="self") UUID target) {
+    public static void playtime(Player sender, @Parameter(name="player", defaultValue="self") UUID player) {
         PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
-        int playtimeTime = (int) playtime.getPlaytime(target);
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
+        int playtimeTime = (int) playtime.getPlaytime(player);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (bukkitPlayer != null && sender.canSee(bukkitPlayer)) {
             playtimeTime += playtime.getCurrentSession(bukkitPlayer.getUniqueId()) / 1000;
         }
 
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + UUIDUtils.name(target) + ChatColor.YELLOW + "'s total playtime is " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(playtimeTime) + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + "'s total playtime is " + ChatColor.LIGHT_PURPLE + TimeUtils.formatIntoDetailedString(playtimeTime) + ChatColor.YELLOW + ".");
     }
 
 }

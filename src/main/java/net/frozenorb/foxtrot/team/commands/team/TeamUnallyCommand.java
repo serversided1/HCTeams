@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 public class TeamUnallyCommand {
 
     @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="")
-    public static void teamUnally(Player sender, @Parameter(name="team") Team targetTeam) {
+    public static void teamUnally(Player sender, @Parameter(name="team") Team team) {
         Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (senderTeam == null) {
@@ -24,25 +24,25 @@ public class TeamUnallyCommand {
             return;
         }
 
-        if (!senderTeam.isAlly(targetTeam)) {
-            sender.sendMessage(ChatColor.RED + "You are not allied to " + targetTeam.getName() + "!");
+        if (!senderTeam.isAlly(team)) {
+            sender.sendMessage(ChatColor.RED + "You are not allied to " + team.getName() + "!");
             return;
         }
 
-        senderTeam.getAllies().remove(targetTeam.getUniqueId());
-        targetTeam.getAllies().remove(senderTeam.getUniqueId());
+        senderTeam.getAllies().remove(team.getUniqueId());
+        team.getAllies().remove(senderTeam.getUniqueId());
 
         senderTeam.flagForSave();
-        targetTeam.flagForSave();
+        team.flagForSave();
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-            if (targetTeam.isMember(player.getUniqueId())) {
+            if (team.isMember(player.getUniqueId())) {
                 player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has dropped their alliance with your team.");
             } else if (senderTeam.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.YELLOW + "Your team has dropped its alliance with " + targetTeam.getName(sender) + ChatColor.YELLOW + ".");
+                player.sendMessage(ChatColor.YELLOW + "Your team has dropped its alliance with " + team.getName(sender) + ChatColor.YELLOW + ".");
             }
 
-            if (targetTeam.isMember(player.getUniqueId()) || senderTeam.isMember(player.getUniqueId())) {
+            if (team.isMember(player.getUniqueId()) || senderTeam.isMember(player.getUniqueId())) {
                 FrozenNametagHandler.reloadPlayer(sender);
                 FrozenNametagHandler.reloadOthersFor(sender);
             }

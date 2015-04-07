@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class KOTHActivateCommand {
 
     @Command(names={ "KOTH Activate", "KOTH Active" }, permissionNode="foxtrot.koth")
-    public static void kothActivate(Player sender, @Parameter(name="KOTH") KOTH target) {
+    public static void kothActivate(Player sender, @Parameter(name="koth") KOTH koth) {
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive() && !koth.isHidden()) {
                 sender.sendMessage(ChatColor.RED + "Another KOTH (" + koth.getName() + ") is already active.");
@@ -18,8 +18,8 @@ public class KOTHActivateCommand {
             }
         }
 
-        target.activate();
-        sender.sendMessage(ChatColor.GRAY + "Activated " + target.getName() + ".");
+        koth.activate();
+        sender.sendMessage(ChatColor.GRAY + "Activated " + koth.getName() + ".");
     }
 
 }

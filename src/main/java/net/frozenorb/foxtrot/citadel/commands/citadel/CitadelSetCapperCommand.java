@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 public class CitadelSetCapperCommand {
 
     @Command(names={ "citadel setcapper" }, permissionNode="op")
-    public static void citadelSetCapper(Player sender, @Parameter(name="team") Team target) {
-        Foxtrot.getInstance().getCitadelHandler().setCapper(target.getUniqueId());
-        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Set " + ChatColor.GREEN + target.getName() + ChatColor.YELLOW + " as the Citadel capper.");
+    public static void citadelSetCapper(Player sender, @Parameter(name="team") Team team) {
+        Foxtrot.getInstance().getCitadelHandler().setCapper(team.getUniqueId());
+        sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Set " + ChatColor.GREEN + team.getName() + ChatColor.YELLOW + " as the Citadel capper.");
     }
 
 }

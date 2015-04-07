@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 public class KOTHRewardKeyCommand {
 
     @Command(names={ "kothrewardkey" }, permissionNode="op")
-    public static void kothRewardKey(Player sender, @Parameter(name="KOTH") String koth, @Parameter(name="Tier") int tier) {
+    public static void kothRewardKey(Player sender, @Parameter(name="koth") String koth, @Parameter(name="level") int level) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
             return;
         }
 
-        sender.setItemInHand(InventoryUtils.generateKOTHRewardKey(koth, tier));
+        sender.setItemInHand(InventoryUtils.generateKOTHRewardKey(koth, level));
         sender.sendMessage(ChatColor.YELLOW + "Gave you a KOTH reward key.");
     }
 

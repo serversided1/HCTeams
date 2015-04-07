@@ -12,8 +12,8 @@ import java.util.UUID;
 public class HighrollerAddCommand {
 
     @Command(names={ "highroller add", "highrollers add" }, permissionNode="op")
-    public static void highrollerAdd(Player sender, @Parameter(name="Player") UUID target) {
-        String name = UUIDUtils.name(target);
+    public static void highrollerAdd(Player sender, @Parameter(name="player") UUID player) {
+        String name = UUIDUtils.name(player);
 
         if (!Foxtrot.getInstance().getServerHandler().getHighRollers().contains(name)) {
             Foxtrot.getInstance().getServerHandler().getHighRollers().add(name);

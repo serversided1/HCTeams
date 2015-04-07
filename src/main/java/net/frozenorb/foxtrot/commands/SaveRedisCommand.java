@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class SaveCommand {
+public class SaveRedisCommand {
 
     @Command(names={ "SaveRedis", "Save" }, permissionNode="op")
     public static void saveRedis(CommandSender sender) {

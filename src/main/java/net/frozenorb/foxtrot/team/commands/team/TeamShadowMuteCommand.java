@@ -22,26 +22,26 @@ public class TeamShadowMuteCommand {
     @Getter public static Map<UUID, String> teamShadowMutes = new HashMap<>();
 
     @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamShadowMuteFaction(Player sender, @Parameter(name="team") final Team target, @Parameter(name="minutes") int time) {
+    public static void teamShadowMute(Player sender, @Parameter(name = "team") final Team team, @Parameter(name = "time") int time) {
         int timeSeconds = time * 60;
 
-        for (UUID player : target.getMembers()) {
-            teamShadowMutes.put(player, target.getName());
+        for (UUID player : team.getMembers()) {
+            teamShadowMutes.put(player, team.getName());
         }
 
-        TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team shadowmute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
-                TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team shadowmute expired.");
+                TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team shadowmute expired.");
 
                 Iterator<java.util.Map.Entry<UUID, String>> mutesIterator = teamShadowMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
                     java.util.Map.Entry<UUID, String> mute = mutesIterator.next();
 
-                    if (mute.getValue().equalsIgnoreCase(target.getName())) {
+                    if (mute.getValue().equalsIgnoreCase(team.getName())) {
                         mutesIterator.remove();
                     }
                 }
@@ -49,7 +49,7 @@ public class TeamShadowMuteCommand {
 
         }.runTaskLater(Foxtrot.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.YELLOW + "Shadow muted the team " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.formatIntoMMSS(timeSeconds) + ".");
+        sender.sendMessage(ChatColor.YELLOW + "Shadow muted the team " + team.getName() + ChatColor.GRAY + " for " + TimeUtils.formatIntoMMSS(timeSeconds) + ".");
     }
 
 }

@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class TeamNullLeaderCommand {
 
     @Command(names={ "team nullleader", "t nullleader", "f nullleader", "faction nullleader", "fac nullleader" }, permissionNode="op")
-    public static void teamSaveString(Player sender) {
+    public static void teamNullLeader(Player sender) {
         int nullLeaders = 0;
 
         for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {

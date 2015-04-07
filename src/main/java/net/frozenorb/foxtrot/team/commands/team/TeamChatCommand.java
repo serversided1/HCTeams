@@ -11,23 +11,23 @@ import org.bukkit.entity.Player;
 public class TeamChatCommand {
 
     @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permissionNode="")
-    public static void teamChat(Player sender, @Parameter(name="chat mode", defaultValue="toggle") String params) {
+    public static void teamChat(Player sender, @Parameter(name="chat mode", defaultValue="toggle") String chatMode) {
         if (Foxtrot.getInstance().getTeamHandler().getTeam(sender) == null) {
             sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
             return;
         }
 
-        ChatMode chatMode = null;
+        ChatMode parsedChatMode = null;
 
-        if (params.equalsIgnoreCase("t") || params.equalsIgnoreCase("team") || params.equalsIgnoreCase("f") || params.equalsIgnoreCase("fac") || params.equalsIgnoreCase("faction") || params.equalsIgnoreCase("fc")) {
-            chatMode = ChatMode.TEAM;
-        } else if (params.equalsIgnoreCase("g") || params.equalsIgnoreCase("p") || params.equalsIgnoreCase("global") || params.equalsIgnoreCase("public") || params.equalsIgnoreCase("gc")) {
-            chatMode = ChatMode.PUBLIC;
-        } else if (params.equalsIgnoreCase("a") || params.equalsIgnoreCase("allies") || params.equalsIgnoreCase("ally") || params.equalsIgnoreCase("alliance") || params.equalsIgnoreCase("ac")) {
-            chatMode = ChatMode.ALLIANCE;
+        if (chatMode.equalsIgnoreCase("t") || chatMode.equalsIgnoreCase("team") || chatMode.equalsIgnoreCase("f") || chatMode.equalsIgnoreCase("fac") || chatMode.equalsIgnoreCase("faction") || chatMode.equalsIgnoreCase("fc")) {
+            parsedChatMode = ChatMode.TEAM;
+        } else if (chatMode.equalsIgnoreCase("g") || chatMode.equalsIgnoreCase("p") || chatMode.equalsIgnoreCase("global") || chatMode.equalsIgnoreCase("public") || chatMode.equalsIgnoreCase("gc")) {
+            parsedChatMode = ChatMode.PUBLIC;
+        } else if (chatMode.equalsIgnoreCase("a") || chatMode.equalsIgnoreCase("allies") || chatMode.equalsIgnoreCase("ally") || chatMode.equalsIgnoreCase("alliance") || chatMode.equalsIgnoreCase("ac")) {
+            parsedChatMode = ChatMode.ALLIANCE;
         }
 
-        setChat(sender, chatMode);
+        setChat(sender, parsedChatMode);
     }
 
     @Command(names={ "fc", "tc" }, permissionNode="")

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TeamLeaderCommand {
 
     @Command(names={ "team newleader", "t newleader", "f newleader", "faction newleader", "fac newleader", "team leader", "t leader", "f leader", "faction leader", "fac leader" }, permissionNode="")
-    public static void teamLeader(Player sender, @Parameter(name="player") UUID target) {
+    public static void teamLeader(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -27,13 +27,13 @@ public class TeamLeaderCommand {
             return;
         }
 
-        if (!team.isMember(target)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is not on your team.");
+        if (!team.isMember(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is not on your team.");
             return;
         }
 
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been given ownership of " + team.getName() + ".");
-        team.setOwner(target);
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been given ownership of " + team.getName() + ".");
+        team.setOwner(player);
         team.addCaptain(sender.getUniqueId());
     }
 

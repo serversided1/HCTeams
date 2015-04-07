@@ -22,11 +22,11 @@ public class TeamMuteCommand {
     @Getter private static Map<UUID, String> teamMutes = new HashMap<>();
 
     @Command(names={ "team mute", "t mute", "f mute", "faction mute", "fac mute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamMute(Player sender, @Parameter(name="team") final Team target, @Parameter(name="minutes") int time, @Parameter(name="reason", wildcard=true) String reason) {
+    public static void teamMute(Player sender, @Parameter(name="team") final Team team, @Parameter(name="time") int time, @Parameter(name="reason", wildcard=true) String reason) {
         int timeSeconds = time * 60;
 
-        for (UUID player : target.getMembers()) {
-            teamMutes.put(player, target.getName());
+        for (UUID player : team.getMembers()) {
+            teamMutes.put(player, team.getName());
 
             Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
@@ -35,19 +35,19 @@ public class TeamMuteCommand {
             }
         }
 
-        TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
 
         new BukkitRunnable() {
 
             public void run() {
-                TeamActionTracker.logActionAsync(target, TeamActionType.GENERAL, "Mute: Team mute expired.");
+                TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team mute expired.");
 
                 Iterator<Map.Entry<UUID, String>> mutesIterator = teamMutes.entrySet().iterator();
 
                 while (mutesIterator.hasNext()) {
                     Map.Entry<UUID, String> mute = mutesIterator.next();
 
-                    if (mute.getValue().equalsIgnoreCase(target.getName())) {
+                    if (mute.getValue().equalsIgnoreCase(team.getName())) {
                         mutesIterator.remove();
                     }
                 }
@@ -55,7 +55,7 @@ public class TeamMuteCommand {
 
         }.runTaskLater(Foxtrot.getInstance(), timeSeconds * 20L);
 
-        sender.sendMessage(ChatColor.YELLOW + "Muted the team " + target.getName() + ChatColor.GRAY + " for " + TimeUtils.formatIntoMMSS(timeSeconds) + " for " + reason + ".");
+        sender.sendMessage(ChatColor.YELLOW + "Muted the team " + team.getName() + ChatColor.GRAY + " for " + TimeUtils.formatIntoMMSS(timeSeconds) + " for " + reason + ".");
     }
 
 }

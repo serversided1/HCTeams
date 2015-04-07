@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
 public class PrefixSetCommand {
 
     @Command(names={ "prefix set" }, permissionNode="op")
-    public static void prefixList(Player sender, @Parameter(name="target") String target, @Parameter(name="prefix", wildcard=true) String prefix) {
+    public static void prefixSet(Player sender, @Parameter(name="player") String player, @Parameter(name="prefix", wildcard=true) String prefix) {
         if (!prefix.equals("null")) {
-            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().put(target, ChatColor.translateAlternateColorCodes('&', prefix));
+            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().put(player, ChatColor.translateAlternateColorCodes('&', prefix));
         } else {
-            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().remove(target);
+            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().remove(player);
         }
 
         Foxtrot.getInstance().getServerHandler().save();

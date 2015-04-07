@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TeamPromoteCommand {
 
     @Command(names={ "team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain" }, permissionNode="")
-    public static void teamPromote(Player sender, @Parameter(name="Player") UUID target) {
+    public static void teamPromote(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -26,18 +26,18 @@ public class TeamPromoteCommand {
             return;
         }
 
-        if (!team.isMember(target)) {
-            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " is not on your team.");
+        if (!team.isMember(player)) {
+            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " is not on your team.");
             return;
         }
 
-        if (team.isCaptain(target)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is already a captain!");
+        if (team.isCaptain(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a captain!");
             return;
         }
 
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been promoted to Captain!");
-        team.addCaptain(target);
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to Captain!");
+        team.addCaptain(player);
     }
 
 }

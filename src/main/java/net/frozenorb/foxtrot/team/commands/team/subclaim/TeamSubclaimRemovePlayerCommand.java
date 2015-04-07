@@ -14,7 +14,7 @@ import java.util.UUID;
 public class TeamSubclaimRemovePlayerCommand {
 
     @Command(names={ "team subclaim removeplayer", "t subclaim removeplayer", "f subclaim removeplayer", "faction subclaim removeplayer", "fac subclaim removeplayer", "team sub removeplayer", "t sub removeplayer", "f sub removeplayer", "faction sub removeplayer", "fac sub removeplayer", "team subclaim revoke", "t subclaim revoke", "f subclaim revoke", "faction subclaim revoke", "fac subclaim revoke", "team sub revoke", "t sub revoke", "f sub revoke", "faction sub revoke", "fac sub revoke" }, permissionNode="")
-    public static void teamSubclaimRemovePlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") UUID target) {
+    public static void teamSubclaimRemovePlayer(Player sender, @Parameter(name="subclaim") Subclaim subclaim, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
@@ -22,18 +22,18 @@ public class TeamSubclaimRemovePlayerCommand {
             return;
         }
 
-        if (!team.isMember(target)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " is not on your team!");
+        if (!team.isMember(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is not on your team!");
             return;
         }
 
-        if (!subclaim.isMember(target)) {
+        if (!subclaim.isMember(player)) {
             sender.sendMessage(ChatColor.RED + "The player already does not have access to that subclaim!");
             return;
         }
 
-        sender.sendMessage(ChatColor.GREEN + UUIDUtils.name(target) + ChatColor.YELLOW + " has been removed from the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
-        subclaim.removeMember(target);
+        sender.sendMessage(ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " has been removed from the subclaim " + ChatColor.GREEN + subclaim.getName() + ChatColor.YELLOW + ".");
+        subclaim.removeMember(player);
         team.flagForSave();
     }
 

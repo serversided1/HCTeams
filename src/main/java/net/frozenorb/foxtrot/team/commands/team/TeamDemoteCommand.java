@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TeamDemoteCommand {
 
     @Command(names={ "team demote", "t demote", "f demote", "faction demote", "fac demote", "team delcaptain", "t delcaptain", "f delcaptain", "faction delcaptain", "fac delcaptain" }, permissionNode="")
-    public static void teamDemote(Player sender, @Parameter(name="player") UUID target) {
+    public static void teamDemote(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -26,18 +26,18 @@ public class TeamDemoteCommand {
             return;
         }
 
-        if (!team.isMember(target)) {
-            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " is not on your team.");
+        if (!team.isMember(player)) {
+            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " is not on your team.");
             return;
         }
 
-        if (!team.isCaptain(target)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " isn't a captain!");
+        if (!team.isCaptain(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " isn't a captain!");
             return;
         }
 
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " has been demoted from Captain!");
-        team.removeCaptain(target);
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted from Captain!");
+        team.removeCaptain(player);
     }
 
 }

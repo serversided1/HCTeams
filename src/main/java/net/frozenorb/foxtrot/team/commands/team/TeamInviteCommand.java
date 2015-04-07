@@ -15,7 +15,7 @@ import java.util.UUID;
 public class TeamInviteCommand {
 
     @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
-    public static void teamInvite(Player sender, @Parameter(name="player") UUID target) {
+    public static void teamInvite(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -33,12 +33,12 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (team.isMember(target)) {
-            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " is already on your team.");
+        if (team.isMember(player)) {
+            sender.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " is already on your team.");
             return;
         }
 
-        if (team.getInvitations().contains(target)) {
+        if (team.getInvitations().contains(player)) {
             sender.sendMessage(ChatColor.RED + "That player has already been invited.");
             return;
         }
@@ -48,18 +48,18 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(target) + " [Invited by: " + sender.getName() + "]");
-        team.getInvitations().add(target);
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
+        team.getInvitations().add(player);
         team.flagForSave();
 
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (bukkitPlayer != null) {
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getName() + ChatColor.DARK_AQUA + "'.");
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/team join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
         }
 
-        team.sendMessage(ChatColor.YELLOW + UUIDUtils.name(target) + " has been invited to the team!");
+        team.sendMessage(ChatColor.YELLOW + UUIDUtils.name(player) + " has been invited to the team!");
     }
 
 }

@@ -15,29 +15,29 @@ import java.util.UUID;
 public class PayCommand {
 
     @Command(names={ "Pay", "P2P" }, permissionNode="")
-    public static void pay(Player sender, @Parameter(name="Target") UUID target, @Parameter(name="Amount") float value) {
+    public static void pay(Player sender, @Parameter(name="player") UUID player, @Parameter(name="amount") float amount) {
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
 
-        if (!Foxtrot.getInstance().getPlaytimeMap().hasPlayed(target)) {
+        if (!Foxtrot.getInstance().getPlaytimeMap().hasPlayed(player)) {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return;
         }
 
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (sender.equals(bukkitPlayer)) {
             sender.sendMessage(ChatColor.RED + "You cannot send money to yourself!");
             return;
         }
 
-        if (value < 5) {
+        if (amount < 5) {
             sender.sendMessage(ChatColor.RED + "You must send at least $5!");
             return;
         }
 
         if (balance > 100000) {
             sender.sendMessage("§cYour balance is too high to send money. Please contact an admin to transfer money.");
-            Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to send " + value);
+            Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to send " + amount);
             return;
         }
 
@@ -46,23 +46,23 @@ public class PayCommand {
             return;
         }
 
-        if (Float.isNaN(value)) {
+        if (Float.isNaN(amount)) {
             sender.sendMessage(ChatColor.RED + "Nope.");
             return;
         }
 
-        if (balance < value) {
-            sender.sendMessage(ChatColor.RED + "You do not have $" + value + "!");
+        if (balance < amount) {
+            sender.sendMessage(ChatColor.RED + "You do not have $" + amount + "!");
             return;
         }
 
-        Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(target), value);
-        Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), value);
+        Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(player), amount);
+        Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), amount);
 
-        sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(target) + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + ".");
 
         if (bukkitPlayer != null) {
-            bukkitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(value) + ChatColor.YELLOW + ".");
+            bukkitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + ".");
         }
     }
 

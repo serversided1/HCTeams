@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class TeamUnclaimCommand {
 
     @Command(names={ "team unclaim", "t unclaim", "f unclaim", "faction unclaim", "fac unclaim" }, permissionNode="")
-    public static void teamUnclaim(Player sender, @Parameter(name="all?", defaultValue="f") String all) {
+    public static void teamUnclaim(Player sender, @Parameter(name="all?", defaultValue="not_all?") String all) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

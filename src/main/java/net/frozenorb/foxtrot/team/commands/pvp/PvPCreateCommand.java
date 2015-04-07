@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit;
 public class PvPCreateCommand {
 
     @Command(names={ "pvptimer create", "timer create", "pvp create" }, permissionNode="worldedit.*")
-    public static void pvpCreate(Player sender, @Parameter(name="target", defaultValue="self") Player target) {
-        Foxtrot.getInstance().getPvPTimerMap().createActiveTimer(target.getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
-        target.sendMessage(ChatColor.YELLOW + "You have 30 minutes of PVP Timer!");
+    public static void pvpCreate(Player sender, @Parameter(name="player", defaultValue="self") Player player) {
+        Foxtrot.getInstance().getPvPTimerMap().createActiveTimer(player.getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
+        player.sendMessage(ChatColor.YELLOW + "You have 30 minutes of PVP Timer!");
 
-        if (sender != target) {
-            sender.sendMessage(ChatColor.YELLOW + "Gave 30 minutes of PVP Timer to " + target.getName() + ".");
+        if (sender != player) {
+            sender.sendMessage(ChatColor.YELLOW + "Gave 30 minutes of PVP Timer to " + player.getName() + ".");
         }
     }
 

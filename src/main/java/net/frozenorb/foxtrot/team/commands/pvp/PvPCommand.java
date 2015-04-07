@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 public class PvPCommand {
 
     @Command(names={ "pvptimer", "timer", "pvp" }, permissionNode="")
-    public static void pvpTimer(Player sender) {
+    public static void pvp(Player sender) {
         String[] msges = {
                 "§c/pvp lives [target] - Shows amount of lives that a player has",
                 "§c/pvp revive <player> - Revives targeted player",

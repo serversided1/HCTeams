@@ -17,7 +17,7 @@ import java.util.UUID;
 public class TeamKickCommand {
 
     @Command(names={ "team kick", "t kick", "f kick", "faction kick", "fac kick" }, permissionNode="")
-    public static void teamKick(Player sender, @Parameter(name="player") UUID target) {
+    public static void teamKick(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -30,34 +30,34 @@ public class TeamKickCommand {
             return;
         }
 
-        if (!team.isMember(target)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(target) + " isn't on your team!");
+        if (!team.isMember(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " isn't on your team!");
             return;
         }
 
-        if (team.isOwner(target)) {
+        if (team.isOwner(player)) {
             sender.sendMessage(ChatColor.RED + "You cannot kick the team leader!");
             return;
         }
 
-        if (team.isCaptain(target)) {
+        if (team.isCaptain(player)) {
             if (team.isCaptain(sender.getUniqueId())) {
                 sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
                 return;
             }
         }
 
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(target) + " was kicked by " + sender.getName() + "!");
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(target) + " [Kicked by: " + sender.getName() + "]");
+        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " was kicked by " + sender.getName() + "!");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(player) + " [Kicked by: " + sender.getName() + "]");
 
-        if (team.removeMember(target)) {
+        if (team.removeMember(player)) {
             team.disband();
         } else {
             team.flagForSave();
         }
 
-        Foxtrot.getInstance().getTeamHandler().setTeam(target, null);
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(target);
+        Foxtrot.getInstance().getTeamHandler().setTeam(player, null);
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (bukkitPlayer != null) {
             FrozenNametagHandler.reloadPlayer(bukkitPlayer);

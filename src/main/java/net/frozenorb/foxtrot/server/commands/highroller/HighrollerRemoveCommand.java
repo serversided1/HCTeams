@@ -12,8 +12,8 @@ import java.util.UUID;
 public class HighrollerRemoveCommand {
 
     @Command(names={ "highroller remove", "highrollers remove" }, permissionNode="op")
-    public static void highrollerRemove(Player sender, @Parameter(name="Player") UUID target) {
-        String name = UUIDUtils.name(target);
+    public static void highrollerRemove(Player sender, @Parameter(name="player") UUID player) {
+        String name = UUIDUtils.name(player);
 
         if (Foxtrot.getInstance().getServerHandler().getHighRollers().contains(name)) {
             Foxtrot.getInstance().getServerHandler().getHighRollers().remove(name);

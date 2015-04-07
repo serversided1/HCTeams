@@ -23,30 +23,30 @@ public class TeamCreateCommand {
     private static CustomTimingsHandler timings4 = new CustomTimingsHandler("Team Creation - Part 4");
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
-    public static void teamCreate(Player sender, @Parameter(name="team") String name) {
+    public static void teamCreate(Player sender, @Parameter(name="team") String team) {
         if (Foxtrot.getInstance().getTeamHandler().getTeam(sender) != null) {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
             return;
         }
 
-        if (name.length() > 16) {
+        if (team.length() > 16) {
             sender.sendMessage(ChatColor.RED + "Maximum team name size is 16 characters!");
             return;
         }
 
-        if (name.length() < 3) {
+        if (team.length() < 3) {
             sender.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
             return;
         }
 
-        if (Foxtrot.getInstance().getTeamHandler().getTeam(name) != null) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(team) != null) {
             sender.sendMessage(ChatColor.GRAY + "That team already exists!");
             return;
         }
 
         timings1.startTiming();
 
-        if (ALPHA_NUMERIC.matcher(name).find()) {
+        if (ALPHA_NUMERIC.matcher(team).find()) {
             sender.sendMessage(ChatColor.RED + "Team names must be alphanumeric!");
             timings1.stopTiming();
             return;
@@ -61,20 +61,20 @@ public class TeamCreateCommand {
         timings2.stopTiming();
         timings3.startTiming();
 
-        Team team = new Team(name);
+        Team createdTeam = new Team(team);
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Team created. [Created by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(createdTeam, TeamActionType.GENERAL, "Team created. [Created by: " + sender.getName() + "]");
 
-        team.setOwner(sender.getUniqueId());
-        team.setName(name);
-        team.setDTR(1);
-        team.setUniqueId(new ObjectId());
+        createdTeam.setOwner(sender.getUniqueId());
+        createdTeam.setName(team);
+        createdTeam.setDTR(1);
+        createdTeam.setUniqueId(new ObjectId());
 
         timings3.stopTiming();
         timings4.startTiming();
 
-        Foxtrot.getInstance().getTeamHandler().setupTeam(team);
-        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + team.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+        Foxtrot.getInstance().getTeamHandler().setupTeam(createdTeam);
+        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
 
         timings4.stopTiming();
     }

@@ -17,24 +17,24 @@ import java.util.UUID;
 public class ReviveCommand {
 
     @Command(names={ "Revive" }, permissionNode="worldedit.*")
-    public static void revive(CommandSender sender, @Parameter(name="Target") UUID target, @Parameter(name="Reason", wildcard=true) String reason) {
+    public static void revive(CommandSender sender, @Parameter(name="player") UUID player, @Parameter(name="reason", wildcard=true) String reason) {
         if (reason.equals(".")) {
             sender.sendMessage(ChatColor.RED + ". is not a good reason...");
             return;
         }
 
-        if (Foxtrot.getInstance().getDeathbanMap().isDeathbanned(target)) {
+        if (Foxtrot.getInstance().getDeathbanMap().isDeathbanned(player)) {
             File logTo = new File(new File("foxlogs"), "adminrevives.log");
 
             try {
                 logTo.createNewFile();
-                Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + sender.getName() + " revived " + UUIDUtils.name(target) + " for " + reason + "\n", logTo, Charset.defaultCharset());
+                Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + sender.getName() + " revived " + UUIDUtils.name(player) + " for " + reason + "\n", logTo, Charset.defaultCharset());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            Foxtrot.getInstance().getDeathbanMap().revive(target);
-            sender.sendMessage(ChatColor.GREEN + "Revived " + UUIDUtils.name(target) + "!");
+            Foxtrot.getInstance().getDeathbanMap().revive(player);
+            sender.sendMessage(ChatColor.GREEN + "Revived " + UUIDUtils.name(player) + "!");
         } else {
             sender.sendMessage(ChatColor.RED + "That player is not deathbanned!");
         }

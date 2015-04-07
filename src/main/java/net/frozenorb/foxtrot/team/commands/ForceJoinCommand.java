@@ -10,9 +10,9 @@ import org.bukkit.entity.Player;
 public class ForceJoinCommand {
 
     @Command(names={ "ForceJoin" }, permissionNode="foxtrot.forcejoin")
-    public static void forceJoin(Player sender, @Parameter(name="Team") Team team,  @Parameter(name="Target", defaultValue="self") Player target) {
-        if (Foxtrot.getInstance().getTeamHandler().getTeam(target) != null) {
-            if (target == sender) {
+    public static void forceJoin(Player sender, @Parameter(name="team") Team team, @Parameter(name="player") Player player) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
+            if (player == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");
             } else {
                 sender.sendMessage(ChatColor.RED + "That player needs to leave their current team first!");
@@ -21,12 +21,12 @@ public class ForceJoinCommand {
             return;
         }
 
-        team.addMember(target.getUniqueId());
-        Foxtrot.getInstance().getTeamHandler().setTeam(target.getUniqueId(), team);
-        target.sendMessage(ChatColor.YELLOW + "You are now a member of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
+        team.addMember(player.getUniqueId());
+        Foxtrot.getInstance().getTeamHandler().setTeam(player.getUniqueId(), team);
+        player.sendMessage(ChatColor.YELLOW + "You are now a member of " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
 
-        if (target != sender) {
-            sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " added to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
+        if (player != sender) {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.YELLOW + " added to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "!");
         }
     }
 

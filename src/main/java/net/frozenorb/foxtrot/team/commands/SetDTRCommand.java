@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 public class SetDTRCommand {
 
     @Command(names={ "SetDTR" }, permissionNode="foxtrot.setdtr")
-    public static void setDTR(Player sender, @Parameter(name="Target") Team target, @Parameter(name="DTR") float value) {
-        target.setDTR(value);
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " has a new DTR of " + ChatColor.LIGHT_PURPLE + value + ChatColor.YELLOW + ".");
+    public static void setDTR(Player sender, @Parameter(name="team") Team team, @Parameter(name="dtr") float dtr) {
+        team.setDTR(dtr);
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + " has a new DTR of " + ChatColor.LIGHT_PURPLE + dtr + ChatColor.YELLOW + ".");
     }
 
 }

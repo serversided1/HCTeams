@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 public class StartDTRRegenCommand {
 
     @Command(names={ "startdtrregen" }, permissionNode="foxtrot.startdtrregen")
-    public static void startDTRRegen(Player sender, @Parameter(name="Target") Team target) {
-        target.setDTRCooldown(System.currentTimeMillis());
-        sender.sendMessage(ChatColor.LIGHT_PURPLE + target.getName() + ChatColor.YELLOW + " is now regenerating DTR.");
+    public static void startDTRRegen(Player sender, @Parameter(name="team") Team team) {
+        team.setDTRCooldown(System.currentTimeMillis());
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + " is now regenerating DTR.");
     }
 
 }

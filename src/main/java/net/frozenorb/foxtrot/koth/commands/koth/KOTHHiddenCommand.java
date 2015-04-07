@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 public class KOTHHiddenCommand {
 
     @Command(names={ "KOTH Hidden" }, permissionNode="foxtrot.koth.admin")
-    public static void kothHidden(Player sender, @Parameter(name="KOTH") KOTH target, @Parameter(name="Hidden") boolean hidden) {
-        target.setHidden(hidden);
-        sender.sendMessage(ChatColor.GRAY + "Set visibility for the " + target.getName() + " KOTH.");
+    public static void kothHidden(Player sender, @Parameter(name="koth") KOTH koth, @Parameter(name="hidden") boolean hidden) {
+        koth.setHidden(hidden);
+        sender.sendMessage(ChatColor.GRAY + "Set visibility for the " + koth.getName() + " KOTH.");
     }
 
 }

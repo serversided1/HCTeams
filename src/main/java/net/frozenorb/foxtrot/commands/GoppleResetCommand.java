@@ -11,8 +11,8 @@ import java.util.UUID;
 public class GoppleResetCommand {
 
     @Command(names={ "GoppleReset" }, permissionNode="foxtrot.gopplereset")
-    public static void goppleReset(Player sender, @Parameter(name="Target") UUID target) {
-        Foxtrot.getInstance().getOppleMap().resetCooldown(target);
+    public static void goppleReset(Player sender, @Parameter(name="player") UUID player) {
+        Foxtrot.getInstance().getOppleMap().resetCooldown(player);
         sender.sendMessage(ChatColor.RED + "Cooldown reset!");
     }
 

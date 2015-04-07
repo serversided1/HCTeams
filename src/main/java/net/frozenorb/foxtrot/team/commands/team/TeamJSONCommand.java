@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 public class TeamJSONCommand {
 
     @Command(names={ "team json", "t json", "f json", "faction json", "fac json" }, permissionNode="op")
-    public static void teamSaveString(CommandSender sender, @Parameter(name="team", defaultValue="self") Team target) {
-        sender.sendMessage(target.toJSON().toString());
+    public static void teamJSON(CommandSender sender, @Parameter(name="team", defaultValue="self") Team team) {
+        sender.sendMessage(team.toJSON().toString());
     }
 
 }

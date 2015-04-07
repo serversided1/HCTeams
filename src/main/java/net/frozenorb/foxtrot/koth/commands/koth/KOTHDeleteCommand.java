@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
 public class KOTHDeleteCommand {
 
     @Command(names={ "KOTH Delete" }, permissionNode="foxtrot.koth.admin")
-    public static void kothDelete(Player sender, @Parameter(name="KOTH") KOTH target) {
-        Foxtrot.getInstance().getKOTHHandler().getKOTHs().remove(target);
+    public static void kothDelete(Player sender, @Parameter(name="koth") KOTH koth) {
+        Foxtrot.getInstance().getKOTHHandler().getKOTHs().remove(koth);
         Foxtrot.getInstance().getKOTHHandler().saveKOTHs();
-        sender.sendMessage(ChatColor.GRAY + "Deleted KOTH " + target.getName() + ".");
+        sender.sendMessage(ChatColor.GRAY + "Deleted KOTH " + koth.getName() + ".");
     }
 
 }

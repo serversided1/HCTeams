@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 public class HighrollerCommand {
 
     @Command(names={ "highroller", "highrollers" }, permissionNode="op")
-    public static void pvpTimer(Player sender) {
+    public static void highroller(Player sender) {
         String[] msges = {
                 "§c/highroller list - Shows all HighRollers.",
                 "§c/highroller add <player> - Add a HighRoller.",

@@ -15,7 +15,7 @@ public class KOTHCommand {
 
     // Make this pretty.
     @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
-    public static void kothSchedule(Player sender) {
+    public static void koth(Player sender) {
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (!koth.isHidden() && koth.isActive()) {
                 sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + koth.getName() + ChatColor.GOLD + " can be contested now.");

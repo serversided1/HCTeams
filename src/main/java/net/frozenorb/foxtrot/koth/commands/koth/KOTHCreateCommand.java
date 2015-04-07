@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 public class KOTHCreateCommand {
 
     @Command(names={ "KOTH Create" }, permissionNode="foxtrot.koth.admin")
-    public static void kothCreate(Player sender, @Parameter(name="KOTH") String target) {
-        new KOTH(target, sender.getLocation());
-        sender.sendMessage(ChatColor.GRAY + "Created a KOTH named " + target + ".");
+    public static void kothCreate(Player sender, @Parameter(name="koth") String koth) {
+        new KOTH(koth, sender.getLocation());
+        sender.sendMessage(ChatColor.GRAY + "Created a KOTH named " + koth + ".");
     }
 
 }

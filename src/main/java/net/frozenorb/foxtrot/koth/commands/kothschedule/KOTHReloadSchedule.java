@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class KOTHReloadSchedule {
 
     @Command(names={ "KOTHSchedule Reload" }, permissionNode="foxtrot.koth.admin")
-    public static void kothReloadSchedule(Player sender) {
+    public static void kothScheduleReload(Player sender) {
         Foxtrot.getInstance().getKOTHHandler().loadSchedules();
         sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Reloaded the KOTH schedule.");
     }

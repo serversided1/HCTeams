@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class ConquestAdminSetScoreCommand {
 
     @Command(names={ "conquestadmin setscore" }, permissionNode="op")
-    public static void conquestAdminSetScore(Player sender, @Parameter(name="team") Team target, @Parameter(name="score") int score) {
+    public static void conquestAdminSetScore(Player sender, @Parameter(name="team") Team team, @Parameter(name="score") int score) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game == null) {
@@ -20,8 +20,8 @@ public class ConquestAdminSetScoreCommand {
             return;
         }
 
-        game.getTeamPoints().put(target.getUniqueId(), score);
-        sender.sendMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Updated the score for " + target.getName(sender) + ChatColor.GOLD + ".");
+        game.getTeamPoints().put(team.getUniqueId(), score);
+        sender.sendMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Updated the score for " + team.getName(sender) + ChatColor.GOLD + ".");
     }
 
 }

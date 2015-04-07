@@ -16,7 +16,7 @@ import java.util.UUID;
 public class TeamUninviteCommand {
 
     @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
-    public static void teamUninvite(Player sender, @Parameter(name="all | player") String name) {
+    public static void teamUninvite(Player sender, @Parameter(name="all | player") String allPlayer) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -25,25 +25,25 @@ public class TeamUninviteCommand {
         }
 
         if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
-            if (name.equalsIgnoreCase("all")) {
+            if (allPlayer.equalsIgnoreCase("all")) {
                 team.getInvitations().clear();
                 sender.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
             } else {
                 new BukkitRunnable() {
 
                     public void run() {
-                        UUID nameUUID = UUIDUtils.uuid(name);
+                        UUID nameUUID = UUIDUtils.uuid(allPlayer);
 
                         new BukkitRunnable() {
 
                             public void run() {
                                 if (team.getInvitations().remove(nameUUID)) {
-                                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + name + " [Uninvited by: " + sender.getName() + "]");
+                                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + allPlayer + " [Uninvited by: " + sender.getName() + "]");
                                     team.getInvitations().remove(nameUUID);
                                     team.flagForSave();
-                                    sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + name + "!");
+                                    sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + allPlayer + "!");
                                 } else {
-                                    sender.sendMessage(ChatColor.RED + "No pending invitation for '" + name + "'!");
+                                    sender.sendMessage(ChatColor.RED + "No pending invitation for '" + allPlayer + "'!");
                                 }
                             }
 
