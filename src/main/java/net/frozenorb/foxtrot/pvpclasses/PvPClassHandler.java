@@ -61,14 +61,12 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
             } else {
                 // Start kit warmup
                 for (PvPClass pvpClass : pvpClasses) {
-                    if (pvpClass.qualifies(player.getInventory())) {
-                        if (pvpClass.canApply(player)) {
-                            pvpClass.apply(player);
-                            PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
+                    if (pvpClass.qualifies(player.getInventory()) && pvpClass.canApply(player)) {
+                        pvpClass.apply(player);
+                        PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
 
-                            player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
-                            player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
-                        }
+                        player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
+                        player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
                     }
                 }
             }
