@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import lombok.Getter;
 import lombok.Setter;
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
@@ -781,7 +782,11 @@ public class Team {
 
         // Now we can actually send all that info we just processed.
         player.sendMessage(GRAY_LINE);
-        player.sendMessage(ChatColor.BLUE + getName() + ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+
+        FancyMessage teamLine = new FancyMessage();
+
+        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/team/" + getName()).then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+        teamLine.send(player);
 
         if (allies.length() > 2) {
             allies.setLength(allies.length() - 2);
