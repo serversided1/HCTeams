@@ -24,6 +24,7 @@ public class DeathMessageHandler {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new FallTracker(), Foxtrot.getInstance());
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new ArrowTracker(), Foxtrot.getInstance());
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new VoidTracker(), Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new BurnTracker(), Foxtrot.getInstance());
     }
 
     public static List<Damage> getDamage(Player player) {
