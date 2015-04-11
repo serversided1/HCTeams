@@ -20,12 +20,6 @@ public class GeneralTracker implements Listener {
             case STARVATION:
                 event.setTrackerDamage(new GeneralDamage(event.getPlayer().getName(), event.getDamage(), "starved to death"));
                 break;
-            case FIRE_TICK:
-                event.setTrackerDamage(new GeneralDamage(event.getPlayer().getName(), event.getDamage(), "burned to death"));
-                break;
-            case LAVA:
-                event.setTrackerDamage(new GeneralDamage(event.getPlayer().getName(), event.getDamage(), "burned to death"));
-                break;
             case LIGHTNING:
                 event.setTrackerDamage(new GeneralDamage(event.getPlayer().getName(), event.getDamage(), "was struck by lightning"));
                 break;
