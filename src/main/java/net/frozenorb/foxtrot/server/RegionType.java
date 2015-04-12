@@ -23,8 +23,11 @@ public enum RegionType {
             return (false);
         }
 
-        event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
-        event.getPlayer().setFoodLevel(20);
+        if (!event.getPlayer().isDead()) {
+            event.getPlayer().setHealth(event.getPlayer().getMaxHealth());
+            event.getPlayer().setFoodLevel(20);
+        }
+
         return (true);
     });
 
