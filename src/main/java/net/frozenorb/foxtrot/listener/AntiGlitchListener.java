@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.event.EventHandler;
