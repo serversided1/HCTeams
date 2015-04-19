@@ -7,8 +7,10 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmaskType;
 import net.frozenorb.foxtrot.team.subclaim.SubclaimType;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.redis.RedisCommand;
 import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,22 +30,27 @@ public class TeamHandler {
         FrozenCommandHandler.registerParameterType(Subclaim.class, new SubclaimType());
 
         // Load teams from Redis.
-        qLib.getInstance().runRedisCommand(redis -> {
-            for (String key : redis.keys("fox_teams.*")) {
-                String loadString = redis.get(key);
+        qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
 
-                try {
-                    Team team = new Team(key.split("\\.")[1]);
-                    team.load(loadString);
+            @Override
+            public Object execute(Jedis redis) {
+                for (String key : redis.keys("fox_teams.*")) {
+                    String loadString = redis.get(key);
 
-                    setupTeam(team);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Foxtrot.getInstance().getLogger().severe("Could not load team from raw string: " + loadString);
+                    try {
+                        Team team = new Team(key.split("\\.")[1]);
+                        team.load(loadString);
+
+                        setupTeam(team);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Foxtrot.getInstance().getLogger().severe("Could not load team from raw string: " + loadString);
+                    }
                 }
+
+                return (null);
             }
 
-            return (null);
         });
     }
 

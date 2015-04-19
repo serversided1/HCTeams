@@ -18,6 +18,7 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.redis.RedisCommand;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -29,6 +30,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -205,9 +207,14 @@ public class Team {
         new BukkitRunnable() {
 
             public void run() {
-                qLib.getInstance().runRedisCommand(redis -> {
-                    redis.del("fox_teams." + name.toLowerCase());
-                    return (null);
+                qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
+
+                    @Override
+                    public Object execute(Jedis redis) {
+                        redis.del("fox_teams." + name.toLowerCase());
+                        return (null);
+                    }
+
                 });
 
                 DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
@@ -228,9 +235,14 @@ public class Team {
 
         Foxtrot.getInstance().getTeamHandler().setupTeam(this);
 
-        qLib.getInstance().runRedisCommand(redis -> {
-            redis.del("fox_teams." + oldName.toLowerCase());
-            return (null);
+        qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
+
+            @Override
+            public Object execute(Jedis redis) {
+                redis.del("fox_teams." + oldName.toLowerCase());
+                return (null);
+            }
+
         });
 
         // We don't need to do anything here as all we're doing is changing the name, not the Unique ID (which is what Mongo uses)

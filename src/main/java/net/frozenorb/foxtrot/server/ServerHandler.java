@@ -410,7 +410,14 @@ public class ServerHandler {
         };
 
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(listener, Foxtrot.getInstance());
-        Foxtrot.getInstance().getServer().getScheduler().runTaskLater(Foxtrot.getInstance(), () -> HandlerList.unregisterAll(listener), seconds * 20L);
+
+        new BukkitRunnable() {
+
+            public void run() {
+                HandlerList.unregisterAll(listener);
+            }
+
+        }.runTaskLater(Foxtrot.getInstance(), seconds * 20L);
     }
 
     public boolean isSpawnBufferZone(Location loc) {

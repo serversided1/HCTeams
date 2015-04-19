@@ -4,9 +4,11 @@ import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.redis.RedisCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import redis.clients.jedis.Jedis;
 
 public class RedisSaveTask extends BukkitRunnable {
 
@@ -16,20 +18,25 @@ public class RedisSaveTask extends BukkitRunnable {
 
     public static int save(final boolean forceAll) {
         long startMs = System.currentTimeMillis();
-        int teamsSaved = qLib.getInstance().runRedisCommand(redis -> {
-            DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
-            int changed = 0;
+        int teamsSaved = qLib.getInstance().runRedisCommand(new RedisCommand<Integer>() {
 
-            for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
-                if (team.isNeedsSave() || forceAll) {
-                    changed++;
+            @Override
+            public Integer execute(Jedis redis) {
+                DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
+                int changed = 0;
 
-                    redis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
-                    teamsCollection.update(team.getJSONIdentifier(), team.toJSON(), true, false);
+                for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
+                    if (team.isNeedsSave() || forceAll) {
+                        changed++;
+
+                        redis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
+                        teamsCollection.update(team.getJSONIdentifier(), team.toJSON(), true, false);
+                    }
                 }
+
+                return (changed);
             }
 
-            return (changed);
         });
 
         int time = (int) (System.currentTimeMillis() - startMs);

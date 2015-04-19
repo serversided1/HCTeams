@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,19 +84,21 @@ public class DeathbanListener implements Listener {
 
         final String time = TimeUtils.formatIntoDetailedString(seconds);
 
-        Foxtrot.getInstance().getServer().getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+        new BukkitRunnable() {
 
-            if (!event.getEntity().isOnline()) {
-                return;
+            public void run() {
+                if (!event.getEntity().isOnline()) {
+                    return;
+                }
+
+                if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
+                } else {
+                    event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
+                }
             }
 
-            if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
-                event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
-            } else {
-                event.getEntity().kickPlayer(ChatColor.YELLOW + "Come back in " + time + "!");
-            }
-
-        }, 5 * 20L);
+        }.runTaskLater(Foxtrot.getInstance(), 5 * 20L);
     }
 
 }

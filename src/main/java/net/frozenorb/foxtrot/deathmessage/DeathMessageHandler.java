@@ -33,7 +33,7 @@ public class DeathMessageHandler {
 
     public static void addDamage(Player player, Damage addedDamage) {
         if (!damage.containsKey(player.getName())) {
-            damage.put(player.getName(), new ArrayList<>());
+            damage.put(player.getName(), new ArrayList<Damage>());
         }
 
         List<Damage> damageList = damage.get(player.getName());

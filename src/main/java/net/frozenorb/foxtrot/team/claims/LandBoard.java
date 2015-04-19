@@ -20,7 +20,7 @@ public class LandBoard {
 
     public LandBoard() {
         for (World world : Foxtrot.getInstance().getServer().getWorlds()) {
-            buckets.put(world.getName(), HashMultimap.create());
+            buckets.put(world.getName(), HashMultimap.<CoordinateSet, Map.Entry<Claim, Team>>create());
         }
     }
 

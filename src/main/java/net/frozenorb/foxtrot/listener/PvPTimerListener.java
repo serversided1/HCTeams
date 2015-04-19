@@ -14,6 +14,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,7 +52,13 @@ public class PvPTimerListener implements Listener {
 
             droppedItems.add(id);
 
-            Foxtrot.getInstance().getServer().getScheduler().runTaskLater(Foxtrot.getInstance(), () -> droppedItems.remove(id), 20L * 60);
+            new BukkitRunnable() {
+
+                public void run() {
+                    droppedItems.remove(id);
+                }
+
+            }.runTaskLater(Foxtrot.getInstance(), 20L * 60);
         }
     }
 

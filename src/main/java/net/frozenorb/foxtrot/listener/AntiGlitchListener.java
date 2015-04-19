@@ -40,7 +40,7 @@ public class AntiGlitchListener implements Listener {
     }
 
     @EventHandler
-    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+    public void onProjectileLaunch(final ProjectileLaunchEvent event) {
         if (event.getEntity() instanceof EnderPearl) {
             new BukkitRunnable() {
 

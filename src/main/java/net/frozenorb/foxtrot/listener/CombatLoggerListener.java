@@ -274,14 +274,16 @@ public class CombatLoggerListener implements Listener {
 
             combatLoggers.add(villager);
 
-            Foxtrot.getInstance().getServer().getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+            new BukkitRunnable() {
 
-                if (!villager.isDead() && villager.isValid()) {
-                    combatLoggers.remove(villager);
-                    villager.remove();
+                public void run() {
+                    if (!villager.isDead() && villager.isValid()) {
+                        combatLoggers.remove(villager);
+                        villager.remove();
+                    }
                 }
 
-            }, 30 * 20L);
+            }.runTaskLater(Foxtrot.getInstance(), 30 * 20L);
         }
     }
 

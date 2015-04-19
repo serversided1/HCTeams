@@ -28,8 +28,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TeamListener implements Listener {
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
         if (team != null) {
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {

@@ -168,7 +168,9 @@ public class CitadelHandler {
     }
 
     public void respawnCitadelChests() {
-        citadelChests.forEach((chest) -> respawnCitadelChest(chest));
+        for (Location chest : citadelChests) {
+            respawnCitadelChest(chest);
+        }
     }
 
     public void respawnCitadelChest(Location location) {

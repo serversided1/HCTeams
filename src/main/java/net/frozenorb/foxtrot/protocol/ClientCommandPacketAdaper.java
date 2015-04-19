@@ -16,7 +16,7 @@ public class ClientCommandPacketAdaper extends PacketAdapter {
     }
 
     @Override
-    public void onPacketReceiving(PacketEvent event) {
+    public void onPacketReceiving(final PacketEvent event) {
         if (event.getPacket().getClientCommands().read(0) == EnumWrappers.ClientCommand.PERFORM_RESPAWN) {
             if (!Foxtrot.getInstance().getDeathbanMap().isDeathbanned(event.getPlayer().getUniqueId())) {
                 return;

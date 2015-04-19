@@ -104,14 +104,12 @@ public class SignSubclaimListener implements Listener {
 
         Team owningTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
-        subclaimSigns(event.getBlock()).forEach(sign -> {
-
+        for (Sign sign : subclaimSigns(event.getBlock())) {
             if (!(owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId()))) {
                 event.getPlayer().sendMessage(NO_ACCESS);
                 event.setCancelled(true);
             }
-
-        });
+        }
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
@@ -149,8 +147,7 @@ public class SignSubclaimListener implements Listener {
         // Will never be null, we check isUnclaimedOrRaidable above.
         Team owningTeam = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
 
-        subclaimSigns(event.getClickedBlock()).forEach(sign -> {
-
+        for (Sign sign : subclaimSigns(event.getClickedBlock())) {
             boolean canAccess = owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId());
 
             for (int i = 0; i <= 3; i++) {
@@ -164,8 +161,7 @@ public class SignSubclaimListener implements Listener {
                 event.getPlayer().sendMessage(NO_ACCESS);
                 event.setCancelled(true);
             }
-
-        });
+        }
     }
 
     @EventHandler
@@ -181,7 +177,9 @@ public class SignSubclaimListener implements Listener {
                 moveBlock = ((BlockState) inventoryHolder).getBlock();
             }
 
-            subclaimSigns(moveBlock).forEach(sign -> event.setCancelled(true));
+            if (subclaimSigns(moveBlock).size() != 0) {
+                event.setCancelled(true);
+            }
         }
     }
 

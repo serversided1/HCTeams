@@ -49,7 +49,7 @@ public class ChatSpyMap extends PersistMap<List<ObjectId>> {
     }
 
     public List<ObjectId> getChatSpy(UUID check) {
-        return (contains(check) ? getValue(check) : new ArrayList<>());
+        return (contains(check) ? getValue(check) : new ArrayList<ObjectId>());
     }
 
     public void setChatSpy(UUID update, List<ObjectId> teams) {

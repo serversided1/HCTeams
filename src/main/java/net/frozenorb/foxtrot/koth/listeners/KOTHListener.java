@@ -84,11 +84,13 @@ public class KOTHListener implements Listener {
                 break;
         }
 
+        final String[] messagesFinal = messages;
+
         new BukkitRunnable() {
 
             public void run() {
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                    player.sendMessage(messages);
+                    player.sendMessage(messagesFinal);
                 }
             }
 
@@ -101,19 +103,19 @@ public class KOTHListener implements Listener {
     }
 
     @EventHandler
-    public void onKOTHCaptured(KOTHCapturedEvent event) {
+    public void onKOTHCaptured(final KOTHCapturedEvent event) {
         if (event.getKOTH().isHidden()) {
             return;
         }
 
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
         String teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]";
 
         if (team != null) {
             teamName = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
         }
 
-        String[] filler = { "", "", "", "", "", "" };
+        final String[] filler = { "", "", "", "", "", "" };
         String[] messages;
 
         if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
@@ -148,12 +150,14 @@ public class KOTHListener implements Listener {
             }
         }
 
+        final String[] messagesFinal = messages;
+
         new BukkitRunnable() {
 
             public void run() {
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     player.sendMessage(filler);
-                    player.sendMessage(messages);
+                    player.sendMessage(messagesFinal);
                 }
             }
 
@@ -185,7 +189,7 @@ public class KOTHListener implements Listener {
     }
 
     @EventHandler
-    public void onKOTHControlLost(KOTHControlLostEvent event) {
+    public void onKOTHControlLost(final KOTHControlLostEvent event) {
         if (event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
             new BukkitRunnable() {
 

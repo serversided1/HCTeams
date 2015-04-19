@@ -67,7 +67,7 @@ public class PacketBorder {
 
     public void sendToPlayer(Player player) {
         if (!sentBlockChanges.containsKey(player.getName())) {
-            sentBlockChanges.put(player.getName(), new HashMap<>());
+            sentBlockChanges.put(player.getName(), new HashMap<Location, Long>());
         }
 
         Iterator<Map.Entry<Location, Long>> bordersIterator = sentBlockChanges.get(player.getName()).entrySet().iterator();

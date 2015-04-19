@@ -16,8 +16,8 @@ import java.util.UUID;
 public class TeamUninviteCommand {
 
     @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
-    public static void teamUninvite(Player sender, @Parameter(name="all | player") String allPlayer) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
+    public static void teamUninvite(final Player sender, @Parameter(name="all | player") final String allPlayer) {
+        final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
@@ -32,7 +32,7 @@ public class TeamUninviteCommand {
                 new BukkitRunnable() {
 
                     public void run() {
-                        UUID nameUUID = UUIDUtils.uuid(allPlayer);
+                        final UUID nameUUID = UUIDUtils.uuid(allPlayer);
 
                         new BukkitRunnable() {
 
