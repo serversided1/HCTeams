@@ -145,7 +145,7 @@ public class KOTH {
         if (currentCapper != null) {
             Player capper = Foxtrot.getInstance().getServer().getPlayerExact(currentCapper);
 
-            if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasPermission("invisible")) {
+            if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasMetadata("invisible")) {
                 resetCapTime();
             } else {
                 if (remainingCapTime % 10 == 0 && remainingCapTime > 1 && !isHidden()) {
