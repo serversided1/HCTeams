@@ -2,4 +2,4 @@ name: ${name}
 version: ${version}
 author: MineHQ Development Team
 main: net.frozenorb.foxtrot.Foxtrot
-depend: [qLib, ProtocolLib]
+depend: [qLib, ProtocolLib, mShared]

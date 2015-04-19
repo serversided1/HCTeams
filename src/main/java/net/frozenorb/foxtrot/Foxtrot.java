@@ -80,26 +80,41 @@ public class Foxtrot extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        System.out.println("1");
+
         try {
             mongoPool = new MongoClient();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        System.out.println("2");
+
         (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
+        System.out.println("3");
         (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
+        System.out.println("4");
         (new PacketBorderThread()).start();
 
+        System.out.println("5");
         setupHandlers();
+        System.out.println("6");
         setupPersistence();
+        System.out.println("7");
         setupListeners();
 
+        System.out.println("8");
         Shared.get().getProfileManager().setNametagsEnabled(false);
+        System.out.println("9");
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
+        System.out.println("10");
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
 
+        System.out.println("11");
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
+        System.out.println("12");
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
+        System.out.println("13");
     }
 
     @Override

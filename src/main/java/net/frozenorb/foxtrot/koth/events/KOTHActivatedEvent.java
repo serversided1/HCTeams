@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @AllArgsConstructor
-public class KOTHActivatedEvent extends Event {
+ public class KOTHActivatedEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
