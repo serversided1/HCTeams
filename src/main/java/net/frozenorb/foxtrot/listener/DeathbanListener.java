@@ -79,6 +79,10 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            return;
+        }
+
         int seconds = (int) Foxtrot.getInstance().getServerHandler().getDeathban(event.getEntity());
         Foxtrot.getInstance().getDeathbanMap().deathban(event.getEntity().getUniqueId(), seconds);
 
