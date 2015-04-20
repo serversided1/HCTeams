@@ -137,7 +137,7 @@ public class BardClass extends PvPClass implements Listener {
         }
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         ItemStack newItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
@@ -160,7 +160,7 @@ public class BardClass extends PvPClass implements Listener {
         event.getPlayer().sendMessage(ChatColor.BLUE + "Bard effect:");
         event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
         event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
-    }
+    }*/
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
