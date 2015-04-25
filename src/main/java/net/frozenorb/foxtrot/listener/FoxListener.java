@@ -136,6 +136,7 @@ public class FoxListener implements Listener {
         Foxtrot.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getUniqueId());
 
         if (!event.getPlayer().hasPlayedBefore()) {
+            Foxtrot.getInstance().getPvPTimerMap().createPendingTimer(event.getPlayer().getUniqueId());
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
