@@ -29,28 +29,31 @@ public class QueueHandler extends BukkitRunnable {
             }
 
             int requested = countOpenSlots();
-            Set<String> toSend = redis.zrange(QUEUE_PREFIX + "Queue", 0, requested);
 
-            for (final String queuedPlayer : toSend) {
-                if (!canMovePlayer(queuedPlayer) || moving.contains(queuedPlayer)) {
-                    continue;
-                }
+            if (requested != 0) {
+                Set<String> toSend = redis.zrange(QUEUE_PREFIX + "Queue", 0, requested - 1);
 
-                Foxtrot.getInstance().getLogger().info("Moving " + queuedPlayer + " to HCTeams...");
-
-                //redis.sadd(QUEUE_PREFIX + "Moving", queuedPlayer); // So the Bungees let them move.
-                //redis.publish("redisbungee-allservers", "/send " + queuedPlayer + " " + SERVER_NAME);
-                moving.add(queuedPlayer);
-
-                new BukkitRunnable() {
-
-                    public void run() {
-                        if (moving.remove(queuedPlayer)) {
-                            Foxtrot.getInstance().getLogger().warning("Player " + queuedPlayer + " didn't join when the queue was expecting them to!");
-                        }
+                for (final String queuedPlayer : toSend) {
+                    if (!canMovePlayer(queuedPlayer) || moving.contains(queuedPlayer)) {
+                        continue;
                     }
 
-                }.runTaskLater(Foxtrot.getInstance(), 100L);
+                    Foxtrot.getInstance().getLogger().info("Moving " + queuedPlayer + " to HCTeams...");
+
+                    redis.sadd(QUEUE_PREFIX + "Moving", queuedPlayer); // So the Bungees let them move.
+                    redis.publish("redisbungee-allservers", "/send " + queuedPlayer + " " + SERVER_NAME);
+                    moving.add(queuedPlayer);
+
+                    new BukkitRunnable() {
+
+                        public void run() {
+                            if (moving.remove(queuedPlayer)) {
+                                Foxtrot.getInstance().getLogger().warning("Player " + queuedPlayer + " didn't join when the queue was expecting them to!");
+                            }
+                        }
+
+                    }.runTaskLater(Foxtrot.getInstance(), 200L);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,10 +75,6 @@ public class QueueHandler extends BukkitRunnable {
     }
 
     public boolean canMovePlayer(String player) {
-        if (Foxtrot.getInstance().getServer().hasWhitelist() && !Foxtrot.getInstance().getServer().getOfflinePlayer(player).isWhitelisted()) {
-            return (false);
-        }
-
         return (true);
     }
 
