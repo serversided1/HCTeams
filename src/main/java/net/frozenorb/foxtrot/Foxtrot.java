@@ -83,6 +83,7 @@ public class Foxtrot extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        saveDefaultConfig();
 
         try {
             mongoPool = new MongoClient();
