@@ -38,8 +38,8 @@ public class QueueHandler extends BukkitRunnable {
 
                 Foxtrot.getInstance().getLogger().info("Moving " + queuedPlayer + " to HCTeams...");
 
-                redis.sadd(QUEUE_PREFIX + "Moving", queuedPlayer); // So the Bungees let them move.
-                redis.publish("redisbungee-allservers", "/send " + queuedPlayer + " " + SERVER_NAME);
+                //redis.sadd(QUEUE_PREFIX + "Moving", queuedPlayer); // So the Bungees let them move.
+                //redis.publish("redisbungee-allservers", "/send " + queuedPlayer + " " + SERVER_NAME);
                 moving.add(queuedPlayer);
 
                 new BukkitRunnable() {
