@@ -32,7 +32,7 @@ public class QueueHandler extends BukkitRunnable {
             Set<String> toSend = redis.zrange(QUEUE_PREFIX + "Queue", 0, requested);
 
             for (final String queuedPlayer : toSend) {
-                if (!canMovePlayer(queuedPlayer)) {
+                if (!canMovePlayer(queuedPlayer) || moving.contains(queuedPlayer)) {
                     continue;
                 }
 
