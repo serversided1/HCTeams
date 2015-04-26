@@ -41,7 +41,7 @@ public class TeamCommand {
                 "§e/t subclaim §7- Show the subclaim help page",
                 "§e/t sethome §7- Set your team's home at your current location",
                 "§e/t withdraw <amount> §7- Withdraw money from your team's balance",
-                "§e/t motd [message here] §7- Set your team's message of the day",
+                "§e/t announcement [message here] §7- Set your team's announcement",
 
                 "",
                 "§9Leader Commands:",
