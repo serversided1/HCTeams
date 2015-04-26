@@ -18,6 +18,7 @@ import net.frozenorb.foxtrot.persist.maps.statistics.*;
 import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
 import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.queue.QueueHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -32,12 +33,14 @@ import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import redis.clients.jedis.JedisPool;
 
 public class Foxtrot extends JavaPlugin {
 
     @Getter private static Foxtrot instance;
 
     @Getter private MongoClient mongoPool;
+    @Getter private JedisPool queuePool;
 
     @Getter private PvPClassHandler pvpClassHandler;
     @Getter private TeamHandler teamHandler;
@@ -46,6 +49,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CitadelHandler citadelHandler;
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
+    @Getter private QueueHandler queueHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -82,6 +86,7 @@ public class Foxtrot extends JavaPlugin {
 
         try {
             mongoPool = new MongoClient();
+            queuePool = new JedisPool(getConfig().getString("Queue.Redis.Host"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,6 +132,7 @@ public class Foxtrot extends JavaPlugin {
         pvpClassHandler = new PvPClassHandler();
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
+        queueHandler = new QueueHandler();
 
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
