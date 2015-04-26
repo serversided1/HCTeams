@@ -18,7 +18,6 @@ import net.frozenorb.foxtrot.persist.maps.statistics.*;
 import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
 import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.queue.QueueHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -49,7 +48,6 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CitadelHandler citadelHandler;
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
-    @Getter private QueueHandler queueHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -133,7 +131,6 @@ public class Foxtrot extends JavaPlugin {
         pvpClassHandler = new PvPClassHandler();
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
-        queueHandler = new QueueHandler();
 
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
