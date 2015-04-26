@@ -17,7 +17,7 @@ public class QueueHandler extends BukkitRunnable {
 
     public QueueHandler() {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new QueueListener(), Foxtrot.getInstance());
-        this.runTaskTimerAsynchronously(Foxtrot.getInstance(), 20L, 20L);
+        this.runTaskTimerAsynchronously(Foxtrot.getInstance(), 100L, 100L);
     }
 
     public void run() {
@@ -67,7 +67,7 @@ public class QueueHandler extends BukkitRunnable {
     }
 
     public int countOpenSlots() {
-        int open = 5; // TODO
+        int open = 2; // TODO
         return (Math.max(open - moving.size(), 0));
     }
 
