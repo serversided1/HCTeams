@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
+import net.frozenorb.foxtrot.queue.PlayerInfoPacket;
 
 import java.util.Date;
 import java.util.UUID;
@@ -40,6 +41,7 @@ public class DeathbanMap extends PersistMap<Long> {
 
     public void revive(UUID update) {
         updateValueAsync(update, 0L);
+        PlayerInfoPacket.sendResponse(update);
     }
 
     public long getDeathban(UUID check) {

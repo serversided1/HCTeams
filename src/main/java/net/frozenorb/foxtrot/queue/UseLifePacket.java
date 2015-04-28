@@ -34,7 +34,6 @@ public class UseLifePacket implements XPacket {
         }
 
         Foxtrot.getInstance().getDeathbanMap().revive(player);
-        PlayerInfoPacket.sendResponse(player);
     }
 
 }
