@@ -28,6 +28,11 @@ public class TeamHQCommand {
             return;
         }
 
+        if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
+            sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters during the End of the World!");
+            return;
+        }
+
         Foxtrot.getInstance().getServerHandler().beginHQWarp(sender, team, 10);
     }
 
