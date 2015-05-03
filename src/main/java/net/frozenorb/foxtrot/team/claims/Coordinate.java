@@ -2,11 +2,18 @@ package net.frozenorb.foxtrot.team.claims;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
-@Data
 public class Coordinate {
 
-    int x, z;
+    @Getter @Setter int x;
+    @Getter @Setter int z;
+
+    @Override
+    public String toString() {
+        return (x + ", " + z);
+    }
 
 }

@@ -8,6 +8,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.Coordinate;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,6 +90,8 @@ public class PacketBorder {
     }
 
     public void sendClaimToPlayer(Player player, Claim claim) {
+        Bukkit.broadcastMessage("PacketBorder: Sending " + claim.getFriendlyName() + " to " + player.getName());
+
         // This gets us all the coordinates on the outside of the claim.
         // Probably could be made better
         for (Coordinate coordinate : claim) {
@@ -96,11 +99,13 @@ public class PacketBorder {
 
             // Ignore an entire pillar if the block closest to the player is further than the max distance (none of the others will be close enough, either)
             if (onPlayerY.distanceSquared(player.getLocation()) > REGION_DISTANCE_SQUARED) {
+                Bukkit.broadcastMessage("PacketBorder: " + claim.getFriendlyName() + "'s location " + coordinate + " not being sent: Too far!");
                 continue;
             }
 
             for (int i = -4; i < 5; i++) {
                 Location check = onPlayerY.clone().add(0, i, 0);
+                Bukkit.broadcastMessage("PacketBorder: " + claim.getFriendlyName() + "'s location " + coordinate + " being sent!");
 
                 if (check.getWorld().isChunkLoaded(check.getBlockX(), check.getBlockZ()) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
                     player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14); // Red stained glass
