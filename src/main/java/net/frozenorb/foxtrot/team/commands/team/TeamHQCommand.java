@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -30,6 +31,11 @@ public class TeamHQCommand {
 
         if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
             sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters during the End of the World!");
+            return;
+        }
+
+        if (Freeze.isFrozen(sender)) {
+            sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters while you're frozen!");
             return;
         }
 
