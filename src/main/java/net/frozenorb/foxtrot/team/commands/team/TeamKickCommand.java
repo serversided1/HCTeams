@@ -40,11 +40,9 @@ public class TeamKickCommand {
             return;
         }
 
-        if (team.isCaptain(player)) {
-            if (team.isCaptain(sender.getUniqueId())) {
-                sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
-                return;
-            }
+        if (team.isCaptain(player) && !team.isOwner(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
+            return;
         }
 
         team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " was kicked by " + sender.getName() + "!");
