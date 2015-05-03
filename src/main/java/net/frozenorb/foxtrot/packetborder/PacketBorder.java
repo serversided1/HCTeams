@@ -99,7 +99,6 @@ public class PacketBorder {
 
             // Ignore an entire pillar if the block closest to the player is further than the max distance (none of the others will be close enough, either)
             if (onPlayerY.distanceSquared(player.getLocation()) > REGION_DISTANCE_SQUARED) {
-                Bukkit.broadcastMessage("PacketBorder: " + claim.getFriendlyName() + "'s location " + coordinate + " not being sent: Too far!");
                 continue;
             }
 
@@ -107,7 +106,7 @@ public class PacketBorder {
                 Location check = onPlayerY.clone().add(0, i, 0);
                 Bukkit.broadcastMessage("PacketBorder: " + claim.getFriendlyName() + "'s location " + coordinate + " being sent!");
 
-                if (check.getWorld().isChunkLoaded(check.getBlockX(), check.getBlockZ()) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
+                if (check.getWorld().isChunkLoaded(check.getBlockX() >> 4, check.getBlockZ() >> 4) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
                     player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14); // Red stained glass
                     sentBlockChanges.get(player.getName()).put(check, System.currentTimeMillis() + 4000L); // The time the glass will stay for if the player walks away
                 }
