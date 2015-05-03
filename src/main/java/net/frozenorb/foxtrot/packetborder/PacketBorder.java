@@ -90,8 +90,6 @@ public class PacketBorder {
     }
 
     public void sendClaimToPlayer(Player player, Claim claim) {
-        Bukkit.broadcastMessage("PacketBorder: Sending " + claim.getFriendlyName() + " to " + player.getName());
-
         // This gets us all the coordinates on the outside of the claim.
         // Probably could be made better
         for (Coordinate coordinate : claim) {
@@ -104,7 +102,6 @@ public class PacketBorder {
 
             for (int i = -4; i < 5; i++) {
                 Location check = onPlayerY.clone().add(0, i, 0);
-                Bukkit.broadcastMessage("PacketBorder: " + claim.getFriendlyName() + "'s location " + coordinate + " being sent!");
 
                 if (check.getWorld().isChunkLoaded(check.getBlockX() >> 4, check.getBlockZ() >> 4) && check.getBlock().getType().isTransparent() && check.distanceSquared(onPlayerY) < REGION_DISTANCE_SQUARED) {
                     player.sendBlockChange(check, Material.STAINED_GLASS, (byte) 14); // Red stained glass
