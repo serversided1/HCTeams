@@ -477,12 +477,11 @@ public class VisualClaim implements Listener {
         }
 
         if (resizing != null && corner2 != null) {
+            Claim newClaim = new Claim(resizing);
+            applyResize(newClaim, corner2);
+
             int oldPrice = Claim.getPrice(resizing, null, false);
-            Claim preview = new Claim(resizing);
-
-            applyResize(preview, corner2);
-
-            int newPrice = Claim.getPrice(preview, null, false);
+            int newPrice = Claim.getPrice(newClaim, null, false);
             int cost = newPrice - oldPrice;
 
             if (!bypass) {
@@ -502,13 +501,12 @@ public class VisualClaim implements Listener {
                 }
             }
 
-            if (isIllegalClaim(preview, null)) {
+            if (isIllegalClaim(newClaim, null)) {
                 return;
             }
 
             LandBoard.getInstance().setTeamAt(resizing, null);
-            applyResize(resizing, corner2);
-            LandBoard.getInstance().setTeamAt(resizing, playerTeam);
+            LandBoard.getInstance().setTeamAt(newClaim, playerTeam);
             playerTeam.flagForSave();
 
             player.sendMessage(ChatColor.YELLOW + "You have resized this land!");
