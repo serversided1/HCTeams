@@ -19,7 +19,7 @@ public class PlayerInfoPacket implements XPacket {
     // We have to have this for XPacket to do its thing.
     public PlayerInfoPacket() {}
 
-    public static void sendResponse(UUID player) {
+    public static void sendResponse(final UUID player) {
         new BukkitRunnable() {
 
             public void run() {
