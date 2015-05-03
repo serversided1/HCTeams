@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.xpacket.FrozenXPacketHandler;
 import net.frozenorb.qlib.xpacket.XPacket;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
@@ -19,11 +20,17 @@ public class PlayerInfoPacket implements XPacket {
     public PlayerInfoPacket() {}
 
     public static void sendResponse(UUID player) {
-        int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player) + Foxtrot.getInstance().getTransferableLivesMap().getLives(player);
-        long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
+        new BukkitRunnable() {
 
-        PlayerInfoPacket packet = new PlayerInfoPacket(player, totalLives, deathbannedUntil);
-        FrozenXPacketHandler.sendToAll(packet);
+            public void run() {
+                int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player) + Foxtrot.getInstance().getTransferableLivesMap().getLives(player);
+                long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
+
+                PlayerInfoPacket packet = new PlayerInfoPacket(player, totalLives, deathbannedUntil);
+                FrozenXPacketHandler.sendToAll(packet);
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     public void onReceive() {}
