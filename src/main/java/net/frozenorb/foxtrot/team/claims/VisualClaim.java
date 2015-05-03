@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.mBasic.Utilities.ItemDb;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -445,6 +446,7 @@ public class VisualClaim implements Listener {
 
             if (!bypass) {
                 playerTeam.setBalance(playerTeam.getBalance() - price);
+                Foxtrot.getInstance().getLogger().info("Economy Logger: Withdrawing " + price + " into " + playerTeam.getBalance() + "'s account: Claimed land");
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) playerTeam.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + price + ")");
             }
 

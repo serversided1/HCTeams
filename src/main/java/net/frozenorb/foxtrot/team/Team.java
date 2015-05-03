@@ -188,6 +188,7 @@ public class Team {
         try {
             if (owner != null) {
                 Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(owner), balance);
+                Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + balance + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
             }
         } catch (Exception e) {
             e.printStackTrace();
