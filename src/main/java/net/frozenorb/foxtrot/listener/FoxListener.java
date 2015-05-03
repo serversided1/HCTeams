@@ -61,7 +61,7 @@ public class FoxListener implements Listener {
             Material.HOPPER, Material.DISPENSER, Material.WOODEN_DOOR,
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
-            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL);
+            Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL, Material.BEACON);
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
