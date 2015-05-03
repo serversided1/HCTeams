@@ -506,9 +506,8 @@ public class VisualClaim implements Listener {
                 return;
             }
 
-            applyResize(resizing, corner2);
-
             LandBoard.getInstance().setTeamAt(resizing, null);
+            applyResize(resizing, corner2);
             LandBoard.getInstance().setTeamAt(resizing, playerTeam);
             playerTeam.flagForSave();
 
