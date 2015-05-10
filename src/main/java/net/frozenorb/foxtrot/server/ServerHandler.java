@@ -61,7 +61,8 @@ public class ServerHandler {
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
 
     @Getter private Map<String, String> customPrefixes = new HashMap<>();
-    @Getter private Set<String> highRollers = new HashSet<>();
+    @Getter private Set<String> highRollers = new HashSet<>(); // We should probably use UUIDs here...
+    @Getter private Set<UUID> betrayers = new HashSet<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
@@ -81,6 +82,24 @@ public class ServerHandler {
             if (dbo != null) {
                 for (Object o : (BasicDBList) dbo.get("names")) {
                     highRollers.add((String) o);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            File f = new File("betrayers.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+
+            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
+
+            if (dbo != null) {
+                for (Object o : (BasicDBList) dbo.get("uuids")) {
+                    betrayers.add(UUID.fromString((String) o));
                 }
             }
         } catch (IOException e) {
@@ -143,6 +162,26 @@ public class ServerHandler {
             }
 
             dbo.put("names", list);
+            FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            File f = new File("betrayers.json");
+
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+
+            BasicDBObject dbo = new BasicDBObject();
+            BasicDBList list = new BasicDBList();
+
+            for (UUID n : betrayers) {
+                list.add(n.toString());
+            }
+
+            dbo.put("uuids", list);
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
@@ -346,6 +385,8 @@ public class ServerHandler {
             return (TimeUnit.DAYS.toSeconds(1000));
         } else if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return (TimeUnit.SECONDS.toSeconds(10));
+        } else if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(playerUUID)) {
+            return (TimeUnit.DAYS.toSeconds(1));
         }
 
         Team ownerTo = LandBoard.getInstance().getTeam(location);

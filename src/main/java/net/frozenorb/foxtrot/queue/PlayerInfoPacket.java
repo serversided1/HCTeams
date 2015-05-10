@@ -15,6 +15,7 @@ public class PlayerInfoPacket implements XPacket {
     @Getter private UUID player;
     @Getter private int totalLives;
     @Getter private long deathbannedUntil;
+    @Getter private boolean betrayer;
 
     // We have to have this for XPacket to do its thing.
     public PlayerInfoPacket() {}
@@ -25,8 +26,9 @@ public class PlayerInfoPacket implements XPacket {
             public void run() {
                 int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player) + Foxtrot.getInstance().getTransferableLivesMap().getLives(player);
                 long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
+                boolean betrayer = Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player);
 
-                PlayerInfoPacket packet = new PlayerInfoPacket(player, totalLives, deathbannedUntil);
+                PlayerInfoPacket packet = new PlayerInfoPacket(player, totalLives, deathbannedUntil, betrayer);
                 FrozenXPacketHandler.sendToAll(packet);
             }
 
