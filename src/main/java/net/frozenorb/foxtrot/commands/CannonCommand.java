@@ -22,6 +22,12 @@ public class CannonCommand {
     public static final int SPAWN_CANNON_MAX_DISTANCE = 600;
     public static final int SPAWN_CANNON_MIN_DISTANCE = 100;
 
+    @Command(names={ "cannon" }, permissionNode="")
+    public static void cannon(Player sender) {
+        sender.sendMessage(ChatColor.RED + "/cannon launch - cannons to random coordinates");
+        sender.sendMessage(ChatColor.RED + "/cannon aim <x> <z> - cannons to the given coordinate");
+    }
+
     @Command(names={ "cannon launch", "spawncannon launch" }, permissionNode="")
     public static void cannonLaunch(Player sender) {
         if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
