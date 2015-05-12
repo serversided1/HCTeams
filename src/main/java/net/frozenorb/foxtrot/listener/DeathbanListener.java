@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -41,6 +42,13 @@ public class DeathbanListener implements Listener {
             }
 
         }.runTaskLater(Foxtrot.getInstance(), 10 * 20L);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if (event.getPlayer().isOp()) {
+            Foxtrot.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
+        }
     }
 
 }
