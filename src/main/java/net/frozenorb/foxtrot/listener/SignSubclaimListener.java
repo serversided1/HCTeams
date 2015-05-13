@@ -168,16 +168,16 @@ public class SignSubclaimListener implements Listener {
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
         if (event.getSource().getType() == InventoryType.CHEST && event.getDestination().getType() == InventoryType.HOPPER) {
             InventoryHolder inventoryHolder = event.getSource().getHolder();
-            Block moveBlock;
+            Block moveBlock = null;
 
             // Special-case double chests
             if (inventoryHolder instanceof DoubleChest) {
                 moveBlock = ((DoubleChest) inventoryHolder).getLocation().getBlock();
-            } else {
+            } else if (inventoryHolder instanceof BlockState) {
                 moveBlock = ((BlockState) inventoryHolder).getBlock();
             }
 
-            if (subclaimSigns(moveBlock).size() != 0) {
+            if (moveBlock != null && subclaimSigns(moveBlock).size() != 0) {
                 event.setCancelled(true);
             }
         }
