@@ -111,13 +111,13 @@ public class VisualClaim implements Listener {
                 player.sendMessage(ChatColor.GOLD + "Team land claim started.");
                 player.sendMessage(ChatColor.YELLOW + "Left click at a corner of the land you'd like to claim.");
                 player.sendMessage(ChatColor.YELLOW + "Right click on the second corner of the land you'd like to claim.");
-                player.sendMessage(ChatColor.YELLOW + "Shift left click the air to purchase your claim.");
+                player.sendMessage(ChatColor.YELLOW + "Crouch left click the air to purchase your claim.");
                 break;
             case RESIZE:
                 player.sendMessage(ChatColor.GOLD + "Team land resize started.");
                 player.sendMessage(ChatColor.YELLOW + "Left click in the claim you'd like to resize.");
                 player.sendMessage(ChatColor.YELLOW + "Right click on the corner you'd like to resize to.");
-                player.sendMessage(ChatColor.YELLOW + "Shift left click the air to confirm your resize.");
+                player.sendMessage(ChatColor.YELLOW + "Crouch left click the air to confirm your resize.");
                 break;
             case MAP:
                 int claimIteration = 0;

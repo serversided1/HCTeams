@@ -37,7 +37,7 @@ public class TeamClaimCommand implements Listener {
                 "§eRight Click §6Air",
                 "§b- §fCancel current claim",
                 "",
-                "§9Shift §eLeft Click §6Block/Air",
+                "§9Crouch §eLeft Click §6Block/Air",
                 "§b- §fPurchase current claim"
 
         ));
