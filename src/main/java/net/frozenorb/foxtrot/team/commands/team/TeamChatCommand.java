@@ -12,11 +12,6 @@ public class TeamChatCommand {
 
     @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permissionNode="")
     public static void teamChat(Player sender, @Parameter(name="chat mode", defaultValue="toggle") String chatMode) {
-        if (Foxtrot.getInstance().getTeamHandler().getTeam(sender) == null) {
-            sender.sendMessage(ChatColor.GRAY + "You're not in a team!");
-            return;
-        }
-
         ChatMode parsedChatMode = null;
 
         if (chatMode.equalsIgnoreCase("t") || chatMode.equalsIgnoreCase("team") || chatMode.equalsIgnoreCase("f") || chatMode.equalsIgnoreCase("fac") || chatMode.equalsIgnoreCase("faction") || chatMode.equalsIgnoreCase("fc")) {
@@ -42,6 +37,11 @@ public class TeamChatCommand {
 
     private static void setChat(Player player, ChatMode chatMode) {
         if (chatMode != null) {
+            if (chatMode != ChatMode.PUBLIC && Foxtrot.getInstance().getTeamHandler().getTeam(player) == null) {
+                player.sendMessage(ChatColor.RED + "You must be on a team to use this chat mode.");
+                return;
+            }
+
             switch (chatMode) {
                 case PUBLIC:
                     player.sendMessage(ChatColor.DARK_AQUA + "You are now in public chat.");
