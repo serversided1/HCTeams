@@ -16,6 +16,7 @@ import java.util.Map;
 public class InventoryUtils {
 
     public static final SimpleDateFormat DEATH_TIME_FORMAT = new SimpleDateFormat("MM.dd.yy HH:mm");
+    public static final String KILLS_LORE_IDENTIFIER = ChatColor.GOLD + "Kills: " + ChatColor.WHITE;
 
     public static final ItemStack CROWBAR;
 
@@ -105,10 +106,38 @@ public class InventoryUtils {
     }
 
     public static ItemStack addDeath(ItemStack item, String key) {
+        ItemMeta meta = item.getItemMeta();
+
+        if (!meta.hasLore()) {
+            meta.setLore(new ArrayList<String>());
+        }
+
+        List<String> lore = meta.getLore();
+        boolean updatedExisting = false;
+
+        for (String loreLine : new ArrayList<>(lore)) {
+            if (loreLine.startsWith(KILLS_LORE_IDENTIFIER)) {
+                int kills = Integer.parseInt(loreLine.replace(KILLS_LORE_IDENTIFIER, ""));
+
+                lore.remove(loreLine);
+                lore.add(KILLS_LORE_IDENTIFIER + (kills + 1));
+
+                updatedExisting = true;
+                break;
+            }
+        }
+
+        if (!updatedExisting) {
+            lore.add(0, KILLS_LORE_IDENTIFIER + 1);
+        }
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
         return (addToPart(item, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Deaths:", key, 10));
     }
 
     public static ItemStack addKill(ItemStack item, String key) {
+
         return (addToPart(item, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills:", key, 3));
     }
 
