@@ -102,6 +102,11 @@ public abstract class PvPClass implements Listener {
                 new BukkitRunnable() {
 
                     public void run() {
+                        // Don't give back infinite potions.
+                        if (activePotionEffect.getDuration() > 1_000_000L) {
+                            return;
+                        }
+
                         player.addPotionEffect(activePotionEffect);
                     }
 
