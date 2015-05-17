@@ -8,6 +8,7 @@ import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -748,6 +749,7 @@ public class Team {
         }
 
         KillsMap killsMap = Foxtrot.getInstance().getKillsMap();
+        DeathbanMap deathbanMap = Foxtrot.getInstance().getDeathbanMap();
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
         StringBuilder members = new StringBuilder();
@@ -784,7 +786,7 @@ public class Team {
                 continue;
             }
 
-            String memberString = ChatColor.GRAY + UUIDUtils.name(offlineMember) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
+            String memberString = (deathbanMap.isDeathbanned(offlineMember) ? ChatColor.RED : ChatColor.GRAY) + UUIDUtils.name(offlineMember) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
 
             if (isCaptain(offlineMember)) {
                 captains.append(memberString).append(ChatColor.GRAY).append(", ");
@@ -806,7 +808,7 @@ public class Team {
             player.sendMessage(ChatColor.YELLOW + "Allies: " + allies.toString());
         }
 
-        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? ChatColor.GRAY : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
+        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? (deathbanMap.isDeathbanned(getOwner()) ? ChatColor.RED : ChatColor.GRAY) : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
 
         if (captains.length() > 2) {
             captains.setLength(captains.length() - 2);
