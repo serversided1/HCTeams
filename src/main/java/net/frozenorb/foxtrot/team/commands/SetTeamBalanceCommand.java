@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class SetTeamBalanceCommand {
 
-    @Command(names={ "setteambalance", "setteambal" }, permissionNode="foxtrot.forceleader")
+    @Command(names={ "setteambalance", "setteambal" }, permissionNode="foxtrot.setteambalance")
     public static void setTeamBalance(Player sender, @Parameter(name="team") Team team,  @Parameter(name="balance") float balance) {
         team.setBalance(balance);
         sender.sendMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s balance is now " + ChatColor.LIGHT_PURPLE + team.getBalance() + ChatColor.YELLOW + ".");
