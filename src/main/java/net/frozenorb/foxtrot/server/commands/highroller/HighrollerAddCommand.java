@@ -13,14 +13,12 @@ public class HighrollerAddCommand {
 
     @Command(names={ "highroller add", "highrollers add" }, permissionNode="op")
     public static void highrollerAdd(Player sender, @Parameter(name="player") UUID player) {
-        String name = UUIDUtils.name(player);
-
-        if (!Foxtrot.getInstance().getServerHandler().getHighRollers().contains(name)) {
-            Foxtrot.getInstance().getServerHandler().getHighRollers().add(name);
+        if (!Foxtrot.getInstance().getServerHandler().getHighRollers().contains(player)) {
+            Foxtrot.getInstance().getServerHandler().getHighRollers().add(player);
             Foxtrot.getInstance().getServerHandler().save();
-            sender.sendMessage(ChatColor.GREEN + "Added " + name + "'s HighRoller tag.");
+            sender.sendMessage(ChatColor.GREEN + "Added " + UUIDUtils.name(player) + "'s HighRoller tag.");
         } else {
-            sender.sendMessage(ChatColor.RED + name + " is already a HighRoller.");
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a HighRoller.");
         }
     }
 

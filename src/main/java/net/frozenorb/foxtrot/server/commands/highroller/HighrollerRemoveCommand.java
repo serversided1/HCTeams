@@ -13,14 +13,12 @@ public class HighrollerRemoveCommand {
 
     @Command(names={ "highroller remove", "highrollers remove" }, permissionNode="op")
     public static void highrollerRemove(Player sender, @Parameter(name="player") UUID player) {
-        String name = UUIDUtils.name(player);
-
-        if (Foxtrot.getInstance().getServerHandler().getHighRollers().contains(name)) {
-            Foxtrot.getInstance().getServerHandler().getHighRollers().remove(name);
+        if (Foxtrot.getInstance().getServerHandler().getHighRollers().contains(player)) {
+            Foxtrot.getInstance().getServerHandler().getHighRollers().remove(player);
             Foxtrot.getInstance().getServerHandler().save();
-            sender.sendMessage(ChatColor.GREEN + "Removed " + name + "'s HighRoller tag.");
+            sender.sendMessage(ChatColor.GREEN + "Removed " + UUIDUtils.name(player) + "'s HighRoller tag.");
         } else {
-            sender.sendMessage(ChatColor.RED + name + " isn't a HighRoller.");
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " isn't a HighRoller.");
         }
     }
 

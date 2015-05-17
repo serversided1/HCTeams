@@ -14,6 +14,9 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.UUIDUtils;
+import net.frozenorb.qlib.uuid.FrozenUUIDCache;
+import net.frozenorb.qlib.uuid.UUIDCache;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -61,7 +64,7 @@ public class ServerHandler {
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
 
     @Getter private Map<String, String> customPrefixes = new HashMap<>();
-    @Getter private Set<String> highRollers = new HashSet<>(); // We should probably use UUIDs here...
+    @Getter private Set<UUID> highRollers = new HashSet<>();
     @Getter private Set<UUID> betrayers = new HashSet<>();
 
     @Getter @Setter private boolean EOTW = false;
@@ -80,9 +83,13 @@ public class ServerHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
             if (dbo != null) {
-                for (Object o : (BasicDBList) dbo.get("names")) {
-                    highRollers.add((String) o);
+                for (Object o : (BasicDBList) dbo.get("uuids")) {
+                    highRollers.add(UUID.fromString((String) o));
                 }
+            }
+
+            for (UUID highRoller : highRollers) {
+                FrozenUUIDCache.ensure(highRoller);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,6 +109,10 @@ public class ServerHandler {
                     betrayers.add(UUID.fromString((String) o));
                 }
             }
+
+            for (UUID betrayer : betrayers) {
+                FrozenUUIDCache.ensure(betrayer);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,8 +122,8 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (String highRoller : highRollers) {
-                    messageBuilder.append(ChatColor.DARK_PURPLE).append(highRoller).append(ChatColor.GOLD).append(", ");
+                for (UUID highRoller : highRollers) {
+                    messageBuilder.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
                 }
 
                 if (messageBuilder.length() > 2) {
@@ -157,11 +168,11 @@ public class ServerHandler {
             BasicDBObject dbo = new BasicDBObject();
             BasicDBList list = new BasicDBList();
 
-            for (String n : highRollers) {
-                list.add(n);
+            for (UUID n : highRollers) {
+                list.add(n.toString());
             }
 
-            dbo.put("names", list);
+            dbo.put("uuids", list);
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
