@@ -169,19 +169,19 @@ public class KOTHListener implements Listener {
             Foxtrot.getInstance().getLogger().info(message);
         }
 
+        final BasicDBObject dbObject = new BasicDBObject();
+
+        dbObject.put("KOTH", event.getKOTH().getName());
+        dbObject.put("Level", event.getKOTH().getLevel());
+        dbObject.put("CapturedAt", new Date());
+        dbObject.put("Capper", event.getPlayer().getUniqueId().toString());
+        dbObject.put("CapperTeam", team == null ? null : team.getUniqueId().toString());
+        dbObject.put("KOTHLocation", LocationSerializer.serialize(event.getKOTH().getCapLocation().toLocation(event.getPlayer().getWorld())));
+
         new BukkitRunnable() {
 
             public void run() {
                 DBCollection kothCapturesCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("KOTHCaptures");
-                BasicDBObject dbObject = new BasicDBObject();
-
-                dbObject.put("KOTH", event.getKOTH().getName());
-                dbObject.put("Level", event.getKOTH().getLevel());
-                dbObject.put("CapturedAt", new Date());
-                dbObject.put("Capper", event.getPlayer().getUniqueId().toString());
-                dbObject.put("CapperTeam", team == null ? null : team.getUniqueId().toString());
-                dbObject.put("KOTHLocation", LocationSerializer.serialize(event.getKOTH().getCapLocation().toLocation(event.getPlayer().getWorld())));
-
                 kothCapturesCollection.insert(dbObject);
             }
 
