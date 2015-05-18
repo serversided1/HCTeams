@@ -15,7 +15,7 @@ import java.util.UUID;
 public class TeamInviteCommand {
 
     @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
-    public static void teamInvite(Player sender, @Parameter(name="player") UUID player) {
+    public static void teamInvite(Player sender, @Parameter(name="player") UUID player, @Parameter(name="override?", defaultValue="something-not-override") String override) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -40,6 +40,11 @@ public class TeamInviteCommand {
 
         if (team.getInvitations().contains(player)) {
             sender.sendMessage(ChatColor.RED + "That player has already been invited.");
+            return;
+        }
+
+        if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player) && !override.equalsIgnoreCase("override")) {
+            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Warning: " + ChatColor.RED + UUIDUtils.name(player) + " has previously betrayed another team. Are you sure you want to invite " + UUIDUtils.name(player) + "? Type '/t invite " + UUIDUtils.name(player) + " override' to ignore this warning.");
             return;
         }
 
