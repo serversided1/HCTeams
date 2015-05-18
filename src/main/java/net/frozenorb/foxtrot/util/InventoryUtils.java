@@ -106,6 +106,10 @@ public class InventoryUtils {
     }
 
     public static ItemStack addDeath(ItemStack item, String key) {
+        return (addToPart(item, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Deaths:", key, 10));
+    }
+
+    public static ItemStack addKill(ItemStack item, String key) {
         ItemMeta meta = item.getItemMeta();
 
         if (!meta.hasLore()) {
@@ -133,11 +137,6 @@ public class InventoryUtils {
 
         meta.setLore(lore);
         item.setItemMeta(meta);
-        return (addToPart(item, ChatColor.DARK_RED.toString() + ChatColor.BOLD + "Deaths:", key, 10));
-    }
-
-    public static ItemStack addKill(ItemStack item, String key) {
-
         return (addToPart(item, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills:", key, 3));
     }
 
