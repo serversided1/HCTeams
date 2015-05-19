@@ -21,7 +21,7 @@ public class ChatListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        String highRollerString = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getName()) ? FoxConstants.highRollerPrefix() : "";
+        String highRollerString = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getUniqueId()) ? FoxConstants.highRollerPrefix() : "";
         String customPrefixString = Foxtrot.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? Foxtrot.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
         ChatMode chatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
 
