@@ -51,4 +51,9 @@ public class TeamDepositCommand {
         team.sendMessage(ChatColor.YELLOW + sender.getName() + " deposited " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " into the team balance.");
     }
 
+    @Command(names={ "team deposit all", "t deposit all", "f deposit all", "faction deposit all", "fac deposit all", "team d all", "t d all", "f d all", "faction d all", "fac d all", "team m d all", "t m d all", "f m d all", "faction m d all", "fac m d all" }, permissionNode="")
+    public static void teamDepositAll(Player sender) {
+        teamDeposit(sender, (float) Basic.get().getEconomyManager().getBalance(sender.getName()));
+    }
+
 }
