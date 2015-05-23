@@ -22,6 +22,7 @@ import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +39,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -53,6 +55,8 @@ import java.util.Set;
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
 
+    public static final ItemStack FIRST_SPAWN_BOOK = new ItemStack(Material.WRITTEN_BOOK);
+    public static final ItemStack FIRST_SPAWN_FISHING_ROD = new ItemStack(Material.FISHING_ROD);
     public static final Set<PotionEffectType> DEBUFFS = ImmutableSet.of(PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.WEAKNESS, PotionEffectType.HARM, PotionEffectType.WITHER);
     public static final Set<Material> NO_INTERACT_WITH = ImmutableSet.of(Material.LAVA_BUCKET, Material.WATER_BUCKET, Material.BUCKET);
     public static final Set<Material> ATTACK_DISABLING_BLOCKS = ImmutableSet.of(Material.GLASS, Material.WOOD_DOOR, Material.IRON_DOOR, Material.FENCE_GATE);
@@ -62,6 +66,26 @@ public class FoxListener implements Listener {
             Material.STONE_BUTTON, Material.WOOD_BUTTON,
             Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.LEVER,
             Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.BED_BLOCK, Material.ANVIL, Material.BEACON);
+
+    static {
+        BookMeta bookMeta = (BookMeta) FIRST_SPAWN_BOOK.getItemMeta();
+
+        bookMeta.setTitle("Welcome to HCTeams");
+        bookMeta.setPages(
+
+                "Page 1",
+                "Page 2",
+                "Page 3",
+                "Page 4",
+                "Page 5"
+
+        );
+        bookMeta.setAuthor("MineHQ");
+
+        FIRST_SPAWN_BOOK.setItemMeta(bookMeta);
+
+        FIRST_SPAWN_FISHING_ROD.addEnchantment(Enchantment.LURE, 2);
+    }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onPlayerMove(PlayerMoveEvent event) {
@@ -139,6 +163,10 @@ public class FoxListener implements Listener {
             Foxtrot.getInstance().getPvPTimerMap().createPendingTimer(event.getPlayer().getUniqueId());
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
+
+            event.getPlayer().getInventory().addItem(FIRST_SPAWN_BOOK);
+            event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
+
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
         }
 
