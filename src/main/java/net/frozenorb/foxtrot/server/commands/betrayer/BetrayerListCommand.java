@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class BetrayerListCommand {
 
-    @Command(names={ "betrayer list", "betrayers list" }, permissionNode="op")
+    @Command(names={ "betrayer list", "betrayers" }, permissionNode="op")
     public static void betrayerList(Player sender) {
         StringBuilder betrayers = new StringBuilder();
 

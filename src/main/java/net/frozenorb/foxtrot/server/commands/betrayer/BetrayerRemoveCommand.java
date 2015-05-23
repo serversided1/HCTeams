@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class BetrayerRemoveCommand {
 
-    @Command(names={ "betrayer remove", "betrayers remove" }, permissionNode="op")
+    @Command(names={ "betrayer remove" }, permissionNode="op")
     public static void betrayerRemove(Player sender, @Parameter(name="player") UUID player) {
         if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
             Foxtrot.getInstance().getServerHandler().getBetrayers().remove(player);
