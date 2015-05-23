@@ -25,14 +25,18 @@ public class KOTHScheduleCommand {
                 continue;
             }
 
+            if (sent > 5) {
+                break;
+            }
+
             sent++;
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(entry.getKey().toDate()) + " PST" + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
         }
 
         if (sent == 0) {
             sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.RED + "KOTH Schedule: " + ChatColor.YELLOW + "Undefined");
         } else {
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(new Date()) + " PST" + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()) + ChatColor.GOLD + ".");
         }
     }
 

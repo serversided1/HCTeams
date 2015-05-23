@@ -18,10 +18,7 @@ import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class KOTHHandler {
     
@@ -97,7 +94,37 @@ public class KOTHHandler {
 
             if (!kothSchedule.exists()) {
                 kothSchedule.createNewFile();
-                FileUtils.write(kothSchedule, qLib.GSON.toJson(new JsonParser().parse(new BasicDBObject().toString())));
+                BasicDBObject schedule = new BasicDBObject();
+                int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+                List<String> allKOTHs = new ArrayList<>();
+
+                for (KOTH koth : getKOTHs()) {
+                    allKOTHs.add(koth.getName());
+                }
+
+                for (int dayOffset = 0; dayOffset < 100; dayOffset++) {
+                    int day = currentDay + dayOffset;
+                    KOTHScheduledTime[] times = new KOTHScheduledTime[] {
+
+                            new KOTHScheduledTime(day, 1, 30), // 1:30am EST
+                            new KOTHScheduledTime(day, 12, 30), // 12:30pm EST
+                            new KOTHScheduledTime(day, 15, 30), // 03:30pm EST
+                            new KOTHScheduledTime(day, 18, 30), // 6:30pm EST
+                            new KOTHScheduledTime(day, 21, 30) // 9:30pm EST
+
+                    };
+
+                    Collections.shuffle(allKOTHs);
+
+                    for (int kothTimeIndex = 0; kothTimeIndex < times.length; kothTimeIndex++) {
+                        KOTHScheduledTime kothTime = times[kothTimeIndex];
+                        String kothName = allKOTHs.get(kothTimeIndex);
+
+                        schedule.put(kothTime.toString(), kothName);
+                    }
+                }
+
+                FileUtils.write(kothSchedule, qLib.GSON.toJson(new JsonParser().parse(schedule.toString())));
             }
 
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(kothSchedule));

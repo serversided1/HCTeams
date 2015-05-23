@@ -27,20 +27,10 @@ public class KOTHCommand {
 
         for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
             if (entry.getKey().toDate().after(now)) {
-                sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(entry.getKey().toDate()) + " PST" + ChatColor.GOLD + ".");
-                sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(now) + " PST" + ChatColor.GOLD + ".");
+                sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
+                sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(now) + ChatColor.GOLD + ".");
                 return;
             }
-        }
-
-        // The logic behind this is as follows:
-        // Say it's 10 PM (22), and /koth is typed. There's not a KOTH at 22, 23, or 24, but there IS a KOTH at 1 (the next day)
-        // If there's nothing later this night, then this will match the first KOTH of the next day.
-        // If there's no KOTHs defined, this will fall through to the 'undefined' message.
-        for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(entry.getKey().toDate()) + " PST" + ChatColor.GOLD + ".");
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.SHORT).format(now) + " PST" + ChatColor.GOLD + ".");
-            return;
         }
 
         sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.RED + "Next KOTH: " + ChatColor.YELLOW + "Undefined");

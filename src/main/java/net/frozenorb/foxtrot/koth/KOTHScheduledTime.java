@@ -10,15 +10,20 @@ import java.util.Date;
 @AllArgsConstructor
 public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
 
+    @Getter private int day;
     @Getter private int hour;
     @Getter private int minutes;
 
     public static KOTHScheduledTime parse(String input) {
-        String[] split = input.split(":");
-        int hour = Integer.parseInt(split[0]);
-        int minutes = split.length > 1 ? Integer.parseInt(split[1]) : 0;
+        String[] inputSplit = input.split(" ");
 
-        return (new KOTHScheduledTime(hour, minutes));
+        int days = Integer.parseInt(inputSplit[0]);
+
+        String[] timeSplit = inputSplit[1].split(":");
+        int hour = Integer.parseInt(timeSplit[0]);
+        int minutes = timeSplit.length > 1 ? Integer.parseInt(timeSplit[1]) : 0;
+
+        return (new KOTHScheduledTime(days, hour, minutes));
     }
 
     public static KOTHScheduledTime parse(Date input) {
@@ -26,15 +31,17 @@ public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
 
         calendar.setTime(input);
 
+        int days = calendar.get(Calendar.DAY_OF_YEAR);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);
 
-        return (new KOTHScheduledTime(hour, minutes));
+        return (new KOTHScheduledTime(days, hour, minutes));
     }
 
     public Date toDate() {
         Calendar activationTime = Calendar.getInstance();
 
+        activationTime.set(Calendar.DAY_OF_YEAR, day);
         activationTime.set(Calendar.HOUR_OF_DAY, hour);
         activationTime.set(Calendar.MINUTE, minutes);
         activationTime.set(Calendar.SECOND, 0);
@@ -48,7 +55,7 @@ public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
         if (object instanceof KOTHScheduledTime) {
             KOTHScheduledTime other = (KOTHScheduledTime) object;
 
-            return (other.hour == this.hour && other.minutes == this.minutes);
+            return (other.day == this.day && other.hour == this.hour && other.minutes == this.minutes);
         }
 
         return (false);
@@ -56,13 +63,27 @@ public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
 
     @Override
     public int hashCode() {
-        return (hour ^ minutes);
+        return (day ^ hour ^ minutes);
     }
 
     @Override
     public int compareTo(KOTHScheduledTime other) {
-        int result = Ints.compare(hour, other.hour);
-        return (result == 0 ? Ints.compare(minutes, other.minutes) : result);
+        int result = Ints.compare(day, other.day);
+
+        if (result == 0) {
+            result = Ints.compare(hour, other.hour);
+        }
+
+        if (result == 0) {
+            result = Ints.compare(minutes, other.minutes);
+        }
+
+        return (result);
+    }
+
+    @Override
+    public String toString() {
+        return (day + " " + hour + ":" + minutes);
     }
 
 }
