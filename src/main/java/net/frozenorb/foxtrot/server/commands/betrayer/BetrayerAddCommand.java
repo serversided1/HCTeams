@@ -18,7 +18,7 @@ public class BetrayerAddCommand {
             Foxtrot.getInstance().getServerHandler().save();
             sender.sendMessage(ChatColor.GREEN + "Added " + UUIDUtils.name(player) + "'s betrayer tag.");
         } else {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a HighRoller.");
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a betrayer.");
         }
     }
 
