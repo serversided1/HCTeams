@@ -29,6 +29,7 @@ public class KOTHCommand {
             if (entry.getKey().toDate().after(now)) {
                 sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + KOTHScheduleCommand.KOTH_DATE_FORMAT.format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
                 sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + KOTHScheduleCommand.KOTH_DATE_FORMAT.format(now) + ChatColor.GOLD + ".");
+                sender.sendMessage(ChatColor.YELLOW + "Type '/koth schedule' to see more upcoming KOTHs.");
                 return;
             }
         }
