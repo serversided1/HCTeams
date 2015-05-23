@@ -20,11 +20,12 @@ public class KOTHScheduleCommand {
     @Command(names={ "KOTH Schedule" }, permissionNode="")
     public static void kothSchedule(Player sender) {
         int sent = 0;
+        Date now = new Date();
 
         for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
             KOTH resolved = Foxtrot.getInstance().getKOTHHandler().getKOTH(entry.getValue());
 
-            if (resolved == null || resolved.isHidden()) {
+            if (resolved == null || resolved.isHidden() || !entry.getKey().toDate().after(now)) {
                 continue;
             }
 
