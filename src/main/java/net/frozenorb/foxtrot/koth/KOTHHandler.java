@@ -102,7 +102,7 @@ public class KOTHHandler {
                     if (koth.isHidden() || koth.getName().equalsIgnoreCase("EOTW") || koth.getName().equalsIgnoreCase("Citadel")) {
                         continue;
                     }
-                    
+
                     allKOTHs.add(koth.getName());
                 }
 

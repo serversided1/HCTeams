@@ -8,10 +8,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
 public class KOTHScheduleCommand {
+
+    public static final DateFormat KOTH_DATE_FORMAT = new SimpleDateFormat("EEE hha");
 
     // Make this pretty.
     @Command(names={ "KOTH Schedule" }, permissionNode="")
@@ -30,13 +33,13 @@ public class KOTHScheduleCommand {
             }
 
             sent++;
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + entry.getValue() + ChatColor.GOLD + " can be captured at " + ChatColor.BLUE + KOTH_DATE_FORMAT.format(entry.getKey().toDate()) + ChatColor.GOLD + ".");
         }
 
         if (sent == 0) {
             sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.RED + "KOTH Schedule: " + ChatColor.YELLOW + "Undefined");
         } else {
-            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()) + ChatColor.GOLD + ".");
+            sender.sendMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "It is currently " + ChatColor.BLUE + KOTH_DATE_FORMAT.format(new Date()) + ChatColor.GOLD + ".");
         }
     }
 
