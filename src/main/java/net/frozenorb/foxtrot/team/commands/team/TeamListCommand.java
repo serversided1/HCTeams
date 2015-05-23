@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
@@ -64,7 +65,13 @@ public class TeamListCommand {
                         break;
                     }
 
-                    sender.sendMessage(ChatColor.GRAY.toString() + (index) + ". " + ChatColor.YELLOW + teamEntry.getKey().getName() + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getSize() + ")");
+                    FancyMessage teamMessage = new FancyMessage();
+
+                    teamMessage.text(index + ". ").color(ChatColor.GRAY).then();
+                    teamMessage.text(teamEntry.getKey().getName()).color(ChatColor.YELLOW).tooltip(ChatColor.GREEN + "Click to view team info").command("/t who " + teamEntry.getKey().getName()).then();
+                    teamMessage.text(" (" + teamEntry.getValue() + "/" + teamEntry.getKey().getSize() + ")").color(ChatColor.GREEN);
+
+                    teamMessage.send(sender);
                 }
 
                 sender.sendMessage(ChatColor.GRAY + "You are currently on " + ChatColor.WHITE + "Page " + currentPage + "/" + maxPages + ChatColor.GRAY + ".");
