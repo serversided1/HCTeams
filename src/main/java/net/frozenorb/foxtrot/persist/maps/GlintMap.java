@@ -52,10 +52,10 @@ public class GlintMap extends PersistMap<Boolean> {
 
     public static void setGlintEnabled(Player player, boolean glint) {
         try {
-            EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-            Field glintField = entityPlayer.getClass().getField("glintEnabled");
+            //EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+            //Field glintField = entityPlayer.getClass().getField("glintEnabled");
 
-            glintField.set(entityPlayer, glint);
+            //glintField.set(entityPlayer, glint);
         } catch (Exception e) {
             e.printStackTrace();
         }
