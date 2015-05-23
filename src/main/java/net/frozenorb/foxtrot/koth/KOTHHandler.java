@@ -99,6 +99,10 @@ public class KOTHHandler {
                 List<String> allKOTHs = new ArrayList<>();
 
                 for (KOTH koth : getKOTHs()) {
+                    if (koth.isHidden() || koth.getName().equalsIgnoreCase("EOTW") || koth.getName().equalsIgnoreCase("Citadel")) {
+                        continue;
+                    }
+                    
                     allKOTHs.add(koth.getName());
                 }
 
