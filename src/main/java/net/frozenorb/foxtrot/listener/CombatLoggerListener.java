@@ -166,7 +166,6 @@ public class CombatLoggerListener implements Listener {
         }
 
         if (damager != null) {
-            Villager villager = (Villager) event.getEntity();
             CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
             if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation())/* || DTRBitmask.SAFE_ZONE.appliesAt(villager.getLocation())*/) { // We only care about where the damager ('Combat loggers can get hit into spawn')
@@ -222,7 +221,7 @@ public class CombatLoggerListener implements Listener {
             return;
         }
 
-        boolean enemyWithinRange = false;
+        boolean spawnCombatLogger = false;
 
         for (Entity entity : event.getPlayer().getNearbyEntities(40, 40, 40)) {
             if (entity instanceof Player) {
@@ -233,13 +232,17 @@ public class CombatLoggerListener implements Listener {
                 }
 
                 if (Foxtrot.getInstance().getTeamHandler().getTeam(other) != Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer())) {
-                    enemyWithinRange = true;
+                    spawnCombatLogger = true;
                     break;
                 }
             }
         }
 
-        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !event.getPlayer().hasMetadata("invisible") && enemyWithinRange && !event.getPlayer().isDead()) {
+        if (!event.getPlayer().isOnGround()) {
+            spawnCombatLogger = true;
+        }
+
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE && !event.getPlayer().hasMetadata("invisible") && spawnCombatLogger && !event.getPlayer().isDead()) {
             Foxtrot.getInstance().getLogger().info(event.getPlayer().getName() + " combat logged at (" + event.getPlayer().getLocation().getBlockX() + ", " + event.getPlayer().getLocation().getBlockY() + ", " + event.getPlayer().getLocation().getBlockZ() + ")");
 
             ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
