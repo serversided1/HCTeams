@@ -33,18 +33,18 @@
 	<distributionManagement>
 		<repository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com:8081/artifactory/${access-level}</url>
+			<url>http://maven.minehq.com/artifactory/${access-level}</url>
 		</repository>
 		<snapshotRepository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com:8081/artifactory/${access-level}</url>
+			<url>http://maven.minehq.com/artifactory/${access-level}</url>
 		</snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
 		<repository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com:8081/artifactory/repo/</url>
+			<url>http://maven.minehq.com/artifactory/repo/</url>
 		</repository>
 	</repositories>
 
