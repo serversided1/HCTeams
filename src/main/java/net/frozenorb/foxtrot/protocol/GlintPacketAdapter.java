@@ -19,7 +19,7 @@ public class GlintPacketAdapter extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        PacketContainer packet = event.getPacket();
+        /*PacketContainer packet = event.getPacket();
 
         int entityID = packet.getIntegers().read(0);
         ItemStack item = packet.getItemModifier().read(0);
@@ -32,7 +32,7 @@ public class GlintPacketAdapter extends PacketAdapter {
                     item.removeEnchantment(enchantment);
                 }
             }
-        }
+        }*/
     }
 
     public static Player getPlayerByEntityID(int entityID) {
