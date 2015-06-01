@@ -23,8 +23,8 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (team.getMembers().size() >= Team.MAX_TEAM_SIZE) {
-            sender.sendMessage(ChatColor.RED + "The max team size is " + Team.MAX_TEAM_SIZE + "!");
+        if (team.getMembers().size() >= Foxtrot.getInstance().getMapHandler().getTeamSize()) {
+            sender.sendMessage(ChatColor.RED + "The max team size is " + Foxtrot.getInstance().getMapHandler().getTeamSize() + "!");
             return;
         }
 

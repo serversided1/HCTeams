@@ -42,16 +42,10 @@ public class Team {
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
     public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
 
-    public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
-    public static final ChatColor TRADING_COLOR = ChatColor.LIGHT_PURPLE;
-
     // Configurable values //
 
-    public static final int MAX_TEAM_SIZE = 30;
+    public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
     public static final int MAX_CLAIMS = 2;
-    public static final int MAX_ALLIES = 0;
-    public static final long DTR_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
-    public static final long RAIDABLE_REGEN_TIME = TimeUnit.MINUTES.toMillis(60);
 
     // End configurable values //
 
@@ -427,9 +421,9 @@ public class Team {
 
         if (isRaidable()) {
             TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team now raidable.");
-            DTRCooldown = System.currentTimeMillis() + RAIDABLE_REGEN_TIME;
+            DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeRaidable();
         } else {
-            DTRCooldown = System.currentTimeMillis() + DTR_REGEN_TIME;
+            DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeDeath();
         }
 
         DTRHandler.setCooldown(this);

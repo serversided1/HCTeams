@@ -20,7 +20,7 @@ public class TeamAcceptCommand {
                 return;
             }
 
-            if (team.getMembers().size() >= Team.MAX_TEAM_SIZE) {
+            if (team.getMembers().size() >= Foxtrot.getInstance().getMapHandler().getTeamSize()) {
                 sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team is full!");
                 return;
             }

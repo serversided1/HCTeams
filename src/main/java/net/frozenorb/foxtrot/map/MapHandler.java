@@ -22,6 +22,10 @@ import java.util.concurrent.TimeUnit;
 public class MapHandler {
 
     @Getter private boolean kitMap;
+    @Getter private int allyLimit;
+    @Getter private int teamSize;
+    @Getter private long regenTimeDeath;
+    @Getter private long regenTimeRaidable;
     @Getter private String scoreboardTitle;
     @Getter private String mapStartedString;
     @Getter private double baseLootingMultiplier;
@@ -44,6 +48,10 @@ public class MapHandler {
                 BasicDBObject crafting = new BasicDBObject();
 
                 dbObject.put("kitMap", false);
+                dbObject.put("allyLimit", 0);
+                dbObject.put("teamSize", 30);
+                dbObject.put("regenTimeDeath", 60);
+                dbObject.put("regenTimeRaidable", 60);
                 dbObject.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
                 dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
                 dbObject.put("warzone", 1000);
@@ -69,6 +77,10 @@ public class MapHandler {
 
             if (dbObject != null) {
                 this.kitMap = dbObject.getBoolean("kitMap", false);
+                this.allyLimit = dbObject.getInt("allyLimit", 0);
+                this.teamSize = dbObject.getInt("teamSize", 30);
+                this.regenTimeDeath = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeDeath", 60));
+                this.regenTimeRaidable = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeRaidable", 60));
                 this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbObject.getString("scoreboardTitle"));
                 this.mapStartedString = dbObject.getString("mapStartedString");
                 ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);

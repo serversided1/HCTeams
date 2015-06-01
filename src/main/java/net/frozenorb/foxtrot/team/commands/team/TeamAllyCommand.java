@@ -29,13 +29,13 @@ public class TeamAllyCommand {
             return;
         }
 
-        if (senderTeam.getAllies().size() >= Team.MAX_ALLIES) {
-            sender.sendMessage(ChatColor.YELLOW + "Your team already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
+        if (senderTeam.getAllies().size() >= Foxtrot.getInstance().getMapHandler().getAllyLimit()) {
+            sender.sendMessage(ChatColor.YELLOW + "Your team already has the max number of allies, which is " + Foxtrot.getInstance().getMapHandler().getAllyLimit() + ".");
             return;
         }
 
-        if (team.getAllies().size() >= Team.MAX_ALLIES) {
-            sender.sendMessage(ChatColor.YELLOW + "The team you're trying to ally already has the max number of allies, which is " + Team.MAX_ALLIES + ".");
+        if (team.getAllies().size() >= Foxtrot.getInstance().getMapHandler().getAllyLimit()) {
+            sender.sendMessage(ChatColor.YELLOW + "The team you're trying to ally already has the max number of allies, which is " + Foxtrot.getInstance().getMapHandler().getAllyLimit() + ".");
             return;
         }
 
@@ -55,9 +55,9 @@ public class TeamAllyCommand {
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (team.isMember(player.getUniqueId())) {
-                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + Team.ALLY_COLOR + team.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(senderTeam.getName(player) + ChatColor.YELLOW + " has accepted your request to ally. You now have " + Team.ALLY_COLOR + team.getAllies().size() + "/" + Foxtrot.getInstance().getMapHandler().getAllyLimit() + " allies" + ChatColor.YELLOW + ".");
                 } else if (senderTeam.isMember(player.getUniqueId())) {
-                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + team.getName(sender) + ChatColor.YELLOW + ". You now have " + Team.ALLY_COLOR + senderTeam.getAllies().size() + "/" + Team.MAX_ALLIES + " allies" + ChatColor.YELLOW + ".");
+                    player.sendMessage(ChatColor.YELLOW + "Your team has allied " + team.getName(sender) + ChatColor.YELLOW + ". You now have " + Team.ALLY_COLOR + senderTeam.getAllies().size() + "/" + Foxtrot.getInstance().getMapHandler().getAllyLimit() + " allies" + ChatColor.YELLOW + ".");
                 }
 
                 if (team.isMember(player.getUniqueId()) || senderTeam.isMember(player.getUniqueId())) {
