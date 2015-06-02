@@ -123,6 +123,10 @@ public class ServerHandler {
                 StringBuilder messageBuilder = new StringBuilder();
 
                 for (UUID highRoller : highRollers) {
+                    if ("null".equals(UUIDUtils.name(highRoller))) {
+                        continue;
+                    }
+                    
                     messageBuilder.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
                 }
 
