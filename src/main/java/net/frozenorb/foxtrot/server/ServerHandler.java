@@ -122,7 +122,7 @@ public class ServerHandler {
                 StringBuilder messageBuilder = new StringBuilder();
 
                 for (UUID highRoller : highRollers) {
-                    if ("null".equals(UUIDUtils.name(highRoller))) {
+                    if (UUIDUtils.name(highRoller) == null) {
                         continue;
                     }
 
