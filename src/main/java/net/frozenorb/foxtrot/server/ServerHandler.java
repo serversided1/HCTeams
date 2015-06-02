@@ -16,7 +16,6 @@ import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
-import net.frozenorb.qlib.uuid.UUIDCache;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
@@ -126,7 +125,7 @@ public class ServerHandler {
                     if ("null".equals(UUIDUtils.name(highRoller))) {
                         continue;
                     }
-                    
+
                     messageBuilder.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
                 }
 

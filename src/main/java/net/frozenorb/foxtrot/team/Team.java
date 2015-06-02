@@ -35,7 +35,6 @@ import redis.clients.jedis.Jedis;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Team {
 
