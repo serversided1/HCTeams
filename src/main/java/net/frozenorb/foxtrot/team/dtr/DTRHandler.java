@@ -13,10 +13,14 @@ import java.util.Set;
 
 public class DTRHandler extends BukkitRunnable {
 
-    private static final double[] BASE_DTR_INCREMENT = { 1.5, .5, .45, .4, .36,
+    /*
+        private static final double[] BASE_DTR_INCREMENT = { 1.5, .5, .45, .4, .36,
             .33, .3, .27, .24, .22, .21, .2, .19, .18, .175, .17, .168, .166,
             .164, .162, .16, .158, .156, .154, .152, .15, .148, .146, .144,
             .142, .142, .142, .142, .142, .142 };
+     */
+    private static final double[] BASE_DTR_INCREMENT = { 1, .45, .4, .36, .3,
+            .27, .27, .27, .27, .27, .27 };
     /*
         private static final double[] MAX_DTR = { 1.01, 2.25, 2.65, 2.85, 3.35, // 1 to 5
                                                                                                                  3.65, 3.85, 4.25, 4.65, 5.15, // 6 to 10
