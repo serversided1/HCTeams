@@ -175,7 +175,7 @@ public class EndListener implements Listener {
                 }
             }
 
-            event.setTo(new Location(event.getTo().getWorld(), 0.6, 64, 125.5));
+            event.setTo(new Location(event.getTo().getWorld(), 0.6, 70, 125.5));
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
             if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
