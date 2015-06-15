@@ -73,10 +73,7 @@ public class FoxListener implements Listener {
         bookMeta.setTitle(ChatColor.GOLD + "Welcome to HCTeams");
         bookMeta.setPages(
 
-                        ChatColor.BLUE + "Welcome to the HCTeams Map 5.5 5-Man Team Map!\n" +
-                        ChatColor.BLUE + "Max DTR:" + ChatColor.BLACK + " 4\n" +
-                        ChatColor.BLUE + "Max Allies:" + ChatColor.BLACK + " 1\n" +
-                        ChatColor.BLUE + "Kit:" + ChatColor.BLACK + " No enchants!\n"
+                        ChatColor.BLUE + "Welcome to the HCTeams!"
 
         );
         bookMeta.setAuthor("MineHQ");

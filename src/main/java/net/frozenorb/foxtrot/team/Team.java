@@ -278,6 +278,19 @@ public class Team {
         return (false);
     }
 
+    public void validateAllies() {
+        Iterator<ObjectId> allyIterator = getAllies().iterator();
+
+        while (allyIterator.hasNext()) {
+            ObjectId ally = allyIterator.next();
+            Team checkTeam = Foxtrot.getInstance().getTeamHandler().getTeam(ally);
+
+            if (checkTeam == null) {
+                allyIterator.remove();
+            }
+        }
+    }
+
     public boolean isAlly(UUID check) {
         Team checkTeam = Foxtrot.getInstance().getTeamHandler().getTeam(check);
         return (checkTeam != null && isAlly(checkTeam));
