@@ -99,8 +99,7 @@ public class Foxtrot extends JavaPlugin {
         setupHandlers();
         setupPersistence();
         setupListeners();
-
-        Shared.get().getProfileManager().setNametagsEnabled(false);
+        
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
 
