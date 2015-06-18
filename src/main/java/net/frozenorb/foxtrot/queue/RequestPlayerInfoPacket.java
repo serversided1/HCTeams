@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.queue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.qlib.xpacket.XPacket;
-import net.frozenorb.qqueue.qQueue;
 
 import java.util.UUID;
 

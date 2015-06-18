@@ -5,7 +5,6 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.xpacket.FrozenXPacketHandler;
 import net.frozenorb.qlib.xpacket.XPacket;
-import net.frozenorb.qqueue.qQueue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
@@ -25,7 +24,7 @@ public class PlayerInfoPacket implements XPacket {
         if (Foxtrot.getInstance().getServer().getPluginManager().getPlugin("qQueue") == null) {
             return;
         }
-        
+
         new BukkitRunnable() {
 
             public void run() {
