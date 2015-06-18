@@ -67,6 +67,11 @@
             <artifactId>qLib</artifactId>
             <version>LATEST</version>
         </dependency>
+        <dependency>
+            <groupId>net.frozenorb</groupId>
+            <artifactId>qQueue</artifactId>
+            <version>LATEST</version>
+        </dependency>
 
 		<!-- Misc. Jars -->
         <dependency>
