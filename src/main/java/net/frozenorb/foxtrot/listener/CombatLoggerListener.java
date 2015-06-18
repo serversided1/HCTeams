@@ -8,17 +8,16 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.mShared.Shared;
-import net.minecraft.server.v1_7_R4.EntityHuman;
-import net.minecraft.server.v1_7_R4.EntityPlayer;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
-import net.minecraft.server.v1_7_R4.PlayerInteractManager;
+import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHumanEntity;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -168,9 +167,13 @@ public class CombatLoggerListener implements Listener {
         if (damager != null) {
             CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
-            if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation())/* || DTRBitmask.SAFE_ZONE.appliesAt(villager.getLocation())*/) { // We only care about where the damager ('Combat loggers can get hit into spawn')
+            if (DTRBitmask.SAFE_ZONE.appliesAt(damager.getLocation()) || DTRBitmask.SAFE_ZONE.appliesAt(event.getEntity().getLocation())) {
                 event.setCancelled(true);
                 return;
+            }
+
+            if (event.getEntity().getLocation().distanceSquared(event.getEntity().getWorld().getSpawnLocation()) < (125 * 125)) {
+                ((EntityLiving) ((CraftEntity) event.getEntity()).getHandle()).knockbackReduction = 1D;
             }
 
             if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(damager.getUniqueId())) {
