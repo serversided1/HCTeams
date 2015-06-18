@@ -22,6 +22,10 @@ public class PlayerInfoPacket implements XPacket {
     public PlayerInfoPacket() {}
 
     public static void sendResponse(final UUID player) {
+        if (Foxtrot.getInstance().getServer().getPluginManager().getPlugin("qQueue") == null) {
+            return;
+        }
+        
         new BukkitRunnable() {
 
             public void run() {
