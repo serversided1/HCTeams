@@ -3,6 +3,9 @@ package net.frozenorb.foxtrot.koth.listeners;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
@@ -27,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KOTHListener implements Listener {
@@ -191,13 +195,33 @@ public class KOTHListener implements Listener {
     @EventHandler
     public void onKOTHControlLost(final KOTHControlLostEvent event) {
         if (event.getKOTH().getRemainingCapTime() <= (event.getKOTH().getCapTime() - 30)) {
-            new BukkitRunnable() {
+            List<Damage> capperDamage = DeathMessageHandler.getDamage(Foxtrot.getInstance().getServer().getPlayerExact(event.getKOTH().getCurrentCapper()));
+            PlayerDamage knocker = null;
+            long knockerTime = 0L;
 
-                public void run() {
-                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
+            if (capperDamage != null) {
+                for (Damage damage : capperDamage) {
+                    if (damage instanceof PlayerDamage && (knocker == null || damage.getTime() > knockerTime)) {
+                        knocker = (PlayerDamage) damage;
+                        knockerTime = damage.getTime();
+                    }
                 }
+            }
 
-            }.runTaskAsynchronously(Foxtrot.getInstance());
+            if (knocker != null && System.currentTimeMillis() - 2000L < knockerTime) {
+                Player knockerPlayer = Foxtrot.getInstance().getServer().getPlayerExact(knocker.getDamager());
+
+                if (knockerPlayer != null) {
+                    Team knockerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(knockerPlayer);
+
+                    if (knockerTeam != null) {
+                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " was knocked by " + ChatColor.BLUE + knockerTeam.getName() + ChatColor.GOLD + ".");
+                        return;
+                    }
+                }
+            }
+
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
         }
     }
 
