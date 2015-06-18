@@ -172,7 +172,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            if (event.getEntity().getLocation().distanceSquared(event.getEntity().getWorld().getSpawnLocation()) < (125 * 125)) {
+            if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getEntity().getLocation())) {
                 ((EntityLiving) ((CraftEntity) event.getEntity()).getHandle()).knockbackReduction = 1D;
             }
 
