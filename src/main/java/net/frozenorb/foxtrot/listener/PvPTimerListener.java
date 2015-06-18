@@ -7,10 +7,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -124,6 +121,17 @@ public class PvPTimerListener implements Listener {
         if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getEntity().getUniqueId())) {
             damager.sendMessage(ChatColor.RED + "That player currently has their PVP Timer!");
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled=true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player && (event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK)) {
+            Player player = (Player) event.getEntity();
+
+            if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+                event.setCancelled(true);
+            }
         }
     }
 
