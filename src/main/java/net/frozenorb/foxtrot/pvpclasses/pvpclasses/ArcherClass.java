@@ -105,6 +105,29 @@ public class ArcherClass extends PvPClass {
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
                 }
 
+                PotionEffect invis = null;
+
+                for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+                    if (potionEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
+                        invis = potionEffect;
+                        break;
+                    }
+                }
+
+                if (invis != null) {
+                    final PotionEffect invisFinal = invis;
+
+                    player.removePotionEffect(invis.getType());
+
+                    new BukkitRunnable() {
+
+                        public void run() {
+                            player.addPotionEffect(invisFinal);
+                        }
+
+                    }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+                }
+
                 getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
 
                 FrozenNametagHandler.reloadPlayer(player);
