@@ -12,17 +12,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UseLifePacket implements XPacket {
 
-    @Getter private String queue;
     @Getter private UUID player;
 
     // We have to have this for XPacket to do its thing.
     public UseLifePacket() {}
 
     public void onReceive() {
-        if (!qQueue.getInstance().getQueueHandler().getQueueId().equals(queue)) {
-            return;
-        }
-
         new BukkitRunnable() {
 
             public void run() {
