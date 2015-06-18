@@ -12,23 +12,25 @@ public class BardEffect {
 
     @Getter private PotionEffect potionEffect;
     @Getter private int energy;
-    @Getter private String description;
 
     // For the message we send when you select the (de)buff in your hotbar.
     @Getter private Map<String, Long> lastMessageSent = new HashMap<>();
 
-    public BardEffect(PotionEffect potionEffect) {
-        this(potionEffect, -1);
+    public static BardEffect fromPotion(PotionEffect potionEffect) {
+        return (new BardEffect(potionEffect, -1));
     }
 
-    public BardEffect(PotionEffect potionEffect, int energy) {
-        this(potionEffect, energy, WordUtils.capitalize(potionEffect.getType().getName().toLowerCase().replace("_", " ")) + " " + (potionEffect.getAmplifier() + 1) + ChatColor.WHITE + " (" + (potionEffect.getDuration() / 20) + "s)");
+    public static BardEffect fromPotionAndEnergy(PotionEffect potionEffect, int energy) {
+        return (new BardEffect(potionEffect, energy));
     }
 
-    public BardEffect(PotionEffect potionEffect, int energy, String description) {
+    public static BardEffect fromEnergy(int energy) {
+        return (new BardEffect(null, energy));
+    }
+
+    private BardEffect(PotionEffect potionEffect, int energy) {
         this.potionEffect = potionEffect;
         this.energy = energy;
-        this.description = description;
     }
 
 }

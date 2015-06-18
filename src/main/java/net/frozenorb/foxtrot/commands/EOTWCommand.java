@@ -38,6 +38,25 @@ public class EOTWCommand {
         }
     }
 
+    @Command(names={ "EOTW TpAll" }, permissionNode="op")
+    public static void eotwTpAll(Player sender) {
+        if (sender.getGameMode() != GameMode.CREATIVE) {
+            sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
+            return;
+        }
+
+        if (!Foxtrot.getInstance().getServerHandler().isEOTW()) {
+            sender.sendMessage(ChatColor.RED + "This command must be ran during EOTW. (/eotw)");
+            return;
+        }
+
+        for (Player onlinePlayer : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+            onlinePlayer.teleport(sender.getLocation());
+        }
+
+        sender.sendMessage(ChatColor.RED + "Players teleported.");
+    }
+
     @Command(names={ "PreEOTW" }, permissionNode="op")
     public static void preeotw(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {

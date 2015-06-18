@@ -30,6 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BardClass extends PvPClass implements Listener {
 
+    /*
+            Things commented with // CUSTOM
+            are the 'unique' abilities, or things that have custom behaviour not seen by most other effects.
+            An example is invis, whose passive cannot be used while its click is on cooldown.
+            This is therefore commented with // CUSTOM
+     */
+
     public final Map<Material, BardEffect> BARD_CLICK_EFFECTS = new HashMap<>();
     public final Map<Material, BardEffect> BARD_PASSIVE_EFFECTS = new HashMap<>();
 
@@ -45,23 +52,26 @@ public class BardClass extends PvPClass implements Listener {
         super("Bard", 15, "GOLD_", null);
 
         // Click buffs
-        BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1), 45));
-        BARD_CLICK_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 2), 25));
-        BARD_CLICK_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 6), 25));
-        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 2), 40));
-        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, new BardEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 5, 2), 40));
-        BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, new BardEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 45, 0), 40));
+        BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1), 45));
+        BARD_CLICK_EFFECTS.put(Material.SUGAR, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 2), 25));
+        BARD_CLICK_EFFECTS.put(Material.FEATHER, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 6), 25));
+        BARD_CLICK_EFFECTS.put(Material.IRON_INGOT, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 2), 40));
+        BARD_CLICK_EFFECTS.put(Material.GHAST_TEAR, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.REGENERATION, 20 * 5, 2), 40));
+        BARD_CLICK_EFFECTS.put(Material.MAGMA_CREAM, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 45, 0), 40));
+        //BARD_CLICK_EFFECTS.put(Material.FERMENTED_SPIDER_EYE, BardEffect.fromEnergy(60));
+        BARD_CLICK_EFFECTS.put(Material.WHEAT, BardEffect.fromEnergy(25));
 
         // Click debuffs
-        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, new BardEffect(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 35));
+        BARD_CLICK_EFFECTS.put(Material.SPIDER_EYE, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.WITHER, 20 * 5, 1), 35));
 
         // Passive buffs
-        BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, new BardEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0)));
-        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, new BardEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 1)));
-        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, new BardEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 6, 1)));
-        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, new BardEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 6, 0)));
-        BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, new BardEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 6, 0)));
-        BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, new BardEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 6, 0)));
+        BARD_PASSIVE_EFFECTS.put(Material.BLAZE_POWDER, BardEffect.fromPotion(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 6, 0)));
+        BARD_PASSIVE_EFFECTS.put(Material.SUGAR, BardEffect.fromPotion(new PotionEffect(PotionEffectType.SPEED, 20 * 6, 1)));
+        BARD_PASSIVE_EFFECTS.put(Material.FEATHER, BardEffect.fromPotion(new PotionEffect(PotionEffectType.JUMP, 20 * 6, 1)));
+        BARD_PASSIVE_EFFECTS.put(Material.IRON_INGOT, BardEffect.fromPotion(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 6, 0)));
+        BARD_PASSIVE_EFFECTS.put(Material.GHAST_TEAR, BardEffect.fromPotion(new PotionEffect(PotionEffectType.REGENERATION, 20 * 6, 0)));
+        BARD_PASSIVE_EFFECTS.put(Material.MAGMA_CREAM, BardEffect.fromPotion(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 6, 0)));
+        //BARD_PASSIVE_EFFECTS.put(Material.FERMENTED_SPIDER_EYE, BardEffect.fromPotion(new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 6, 0)));
 
         new BukkitRunnable() {
 
@@ -105,10 +115,6 @@ public class BardClass extends PvPClass implements Listener {
 
     @Override
     public void tick(Player player) {
-        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && !DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
-            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true, false);
-        }
-
         if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
         }
@@ -119,6 +125,15 @@ public class BardClass extends PvPClass implements Listener {
 
         if (!player.hasPotionEffect(PotionEffectType.REGENERATION)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
+        }
+
+        if (player.getItemInHand() != null && BARD_PASSIVE_EFFECTS.containsKey(player.getItemInHand().getType()) && !DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+            // CUSTOM
+            if (player.getItemInHand().getType() == Material.FERMENTED_SPIDER_EYE && getLastEffectUsage().containsKey(player.getName()) && getLastEffectUsage().get(player.getName()) > System.currentTimeMillis()) {
+                return;
+            }
+
+            giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true, false);
         }
     }
 
@@ -135,31 +150,6 @@ public class BardClass extends PvPClass implements Listener {
             bardEffect.getLastMessageSent().remove(player.getName());
         }
     }
-
-    /*@EventHandler
-    public void onPlayerItemHeld(PlayerItemHeldEvent event) {
-        ItemStack newItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
-
-        if (newItem == null || !PvPClassHandler.hasKitOn(event.getPlayer(), this)) {
-            return;
-        }
-
-        BardEffect clickEffect = BARD_CLICK_EFFECTS.get(newItem.getType());
-
-        if (clickEffect == null) {
-            return;
-        }
-
-        if (clickEffect.getLastMessageSent().containsKey(event.getPlayer().getName()) && clickEffect.getLastMessageSent().get(event.getPlayer().getName()) + 3000L > System.currentTimeMillis()) {
-            return;
-        }
-
-        clickEffect.getLastMessageSent().put(event.getPlayer().getName(), System.currentTimeMillis());
-
-        event.getPlayer().sendMessage(ChatColor.BLUE + "Bard effect:");
-        event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Effect: " + ChatColor.GRAY + clickEffect.getDescription());
-        event.getPlayer().sendMessage("    " + ChatColor.YELLOW + "Energy: " + ChatColor.GRAY + (clickEffect.getEnergy() > energy.get(event.getPlayer().getName()) ? ChatColor.RED : ChatColor.GREEN) + clickEffect.getEnergy());
-    }*/
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -199,7 +189,7 @@ public class BardClass extends PvPClass implements Listener {
         boolean negative = bardEffect.getPotionEffect() != null && FoxListener.DEBUFFS.contains(bardEffect.getPotionEffect().getType());
 
         getLastEffectUsage().put(event.getPlayer().getName(), System.currentTimeMillis() + EFFECT_COOLDOWN);
-        SpawnTagHandler.addSeconds(event.getPlayer(), negative ? 30 : 30);
+        SpawnTagHandler.addSeconds(event.getPlayer(), 30);
         giveBardEffect(event.getPlayer(), bardEffect, !negative, true);
 
         if (event.getPlayer().getItemInHand().getAmount() == 1) {
@@ -216,6 +206,7 @@ public class BardClass extends PvPClass implements Listener {
                 continue;
             }
 
+            // CUSTOM
             // Bards can't get Strength.
             // Yes, that does need to use .equals. PotionEffectType is NOT an enum.
             if (PvPClassHandler.hasKitOn(player, this) && bardEffect.getPotionEffect() != null && bardEffect.getPotionEffect().getType().equals(PotionEffectType.INCREASE_DAMAGE)) {
@@ -232,7 +223,21 @@ public class BardClass extends PvPClass implements Listener {
     }
 
     public void giveCustomBardEffect(Player player, Material material) {
-        // For now this does nothing.
+        switch (material) {
+            case WHEAT:
+                for (Player nearbyPlayer : getNearbyPlayers(player, true)) {
+                    nearbyPlayer.setFoodLevel(20);
+                    nearbyPlayer.setSaturation(10F);
+                }
+
+                break;
+            case FERMENTED_SPIDER_EYE:
+
+
+                break;
+            default:
+                Foxtrot.getInstance().getLogger().warning("No custom Bard effect defined for " + material + ".");
+        }
     }
 
     public List<Player> getNearbyPlayers(Player player, boolean friendly) {

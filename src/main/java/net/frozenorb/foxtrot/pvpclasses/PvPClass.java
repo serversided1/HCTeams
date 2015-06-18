@@ -93,6 +93,7 @@ public abstract class PvPClass implements Listener {
             break;
         }
 
+        // CUSTOM
         if (potionEffect.getType().equals(PotionEffectType.SPEED) && persistOldValues) {
             for (final PotionEffect activePotionEffect : player.getActivePotionEffects()) {
                 if (!activePotionEffect.getType().equals(potionEffect.getType())) {
