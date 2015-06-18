@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.events.*;
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -148,6 +149,18 @@ public class KOTH {
             if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasMetadata("invisible")) {
                 resetCapTime();
             } else {
+                if (remainingCapTime % 60 == 0 && remainingCapTime > 1 && !isHidden()) {
+                    Team team = Foxtrot.getInstance().getTeamHandler().getTeam(capper);
+
+                    if (team != null) {
+                        for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                            if (team.isMember(player.getUniqueId()) && capper != player) {
+                                player.sendMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Your team is controlling " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
+                            }
+                        }
+                    }
+                }
+
                 if (remainingCapTime % 10 == 0 && remainingCapTime > 1 && !isHidden()) {
                     capper.sendMessage(ChatColor.GOLD + "[KingOfTheHill]" + ChatColor.YELLOW + " Attempting to control " + ChatColor.BLUE + getName() + ChatColor.YELLOW + ".");
                 }
