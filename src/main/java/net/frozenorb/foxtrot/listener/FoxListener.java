@@ -34,10 +34,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -81,6 +78,20 @@ public class FoxListener implements Listener {
         FIRST_SPAWN_BOOK.setItemMeta(bookMeta);
 
         FIRST_SPAWN_FISHING_ROD.addEnchantment(Enchantment.LURE, 2);
+    }
+
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || event.getBucket() != Material.LAVA_BUCKET) {
+            return;
+        }
+
+        Team teamAt = LandBoard.getInstance().getTeam(event.getBlockClicked().getRelative(event.getBlockFace()).getLocation());
+
+        if (teamAt == null) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place lava in the wilderness!");
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
