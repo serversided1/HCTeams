@@ -54,8 +54,12 @@ public class AntiGlitchListener implements Listener {
         final Player player = (Player) event.getExited();
         Location location = player.getLocation();
 
-        if (event.getVehicle().getLocation().add(0, 1, 0).getBlock().getType().isSolid()) {
-            location = player.getLocation().subtract(0, 1, 0);
+        while (location.getBlock().getType().isSolid()) {
+            location.add(0, 1, 0);
+        }
+
+        while (location.getBlock().getType().isSolid()) {
+            location.subtract(0, 1, 0);
         }
 
         final Location locationFinal = location;
