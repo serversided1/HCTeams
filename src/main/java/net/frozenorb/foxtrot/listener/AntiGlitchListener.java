@@ -39,29 +39,4 @@ public class AntiGlitchListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onProjectileLaunch(final ProjectileLaunchEvent event) {
-        if (event.getEntity() instanceof EnderPearl) {
-            new BukkitRunnable() {
-
-                public void run() {
-                    if (!event.getEntity().isValid()) {
-                        cancel();
-                        return;
-                    }
-
-                    int chunkX = event.getEntity().getLocation().getBlockX() >> 4;
-                    int chunkZ = event.getEntity().getLocation().getBlockZ() >> 4;
-
-                    //TODO: Make this async...
-                    ((CraftWorld) event.getEntity().getWorld()).getChunkAt(chunkX + 1, chunkZ);
-                    ((CraftWorld) event.getEntity().getWorld()).getChunkAt(chunkX - 1, chunkZ);
-                    ((CraftWorld) event.getEntity().getWorld()).getChunkAt(chunkX, chunkZ + 1);
-                    ((CraftWorld) event.getEntity().getWorld()).getChunkAt(chunkX, chunkZ - 1);
-                }
-
-            }.runTaskTimer(Foxtrot.getInstance(), 10L, 10L);
-        }
-    }
-
 }
