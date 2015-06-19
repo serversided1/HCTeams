@@ -1,17 +1,23 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_7_R4.CraftWorld;
-import org.bukkit.entity.EnderPearl;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class AntiGlitchListener implements Listener {
@@ -37,6 +43,30 @@ public class AntiGlitchListener implements Listener {
                 event.setCancelled(true);
             }
         }
+    }
+
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onVehicleExit(VehicleExitEvent event) {
+        if (!(event.getExited() instanceof Player)) {
+            return;
+        }
+
+        final Player player = (Player) event.getExited();
+        Location location = player.getLocation();
+
+        if (event.getVehicle().getLocation().add(0, 1, 0).getBlock().getType().isSolid()) {
+            location = player.getLocation().subtract(0, 1, 0);
+        }
+
+        final Location locationFinal = location;
+
+        new BukkitRunnable() {
+
+            public void run () {
+                player.teleport(locationFinal);
+            }
+
+        }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
 
 }
