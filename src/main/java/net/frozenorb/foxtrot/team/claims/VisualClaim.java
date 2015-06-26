@@ -693,6 +693,8 @@ public class VisualClaim implements Listener {
         }
 
         claim.setLocations(location, furthestCorner);
+        claim.setY1(0);
+        claim.setY2(256);
     }
 
     @EventHandler

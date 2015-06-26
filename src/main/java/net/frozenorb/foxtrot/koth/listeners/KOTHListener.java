@@ -215,8 +215,8 @@ public class KOTHListener implements Listener {
                     Team knockerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(knockerPlayer);
 
                     if (knockerTeam != null) {
-                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " was knocked by " + ChatColor.BLUE + knockerTeam.getName() + ChatColor.GOLD + ".");
-                        return;
+                        //Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " was knocked by " + ChatColor.BLUE + knockerTeam.getName() + ChatColor.GOLD + ".");
+                        //return;
                     }
                 }
             }
