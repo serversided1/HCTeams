@@ -58,7 +58,7 @@ public class FoxtrotScoreboardConfiguration {
 
                     @Override
                     public String getValue(Player player) {
-                        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+                        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                             int secondsRemaining = Foxtrot.getInstance().getPvPTimerMap().getSecondsRemaining(player.getUniqueId());
 
                             if (secondsRemaining >= 0) {

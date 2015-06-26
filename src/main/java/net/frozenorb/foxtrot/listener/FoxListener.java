@@ -108,7 +108,7 @@ public class FoxListener implements Listener {
 
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
             Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
         }
 
@@ -120,13 +120,6 @@ public class FoxListener implements Listener {
         if (!from.equals(to)) {
             if (!to.getRegionType().getMoveHandler().handleMove(event)) {
                 return;
-            }
-
-            // PVP Timer
-            if (from.getRegionType() == RegionType.SPAWN) {
-                if (Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(event.getPlayer().getUniqueId())) {
-                    Foxtrot.getInstance().getPvPTimerMap().createActiveTimer(event.getPlayer().getUniqueId(), 30 * 60); // 30 minutes
-                }
             }
 
             boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
@@ -167,7 +160,7 @@ public class FoxListener implements Listener {
         Foxtrot.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getUniqueId());
 
         if (!event.getPlayer().hasPlayedBefore()) {
-            Foxtrot.getInstance().getPvPTimerMap().createPendingTimer(event.getPlayer().getUniqueId());
+            Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
 
@@ -175,10 +168,6 @@ public class FoxListener implements Listener {
             event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
 
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
-        }
-
-        if (Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(event.getPlayer().getUniqueId())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You have still not activated your 30 minute PVP timer! Walk out of spawn to activate it!");
         }
     }
 
@@ -209,7 +198,7 @@ public class FoxListener implements Listener {
                         Potion pot = Potion.fromItemStack(i);
 
                         if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
-                            if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+                            if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                                 player.sendMessage(ChatColor.RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
                                 event.setCancelled(true);

@@ -293,7 +293,7 @@ public class ServerHandler {
 
             if (inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 // Remove their PvP timer.
-                if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(player.getUniqueId())) {
+                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                     Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                 }
 
@@ -331,7 +331,7 @@ public class ServerHandler {
 
                 if (time == 0) {
                     // Remove their PvP timer.
-                    if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId()) || Foxtrot.getInstance().getPvPTimerMap().hasPendingTimer(player.getUniqueId())) {
+                    if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 

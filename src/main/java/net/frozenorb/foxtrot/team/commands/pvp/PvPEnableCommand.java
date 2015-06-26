@@ -9,7 +9,7 @@ public class PvPEnableCommand {
 
     @Command(names={ "pvptimer enable", "timer enable", "pvp enable", "pvptimer remove", "timer remove", "pvp remove" }, permissionNode="")
     public static void pvpEnable(Player sender) {
-        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(sender.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
             Foxtrot.getInstance().getPvPTimerMap().removeTimer(sender.getUniqueId());
             sender.sendMessage(ChatColor.RED + "Your PVP Timer has been removed!");
         } else {

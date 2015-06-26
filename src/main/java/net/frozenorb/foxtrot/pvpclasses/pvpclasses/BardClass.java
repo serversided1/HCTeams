@@ -77,7 +77,7 @@ public class BardClass extends PvPClass implements Listener {
 
             public void run() {
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                    if (!PvPClassHandler.hasKitOn(player, BardClass.this) || Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+                    if (!PvPClassHandler.hasKitOn(player, BardClass.this) || Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         continue;
                     }
 
@@ -108,7 +108,7 @@ public class BardClass extends PvPClass implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1), true);
         player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0), true);
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(player.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
         }
     }
@@ -162,7 +162,7 @@ public class BardClass extends PvPClass implements Listener {
             return;
         }
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(event.getPlayer().getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.RED + "You are in PvP Protection and cannot use Bard effects. Type '/pvp enable' to remove your protection.");
             return;
         }
@@ -249,7 +249,7 @@ public class BardClass extends PvPClass implements Listener {
             if (entity instanceof Player) {
                 Player nearbyPlayer = (Player) entity;
 
-                if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(nearbyPlayer.getUniqueId())) {
+                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(nearbyPlayer.getUniqueId())) {
                     continue;
                 }
 

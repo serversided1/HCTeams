@@ -10,7 +10,7 @@ public class PvPTimeCommand {
 
     @Command(names={ "pvptimer time", "timer time", "pvp time" }, permissionNode="")
     public static void pvpTime(Player sender) {
-        if (Foxtrot.getInstance().getPvPTimerMap().hasActiveTimer(sender.getUniqueId())) {
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You have " + TimeUtils.formatIntoMMSS(Foxtrot.getInstance().getPvPTimerMap().getSecondsRemaining(sender.getUniqueId())) + " left on your PVP Timer.");
         } else {
             sender.sendMessage(ChatColor.RED + "You do not have a PVP Timer on!");
