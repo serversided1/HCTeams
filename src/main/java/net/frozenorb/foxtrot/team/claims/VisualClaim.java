@@ -508,6 +508,8 @@ public class VisualClaim implements Listener {
 
             LandBoard.getInstance().setTeamAt(resizing, null);
             LandBoard.getInstance().setTeamAt(newClaim, playerTeam);
+            playerTeam.getClaims().remove(resizing);
+            playerTeam.getClaims().add(newClaim);
             playerTeam.flagForSave();
 
             player.sendMessage(ChatColor.YELLOW + "You have resized this land!");
