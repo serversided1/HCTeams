@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.server.RegionData;
-import net.frozenorb.foxtrot.server.RegionType;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;

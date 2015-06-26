@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard;
 
 import lombok.Getter;
-import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.HashMap;

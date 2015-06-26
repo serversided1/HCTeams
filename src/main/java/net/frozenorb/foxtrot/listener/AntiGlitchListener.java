@@ -1,15 +1,9 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
