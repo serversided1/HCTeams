@@ -41,9 +41,7 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer().isOp()) {
-            Foxtrot.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
-        }
+        Foxtrot.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
     }
 
 }
