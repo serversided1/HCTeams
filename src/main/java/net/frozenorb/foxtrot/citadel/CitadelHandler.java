@@ -167,13 +167,19 @@ public class CitadelHandler {
         }
     }
 
-    public void respawnCitadelChests() {
+    public int respawnCitadelChests() {
+        int respawned = 0;
+
         for (Location chest : citadelChests) {
-            respawnCitadelChest(chest);
+            if (respawnCitadelChest(chest)) {
+                respawned++;
+            }
         }
+
+        return (respawned);
     }
 
-    public void respawnCitadelChest(Location location) {
+    public boolean respawnCitadelChest(Location location) {
         BlockState blockState = location.getBlock().getState();
 
         if (blockState instanceof Chest) {
@@ -181,8 +187,10 @@ public class CitadelHandler {
 
             chest.getBlockInventory().clear();
             chest.getBlockInventory().addItem(citadelLoot.get(qLib.RANDOM.nextInt(citadelLoot.size())));
+            return (true);
         } else {
             Foxtrot.getInstance().getLogger().warning("Citadel chest defined at [" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + "] isn't a chest!");
+            return (false);
         }
     }
 

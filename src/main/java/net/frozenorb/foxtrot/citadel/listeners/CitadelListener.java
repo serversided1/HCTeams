@@ -62,15 +62,11 @@ public class CitadelListener implements Listener {
     public void onHour(HourEvent event) {
         // Every other hour
         if (event.getHour() % 2 == 0) {
-            new BukkitRunnable() {
+            int respawned = Foxtrot.getInstance().getCitadelHandler().respawnCitadelChests();
 
-                public void run() {
-                    Foxtrot.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
-                }
-
-            }.runTaskAsynchronously(Foxtrot.getInstance());
-
-            Foxtrot.getInstance().getCitadelHandler().respawnCitadelChests();
+            if (respawned != 0) {
+                Foxtrot.getInstance().getServer().broadcastMessage(CitadelHandler.PREFIX + " " + ChatColor.GREEN + "Citadel loot chests have respawned!");
+            }
         }
     }
 
