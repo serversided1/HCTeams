@@ -69,13 +69,12 @@ public class FoxListener implements Listener {
         bookMeta.setTitle(ChatColor.GOLD + "Welcome to HCTeams");
         bookMeta.setPages(
 
-                        ChatColor.BLUE + "Welcome to the HCTeams!"
+                        ChatColor.BLUE + "Welcome to HCTeams!"
 
         );
         bookMeta.setAuthor("MineHQ");
 
         FIRST_SPAWN_BOOK.setItemMeta(bookMeta);
-
         FIRST_SPAWN_FISHING_ROD.addEnchantment(Enchantment.LURE, 2);
     }
 
