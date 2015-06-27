@@ -110,32 +110,53 @@ public class InventoryUtils {
     }
 
     public static ItemStack addKill(ItemStack item, String key) {
-        addToPart(item, "", key, 3);
+        int killsIndex = 1;
+        int[] lastKills = { 3, 4, 5 };
+        int currentKills = 1;
         ItemMeta meta = item.getItemMeta();
+        List<String> lore = new ArrayList<>();
 
-        if (!meta.hasLore()) {
-            meta.setLore(new ArrayList<String>());
-        }
+        if (meta.hasLore()) {
+            lore = meta.getLore();
 
-        List<String> lore = meta.getLore();
-        boolean updatedExisting = false;
+            if (meta.getLore().size() > killsIndex) {
+                String killStr = lore.get(killsIndex);
+                currentKills += Integer.parseInt(ChatColor.stripColor(killStr.split(":")[1]).trim());
+            }
 
-        for (String loreLine : new ArrayList<>(lore)) {
-            if (loreLine.startsWith(KILLS_LORE_IDENTIFIER)) {
-                int kills = Integer.parseInt(loreLine.replace(KILLS_LORE_IDENTIFIER, ""));
+            for (int j : lastKills) {
+                if (j == lastKills[lastKills.length - 1]) {
+                    continue;
+                }
+                if (lore.size() > j) {
+                    String atJ = meta.getLore().get(j);
 
-                lore.remove(loreLine);
-                lore.add(KILLS_LORE_IDENTIFIER + (kills + 1));
+                    if (lore.size() <= j + 1) {
+                        lore.add(null);
+                    }
 
-                updatedExisting = true;
-                break;
+                    lore.set(j + 1, atJ);
+                }
+
             }
         }
 
-        if (!updatedExisting) {
-            lore.add(0, KILLS_LORE_IDENTIFIER + 1);
+        if (lore.size() <= killsIndex) {
+            for (int i = lore.size(); i <= killsIndex + 1; i++) {
+                lore.add("");
+            }
+        }
+        lore.set(killsIndex, "§6§lKills:§f " + currentKills);
+
+        int firsKill = lastKills[0];
+
+        if (lore.size() <= firsKill) {
+            for (int i = lore.size(); i <= firsKill + 1; i++) {
+                lore.add("");
+            }
         }
 
+        lore.set(firsKill, key);
         meta.setLore(lore);
         item.setItemMeta(meta);
         return (item);
