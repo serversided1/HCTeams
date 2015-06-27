@@ -16,7 +16,7 @@ import java.util.Map;
 public class InventoryUtils {
 
     public static final SimpleDateFormat DEATH_TIME_FORMAT = new SimpleDateFormat("MM.dd.yy HH:mm");
-    public static final String KILLS_LORE_IDENTIFIER = ChatColor.GOLD + "Kills: " + ChatColor.WHITE;
+    public static final String KILLS_LORE_IDENTIFIER = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills: " + ChatColor.WHITE.toString() + ChatColor.BOLD;
 
     public static final ItemStack CROWBAR;
 
@@ -110,6 +110,7 @@ public class InventoryUtils {
     }
 
     public static ItemStack addKill(ItemStack item, String key) {
+        addToPart(item, ChatColor.BLACK.toString(), key, 3);
         ItemMeta meta = item.getItemMeta();
 
         if (!meta.hasLore()) {
@@ -137,7 +138,7 @@ public class InventoryUtils {
 
         meta.setLore(lore);
         item.setItemMeta(meta);
-        return (addToPart(item, ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills:", key, 3));
+        return (item);
     }
 
     public static List<String> getCrowbarLore(int portals, int spawners) {
