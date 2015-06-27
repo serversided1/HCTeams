@@ -110,7 +110,7 @@ public class InventoryUtils {
     }
 
     public static ItemStack addKill(ItemStack item, String key) {
-        addToPart(item, ChatColor.BLACK.toString(), key, 3);
+        addToPart(item, "", key, 3);
         ItemMeta meta = item.getItemMeta();
 
         if (!meta.hasLore()) {
