@@ -238,7 +238,10 @@ public class CombatLoggerListener implements Listener {
                     continue;
                 }
 
-                if (Foxtrot.getInstance().getTeamHandler().getTeam(other) != Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer())) {
+                Team otherTeam = Foxtrot.getInstance().getTeamHandler().getTeam(other);
+                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+
+                if (otherTeam != playerTeam || playerTeam == null) {
                     spawnCombatLogger = true;
                     break;
                 }
