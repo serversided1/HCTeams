@@ -806,7 +806,7 @@ public class Team {
 
         FancyMessage teamLine = new FancyMessage();
 
-        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/team/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!").then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!").then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
         teamLine.send(player);
 
         if (allies.length() > 2) {
