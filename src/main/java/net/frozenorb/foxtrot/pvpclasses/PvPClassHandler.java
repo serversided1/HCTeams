@@ -92,6 +92,10 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         }
     }
 
+    public PvPClass getPvPClass(Player player) {
+        return (equippedKits.containsKey(player.getName()) ? equippedKits.get(player.getName()) : null);
+    }
+
     public static boolean hasKitOn(Player player, PvPClass pvpClass) {
         return (equippedKits.containsKey(player.getName()) && equippedKits.get(player.getName()) == pvpClass);
     }

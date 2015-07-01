@@ -34,4 +34,8 @@ public class FirstJoinMap extends PersistMap<Long> {
         return (contains(check) ? getValue(check) : 0L);
     }
 
+    public int getAllPlayersSize() {
+        return (wrappedMap.size());
+    }
+
 }

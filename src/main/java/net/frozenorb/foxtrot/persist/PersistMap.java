@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class PersistMap<T> {
 
-    private Map<UUID, T> wrappedMap = new ConcurrentHashMap<>();
+    protected Map<UUID, T> wrappedMap = new ConcurrentHashMap<>();
 
     private String keyPrefix;
     private String mongoName;

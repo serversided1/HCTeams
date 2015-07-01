@@ -3,8 +3,7 @@ package net.frozenorb.foxtrot.persist.maps;
 import net.frozenorb.foxtrot.persist.PersistMap;
 import net.frozenorb.foxtrot.queue.PlayerInfoPacket;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 public class DeathbanMap extends PersistMap<Long> {
 
@@ -50,6 +49,18 @@ public class DeathbanMap extends PersistMap<Long> {
 
     public void wipeDeathbans() {
         wipeValues();
+    }
+
+    public Collection<UUID> getDeathbannedPlayers() {
+        Collection<UUID> deathbannedPlayers = new HashSet<>();
+
+        for (Map.Entry<UUID, Long> entry : wrappedMap.entrySet()) {
+            if (isDeathbanned(entry.getKey())) {
+                deathbannedPlayers.add(entry.getKey());
+            }
+        }
+
+        return (deathbannedPlayers);
     }
 
 }

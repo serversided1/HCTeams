@@ -8,6 +8,7 @@ import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
+import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
@@ -170,6 +171,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
+        getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
     }
 
     private void setupPersistence() {
