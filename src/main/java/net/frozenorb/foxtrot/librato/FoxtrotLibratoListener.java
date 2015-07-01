@@ -65,8 +65,8 @@ Players in nether, players in end
 
         event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
         event.getBatch().addGaugeMeasurement("teams.count", teamCount);
-        event.getBatch().addGaugeMeasurement("teams.averageSize", totalPlayersInTeams / teamCount);
-        event.getBatch().addGaugeMeasurement("teams.averageBalance", totalTeamBalance / teamCount);
+        event.getBatch().addGaugeMeasurement("teams.averageSize", teamCount == 0 ? 0 : (totalPlayersInTeams / teamCount));
+        event.getBatch().addGaugeMeasurement("teams.averageBalance", teamCount == 0 ? 0 : (totalTeamBalance / teamCount));
         event.getBatch().addGaugeMeasurement("pvpclasses.archer.active", archerActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.bard.active", bardActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.miner.active", minerActive);
