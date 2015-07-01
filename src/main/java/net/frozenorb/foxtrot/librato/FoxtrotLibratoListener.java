@@ -15,14 +15,9 @@ import org.bukkit.event.Listener;
 
 public class FoxtrotLibratoListener implements Listener {
 
-    /*
-Players in nether, players in end
-     */
-
     @EventHandler
     public void onLibratoPost(LibratoPostEvent event) {
         int totalPlayersInTeams = 0;
-        double totalTeamBalance = 0;
         int teamCount = 0;
         int archerActive = 0;
         int bardActive = 0;
@@ -34,7 +29,6 @@ Players in nether, players in end
         for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             teamCount++;
             totalPlayersInTeams += team.getSize();
-            totalTeamBalance += team.getBalance();
         }
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
@@ -66,7 +60,6 @@ Players in nether, players in end
         event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
         event.getBatch().addGaugeMeasurement("teams.count", teamCount);
         event.getBatch().addGaugeMeasurement("teams.averageSize", teamCount == 0 ? 0 : (totalPlayersInTeams / teamCount));
-        event.getBatch().addGaugeMeasurement("teams.averageBalance", teamCount == 0 ? 0 : (totalTeamBalance / teamCount));
         event.getBatch().addGaugeMeasurement("pvpclasses.archer.active", archerActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.bard.active", bardActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.miner.active", minerActive);
