@@ -11,11 +11,13 @@ import net.frozenorb.qlib.librato.LibratoPostEvent;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_7_R4.CraftChunk;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.TimeUnit;
 
 public class FoxtrotLibratoListener implements Listener {
 
@@ -29,6 +31,7 @@ public class FoxtrotLibratoListener implements Listener {
         int spawnTagged = 0;
         int inNether = 0;
         int inEnd = 0;
+        int afkPlayers = 0;
 
         for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             teamCount++;
@@ -50,6 +53,10 @@ public class FoxtrotLibratoListener implements Listener {
 
             if (SpawnTagHandler.isTagged(player)) {
                 spawnTagged++;
+            }
+
+            if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
+                afkPlayers++;
             }
 
             World.Environment world = player.getWorld().getEnvironment();
@@ -96,6 +103,7 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("players.spawnTagged", spawnTagged);
         event.getBatch().addGaugeMeasurement("players.inNether", inNether);
         event.getBatch().addGaugeMeasurement("players.inEnd", inEnd);
+        event.getBatch().addGaugeMeasurement("players.afk", afkPlayers);
     }
 
 }
