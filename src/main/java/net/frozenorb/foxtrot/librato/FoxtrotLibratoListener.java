@@ -8,10 +8,14 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
+import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_7_R4.CraftChunk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.lang.reflect.Field;
 
 public class FoxtrotLibratoListener implements Listener {
 
@@ -55,6 +59,31 @@ public class FoxtrotLibratoListener implements Listener {
             } else if (world == World.Environment.THE_END) {
                 inEnd++;
             }
+        }
+
+        for (World world : Foxtrot.getInstance().getServer().getWorlds()) {
+            int totalChunks = 0;
+            int activeChunks = 0;
+
+            try {
+                Field sleepingField = net.minecraft.server.v1_7_R4.Chunk.class.getField("sleeping");
+
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    net.minecraft.server.v1_7_R4.Chunk nmsChunk = ((CraftChunk) chunk).getHandle();
+                    boolean sleeping = (Boolean) sleepingField.get(nmsChunk);
+
+                    if (!sleeping) {
+                        activeChunks++;
+                    }
+
+                    totalChunks++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.total", totalChunks);
+            event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.active", activeChunks);
         }
 
         event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
