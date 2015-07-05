@@ -15,6 +15,7 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -98,6 +99,8 @@ public class FoxListener implements Listener {
             return;
         }
 
+        long start = System.currentTimeMillis();
+
         if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
             Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
             ServerHandler.getTasks().remove(event.getPlayer().getName());
@@ -142,6 +145,8 @@ public class FoxListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now leaving: " + from.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (fromReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
         }
+
+        Bukkit.broadcastMessage("move event took " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @EventHandler
