@@ -30,9 +30,11 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.JedisPool;
 
 public class Foxtrot extends JavaPlugin {
@@ -106,6 +108,16 @@ public class Foxtrot extends JavaPlugin {
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new GlintPacketAdapter());
+
+        new BukkitRunnable() {
+
+            public void run() {
+                if (MinecraftServer.getServer().lastTickTime >= 50F) {
+                    getLogger().severe("Tick time too long: " + MinecraftServer.getServer().lastTickTime + ", Tick Id: " + MinecraftServer.currentTick + ", Index: " + MinecraftServer.currentTick % 20);
+                }
+            }
+
+        }.runTaskTimer(this, 1L, 1L);
     }
 
     @Override
