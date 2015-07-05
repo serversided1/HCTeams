@@ -146,7 +146,9 @@ public class FoxListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
         }
 
-        Bukkit.broadcastMessage("move event took " + (System.currentTimeMillis() - start) + "ms");
+        if (event.getPlayer().isOp() && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() == Material.SPONGE) {
+            Foxtrot.getInstance().getLogger().warning("move event took " + (System.currentTimeMillis() - start) + "ms");
+        }
     }
 
     @EventHandler
