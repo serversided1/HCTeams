@@ -99,8 +99,6 @@ public class FoxListener implements Listener {
             return;
         }
 
-        long start = System.currentTimeMillis();
-
         if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
             Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()));
             ServerHandler.getTasks().remove(event.getPlayer().getName());
@@ -144,10 +142,6 @@ public class FoxListener implements Listener {
 
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now leaving: " + from.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (fromReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
             event.getPlayer().sendMessage(ChatColor.YELLOW + "Now entering: " + to.getName(event.getPlayer()) + ChatColor.YELLOW + "(" + (toReduceDeathban ? ChatColor.GREEN + "Non-Deathban" : ChatColor.RED + "Deathban") + ChatColor.YELLOW + ")");
-        }
-
-        if (event.getPlayer().isOp() && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() == Material.SPONGE) {
-            Foxtrot.getInstance().getLogger().warning("move event took " + (System.currentTimeMillis() - start) + "ms");
         }
     }
 
