@@ -248,11 +248,23 @@ public class TeamListener implements Listener {
     // Used for item frames
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player) || event.getEntity().getType() != EntityType.ITEM_FRAME || Foxtrot.getInstance().getServerHandler().isAdminOverride((Player) event.getDamager())) {
+        if (event.getEntity().getType() != EntityType.ITEM_FRAME) {
             return;
         }
 
-        if (Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
+        Player damager = null;
+
+        if (event.getDamager() instanceof Player) {
+            damager = (Player) event.getDamager();
+        } else if (event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+
+            if (projectile.getShooter() instanceof Player) {
+                damager = (Player) projectile.getShooter();
+            }
+        }
+
+        if (damager == null || Foxtrot.getInstance().getServerHandler().isAdminOverride(damager) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getEntity().getLocation())) {
             return;
         }
 
