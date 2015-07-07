@@ -108,16 +108,6 @@ public class Foxtrot extends JavaPlugin {
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new GlintPacketAdapter());
-
-        new BukkitRunnable() {
-
-            public void run() {
-                if (MinecraftServer.getServer().lastTickTime >= 50F) {
-                    getLogger().severe("Tick time too long: " + MinecraftServer.getServer().lastTickTime + ", Tick Id: " + MinecraftServer.currentTick + ", Index: " + MinecraftServer.currentTick % 20);
-                }
-            }
-
-        }.runTaskTimer(this, 1L, 1L);
     }
 
     @Override
