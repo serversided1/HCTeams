@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.librato;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
@@ -23,6 +24,7 @@ public class FoxtrotLibratoListener implements Listener {
 
     @EventHandler
     public void onLibratoPost(LibratoPostEvent event) {
+        int kothsActive = 0;
         int totalPlayersInTeams = 0;
         int teamCount = 0;
         int archerActive = 0;
@@ -32,6 +34,12 @@ public class FoxtrotLibratoListener implements Listener {
         int inNether = 0;
         int inEnd = 0;
         int afkPlayers = 0;
+
+        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+            if (koth.isActive()) {
+                kothsActive++;
+            }
+        }
 
         for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
             teamCount++;
@@ -93,6 +101,7 @@ public class FoxtrotLibratoListener implements Listener {
             event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.active", activeChunks);
         }
 
+        event.getBatch().addGaugeMeasurement("koths.active", kothsActive);
         event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
         event.getBatch().addGaugeMeasurement("teams.count", teamCount);
         event.getBatch().addGaugeMeasurement("teams.averageSize", teamCount == 0 ? 0 : (totalPlayersInTeams / teamCount));
