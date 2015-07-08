@@ -75,7 +75,7 @@ public class FoxtrotLibratoListener implements Listener {
             try {
                 Field sleepingField = net.minecraft.server.v1_7_R4.Chunk.class.getField("sleeping");
 
-                for (Chunk chunk : world.getLoadedChunks()) {
+                for (Chunk chunk : world.getLoadedChunks().clone()) {
                     net.minecraft.server.v1_7_R4.Chunk nmsChunk = ((CraftChunk) chunk).getHandle();
                     boolean sleeping = (Boolean) sleepingField.get(nmsChunk);
 
