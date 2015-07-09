@@ -34,6 +34,7 @@ public class FoxtrotLibratoListener implements Listener {
         int inNether = 0;
         int inEnd = 0;
         int afkPlayers = 0;
+        int staffOnline = 0;
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive()) {
@@ -74,6 +75,10 @@ public class FoxtrotLibratoListener implements Listener {
             } else if (world == World.Environment.THE_END) {
                 inEnd++;
             }
+
+            if (player.hasPermission("basic.staff")) {
+                staffOnline++;
+            }
         }
 
         for (World world : Foxtrot.getInstance().getServer().getWorlds()) {
@@ -113,6 +118,7 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("players.inNether", inNether);
         event.getBatch().addGaugeMeasurement("players.inEnd", inEnd);
         event.getBatch().addGaugeMeasurement("players.afk", afkPlayers);
+        event.getBatch().addGaugeMeasurement("players.staff", staffOnline);
     }
 
 }
