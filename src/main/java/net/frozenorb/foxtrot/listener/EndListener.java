@@ -207,9 +207,9 @@ public class EndListener implements Listener {
                 }
             }
 
-            // Remove all potion effects with less than 8s remaining
+            // Remove all potion effects with less than 9s remaining
             for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
-                if (potionEffect.getDuration() < 20 * 8) {
+                if (potionEffect.getDuration() < 20 * 9) {
                     event.getPlayer().removePotionEffect(potionEffect.getType());
                 }
             }
