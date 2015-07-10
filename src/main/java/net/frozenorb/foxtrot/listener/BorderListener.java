@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -89,13 +90,24 @@ public class BorderListener implements Listener {
                 }
 
                 Location newLocation = event.getTo().clone();
+                int tries = 0;
 
-                while (Math.abs(newLocation.getX()) > BORDER_SIZE) {
+                while (Math.abs(newLocation.getX()) > BORDER_SIZE && tries++ < 100) {
                     newLocation.setX(newLocation.getX() - (newLocation.getX() > 0 ? 1 : -1));
                 }
 
-                while (Math.abs(newLocation.getZ()) > BORDER_SIZE) {
+                if (tries >= 99) {
+                    Foxtrot.getInstance().getLogger().severe("The server would have crashed while doing border checks! New X: " + newLocation.getX() + ", Old X: " + event.getTo().getBlockX());
+                }
+
+                tries = 0;
+
+                while (Math.abs(newLocation.getZ()) > BORDER_SIZE && tries++ < 100) {
                     newLocation.setZ(newLocation.getZ() - (newLocation.getZ() > 0 ? 1 : -1));
+                }
+
+                if (tries >= 99) {
+                    Foxtrot.getInstance().getLogger().severe("The server would have crashed while doing border checks! New Z: " + newLocation.getZ() + ", Old Z: " + event.getTo().getBlockZ());
                 }
 
                 while (newLocation.getBlock().getType() != Material.AIR) {
