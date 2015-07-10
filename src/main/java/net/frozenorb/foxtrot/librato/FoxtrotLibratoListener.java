@@ -80,7 +80,7 @@ public class FoxtrotLibratoListener implements Listener {
                 if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
                     continue;
                 }
-                
+
                 staffOnline++;
             }
         }
