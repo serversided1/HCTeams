@@ -65,17 +65,6 @@ public class MapListener implements Listener {
         event.setDroppedExp((int) Math.ceil(event.getDroppedExp() * multiplier));
     }
 
-    /*@EventHandler
-    public void onFurnace(FurnaceSmeltEvent event) {
-        if (event.getResult().getType() == Material.GOLD_INGOT || event.getResult().getType() == Material.IRON_INGOT) {
-            ItemStack result = event.getResult();
-
-            result.setAmount(result.getAmount() * 3);
-
-            event.setResult(result);
-        }
-    }*/
-
     @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true) // This is actually 'Lowest', but Bukkit calls listeners LOWEST -> HIGHEST, so HIGHEST is what's actually called last. #BukkitBeLike
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getPlayer().getItemInHand() == null || !event.getPlayer().getItemInHand().getType().name().contains("PICKAXE") || event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH)) {
