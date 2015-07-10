@@ -17,27 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class MapListener implements Listener {
 
-    private void startUpdate(final Furnace tile, final int increase) {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if (tile.getCookTime() > 0 || tile.getBurnTime() > 0) {
-                    tile.setCookTime((short) (tile.getCookTime() + increase));
-                    tile.update();
-                } else {
-                    cancel();
-                }
-            }
-
-        }.runTaskTimer(Foxtrot.getInstance(), 1L, 1L);
-    }
-
-    @EventHandler
-    public void onFurnaceBurn(FurnaceBurnEvent event) {
-        startUpdate((Furnace) event.getBlock().getState(), qLib.RANDOM.nextBoolean() ? 1 : 2); // Averages to 1.5
-    }
-
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         double multiplier = Foxtrot.getInstance().getMapHandler().getBaseLootingMultiplier();
