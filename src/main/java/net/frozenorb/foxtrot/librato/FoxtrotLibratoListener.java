@@ -77,6 +77,10 @@ public class FoxtrotLibratoListener implements Listener {
             }
 
             if (player.hasPermission("basic.staff")) {
+                if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
+                    continue;
+                }
+                
                 staffOnline++;
             }
         }
