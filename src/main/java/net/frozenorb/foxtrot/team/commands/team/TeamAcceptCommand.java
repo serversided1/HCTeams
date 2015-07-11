@@ -31,7 +31,7 @@ public class TeamAcceptCommand {
             }
 
             if (team.getMembers().size() >= 15 && Foxtrot.getInstance().getTeamHandler().isRostersLocked()) {
-                sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team rosters are locked server-wise!");
+                sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team rosters are locked server-wide!");
                 return;
             }
 
