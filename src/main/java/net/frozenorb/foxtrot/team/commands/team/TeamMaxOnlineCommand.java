@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 public class TeamMaxOnlineCommand {
 
     @Command(names={ "team maxOnline" }, permissionNode="op")
-    public static void teamMaxOnline(Player sender, @Parameter(name="team") Team team, @Parameter(name="max online", defaultValue="-1") int maxOnline) {
-        if (maxOnline == -1) {
+    public static void teamMaxOnline(Player sender, @Parameter(name="team") Team team, @Parameter(name="max online", defaultValue="-5") int maxOnline) {
+        if (maxOnline == -5) {
             if (team.getMaxOnline() == -1) {
                 sender.sendMessage(team.getName(sender) + ChatColor.YELLOW + "'s player limit is " + ChatColor.GREEN + "not set" + ChatColor.YELLOW + ".");
             } else {
