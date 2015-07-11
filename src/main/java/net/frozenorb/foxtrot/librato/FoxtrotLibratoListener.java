@@ -35,6 +35,7 @@ public class FoxtrotLibratoListener implements Listener {
         int inEnd = 0;
         int afkPlayers = 0;
         int staffOnline = 0;
+        int afkStaffOnline = 0;
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive()) {
@@ -78,6 +79,7 @@ public class FoxtrotLibratoListener implements Listener {
 
             if (player.hasPermission("basic.staff")) {
                 if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
+                    afkStaffOnline++;
                     continue;
                 }
 
@@ -123,6 +125,7 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("players.inEnd", inEnd);
         event.getBatch().addGaugeMeasurement("players.afk", afkPlayers);
         event.getBatch().addGaugeMeasurement("players.staff", staffOnline);
+        event.getBatch().addGaugeMeasurement("players.staff.afk", afkStaffOnline);
     }
 
 }
