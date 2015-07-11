@@ -67,6 +67,7 @@ public class Team {
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
     @Getter private String announcement;
+    @Getter private int maxOnline = -1;
 
     public Team(String name) {
         this.name = name;
@@ -161,6 +162,11 @@ public class Team {
 
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
         pushToMongoLog(new BasicDBObject("Type", "OwnerChanged").append("NewOwner", owner == null ? "null" : owner.toString()));
+        flagForSave();
+    }
+
+    public void setMaxOnline(int maxOnline) {
+        this.maxOnline = maxOnline;
         flagForSave();
     }
 
@@ -493,6 +499,8 @@ public class Team {
                 setDTR(Double.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("Balance")) {
                 setBalance(Double.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("MaxOnline")) {
+                setMaxOnline(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("DTRCooldown")) {
                 setDTRCooldown(Long.parseLong(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
@@ -641,6 +649,7 @@ public class Team {
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
+        teamString.append("MaxOnline:").append(getMaxOnline()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
@@ -666,6 +675,7 @@ public class Team {
         dbObject.put("DTR", getDTR());
         dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
+        dbObject.put("MaxOnline", getMaxOnline());
         dbObject.put("Name", getName());
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
         dbObject.put("Announcement", getAnnouncement());

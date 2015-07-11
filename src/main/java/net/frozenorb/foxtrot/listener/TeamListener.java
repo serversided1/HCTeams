@@ -28,6 +28,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TeamListener implements Listener {
 
     @EventHandler
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+
+        if (team != null && team.getMaxOnline() > 0 && team.getOnlineMemberAmount() >= team.getMaxOnline()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.YELLOW + "Your team currently has too many players logged in. Try again later!");
+        }
+    }
+
+    @EventHandler
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 

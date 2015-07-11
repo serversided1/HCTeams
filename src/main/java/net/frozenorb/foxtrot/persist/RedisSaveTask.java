@@ -34,6 +34,7 @@ public class RedisSaveTask extends BukkitRunnable {
                     }
                 }
 
+                redis.set("RostersLocked", String.valueOf(Foxtrot.getInstance().getTeamHandler().isRostersLocked()));
                 return (changed);
             }
 

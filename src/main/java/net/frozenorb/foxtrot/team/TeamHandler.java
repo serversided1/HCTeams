@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -23,6 +25,7 @@ public class TeamHandler {
     private Map<String, Team> teamNameMap = new ConcurrentHashMap<>(); // Team Name -> Team
     private Map<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<>(); // Team UUID -> Team
     private Map<UUID, Team> playerTeamMap = new ConcurrentHashMap<>(); // Player UUID -> Team
+    @Getter @Setter private boolean rostersLocked = false;
 
     public TeamHandler() {
         FrozenCommandHandler.registerParameterType(Team.class, new TeamType());
@@ -48,6 +51,7 @@ public class TeamHandler {
                     }
                 }
 
+                rostersLocked = Boolean.valueOf(redis.get("RostersLocked"));
                 return (null);
             }
 
