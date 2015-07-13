@@ -45,11 +45,11 @@ public class RedisSaveTask extends BukkitRunnable {
         if (teamsSaved != 0) {
             System.out.println("Saved " + teamsSaved + " teams to Redis in " + time + "ms.");
 
-            for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+            /*for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (player.isOp()) {
                     player.sendMessage(ChatColor.DARK_PURPLE + "Saved " + teamsSaved + " teams to Redis in " + time + "ms.");
                 }
-            }
+            }*/
         }
 
         return (teamsSaved);
