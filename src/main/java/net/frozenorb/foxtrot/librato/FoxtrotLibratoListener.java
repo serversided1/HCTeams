@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_7_R4.CraftChunk;
@@ -25,27 +26,17 @@ public class FoxtrotLibratoListener implements Listener {
     @EventHandler
     public void onLibratoPost(LibratoPostEvent event) {
         int kothsActive = 0;
-        int totalPlayersInTeams = 0;
-        int teamCount = 0;
         int archerActive = 0;
         int bardActive = 0;
         int minerActive = 0;
         int spawnTagged = 0;
         int inNether = 0;
         int inEnd = 0;
-        int afkPlayers = 0;
-        int staffOnline = 0;
-        int afkStaffOnline = 0;
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive()) {
                 kothsActive++;
             }
-        }
-
-        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
-            teamCount++;
-            totalPlayersInTeams += team.getSize();
         }
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
@@ -65,25 +56,12 @@ public class FoxtrotLibratoListener implements Listener {
                 spawnTagged++;
             }
 
-            if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
-                afkPlayers++;
-            }
-
             World.Environment world = player.getWorld().getEnvironment();
 
             if (world == World.Environment.NETHER) {
                 inNether++;
             } else if (world == World.Environment.THE_END) {
                 inEnd++;
-            }
-
-            if (player.hasPermission("basic.staff")) {
-                if (System.currentTimeMillis() - ((CraftPlayer) player).getHandle().x() > TimeUnit.MINUTES.toMillis(5)) {
-                    afkStaffOnline++;
-                    continue;
-                }
-
-                staffOnline++;
             }
         }
 
@@ -114,8 +92,7 @@ public class FoxtrotLibratoListener implements Listener {
 
         event.getBatch().addGaugeMeasurement("koths.active", kothsActive);
         event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
-        event.getBatch().addGaugeMeasurement("teams.count", teamCount);
-        event.getBatch().addGaugeMeasurement("teams.averageSize", teamCount == 0 ? 0 : (totalPlayersInTeams / teamCount));
+        event.getBatch().addGaugeMeasurement("teams.count", Foxtrot.getInstance().getTeamHandler().getTeams().size());
         event.getBatch().addGaugeMeasurement("pvpclasses.archer.active", archerActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.bard.active", bardActive);
         event.getBatch().addGaugeMeasurement("pvpclasses.miner.active", minerActive);
@@ -123,9 +100,8 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("players.spawnTagged", spawnTagged);
         event.getBatch().addGaugeMeasurement("players.inNether", inNether);
         event.getBatch().addGaugeMeasurement("players.inEnd", inEnd);
-        event.getBatch().addGaugeMeasurement("players.afk", afkPlayers);
-        event.getBatch().addGaugeMeasurement("players.staff", staffOnline);
-        event.getBatch().addGaugeMeasurement("players.staff.afk", afkStaffOnline);
+        event.getBatch().addGaugeMeasurement("entities", MinecraftServer.getServer().entities);
+        event.getBatch().addGaugeMeasurement("activeEntities", MinecraftServer.getServer().activeEntities);
     }
 
 }
