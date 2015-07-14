@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHumanEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -194,11 +195,15 @@ public class CombatLoggerListener implements Listener {
     }
 
     // Spawn the combat logger
-    @EventHandler
+    @EventHandler(priority=EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         // If the player safe logged out
         if (event.getPlayer().hasMetadata("loggedout")) {
             event.getPlayer().removeMetadata("loggedout", Foxtrot.getInstance());
+            return;
+        }
+
+        if (event.getPlayer().hasMetadata("invisible") || event.getPlayer().hasMetadata("modmode")) {
             return;
         }
 
