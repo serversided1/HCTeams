@@ -7,19 +7,16 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_7_R4.CraftChunk;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.TimeUnit;
 
 public class FoxtrotLibratoListener implements Listener {
 
