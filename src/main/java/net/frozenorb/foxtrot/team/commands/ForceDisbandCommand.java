@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class ForceDisbandCommand {
 
-    @Command(names={ "forcedisband" }, permissionNode="worldedit.*")
+    @Command(names={ "forcedisband" }, permissionNode="op")
     public static void forceDisband(Player sender, @Parameter(name="team") Team team) {
         team.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + sender.getName() + " has force disbanded the team.");
         team.disband();

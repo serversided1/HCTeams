@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ForceDisbandAllCommand {
 
-    @Command(names={ "forcedisbandall" }, permissionNode="worldedit.*")
+    @Command(names={ "forcedisbandall" }, permissionNode="op")
     public static void forceDisbandAll(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
