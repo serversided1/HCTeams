@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.koth.commands.koth;
 
-import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
@@ -11,13 +10,6 @@ public class KOTHActivateCommand {
 
     @Command(names={ "KOTH Activate", "KOTH Active" }, permissionNode="foxtrot.koth")
     public static void kothActivate(Player sender, @Parameter(name="koth") KOTH koth) {
-        for (KOTH activeKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (activeKoth.isActive() && !activeKoth.isHidden()) {
-                sender.sendMessage(ChatColor.RED + "Another KOTH (" + activeKoth.getName() + ") is already active.");
-                return;
-            }
-        }
-
         koth.activate();
         sender.sendMessage(ChatColor.GRAY + "Activated " + koth.getName() + ".");
     }
