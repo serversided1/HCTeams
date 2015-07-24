@@ -75,10 +75,10 @@ public class FoxtrotScoreGetter implements ScoreGetter {
 
         if (!scores.isEmpty()) {
             // 'Top' and bottom.
-            scores.add(0, "&7&m--------------------");
-            scores.add("&7&m--------------------");
+            scores.add(0, "&a&7&m--------------------");
+            scores.add("&b&7&m--------------------");
         }
-        
+
         return (scores.toArray(new String[scores.size()]));
     }
 
