@@ -14,7 +14,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             new PvPTimerScore(),
             new KOTHScore(),
             new ArcherMarkScore(),
-            new BardBuffScore(),
+            new BardEffectScore(),
             new BardEnergyScore()
 
     };

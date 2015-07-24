@@ -6,10 +6,10 @@ import net.frozenorb.qlib.scoreboard.ScoreboardScore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class BardBuffScore extends ScoreboardScore {
+public class BardEffectScore extends ScoreboardScore {
 
-    public BardBuffScore() {
-        super(ChatColor.GREEN.toString() + ChatColor.BOLD + "Bard Buff");
+    public BardEffectScore() {
+        super(ChatColor.GREEN.toString() + ChatColor.BOLD + "Bard Effect");
     }
 
     public String getValue(Player player) {
