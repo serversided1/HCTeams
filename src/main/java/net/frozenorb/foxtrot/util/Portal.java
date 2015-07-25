@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.util;
 
 import net.frozenorb.foxtrot.listener.PortalTrapListener;
+import net.frozenorb.foxtrot.team.claims.Claim;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.Cuboid;
 import net.frozenorb.foxtrot.util.PortalDirection;
 import org.bukkit.Effect;
@@ -152,10 +154,15 @@ public class Portal {
         for (Block block : expanded) {
             if (!portal.contains(block)) {
                 for (BlockFace f : PortalTrapListener.FACES) {
-                    if (block.getRelative(f).getType() == Material.PORTAL) {
+                    Block relative = block.getRelative(f);
+                    if (relative.getType() == Material.PORTAL) {
                         if (block.getType() != Material.AIR) {
-                            block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
-                            block.setTypeIdAndData(Material.AIR.getId(), (byte) 0, false);
+                            Claim claimAtPortal = LandBoard.getInstance().getClaim(relative.getLocation());
+                            if (claimAtPortal == null || claimAtPortal.contains(block)) {
+                                block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
+                                block.setTypeIdAndData(Material.AIR.getId(), (byte) 0, false);
+                            }
+
                             continue first;
                         }
                     }
