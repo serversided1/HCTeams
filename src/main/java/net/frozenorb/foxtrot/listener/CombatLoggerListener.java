@@ -195,7 +195,7 @@ public class CombatLoggerListener implements Listener {
     }
 
     // Spawn the combat logger
-    @EventHandler(priority=EventPriority.HIGHEST)
+    @EventHandler(priority=EventPriority.LOW) // So we run before Mod Suite code will.
     public void onPlayerQuit(PlayerQuitEvent event) {
         // If the player safe logged out
         if (event.getPlayer().hasMetadata("loggedout")) {
