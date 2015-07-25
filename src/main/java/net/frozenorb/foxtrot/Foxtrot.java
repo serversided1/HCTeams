@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import net.frozenorb.foxtrot.listener.PortalTrapListener;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
@@ -30,11 +31,9 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.JedisPool;
 
 public class Foxtrot extends JavaPlugin {
@@ -147,6 +146,7 @@ public class Foxtrot extends JavaPlugin {
     }
 
     private void setupListeners() {
+
         getServer().getPluginManager().registerEvents(new MapListener(), this);
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
@@ -164,6 +164,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
