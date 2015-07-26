@@ -159,8 +159,6 @@ public class Portal {
                     if (relative.getType() == Material.PORTAL) {
                         if (block.getType() != Material.AIR) {
                             Claim bClaim = LandBoard.getInstance().getClaim(block.getLocation());
-                            Bukkit.broadcastMessage(bClaim + " (" + (bClaim == null ? "None" : bClaim.getName()) + ")");
-                            Bukkit.broadcastMessage((bClaim == null ? "N/A" : bClaim.contains(relative) + ""));
 
                             if (bClaim == null || bClaim.contains(relative)) {
                                 block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
