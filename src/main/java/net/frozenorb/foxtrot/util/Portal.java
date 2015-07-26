@@ -157,8 +157,8 @@ public class Portal {
                     Block relative = block.getRelative(f);
                     if (relative.getType() == Material.PORTAL) {
                         if (block.getType() != Material.AIR) {
-                            Claim claimAtPortal = LandBoard.getInstance().getClaim(relative.getLocation());
-                            if (claimAtPortal == null || claimAtPortal.contains(block)) {
+                            Claim bClaim = LandBoard.getInstance().getClaim(block.getLocation());
+                            if (bClaim == null || bClaim.contains(relative)) {
                                 block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
                                 block.setTypeIdAndData(Material.AIR.getId(), (byte) 0, false);
                             }
