@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.Cuboid;
 import net.frozenorb.foxtrot.util.PortalDirection;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -158,6 +159,9 @@ public class Portal {
                     if (relative.getType() == Material.PORTAL) {
                         if (block.getType() != Material.AIR) {
                             Claim bClaim = LandBoard.getInstance().getClaim(block.getLocation());
+                            Bukkit.broadcastMessage(bClaim + " (" + (bClaim == null ? "None" : bClaim.getName()) + ")");
+                            Bukkit.broadcastMessage((bClaim == null ? "N/A" : bClaim.contains(relative) + ""));
+
                             if (bClaim == null || bClaim.contains(relative)) {
                                 block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
                                 block.setTypeIdAndData(Material.AIR.getId(), (byte) 0, false);
