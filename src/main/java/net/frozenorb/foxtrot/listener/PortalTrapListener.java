@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.claims.Claim;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.Portal;
 import net.frozenorb.foxtrot.util.PortalDirection;
 import org.bukkit.*;
@@ -111,31 +113,32 @@ public class PortalTrapListener implements Listener {
                 PortalDirection dir = PortalDirection.fromPortalData(blocks.get(blocks.size() - 1).getData());
 
                 for(Block b : blocks) {
+                    Claim claimAtPortal = LandBoard.getInstance().getClaim(b.getLocation());
                     if(dir == PortalDirection.NORTH_SOUTH) {
                         Block b1 = b.getRelative(BlockFace.EAST);
 
-                        if(b1.getType() != Material.AIR) {
+                        if((claimAtPortal == null || claimAtPortal.contains(b1)) && b1.getType() != Material.AIR) {
                             b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getTypeId());
                             b1.setTypeIdAndData(0, (byte) 0, false);
                         }
 
                         Block b2 = b.getRelative(BlockFace.WEST);
 
-                        if(b2.getType() != Material.AIR) {
+                        if((claimAtPortal == null || claimAtPortal.contains(b2)) && b2.getType() != Material.AIR) {
                             b2.getWorld().playEffect(b2.getLocation(), Effect.STEP_SOUND, b2.getTypeId());
                             b2.setTypeIdAndData(0, (byte) 0, false);
                         }
                     } else {
                         Block b1 = b.getRelative(BlockFace.NORTH);
 
-                        if(b1.getType() != Material.AIR) {
+                        if((claimAtPortal == null || claimAtPortal.contains(b1)) && b1.getType() != Material.AIR) {
                             b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getTypeId());
                             b1.setTypeIdAndData(0, (byte) 0, false);
                         }
 
                         Block b2 = b.getRelative(BlockFace.SOUTH);
 
-                        if(b2.getType() != Material.AIR) {
+                        if((claimAtPortal == null || claimAtPortal.contains(b2)) && b2.getType() != Material.AIR) {
                             b2.getWorld().playEffect(b2.getLocation(), Effect.STEP_SOUND, b2.getTypeId());
                             b2.setTypeIdAndData(0, (byte) 0, false);
                         }
