@@ -117,6 +117,8 @@ public class PortalTrapListener implements Listener {
                         Block b1 = b.getRelative(BlockFace.EAST);
                         Claim b1Claim = LandBoard.getInstance().getClaim(b1.getLocation());
 
+                        Bukkit.broadcastMessage((b1Claim == null) + " - " + (b1Claim != null ? b1Claim.contains(b) : "N/A"));
+
                         if((b1Claim == null || b1Claim.contains(b)) && b1.getType() != Material.AIR) {
                             b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getTypeId());
                             b1.setTypeIdAndData(0, (byte) 0, false);
@@ -132,6 +134,8 @@ public class PortalTrapListener implements Listener {
                     } else {
                         Block b1 = b.getRelative(BlockFace.NORTH);
                         Claim b1Claim = LandBoard.getInstance().getClaim(b1.getLocation());
+
+                        Bukkit.broadcastMessage((b1Claim == null) + " - " + (b1Claim != null ? b1Claim.contains(b) : "N/A"));
 
                         if((b1Claim == null || b1Claim.contains(b)) && b1.getType() != Material.AIR) {
                             b1.getWorld().playEffect(b1.getLocation(), Effect.STEP_SOUND, b1.getTypeId());
