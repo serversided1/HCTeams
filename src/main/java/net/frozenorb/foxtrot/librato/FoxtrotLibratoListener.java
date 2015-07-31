@@ -66,7 +66,7 @@ public class FoxtrotLibratoListener implements Listener {
             int totalChunks = 0;
             int activeChunks = 0;
 
-            try {
+            /*try {
                 Field sleepingField = net.minecraft.server.v1_7_R4.Chunk.class.getField("sleeping");
 
                 for (Chunk chunk : world.getLoadedChunks().clone()) {
@@ -81,7 +81,7 @@ public class FoxtrotLibratoListener implements Listener {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
 
             event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.total", totalChunks);
             event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.active", activeChunks);
