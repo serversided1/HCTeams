@@ -38,22 +38,19 @@ import java.util.*;
 
 public class Team {
 
+    // Constants //
     public static final DecimalFormat DTR_FORMAT = new DecimalFormat("0.00");
     public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
-
-    // Configurable values //
-
     public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
     public static final int MAX_CLAIMS = 2;
 
-    // End configurable values //
-
-    @Getter @Setter private ObjectId uniqueId;
-    @Getter private String name;
-
+    // Internal //
     @Getter private boolean needsSave = false;
     @Getter private boolean loading = false;
 
+    // Persisted //
+    @Getter @Setter private ObjectId uniqueId;
+    @Getter private String name;
     @Getter private Location HQ;
     @Getter private double balance;
     @Getter private double DTR;
@@ -68,6 +65,9 @@ public class Team {
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
+
+    // Not persisted //
+    @Getter @Setter private UUID focused;
 
     public Team(String name) {
         this.name = name;

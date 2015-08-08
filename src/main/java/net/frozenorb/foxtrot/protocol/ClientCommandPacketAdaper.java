@@ -31,7 +31,7 @@ public class ClientCommandPacketAdaper extends PacketAdapter {
 
                 public void run() {
                     event.getPlayer().setMetadata("loggedout", new FixedMetadataValue(Foxtrot.getInstance(), true));
-                    
+
                     if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
                         event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
                     } else {
