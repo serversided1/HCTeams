@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.chat.listeners;
 
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
@@ -20,38 +21,20 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        String highRollerString = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getUniqueId()) ? FoxConstants.highRollerPrefix() : "";
-        String customPrefixString = Foxtrot.getInstance().getServerHandler().getCustomPrefixes().containsKey(event.getPlayer().getName()) ? Foxtrot.getInstance().getServerHandler().getCustomPrefixes().get(event.getPlayer().getName()) : "";
-        ChatMode chatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
+        Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+        String highRollerPrefix = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getUniqueId()) ? ChatHandler.HIGHROLLER_PREFIX : "";
+        String customPrefix = Foxtrot.getInstance().getChatHandler().getCustomPrefix(event.getPlayer().getUniqueId());
+        ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
+        ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
 
-        // Determine if we're using one of our custom
-        // chat channel prefixes.
-        // @ for team chat,
-        // # for ally chat,
-        // ! for global chat
-        boolean doTeamChat = event.getMessage().startsWith("@");
-        boolean doAllyChat = event.getMessage().startsWith("#");
-        boolean doGlobalChat = event.getMessage().startsWith("!");
-
-        // and take off the character 'starting' it
-        if (doTeamChat || doAllyChat || doGlobalChat) {
-            event.setMessage(event.getMessage().substring(1));
-        }
-
-        // Determine our final chat mode.
-        // We check if they used a custom prefix / aren't in a team,
-        // otherwise, we fall back on their configuration
-        if (doGlobalChat) {
-            chatMode = ChatMode.PUBLIC;
-        } else if (doTeamChat) {
-            chatMode = ChatMode.TEAM;
-        } else if (doAllyChat && team != null && team.getAllies().size() != 0) {
-            chatMode = ChatMode.ALLIANCE;
+        // If they provided us with a forced chat mode, we have to remove it from the final message.
+        // We also .trim() the message because people will do things like '! hi', which just looks annoying in chat.
+        if (forcedChatMode != null) {
+            event.setMessage(event.getMessage().substring(1).trim());
         }
 
         // If another plugin cancelled this event before it got to us (we are on MONITOR, so it'll happen)
-        if (event.isCancelled() && chatMode == ChatMode.PUBLIC) { // Only respect cancelled events if this is public chat. Who cares what their team says.
+        if (event.isCancelled() && playerChatMode == ChatMode.PUBLIC) { // Only respect cancelled events if this is public chat. Who cares what their team says.
             return;
         }
 
@@ -61,26 +44,26 @@ public class ChatListener implements Listener {
 
         // If someone's not in a team, instead of forcing their 'channel' to public,
         // we just tell them they can't.
-        if (chatMode != ChatMode.PUBLIC && team == null) {
+        if (playerChatMode != ChatMode.PUBLIC && playerTeam == null) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't speak in non-public chat if you're not in a team!");
             return;
         }
 
         // and here starts the big logic switch
-        switch (chatMode) {
+        switch (playerChatMode) {
             case PUBLIC:
                 if (TeamMuteCommand.getTeamMutes().containsKey(event.getPlayer().getUniqueId())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team is muted!");
                     return;
                 }
 
-                String publicChatFormat = FoxConstants.publicChatFormat(team, highRollerString, customPrefixString);
+                String publicChatFormat = FoxConstants.publicChatFormat(playerTeam, highRollerPrefix, customPrefix);
                 String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
                 // not online players
                 for (Player player : event.getRecipients()) {
-                    if (team == null) {
+                    if (playerTeam == null) {
                         // If the player sending the message is shadowmuted (if their team was and they left it)
                         // then we don't allow them to. We probably could move this check "higher up", but oh well.
                         if (TeamShadowMuteCommand.getTeamShadowMutes().containsKey(event.getPlayer().getUniqueId())) {
@@ -93,10 +76,10 @@ public class ChatListener implements Listener {
                             player.sendMessage(finalMessage);
                         }
                     } else {
-                        if (team.isMember(player.getUniqueId())) {
+                        if (playerTeam.isMember(player.getUniqueId())) {
                             // Gypsie way to get a custom color if they're allies/teammates
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
-                        } else if (team.isAlly(player.getUniqueId())) {
+                        } else if (playerTeam.isAlly(player.getUniqueId())) {
                             // Gypsie way to get a custom color if they're allies/teammates
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
                         } else {
@@ -121,48 +104,48 @@ public class ChatListener implements Listener {
                 break;
             case ALLIANCE:
                 String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
-                String allyChatSpyFormat = FoxConstants.allyChatSpyFormat(team, event.getPlayer(), event.getMessage());
+                String allyChatSpyFormat = FoxConstants.allyChatSpyFormat(playerTeam, event.getPlayer(), event.getMessage());
 
                 // Loop online players and not recipients just in case you're weird and
                 // /ignore your teammates/allies
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player.getUniqueId()) || team.isAlly(player.getUniqueId())) {
+                    if (playerTeam.isMember(player.getUniqueId()) || playerTeam.isAlly(player.getUniqueId())) {
                         player.sendMessage(allyChatFormat);
-                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
+                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(playerTeam.getUniqueId())) {
                         player.sendMessage(allyChatSpyFormat);
                     }
                 }
 
                 // Log to ally's allychat log.
-                for (ObjectId allyId : team.getAllies()) {
+                for (ObjectId allyId : playerTeam.getAllies()) {
                     Team ally = Foxtrot.getInstance().getTeamHandler().getTeam(allyId);
 
                     if (ally != null) {
-                        TeamActionTracker.logAction(ally, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                        TeamActionTracker.logAction(ally, TeamActionType.ALLY_CHAT, "[" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                     }
                 }
 
                 // Log to our own allychat log.
-                TeamActionTracker.logAction(team, TeamActionType.ALLY_CHAT, "[" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
-                Foxtrot.getInstance().getServer().getLogger().info("[Ally Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logAction(playerTeam, TeamActionType.ALLY_CHAT, "[" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                Foxtrot.getInstance().getServer().getLogger().info("[Ally Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case TEAM:
                 String teamChatFormat = FoxConstants.teamChatFormat(event.getPlayer(), event.getMessage());
-                String teamChatSpyFormat = FoxConstants.teamChatSpyFormat(team, event.getPlayer(), event.getMessage());
+                String teamChatSpyFormat = FoxConstants.teamChatSpyFormat(playerTeam, event.getPlayer(), event.getMessage());
 
                 // Loop online players and not recipients just in case you're weird and
                 // /ignore your teammates
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                    if (team.isMember(player.getUniqueId())) {
+                    if (playerTeam.isMember(player.getUniqueId())) {
                         player.sendMessage(teamChatFormat);
-                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(team.getUniqueId())) {
+                    } else if (Foxtrot.getInstance().getChatSpyMap().getChatSpy(player.getUniqueId()).contains(playerTeam.getUniqueId())) {
                         player.sendMessage(teamChatSpyFormat);
                     }
                 }
 
                 // Log to our teamchat log.
-                TeamActionTracker.logAction(team, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
-                Foxtrot.getInstance().getServer().getLogger().info("[Team Chat] [" + team.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logAction(playerTeam, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
+                Foxtrot.getInstance().getServer().getLogger().info("[Team Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
         }
     }

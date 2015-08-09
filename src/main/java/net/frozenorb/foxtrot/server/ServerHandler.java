@@ -62,7 +62,6 @@ public class ServerHandler {
 
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
 
-    @Getter private Map<String, String> customPrefixes = new HashMap<>();
     @Getter private Set<UUID> highRollers = new HashSet<>();
     @Getter private Set<UUID> betrayers = new HashSet<>();
 
@@ -70,8 +69,6 @@ public class ServerHandler {
     @Getter @Setter private boolean PreEOTW = false;
 
     public ServerHandler() {
-        loadPrefixes();
-
         try {
             File f = new File("highRollers.json");
 
@@ -138,28 +135,6 @@ public class ServerHandler {
         }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 3000L, 6000L);
     }
 
-    public void loadPrefixes() {
-        try {
-            File f = new File("customPrefixes.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
-
-            if (dbo != null) {
-                customPrefixes.clear();
-
-                for (Map.Entry<String, Object> o : ((BasicDBObject) dbo.get("prefixes")).entrySet()) {
-                    customPrefixes.put(o.getKey(), ChatColor.translateAlternateColorCodes('&', o.getValue().toString()));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void save() {
         try {
             File f = new File("highRollers.json");
@@ -196,20 +171,6 @@ public class ServerHandler {
             }
 
             dbo.put("uuids", list);
-            FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            File f = new File("customPrefixes.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = new BasicDBObject();
-            dbo.put("prefixes", customPrefixes);
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();

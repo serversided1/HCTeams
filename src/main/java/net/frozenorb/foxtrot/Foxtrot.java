@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot;
 
 import com.comphenix.protocol.ProtocolLibrary;
+import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.listener.PortalTrapListener;
 import com.mongodb.MongoClient;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private MongoClient mongoPool;
     @Getter private JedisPool queuePool;
 
+    @Getter private ChatHandler chatHandler;
     @Getter private PvPClassHandler pvpClassHandler;
     @Getter private TeamHandler teamHandler;
     @Getter private ServerHandler serverHandler;
@@ -128,6 +130,7 @@ public class Foxtrot extends JavaPlugin {
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
 
+        chatHandler = new ChatHandler();
         serverHandler = new ServerHandler();
         mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
@@ -146,12 +149,10 @@ public class Foxtrot extends JavaPlugin {
     }
 
     private void setupListeners() {
-
         getServer().getPluginManager().registerEvents(new MapListener(), this);
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new ChatListener(), this);
         getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);

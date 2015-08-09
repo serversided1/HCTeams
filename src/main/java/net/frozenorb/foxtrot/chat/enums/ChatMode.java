@@ -1,9 +1,29 @@
 package net.frozenorb.foxtrot.chat.enums;
 
-public enum  ChatMode {
+import com.google.common.collect.ImmutableSet;
+import lombok.AllArgsConstructor;
 
-    PUBLIC,
-    ALLIANCE,
-    TEAM
+import java.util.Set;
+
+@AllArgsConstructor
+public enum ChatMode {
+
+    PUBLIC(ImmutableSet.of('!')),
+    ALLIANCE(ImmutableSet.of('#')),
+    TEAM(ImmutableSet.of('@'));
+
+    Set<Character> forcedPrefixes;
+
+    public static ChatMode findFromForcedPrefix(char forcedPrefix) {
+        for (ChatMode chatMode : values()) {
+            for (char chatModePrefix : chatMode.forcedPrefixes) {
+                if (chatModePrefix == forcedPrefix) {
+                    return chatMode;
+                }
+            }
+        }
+
+        return null;
+    }
 
 }
