@@ -579,7 +579,7 @@ public class ServerHandler {
                 player.updateInventory();
                 player.sendMessage(ChatColor.GOLD + "Equipped the " + ChatColor.WHITE + "Fishing" + ChatColor.GOLD + " kit!");
                 Foxtrot.getInstance().getFishingKitMap().setUses(player.getUniqueId(), uses + 1);
-                showSignPacket(player, sign, "§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses) + "/3");
+                showSignPacket(player, sign, "§aFishing Kit:", "§bEquipped!", "", "§dUses: §e" + (uses + 1) + "/3");
             }
         }
     }
