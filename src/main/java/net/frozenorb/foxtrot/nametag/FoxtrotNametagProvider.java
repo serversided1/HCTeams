@@ -16,27 +16,33 @@ public class FoxtrotNametagProvider extends NametagProvider {
 
     @Override
     public NametagInfo fetchNametag(Player toRefresh, Player refreshFor) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(toRefresh);
-        NametagInfo nametagInfo = createNametag(ChatColor.YELLOW.toString(), "");
+        Team viewerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(refreshFor);
+        NametagInfo nametagInfo = null;
 
-        if (team != null) {
-            if (team.isMember(refreshFor.getUniqueId())) {
+        if (viewerTeam != null) {
+            if (viewerTeam.isMember(toRefresh.getUniqueId())) {
                 nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
-            } else if (team.isAlly(refreshFor.getUniqueId())) {
+            } else if (viewerTeam.isAlly(toRefresh.getUniqueId())) {
                 nametagInfo = createNametag(Team.ALLY_COLOR.toString(), "");
-            } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                nametagInfo = createNametag(ChatColor.RED.toString(), "");
             }
-        } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-            nametagInfo = createNametag(ChatColor.RED.toString(), "");
         }
 
-        // You always see yourself as green, even if you're not on a team.
+        // If we already found something above they override these, otherwise we can do these checks.
+        if (nametagInfo == null) {
+            if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+                nametagInfo = createNametag(ChatColor.RED.toString(), "");
+            } else if (viewerTeam != null && viewerTeam.getFocused() != null && viewerTeam.getFocused().equals(toRefresh.getUniqueId())) {
+                nametagInfo = createNametag(ChatColor.LIGHT_PURPLE.toString(), "");
+            }
+        }
+
+        // You always see yourself as green.
         if (refreshFor == toRefresh) {
             nametagInfo = createNametag(ChatColor.DARK_GREEN.toString(), "");
         }
 
-        return (nametagInfo);
+        // If nothing custom was set, fall back on yellow.
+        return (nametagInfo == null ? createNametag(ChatColor.YELLOW.toString(), "") : nametagInfo);
     }
 
 }

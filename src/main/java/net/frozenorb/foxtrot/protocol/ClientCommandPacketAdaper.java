@@ -7,6 +7,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ClientCommandPacketAdaper extends PacketAdapter {
@@ -29,6 +30,8 @@ public class ClientCommandPacketAdaper extends PacketAdapter {
             new BukkitRunnable() {
 
                 public void run() {
+                    event.getPlayer().setMetadata("loggedout", new FixedMetadataValue(Foxtrot.getInstance(), true));
+
                     if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
                         event.getPlayer().kickPlayer(ChatColor.YELLOW + "Come back tomorrow for SOTW!");
                     } else {
