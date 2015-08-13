@@ -44,32 +44,4 @@ public class MapListener implements Listener {
         event.setDroppedExp((int) Math.ceil(event.getDroppedExp() * multiplier));
     }
 
-    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true) // This is actually 'Lowest', but Bukkit calls listeners LOWEST -> HIGHEST, so HIGHEST is what's actually called last. #BukkitBeLike
-    public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getPlayer().getItemInHand() == null || !event.getPlayer().getItemInHand().getType().name().contains("PICKAXE") || event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH)) {
-            return;
-        }
-
-        switch (event.getBlock().getType()) {
-            case GOLD_ORE:
-                for (int i = 0; i < 1; i++) {
-                    event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.GOLD_INGOT));
-                }
-
-                event.setCancelled(true);
-                event.getPlayer().giveExp(4);
-                event.getBlock().setType(Material.AIR);
-                break;
-            case IRON_ORE:
-                for (int i = 0; i < 1; i++) {
-                    event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.IRON_INGOT));
-                }
-
-                event.setCancelled(true);
-                event.getPlayer().giveExp(4);
-                event.getBlock().setType(Material.AIR);
-                break;
-        }
-    }
-
 }
