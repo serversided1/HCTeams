@@ -7,10 +7,10 @@ import org.bukkit.ChatColor;
 @AllArgsConstructor
 public enum ConquestCapzone {
 
-    GREEN(ChatColor.DARK_GREEN, "Green"),
-    YELLOW(ChatColor.YELLOW, "Yellow"),
-    BLUE(ChatColor.BLUE, "Blue"),
-    RED(ChatColor.RED, "Red");
+    UFO(ChatColor.DARK_GREEN, "UFO"),
+    METEOR(ChatColor.YELLOW, "Meteor"),
+    SHUTTLE(ChatColor.BLUE, "Shuttle"),
+    COMMAND(ChatColor.RED, "Command");
 
     @Getter private ChatColor color;
     @Getter private String name;

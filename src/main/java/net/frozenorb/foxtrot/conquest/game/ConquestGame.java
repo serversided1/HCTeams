@@ -51,20 +51,7 @@ public class ConquestGame implements Listener {
         if (winner == null) {
             Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Conquest has ended.");
         } else {
-            new BukkitRunnable() {
-
-                int repeats = 3;
-
-                public void run() {
-                    if (repeats-- == 0) {
-                        cancel();
-                        return;
-                    }
-
-                    Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
-                }
-
-            }.runTaskTimer(Foxtrot.getInstance(), 0L, 120L);
+            Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
         }
 
         HandlerList.unregisterAll(this);
