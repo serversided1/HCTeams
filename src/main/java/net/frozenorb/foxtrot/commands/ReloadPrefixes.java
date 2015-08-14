@@ -9,7 +9,7 @@ public class ReloadPrefixes {
 
     @Command(names={ "reloadprefixes" }, permissionNode="op")
     public static void reloadPrefixes(Player sender) {
-        Foxtrot.getInstance().getServerHandler().loadPrefixes();
+        Foxtrot.getInstance().getChatHandler().reloadCustomPrefixes();
         sender.sendMessage(ChatColor.DARK_PURPLE + "Reloaded prefixes from file.");
     }
 

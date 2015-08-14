@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.chat;
 
+import com.google.common.collect.ImmutableMap;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -11,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -84,6 +86,10 @@ public class ChatHandler {
         } else {
             customPrefixes.put(player, customPrefix);
         }
+    }
+
+    public Collection<Map.Entry<UUID, String>> getAllCustomPrefixes() {
+        return ImmutableMap.copyOf(customPrefixes).entrySet();
     }
 
 }

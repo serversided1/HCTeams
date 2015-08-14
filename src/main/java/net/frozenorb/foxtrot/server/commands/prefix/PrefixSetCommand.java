@@ -6,17 +6,17 @@ import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class PrefixSetCommand {
 
     @Command(names={ "prefix set" }, permissionNode="op")
-    public static void prefixSet(Player sender, @Parameter(name="player") String player, @Parameter(name="prefix", wildcard=true) String prefix) {
+    public static void prefixSet(Player sender, @Parameter(name="player") UUID player, @Parameter(name="prefix", wildcard=true) String prefix) {
         if (!prefix.equals("null")) {
-            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().put(player, ChatColor.translateAlternateColorCodes('&', prefix));
+            Foxtrot.getInstance().getChatHandler().setCustomPrefix(player, ChatColor.translateAlternateColorCodes('&', prefix));
         } else {
-            Foxtrot.getInstance().getServerHandler().getCustomPrefixes().remove(player);
+            Foxtrot.getInstance().getChatHandler().setCustomPrefix(player, null);
         }
-
-        Foxtrot.getInstance().getServerHandler().save();
 
         sender.sendMessage(ChatColor.YELLOW + "Prefix updated.");
     }
