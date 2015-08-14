@@ -1,20 +1,23 @@
 package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
 import net.frozenorb.qlib.scoreboard.ScoreGetter;
+import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-// Foxtrot has a bunch of constant scores, so this is really simple.
 public class FoxtrotScoreGetter implements ScoreGetter {
 
     @Override
@@ -71,6 +74,32 @@ public class FoxtrotScoreGetter implements ScoreGetter {
 
         if (bardEnergyScore != null) {
             scores.add("&b&lBard Energy&7: &c" + bardEnergyScore);
+        }
+
+        ConquestGame conquest = Foxtrot.getInstance().getConquestHandler().getGame();
+
+        if (conquest != null) {
+            scores.add("&c&7&m--------------------");
+            scores.add("&e&lConquest:");
+            int displayed = 0;
+
+            for (Map.Entry<ObjectId, Integer> entry : conquest.getTeamPoints().entrySet()) {
+                Team resolved = Foxtrot.getInstance().getTeamHandler().getTeam(entry.getKey());
+
+                if (resolved != null) {
+                    scores.add("  " + resolved.getName(player) + "&7: &f" + entry.getValue());
+                    displayed++;
+                }
+
+                if (displayed == 3) {
+                    break;
+                }
+            }
+
+            if (displayed == 0) {
+                scores.add("  &7No scores");
+                scores.add("  &7yet");
+            }
         }
 
         if (!scores.isEmpty()) {

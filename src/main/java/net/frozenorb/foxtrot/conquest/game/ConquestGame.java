@@ -19,12 +19,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConquestGame implements Listener {
 
-    @Getter private Map<ObjectId, Integer> teamPoints = new HashMap<>();
+    @Getter private LinkedHashMap<ObjectId, Integer> teamPoints = new LinkedHashMap<>();
 
     public ConquestGame() {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(this, Foxtrot.getInstance());
@@ -77,6 +76,7 @@ public class ConquestGame implements Listener {
             teamPoints.put(team.getUniqueId(), 1);
         }
 
+        teamPoints = sortByValues(teamPoints);
         Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + team.getName() + ChatColor.GOLD + " captured " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + " and earned a point!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
 
         if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.POINTS_TO_WIN) {
@@ -133,7 +133,22 @@ public class ConquestGame implements Listener {
         }
 
         teamPoints.put(team.getUniqueId(), Math.max(0, teamPoints.get(team.getUniqueId()) - ConquestHandler.POINTS_DEATH_PENALTY));
+        teamPoints = sortByValues(teamPoints);
         team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
+    }
+
+    private static LinkedHashMap<ObjectId, Integer> sortByValues(Map<ObjectId, Integer> map) {
+        LinkedList<Map.Entry<ObjectId, Integer>> list = new LinkedList<>(map.entrySet());
+        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        LinkedHashMap<ObjectId, Integer> sortedHashMap = new LinkedHashMap<>();
+        Iterator<Map.Entry<ObjectId, Integer>> iterator = list.iterator();
+
+        while (iterator.hasNext()) {
+            java.util.Map.Entry<ObjectId, Integer> entry = iterator.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedHashMap;
     }
 
 }

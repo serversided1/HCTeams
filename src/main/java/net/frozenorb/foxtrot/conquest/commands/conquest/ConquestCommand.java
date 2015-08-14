@@ -22,7 +22,7 @@ public class ConquestCommand {
             return;
         }
 
-        Map<ObjectId, Integer> caps = sortByValues(game.getTeamPoints());
+        Map<ObjectId, Integer> caps = game.getTeamPoints();
 
         sender.sendMessage(ChatColor.YELLOW + "Conquest Scores:");
         boolean sent = false;
@@ -42,28 +42,6 @@ public class ConquestCommand {
 
         sender.sendMessage("");
         sender.sendMessage(ChatColor.YELLOW.toString() + ConquestHandler.POINTS_TO_WIN + " points are required to win.");
-    }
-
-    private static LinkedHashMap<ObjectId, Integer> sortByValues(Map<ObjectId, Integer> map) {
-        LinkedList<Map.Entry<ObjectId, Integer>> list = new LinkedList<>(map.entrySet());
-
-        Collections.sort(list, new Comparator<Map.Entry<ObjectId, Integer>>() {
-
-            public int compare(java.util.Map.Entry<ObjectId, Integer> o1, java.util.Map.Entry<ObjectId, Integer> o2) {
-                return (o2.getValue().compareTo(o1.getValue()));
-            }
-
-        });
-
-        LinkedHashMap<ObjectId, Integer> sortedHashMap = new LinkedHashMap<>();
-        Iterator<Map.Entry<ObjectId, Integer>> iterator = list.iterator();
-
-        while (iterator.hasNext()) {
-            java.util.Map.Entry<ObjectId, Integer> entry = iterator.next();
-            sortedHashMap.put(entry.getKey(), entry.getValue());
-        }
-
-        return (sortedHashMap);
     }
 
 }
