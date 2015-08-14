@@ -38,7 +38,10 @@ public enum DTRBitmask {
     QUARTER_DTR_LOSS(512, "1/4-DTR-Loss", "Determines if a region takes away 1/4th DTR loss."),
 
     // Used on the road.
-    ROAD(1024, "Road", "Determines if a region is a road.");
+    ROAD(1024, "Road", "Determines if a region is a road."),
+
+    // Used in Conquest.
+    CONQUEST(2048, "Conquest", "Determines if a region is part of Conquest.");
 
     @Getter private int bitmask;
     @Getter private String name;

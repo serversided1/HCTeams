@@ -15,6 +15,7 @@ public enum RegionType {
 
     KOTH(RegionMoveHandler.PVP_TIMER),
     CITADEL(RegionMoveHandler.PVP_TIMER),
+    CONQUEST(RegionMoveHandler.PVP_TIMER),
     CLAIMED_LAND(RegionMoveHandler.PVP_TIMER),
 
     SPAWN(new RegionMoveHandler() {

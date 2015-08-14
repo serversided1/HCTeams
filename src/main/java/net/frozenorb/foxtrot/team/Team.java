@@ -112,6 +112,8 @@ public class Team {
                 return (ChatColor.DARK_PURPLE + "Citadel");
             } else if (hasDTRBitmask(DTRBitmask.ROAD)) {
                 return (ChatColor.RED + getName().replace("Road", " Road"));
+            } else if (hasDTRBitmask(DTRBitmask.CONQUEST)) {
+                return (ChatColor.YELLOW + "Conquest");
             }
         }
 
@@ -752,15 +754,7 @@ public class Team {
         // @HCFactions
         if (getOwner() == null) {
             player.sendMessage(GRAY_LINE);
-
-            if (hasDTRBitmask(DTRBitmask.KOTH)) {
-                player.sendMessage(ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
-            } else if (hasDTRBitmask(DTRBitmask.CITADEL)) {
-                player.sendMessage(ChatColor.DARK_PURPLE + "Citadel");
-            } else {
-                player.sendMessage(ChatColor.BLUE + getName());
-            }
-
+            player.sendMessage(getName(player));
             player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
             player.sendMessage(GRAY_LINE);
             return;

@@ -226,6 +226,8 @@ public class ServerHandler {
                 return (new RegionData(RegionType.CITADEL, ownerTo));
             } else if (ownerTo.hasDTRBitmask(DTRBitmask.ROAD)) {
                 return (new RegionData(RegionType.ROAD, ownerTo));
+            } else if (ownerTo.hasDTRBitmask(DTRBitmask.CONQUEST)) {
+                return (new RegionData(RegionType.CONQUEST, ownerTo));
             }
         }
 
