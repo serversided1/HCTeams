@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class ForceJoinCommand {
 
     @Command(names={ "ForceJoin" }, permissionNode="foxtrot.forcejoin")
-    public static void forceJoin(Player sender, @Parameter(name="team") Team team, @Parameter(name="player") Player player) {
+    public static void forceJoin(Player sender, @Parameter(name="team") Team team, @Parameter(name="player", defaultValue="self") Player player) {
         if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
             if (player == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");
