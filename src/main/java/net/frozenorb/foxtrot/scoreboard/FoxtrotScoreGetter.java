@@ -79,7 +79,10 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         ConquestGame conquest = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (conquest != null) {
-            scores.add("&c&7&m--------------------");
+            if (scores.size() != 0) {
+                scores.add("&c&7&m--------------------");
+            }
+            
             scores.add("&e&lConquest:");
             int displayed = 0;
 
@@ -97,8 +100,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             }
 
             if (displayed == 0) {
-                scores.add("  &7No scores");
-                scores.add("  &7yet");
+                scores.add("  &7No scores yet");
             }
         }
 
