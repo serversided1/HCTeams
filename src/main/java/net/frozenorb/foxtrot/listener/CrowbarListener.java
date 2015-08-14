@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,9 +40,7 @@ public class CrowbarListener implements Listener {
         }
 
         if (event.getClickedBlock().getType() == Material.ENDER_PORTAL_FRAME) {
-            event.getPlayer().sendMessage(ChatColor.RED + "Crowbars on End Portals are removed for this map.");
-
-            /*int portals = InvUtils.getCrowbarUsesPortal(event.getItem());
+            int portals = InventoryUtils.getCrowbarUsesPortal(event.getItem());
 
             if (portals == 0) {
                 event.getPlayer().sendMessage(ChatColor.RED + "This crowbar has no more uses on end portals!");
@@ -76,15 +75,15 @@ public class CrowbarListener implements Listener {
 
             ItemMeta meta = event.getItem().getItemMeta();
 
-            meta.setLore(InvUtils.getCrowbarLore(portals, 0));
+            meta.setLore(InventoryUtils.getCrowbarLore(portals, 0));
 
             event.getItem().setItemMeta(meta);
 
             double max = Material.DIAMOND_HOE.getMaxDurability();
-            double dura = (max / (double) InvUtils.CROWBAR_PORTALS) * portals;
+            double dura = (max / (double) InventoryUtils.CROWBAR_PORTALS) * portals;
 
             event.getItem().setDurability((short) (max - dura));
-            event.getPlayer().setItemInHand(event.getItem());*/
+            event.getPlayer().setItemInHand(event.getItem());
         } else if (event.getClickedBlock().getType() == Material.MOB_SPAWNER) {
             CreatureSpawner spawner = (CreatureSpawner) event.getClickedBlock().getState();
             int spawners = InventoryUtils.getCrowbarUsesSpawner(event.getItem());
