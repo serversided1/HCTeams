@@ -151,9 +151,9 @@ public class TeamStuckCommand implements Listener {
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
                 if (landBoard.getClaim(atPos) == null) {
-                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0 , 1, 0));
+                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0, 1, 0));
                 } else if (landBoard.getClaim(atNeg) == null) {
-                    return (getActualHighestBlock(atNeg.getBlock()).getLocation().add(0 , 1, 0));
+                    return (getActualHighestBlock(atNeg.getBlock()).getLocation().add(0, 1, 0));
                 }
             }
         }
