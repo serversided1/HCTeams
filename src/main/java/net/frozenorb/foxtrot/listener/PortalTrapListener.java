@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.util.Portal;
 import net.frozenorb.foxtrot.util.PortalDirection;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;

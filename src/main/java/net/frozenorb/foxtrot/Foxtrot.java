@@ -1,11 +1,9 @@
 package net.frozenorb.foxtrot;
 
 import com.comphenix.protocol.ProtocolLibrary;
-import net.frozenorb.foxtrot.chat.ChatHandler;
-import net.frozenorb.foxtrot.listener.PortalTrapListener;
 import com.mongodb.MongoClient;
 import lombok.Getter;
-import net.frozenorb.foxtrot.chat.listeners.ChatListener;
+import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;

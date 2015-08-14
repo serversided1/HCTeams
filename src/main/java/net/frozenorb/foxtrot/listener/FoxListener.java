@@ -15,7 +15,6 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;

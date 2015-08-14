@@ -9,14 +9,10 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
-import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_7_R4.CraftChunk;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.lang.reflect.Field;
 
 public class FoxtrotLibratoListener implements Listener {
 

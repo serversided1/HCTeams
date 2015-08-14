@@ -1,19 +1,11 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.qLib;
-import org.bukkit.Material;
-import org.bukkit.block.Furnace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.FurnaceBurnEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class MapListener implements Listener {
 
