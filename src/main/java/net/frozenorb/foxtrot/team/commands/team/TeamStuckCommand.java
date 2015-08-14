@@ -66,7 +66,7 @@ public class TeamStuckCommand implements Listener {
 
         new BukkitRunnable() {
 
-            private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5: 300;
+            private int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5 : 300;
 
             private Location loc = sender.getLocation();
 
