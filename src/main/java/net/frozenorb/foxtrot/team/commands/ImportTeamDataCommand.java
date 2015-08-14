@@ -40,7 +40,7 @@ public class ImportTeamDataCommand {
             in.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Foxtrot.getInstance().getLogger().severe("Could not import teams! Check console for errors.");
+            sender.sendMessage(ChatColor.RED + "Could not import teams! Check console for errors.");
         }
     }
 
