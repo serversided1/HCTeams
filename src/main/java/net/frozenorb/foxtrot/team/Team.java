@@ -110,6 +110,8 @@ public class Team {
                 return (ChatColor.AQUA + getName() + ChatColor.GOLD + " KOTH");
             } else if (hasDTRBitmask(DTRBitmask.CITADEL)) {
                 return (ChatColor.DARK_PURPLE + "Citadel");
+            } else if (hasDTRBitmask(DTRBitmask.ROAD)) {
+                return (ChatColor.RED + getName().replace("Road", " Road"));
             }
         }
 
