@@ -82,7 +82,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             if (scores.size() != 0) {
                 scores.add("&c&7&m--------------------");
             }
-            
+
             scores.add("&e&lConquest:");
             int displayed = 0;
 

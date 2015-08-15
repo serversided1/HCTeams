@@ -56,7 +56,7 @@ public class TeamHQCommand {
         double bal = playerTeam.getBalance();
 
         if (bal < WARP_PRICE) {
-            sender.sendMessage(ChatColor.RED + "This costs §e$" + WARP_PRICE + "§c while your team has only §e$" + bal + "§c!");
+            sender.sendMessage(ChatColor.RED + "This costs $" + WARP_PRICE + " while your team has only $" + bal + "!");
             return;
         }
 
