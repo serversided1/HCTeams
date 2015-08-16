@@ -26,6 +26,7 @@ public class ChatListener implements Listener {
         String customPrefix = Foxtrot.getInstance().getChatHandler().getCustomPrefix(event.getPlayer().getUniqueId());
         ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
         ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
+        ChatMode finalChatMode;
 
         // If they provided us with a forced chat mode, we have to remove it from the final message.
         // We also .trim() the message because people will do things like '! hi', which just looks annoying in chat.
@@ -33,8 +34,14 @@ public class ChatListener implements Listener {
             event.setMessage(event.getMessage().substring(1).trim());
         }
 
+        if (forcedChatMode != null) {
+            finalChatMode = forcedChatMode;
+        } else {
+            finalChatMode = playerChatMode;
+        }
+
         // If another plugin cancelled this event before it got to us (we are on MONITOR, so it'll happen)
-        if (event.isCancelled() && playerChatMode == ChatMode.PUBLIC) { // Only respect cancelled events if this is public chat. Who cares what their team says.
+        if (event.isCancelled() && finalChatMode == ChatMode.PUBLIC) { // Only respect cancelled events if this is public chat. Who cares what their team says.
             return;
         }
 
@@ -44,13 +51,13 @@ public class ChatListener implements Listener {
 
         // If someone's not in a team, instead of forcing their 'channel' to public,
         // we just tell them they can't.
-        if (playerChatMode != ChatMode.PUBLIC && playerTeam == null) {
+        if (finalChatMode != ChatMode.PUBLIC && playerTeam == null) {
             event.getPlayer().sendMessage(ChatColor.RED + "You can't speak in non-public chat if you're not in a team!");
             return;
         }
 
         // and here starts the big logic switch
-        switch (playerChatMode) {
+        switch (finalChatMode) {
             case PUBLIC:
                 if (TeamMuteCommand.getTeamMutes().containsKey(event.getPlayer().getUniqueId())) {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team is muted!");
