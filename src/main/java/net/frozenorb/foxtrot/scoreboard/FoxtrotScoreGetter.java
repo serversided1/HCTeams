@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.scoreboard;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
@@ -40,6 +41,10 @@ public class FoxtrotScoreGetter implements ScoreGetter {
 
         if (pvpTimerScore != null) {
             scores.add("&a&lPvP Timer&7: &c" + pvpTimerScore);
+        }
+
+        for (Map.Entry<String, Long> timer : CustomTimerCreateCommand.getCustomTimers().entrySet()) {
+            scores.add(ChatColor.translateAlternateColorCodes('&', timer.getKey()) + "&7: &c" + getTimerScore(timer));
         }
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
@@ -147,6 +152,16 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         return (null);
+    }
+
+    public String getTimerScore(Map.Entry<String, Long> timer) {
+        long diff = timer.getValue() - System.currentTimeMillis();
+
+        if (diff > 0) {
+            return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+        } else {
+            return (null);
+        }
     }
 
     public String getArcherMarkScore(Player player) {
