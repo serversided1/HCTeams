@@ -101,7 +101,7 @@ public class TeamStuckCommand implements Listener {
                             nearest = nearestSafeLocation(sender.getLocation());
                         }
 
-                    }.runTaskAsynchronously(Foxtrot.getInstance());
+                    }.runTask(Foxtrot.getInstance());
                 }
 
                 if (seconds <= 0) {
