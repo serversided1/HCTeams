@@ -203,13 +203,15 @@ public class VisualClaim implements Listener {
     }
 
     public boolean containsOtherClaim(Claim claim) {
-        Team maxTeam = LandBoard.getInstance().getTeam(claim.getMaximumPoint());
+        Location maxPoint = claim.getMaximumPoint();
+        Location minPoint = claim.getMinimumPoint();
+        Team maxTeam = LandBoard.getInstance().getTeam(maxPoint);
 
         if (maxTeam != null && (type != VisualClaimType.RESIZE || !maxTeam.isMember(player.getUniqueId()))) {
             return (true);
         }
 
-        Team minTeam = LandBoard.getInstance().getTeam(claim.getMinimumPoint());
+        Team minTeam = LandBoard.getInstance().getTeam(minPoint);
 
         if (minTeam != null && (type != VisualClaimType.RESIZE || !minTeam.isMember(player.getUniqueId()))) {
             return (true);
@@ -220,12 +222,14 @@ public class VisualClaim implements Listener {
             return (false);
         }
 
-        for (Coordinate location : claim) {
-            Location at = new Location(Foxtrot.getInstance().getServer().getWorld(claim.getWorld()), location.getX(), 80, location.getZ());
-            Team teamAt = LandBoard.getInstance().getTeam(at);
+        for (int x = minPoint.getBlockX(); x <= maxPoint.getBlockX(); x++) {
+            for (int z = minPoint.getBlockZ(); z <= maxPoint.getBlockZ(); z++) {
+                Location at = new Location(Foxtrot.getInstance().getServer().getWorld(claim.getWorld()), x, 80, z);
+                Team teamAt = LandBoard.getInstance().getTeam(at);
 
-            if (teamAt != null && (type != VisualClaimType.RESIZE || !teamAt.isMember(player.getUniqueId()))) {
-                return (true);
+                if (teamAt != null && (type != VisualClaimType.RESIZE || !teamAt.isMember(player.getUniqueId()))) {
+                    return (true);
+                }
             }
         }
 
