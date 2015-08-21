@@ -329,8 +329,6 @@ public class TeamListener implements Listener {
 
         if (!owner.isMember(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
-            event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
-            event.setItemStack(new ItemStack(event.getBucket()));
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
         }
     }

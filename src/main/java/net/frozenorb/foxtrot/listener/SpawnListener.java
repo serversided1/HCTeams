@@ -123,8 +123,6 @@ public class  SpawnListener implements Listener {
 
         if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlockClicked().getLocation())) {
             event.setCancelled(true);
-            event.getBlockClicked().getRelative(event.getBlockFace()).setType(Material.AIR);
-            event.setItemStack(new ItemStack(event.getBucket()));
         }
     }
 
