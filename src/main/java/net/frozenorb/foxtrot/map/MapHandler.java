@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import java.io.File;
@@ -123,6 +124,35 @@ public class MapHandler {
         if (craftingReducedMelon) {
             Foxtrot.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
         }
+
+        ShapedRecipe nametagRecipe = new ShapedRecipe(new ItemStack(Material.NAME_TAG));
+        ShapedRecipe saddleRecipe = new ShapedRecipe(new ItemStack(Material.SADDLE));
+        ShapedRecipe horseArmorRecipe = new ShapedRecipe(new ItemStack(Material.DIAMOND_BARDING));
+
+        nametagRecipe.shape(" I ",
+                                                     " P ",
+                                                     " S ");
+        nametagRecipe.setIngredient('I', Material.INK_SACK);
+        nametagRecipe.setIngredient('P', Material.PAPER);
+        nametagRecipe.setIngredient('S', Material.STRING);
+
+        saddleRecipe.shape("  L",
+                                                 "LLL",
+                                                 "B B");
+        saddleRecipe.setIngredient('L', Material.LEATHER);
+        saddleRecipe.setIngredient('B', Material.LEASH);
+
+        horseArmorRecipe.shape(" SD",
+                                                            "BBL",
+                                                            "LL ");
+        horseArmorRecipe.setIngredient('S', Material.SADDLE);
+        horseArmorRecipe.setIngredient('D', Material.DIAMOND);
+        horseArmorRecipe.setIngredient('B', Material.DIAMOND_BLOCK);
+        horseArmorRecipe.setIngredient('L', Material.LEATHER);
+
+        Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
+        Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
+        Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
     }
 
 }
