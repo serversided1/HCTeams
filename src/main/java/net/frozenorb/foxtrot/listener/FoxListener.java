@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -317,6 +319,17 @@ public class FoxListener implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled=true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
+        int playtimeTime = (int) (playtime.getPlaytime(event.getPlayer().getUniqueId()) + (playtime.getCurrentSession(event.getPlayer().getUniqueId()) / 1000));
+
+        if (playtimeTime < TimeUnit.HOURS.toSeconds(8)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place sand/gravel at this time.");
         }
     }
 
