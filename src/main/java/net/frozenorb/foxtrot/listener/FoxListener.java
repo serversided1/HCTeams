@@ -324,6 +324,10 @@ public class FoxListener implements Listener {
 
     @EventHandler(ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getPlayer().hasMetadata("ModMode")) {
+            return;
+        }
+        
         PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
         int playtimeTime = (int) (playtime.getPlaytime(event.getPlayer().getUniqueId()) + (playtime.getCurrentSession(event.getPlayer().getUniqueId()) / 1000));
 
