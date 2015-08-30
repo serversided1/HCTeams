@@ -327,7 +327,7 @@ public class FoxListener implements Listener {
         if (event.getPlayer().hasMetadata("ModMode")) {
             return;
         }
-        
+
         PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
         int playtimeTime = (int) (playtime.getPlaytime(event.getPlayer().getUniqueId()) + (playtime.getCurrentSession(event.getPlayer().getUniqueId()) / 1000));
 
