@@ -324,7 +324,7 @@ public class FoxListener implements Listener {
 
     @EventHandler(ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getPlayer().hasMetadata("ModMode")) {
+        if (event.getPlayer().hasMetadata("ModMode") || !event.getBlock().getType().hasGravity()) {
             return;
         }
 
@@ -333,7 +333,7 @@ public class FoxListener implements Listener {
 
         if (playtimeTime < TimeUnit.HOURS.toSeconds(8)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place sand/gravel at this time.");
+            //event.getPlayer().sendMessage(ChatColor.RED + "You cannot place sand/gravel at this time.");
         }
     }
 
