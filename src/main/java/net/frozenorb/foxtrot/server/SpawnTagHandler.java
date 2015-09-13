@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class SpawnTagHandler {
 
-    public static final int MAX_SPAWN_TAG = 60;
+    public static final int MAX_SPAWN_TAG = 30;
     @Getter private static Map<String, Long> spawnTags = new ConcurrentHashMap<>();
 
     public static void removeTag(Player player) {
