@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,6 +37,10 @@ public class FirstJoinMap extends PersistMap<Long> {
 
     public int getAllPlayersSize() {
         return (wrappedMap.size());
+    }
+
+    public Collection<UUID> getAllPlayers() {
+        return wrappedMap.keySet();
     }
 
 }
