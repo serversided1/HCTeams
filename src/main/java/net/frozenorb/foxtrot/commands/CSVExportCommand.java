@@ -40,8 +40,8 @@ public class CSVExportCommand {
                 fileWriter.append(String.valueOf(Foxtrot.getInstance().getSoulboundLivesMap().getLives(player))).append(",");
                 fileWriter.append(String.valueOf(Foxtrot.getInstance().getTransferableLivesMap().getLives(player))).append(",");
                 fileWriter.append(String.valueOf(Foxtrot.getInstance().getWrappedBalanceMap().getBalance(player))).append(",");
-                fileWriter.append(String.valueOf(offlinePlayer.isWhitelisted())).append(",");
-                fileWriter.append(String.valueOf(offlinePlayer.isOp())).append('\n');
+                fileWriter.append(String.valueOf(offlinePlayer.isWhitelisted() ? "1" : "0")).append(",");
+                fileWriter.append(String.valueOf(offlinePlayer.isOp() ? "1" : "0")).append('\n');
 
                 fileWriter.flush();
             }
