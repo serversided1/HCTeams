@@ -322,14 +322,14 @@ public class ServerHandler {
         }
 
         // The default max.
-        long max = TimeUnit.HOURS.toSeconds(6);
+        long max = TimeUnit.HOURS.toSeconds(3);
 
         // 1 to 2 hours based on the player's rank.
         if (player != null) {
             if (player.hasPermission("PRO")) {
-                max = TimeUnit.HOURS.toSeconds(2);
+                max = TimeUnit.HOURS.toSeconds(1);
             } else if (player.hasPermission("VIP")) {
-                max = TimeUnit.HOURS.toSeconds(4);
+                max = TimeUnit.HOURS.toSeconds(2);
             }
         }
 
