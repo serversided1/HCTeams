@@ -52,7 +52,7 @@
 		<!-- Spigot Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mSpigot-API</artifactId>
+			<artifactId>mSpigot</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		
