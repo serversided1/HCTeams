@@ -55,7 +55,6 @@ public class ServerHandler {
             8200, 8232, 8264, 16392, 16424, 16456, // Weakness Potions
             8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
             8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
-            16430, 16398, // Invisibility Potions
             8228, 8260, 16420, 16452, // Poison Potions
             8234, 8266, 16426, 16458 // Slowness Potions
     );
