@@ -20,7 +20,6 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class  SpawnListener implements Listener {
 

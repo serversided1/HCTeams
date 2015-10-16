@@ -9,7 +9,7 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Map;
 
 public class ConquestCommand {
 
