@@ -7,12 +7,13 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ConquestAdminSetScoreCommand {
 
     @Command(names={ "conquestadmin setscore" }, permissionNode="op")
-    public static void conquestAdminSetScore(Player sender, @Parameter(name="team") Team team, @Parameter(name="score") int score) {
+    public static void conquestAdminSetScore(CommandSender sender, @Parameter(name="team") Team team, @Parameter(name="score") int score) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game == null) {
@@ -21,7 +22,7 @@ public class ConquestAdminSetScoreCommand {
         }
 
         game.getTeamPoints().put(team.getUniqueId(), score);
-        sender.sendMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Updated the score for " + team.getName(sender) + ChatColor.GOLD + ".");
+        sender.sendMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + "Updated the score for " + team.getName() + ChatColor.GOLD + ".");
     }
 
 }

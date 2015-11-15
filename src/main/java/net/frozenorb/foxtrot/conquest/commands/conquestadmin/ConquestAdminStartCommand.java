@@ -4,12 +4,13 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ConquestAdminStartCommand {
 
     @Command(names={ "conquestadmin start" }, permissionNode="op")
-    public static void conquestAdminStart(Player sender) {
+    public static void conquestAdminStart(CommandSender sender) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game != null) {
