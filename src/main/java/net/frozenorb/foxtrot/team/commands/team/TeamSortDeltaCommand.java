@@ -17,7 +17,7 @@ public class TeamSortDeltaCommand {
             mod = KB_MAX;
         }
 
-        if (mod > KB_MIN) {
+        if (mod < KB_MIN) {
             sender.sendMessage(ChatColor.RED + "The modifier you entered (" + mod + ") was lower than the min (" + KB_MIN + ") - it has been increased.");
             mod = KB_MIN;
         }
