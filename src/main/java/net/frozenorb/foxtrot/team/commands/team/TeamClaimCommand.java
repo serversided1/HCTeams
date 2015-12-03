@@ -54,6 +54,11 @@ public class TeamClaimCommand implements Listener {
             return;
         }
 
+        if (Foxtrot.getInstance().getServerHandler().isWarzone(sender.getLocation())) {
+            sender.sendMessage(ChatColor.RED + "You are currently in the Warzone and can't claim land here. The Warzone ends at 1000 blocks.");
+            return;
+        }
+
         if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             sender.getInventory().remove(SELECTION_WAND);
 

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class TeamPromoteCommand {
 
-    @Command(names={ "team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain" }, permissionNode="")
+    @Command(names={ "team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain", "team mod", "t mod", "f mod", "faction mod", "fac mod" }, permissionNode="")
     public static void teamPromote(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
