@@ -145,8 +145,8 @@ public class CrowbarListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getType() == Material.MOB_SPAWNER && event.getBlock().getWorld().getEnvironment() == World.Environment.NETHER) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot break mob spawners in the nether!");
+        if (event.getBlock().getType() == Material.MOB_SPAWNER) {
+            event.getPlayer().sendMessage(ChatColor.RED + "This is too strong for you to break with your pickaxe! Try using a crowbar instead.");
             event.setCancelled(true);
         }
     }
