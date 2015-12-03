@@ -17,7 +17,6 @@ import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.persist.maps.statistics.*;
 import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
-import net.frozenorb.foxtrot.protocol.GlintPacketAdapter;
 import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
@@ -105,7 +104,6 @@ public class Foxtrot extends JavaPlugin {
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
-        ProtocolLibrary.getProtocolManager().addPacketListener(new GlintPacketAdapter());
     }
 
     @Override
