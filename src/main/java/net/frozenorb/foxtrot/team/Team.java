@@ -838,9 +838,10 @@ public class Team {
         teamLine.then().text(ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
 
         if (HQ != null) {
-            teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
-            teamLine.tooltip("§aClick to warp to HQ");
-
+            if (player.hasPermission("basic.staff")) {
+                teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
+                teamLine.tooltip("§aClick to warp to HQ");
+            }
         }
 
         if (player.hasPermission("basic.staff")) {
