@@ -872,7 +872,7 @@ public class Team {
             if (player.hasPermission("basic.staff")) {
                 captainMsg.command("/manageteam demote " + getName()).tooltip("§bClick to demote captains");
             }
-
+            captainMsg.color(ChatColor.YELLOW);
             captainMsg.send(player);
 
 
@@ -885,6 +885,7 @@ public class Team {
             if (player.hasPermission("basic.staff")) {
                 membersMsg.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
             }
+            membersMsg.color(ChatColor.YELLOW);
             membersMsg.send(player);
 
         }
