@@ -45,29 +45,50 @@ public class Team {
     public static final int MAX_CLAIMS = 2;
 
     // Internal //
-    @Getter private boolean needsSave = false;
-    @Getter private boolean loading = false;
+    @Getter
+    private boolean needsSave = false;
+    @Getter
+    private boolean loading = false;
 
     // Persisted //
-    @Getter @Setter private ObjectId uniqueId;
-    @Getter private String name;
-    @Getter private Location HQ;
-    @Getter private double balance;
-    @Getter private double DTR;
-    @Getter private long DTRCooldown;
-    @Getter private List<Claim> claims = new ArrayList<>();
-    @Getter private List<Subclaim> subclaims = new ArrayList<>();
-    @Getter private UUID owner = null;
-    @Getter private Set<UUID> members = new HashSet<>();
-    @Getter private Set<UUID> captains = new HashSet<>();
-    @Getter private Set<UUID> invitations = new HashSet<>();
-    @Getter private Set<ObjectId> allies = new HashSet<>();
-    @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
-    @Getter private String announcement;
-    @Getter private int maxOnline = -1;
+    @Getter
+    @Setter
+    private ObjectId uniqueId;
+    @Getter
+    private String name;
+    @Getter
+    private Location HQ;
+    @Getter
+    private double balance;
+    @Getter
+    private double DTR;
+    @Getter
+    private long DTRCooldown;
+    @Getter
+    private List<Claim> claims = new ArrayList<>();
+    @Getter
+    private List<Subclaim> subclaims = new ArrayList<>();
+    @Getter
+    private UUID owner = null;
+    @Getter
+    private Set<UUID> members = new HashSet<>();
+    @Getter
+    private Set<UUID> captains = new HashSet<>();
+    @Getter
+    private Set<UUID> invitations = new HashSet<>();
+    @Getter
+    private Set<ObjectId> allies = new HashSet<>();
+    @Getter
+    private Set<ObjectId> requestedAllies = new HashSet<>();
+    @Getter
+    private String announcement;
+    @Getter
+    private int maxOnline = -1;
 
     // Not persisted //
-    @Getter @Setter private UUID focused;
+    @Getter
+    @Setter
+    private UUID focused;
 
     public Team(String name) {
         this.name = name;
@@ -812,7 +833,21 @@ public class Team {
 
         FancyMessage teamLine = new FancyMessage();
 
-        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!").then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - " + ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!");
+        teamLine.then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - ");
+        teamLine.then().text(ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+
+        if (HQ != null) {
+            if (player.hasPermission("basic.staff")) {
+                teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
+                teamLine.tooltip("§aClick to warp to HQ");
+            }
+        }
+
+        if (player.hasPermission("basic.staff")) {
+            teamLine.then().text("§3 - §e[Manage]").color(ChatColor.YELLOW).command("/manageteam manage " + getName()).tooltip("§bClick to manage team");
+        }
+
         teamLine.send(player);
 
         if (allies.length() > 2) {
@@ -820,20 +855,59 @@ public class Team {
             player.sendMessage(ChatColor.YELLOW + "Allies: " + allies.toString());
         }
 
-        player.sendMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? (deathbanMap.isDeathbanned(getOwner()) ? ChatColor.RED : ChatColor.GRAY) : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
+        FancyMessage leader = new FancyMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? (deathbanMap.isDeathbanned(getOwner()) ? ChatColor.RED : ChatColor.GRAY) : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
+
+
+        if (player.hasPermission("basic.staff")) {
+            leader.command("/manageteam leader " + getName()).tooltip("§bClick to change leader");
+        }
+
+        leader.send(player);
+
 
         if (captains.length() > 2) {
             captains.setLength(captains.length() - 2);
-            player.sendMessage(ChatColor.YELLOW + "Captains: " + captains.toString());
+            FancyMessage captainMsg = new FancyMessage(ChatColor.YELLOW + "Captains: " + captains.toString());
+
+            if (player.hasPermission("basic.staff")) {
+                captainMsg.command("/manageteam demote " + getName()).tooltip("§bClick to demote captains");
+            }
+            captainMsg.color(ChatColor.YELLOW);
+            captainMsg.send(player);
+
+
         }
 
         if (members.length() > 2) {
             members.setLength(members.length() - 2);
-            player.sendMessage(ChatColor.YELLOW + "Members: " + members.toString());
+            FancyMessage membersMsg = new FancyMessage(ChatColor.YELLOW + "Members: " + members.toString());
+
+            if (player.hasPermission("basic.staff")) {
+                membersMsg.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
+            }
+            membersMsg.color(ChatColor.YELLOW);
+            membersMsg.send(player);
+
         }
 
-        player.sendMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(getBalance()));
-        player.sendMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
+        FancyMessage balance = new FancyMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(getBalance()));
+
+        if (player.hasPermission("basic.staff")) {
+            balance.command("/manageteam balance " + getName()).tooltip("§bClick to modify team balance");
+        }
+
+        balance.send(player);
+
+
+        FancyMessage dtrMessage = new FancyMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
+
+
+        if (player.hasPermission("basic.staff")) {
+            dtrMessage.command("/manageteam dtr " + getName()).tooltip("§bClick to modify team DTR");
+        }
+
+        dtrMessage.send(player);
+
 
         if (DTRHandler.isOnCooldown(this)) {
             player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
