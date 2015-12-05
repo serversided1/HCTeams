@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,6 +20,12 @@ public class ForceLeaderCommand {
         if (playerTeam == null) {
             sender.sendMessage(ChatColor.GRAY + "That player is not on a team.");
             return;
+        }
+
+        Player bukkitPlayer = Bukkit.getPlayer(player);
+
+        if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+            bukkitPlayer.sendMessage(ChatColor.YELLOW + "A staff member has made you leader of §b" + playerTeam.getName() + "§e.");
         }
 
         playerTeam.setOwner(player);

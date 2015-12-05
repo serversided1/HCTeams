@@ -36,7 +36,7 @@ public class MakeLeaderButton extends Button {
         if (team.isOwner(uuid)) {
             lore.add("§aThis player is already the leader!");
         } else {
-            lore.add("§eClick to change §b" + team + "§b's§e leader");
+            lore.add("§eClick to change §b" + team.getName() + "§b's§e leader");
             lore.add("§eto §6" + UUIDUtils.name(uuid));
         }
 
@@ -66,7 +66,7 @@ public class MakeLeaderButton extends Button {
                 ForceLeaderCommand.forceLeader(player, uuid);
 
             }
-        });
+        }).openMenu(player);
 
 
     }

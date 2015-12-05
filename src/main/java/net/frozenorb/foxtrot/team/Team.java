@@ -785,8 +785,20 @@ public class Team {
         DeathbanMap deathbanMap = Foxtrot.getInstance().getDeathbanMap();
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
-        StringBuilder members = new StringBuilder();
-        StringBuilder captains = new StringBuilder();
+
+        FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
+
+        if (player.hasPermission("basic.staff")) {
+            captainsJson.command("/manageteam demote " + getName()).tooltip("§bClick to demote captains");
+        }
+
+        FancyMessage membersJson = new FancyMessage("Members: ").color(ChatColor.YELLOW);
+
+        if (player.hasPermission("basic.staff")) {
+            membersJson.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
+        }
+
+
         int onlineMembers = 0;
 
         for (ObjectId allyId : getAllies()) {
@@ -797,6 +809,7 @@ public class Team {
             }
         }
 
+
         for (Player onlineMember : getOnlineMembers()) {
             onlineMembers++;
 
@@ -805,13 +818,18 @@ public class Team {
                 continue;
             }
 
-            String memberString = ChatColor.GREEN + onlineMember.getName() + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(onlineMember.getUniqueId()) + ChatColor.YELLOW + "]";
+            boolean captain = isCaptain(onlineMember.getUniqueId());
 
-            if (isCaptain(onlineMember.getUniqueId())) {
-                captains.append(memberString).append(ChatColor.GRAY).append(", ");
-            } else {
-                members.append(memberString).append(ChatColor.GRAY).append(", ");
+            FancyMessage appendTo = captain ? captainsJson : membersJson;
+
+            if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
+                appendTo.then(", ").color(ChatColor.GRAY);
             }
+
+            appendTo.then(onlineMember.getName()).color(ChatColor.GREEN).then("[").color(ChatColor.YELLOW);
+            appendTo.then(killsMap.getKills(onlineMember.getUniqueId()) + "").color(ChatColor.GREEN);
+            appendTo.then("]").color(ChatColor.YELLOW);
+
         }
 
         for (UUID offlineMember : getOfflineMembers()) {
@@ -819,13 +837,18 @@ public class Team {
                 continue;
             }
 
-            String memberString = (deathbanMap.isDeathbanned(offlineMember) ? ChatColor.RED : ChatColor.GRAY) + UUIDUtils.name(offlineMember) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(offlineMember) + ChatColor.YELLOW + "]";
+            boolean captain = isCaptain(offlineMember);
 
-            if (isCaptain(offlineMember)) {
-                captains.append(memberString).append(ChatColor.GRAY).append(", ");
-            } else {
-                members.append(memberString).append(ChatColor.GRAY).append(", ");
+            FancyMessage appendTo = captain ? captainsJson : membersJson;
+
+            if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
+                appendTo.then(", ").color(ChatColor.GRAY);
             }
+
+            appendTo.then(UUIDUtils.name(offlineMember)).color(deathbanMap.isDeathbanned(offlineMember) ? ChatColor.RED : ChatColor.GRAY);
+            appendTo.then("[").color(ChatColor.YELLOW).then("" + killsMap.getKills(offlineMember)).color(ChatColor.GREEN);
+            appendTo.then("]").color(ChatColor.YELLOW);
+
         }
 
         // Now we can actually send all that info we just processed.
@@ -837,7 +860,7 @@ public class Team {
         teamLine.then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - ");
         teamLine.then().text(ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
 
-        if (HQ != null) {
+        if (HQ != null && player.hasPermission("basic.staff")) {
             teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
             teamLine.tooltip("§aClick to warp to HQ");
 
@@ -863,30 +886,15 @@ public class Team {
 
         leader.send(player);
 
-
-        if (captains.length() > 2) {
-            captains.setLength(captains.length() - 2);
-            FancyMessage captainMsg = new FancyMessage(ChatColor.YELLOW + "Captains: " + captains.toString());
-
-            if (player.hasPermission("basic.staff")) {
-                captainMsg.command("/manageteam demote " + getName()).tooltip("§bClick to demote captains");
-            }
-
-            captainMsg.send(player);
-
-
+        if (!ChatColor.stripColor(captainsJson.toOldMessageFormat()).endsWith("s: ")) {
+            captainsJson.send(player);
         }
 
-        if (members.length() > 2) {
-            members.setLength(members.length() - 2);
-            FancyMessage membersMsg = new FancyMessage(ChatColor.YELLOW + "Members: " + members.toString());
 
-            if (player.hasPermission("basic.staff")) {
-                membersMsg.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
-            }
-            membersMsg.send(player);
-
+        if (!ChatColor.stripColor(membersJson.toOldMessageFormat()).endsWith("s: ")) {
+            membersJson.send(player);
         }
+
 
         FancyMessage balance = new FancyMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(getBalance()));
 

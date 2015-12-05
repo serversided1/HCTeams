@@ -7,10 +7,12 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.ForceLeaderCommand;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.util.UUIDUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.util.io.BukkitObjectInputStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,18 +69,32 @@ public class ChangePromotionStatusButton extends Button {
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " captain?", (b) -> {
                 if (b) {
                     team.addCaptain(uuid);
+
+                    Player bukkitPlayer= Bukkit.getPlayer(uuid);
+
+                    if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+                        bukkitPlayer.sendMessage(ChatColor.YELLOW + "A staff member has made you a §acaptain §eof your team.");
+                    }
+
                     player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a captain of " + team.getName() + ".");
                 }
-            });
+            }).openMenu(player);
 
 
         } else {
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " member?", (b) -> {
                 if (b) {
                     team.removeCaptain(uuid);
+
+                    Player bukkitPlayer= Bukkit.getPlayer(uuid);
+
+                    if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+                        bukkitPlayer.sendMessage(ChatColor.YELLOW + "A staff member has made you a §bmember §eof your team.");
+                    }
+
                     player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a member of " + team.getName() + ".");
                 }
-            });
+            }).openMenu(player);
 
 
         }
