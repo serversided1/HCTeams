@@ -82,7 +82,6 @@ public class CannonCommand {
 
     public static void spawnCannon(final Player player, final int x, final int z) {
         player.sendMessage(ChatColor.YELLOW + "Cannoning to " + ChatColor.GREEN + x + ", " + z + ChatColor.YELLOW + ".");
-        player.setVelocity(new Vector(0F, 1F, 0F));
 
         new BukkitRunnable() {
 
@@ -93,24 +92,18 @@ public class CannonCommand {
 
                 if (timer < 40) {
                     if (timer % 2 == 0) {
-                        player.setVelocity(new Vector(0F, 1F, 0F));
                         player.playSound(player.getLocation(), Sound.EXPLODE, 1F, 1F);
                     }
-                } else if (timer == 40) {
+                } else {
                     Block block = player.getWorld().getBlockAt(x, 200, z);
 
                     while (block.getType() == Material.AIR && block.getY() > 1) {
                         block = block.getRelative(BlockFace.DOWN);
                     }
 
-                    player.teleport(new Location(player.getWorld(), x, block.getY() + 100, z));
+                    player.teleport(new Location(player.getWorld(), x, block.getY(), z));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 4, 1));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 10, 1000));
-                } else if (timer > 40) {
-                    if (player.isOnGround() || timer > 600) {
-                        player.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
-                        cancel();
-                    }
+                    cancel();
                 }
             }
 
@@ -118,6 +111,10 @@ public class CannonCommand {
     }
 
     public static int getMaxCannonDistance(Player player) {
+        if (Foxtrot.getInstance().getServerHandler().getHighRollers().contains(player.getUniqueId())) {
+            return 1000;
+        }
+        
         if (player.hasPermission("foxtrot.spawncannon.1250")) {
             return (1250);
         } else if (player.hasPermission("foxtrot.spawncannon.1000")) {

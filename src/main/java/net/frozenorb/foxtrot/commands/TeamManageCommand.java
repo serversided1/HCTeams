@@ -50,7 +50,6 @@ public class TeamManageCommand {
     public static void dtrTeam(Player sender, @Parameter(name = "team") Team team) {
         conversationDouble(sender, "§eEnter a new DTR for " + team.getName() + ".", (d) -> {
             SetDTRCommand.setDTR(sender, team, d.floatValue());
-            sender.sendRawMessage(ChatColor.GRAY + team.getName() + " now has a DTR of " + team.getDTR());
         });
     }
 
