@@ -111,6 +111,10 @@ public class CannonCommand {
     }
 
     public static int getMaxCannonDistance(Player player) {
+        if (Foxtrot.getInstance().getServerHandler().getHighRollers().contains(player.getUniqueId())) {
+            return 1000;
+        }
+        
         if (player.hasPermission("foxtrot.spawncannon.1250")) {
             return (1250);
         } else if (player.hasPermission("foxtrot.spawncannon.1000")) {
