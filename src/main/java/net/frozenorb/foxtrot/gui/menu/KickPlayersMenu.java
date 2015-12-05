@@ -5,14 +5,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.gui.button.ChangePromotionStatusButton;
 import net.frozenorb.foxtrot.gui.button.KickPlayerButton;
+import net.frozenorb.foxtrot.gui.button.MakeLeaderButton;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class KickPlayersMenu extends Menu {
@@ -33,11 +33,21 @@ public class KickPlayersMenu extends Menu {
 
         int index = 0;
 
-        for (UUID uuid : team.getMembers()) {
-            buttons.put(index, new KickPlayerButton(uuid, team));
+        ArrayList<UUID> uuids = new ArrayList<>();
+        uuids.addAll(team.getMembers());
+
+        Collections.sort(uuids, new Comparator<UUID>() {
+            public int compare(UUID u1, UUID u2) {
+                return UUIDUtils.name(u1).toLowerCase().compareTo(UUIDUtils.name(u2).toLowerCase());
+            }
+        });
+
+        for (UUID u : uuids) {
+            buttons.put(index, new KickPlayerButton(u, team));
 
             index++;
         }
+
 
         return buttons;
     }

@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -28,6 +29,11 @@ public class ForceKickCommand {
 
         team.removeMember(player);
         Foxtrot.getInstance().getTeamHandler().setTeam(player, null);
+
+        Player bukkitPlayer = Bukkit.getPlayer(player);
+        if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+            bukkitPlayer.sendMessage(ChatColor.RED + "You were kicked from your team by a staff member.");
+        }
 
         sender.sendMessage(ChatColor.YELLOW + "Force kicked " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + " from their team, " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + ".");
     }

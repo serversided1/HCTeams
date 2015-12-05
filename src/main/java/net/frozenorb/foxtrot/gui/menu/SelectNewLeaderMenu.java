@@ -34,7 +34,7 @@ public class SelectNewLeaderMenu extends Menu {
 
         Collections.sort(uuids, new Comparator<UUID>() {
             public int compare(UUID u1, UUID u2) {
-                return UUIDUtils.name(u1).compareTo(UUIDUtils.name(u2));
+                return UUIDUtils.name(u1).toLowerCase().compareTo(UUIDUtils.name(u2).toLowerCase());
             }
         });
 

@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
@@ -61,7 +62,13 @@ public class TeamInviteCommand {
 
         if (bukkitPlayer != null) {
             bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " invited you to join '" + ChatColor.YELLOW + team.getName() + ChatColor.DARK_AQUA + "'.");
-            bukkitPlayer.sendMessage(ChatColor.DARK_AQUA + "Type '" + ChatColor.YELLOW + "/team join " + team.getName() + ChatColor.DARK_AQUA + "' to join.");
+
+            FancyMessage clickToJoin =new FancyMessage("Type '").color(ChatColor.DARK_AQUA).then("/team join " + team.getName()).color(ChatColor.YELLOW);
+            clickToJoin.then("' or ").color(ChatColor.DARK_AQUA);
+            clickToJoin.then("click here").color(ChatColor.AQUA).command("/team join " + team.getName()).tooltip("§aJoin " + team.getName());
+            clickToJoin.then(" to join.").color(ChatColor.DARK_AQUA);
+
+            clickToJoin.send(bukkitPlayer);
         }
 
         team.sendMessage(ChatColor.YELLOW + UUIDUtils.name(player) + " has been invited to the team!");

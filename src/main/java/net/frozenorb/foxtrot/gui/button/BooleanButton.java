@@ -23,6 +23,7 @@ public class BooleanButton extends Button {
         } else {
             player.playSound(player.getLocation(), Sound.DIG_GRAVEL, 20f, 0.1F);
         }
+        player.closeInventory();
 
         callback.callback(elAccepto);
     }
