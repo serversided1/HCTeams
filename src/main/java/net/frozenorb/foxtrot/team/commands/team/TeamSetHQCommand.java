@@ -29,6 +29,16 @@ public class TeamSetHQCommand {
                 }
             }
 
+            if (sender.getLocation().getBlockY() > 100) {
+                if (!sender.isOp()) {
+                    sender.sendMessage(ChatColor.RED + "You can't set your HQ above  Y 100.");
+                    return;
+                } else {
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check is being bypassed due to your rank.");
+                }
+            }
+
+
             team.setHQ(sender.getLocation());
             team.sendMessage(ChatColor.DARK_AQUA + sender.getName() + " has updated the team's HQ point!");
         } else {
