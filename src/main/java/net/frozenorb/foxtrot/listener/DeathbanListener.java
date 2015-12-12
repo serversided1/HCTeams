@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,8 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(final PlayerDeathEvent event) {
+        LastInvCommand.recordInventory(event.getEntity());
+
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return;
         }
