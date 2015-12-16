@@ -95,7 +95,7 @@ public class WebsiteListener implements Listener {
         }
 
         playerDeath.append("ip", event.getEntity().getAddress().toString().split(":")[0].replace("/", ""));
-        playerDeath.append("uuid", event.getEntity().getUniqueId().toString());
+        playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", event.getEntity().getName());
         playerDeath.append("type", "death");
         playerDeath.append("when", new Date());

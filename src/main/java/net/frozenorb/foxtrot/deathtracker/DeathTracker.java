@@ -182,7 +182,7 @@ public class DeathTracker {
         playerData.put("Location", locationData);
         playerData.put("Health", player.getHealth());
         playerData.put("Name", player.getName());
-        playerData.put("UUID", player.getUniqueId().toString());
+        playerData.put("UUID", player.getUniqueId().toString().replace("-", ""));
 
         return (playerData);
     }

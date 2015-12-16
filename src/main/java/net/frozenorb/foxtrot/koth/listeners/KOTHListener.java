@@ -188,7 +188,7 @@ public class KOTHListener implements Listener {
         dbObject.put("KOTH", event.getKOTH().getName());
         dbObject.put("Level", event.getKOTH().getLevel());
         dbObject.put("CapturedAt", new Date());
-        dbObject.put("Capper", event.getPlayer().getUniqueId().toString());
+        dbObject.put("Capper", event.getPlayer().getUniqueId().toString().replace("-", ""));
         dbObject.put("CapperTeam", team == null ? null : team.getUniqueId().toString());
         dbObject.put("KOTHLocation", LocationSerializer.serialize(event.getKOTH().getCapLocation().toLocation(event.getPlayer().getWorld())));
 

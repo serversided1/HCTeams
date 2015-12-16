@@ -406,7 +406,7 @@ public class CombatLoggerListener implements Listener {
             playerDeath.append("killerInventory", killerInventory);
         }
 
-        playerDeath.append("uuid", killed.getUniqueId().toString());
+        playerDeath.append("uuid", killed.getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", killed.getName());
         playerDeath.append("type", "death");
         playerDeath.append("when", new Date());
