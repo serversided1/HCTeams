@@ -39,12 +39,15 @@ public class LastInvCommand {
     }
 
     public static void recordInventory(Player player) {
+        ItemStack[] contents = player.getInventory().getContents();
+        ItemStack[] armor = player.getInventory().getArmorContents();
+
         new BukkitRunnable() {
 
             public void run() {
                 qLib.getInstance().runRedisCommand((redis) -> {
-                    redis.set("lastInv:" + player.getUniqueId().toString() + ":contents", qLib.PLAIN_GSON.toJson(player.getInventory().getContents()));
-                    redis.set("lastInv:" + player.getUniqueId().toString() + ":armorContents", qLib.PLAIN_GSON.toJson(player.getInventory().getArmorContents()));
+                    redis.set("lastInv:" + player.getUniqueId().toString() + ":contents", qLib.PLAIN_GSON.toJson(contents));
+                    redis.set("lastInv:" + player.getUniqueId().toString() + ":armorContents", qLib.PLAIN_GSON.toJson(armor));
                     return null;
                 });
             }
