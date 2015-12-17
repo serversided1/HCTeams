@@ -12,7 +12,7 @@ public class KOTHListCommand {
     @Command(names={ "KOTH List" }, permissionNode="foxtrot.koth")
     public static void kothList(Player sender) {
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            sender.sendMessage((koth.isHidden() ? ChatColor.DARK_GRAY + "[H] " : "") + (koth.isActive() ? ChatColor.GREEN : ChatColor.RED) + koth.getName() + ChatColor.WHITE + " - " + ChatColor.GRAY + TimeUtils.formatIntoMMSS(koth.getRemainingCapTime()) + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + TimeUtils.formatIntoMMSS(koth.getCapTime()) + " " + ChatColor.WHITE + "- " + ChatColor.GRAY + (koth.getCurrentCapper() == null ? "None" : koth.getCurrentCapper()) + (koth.isHidden() ? "" : ChatColor.WHITE + " - " + ChatColor.GRAY + "Level " + koth.getLevel()));
+            sender.sendMessage((koth.isHidden() ? ChatColor.DARK_GRAY + "[H] " : "") + (koth.isActive() ? ChatColor.GREEN : ChatColor.RED) + koth.getName() + ChatColor.WHITE + " - " + ChatColor.GRAY + TimeUtils.formatIntoMMSS(koth.getRemainingCapTime()) + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + TimeUtils.formatIntoMMSS(koth.getCapTime()) + " " + ChatColor.WHITE + "- " + ChatColor.GRAY + (koth.getCurrentCapper() == null ? "None" : koth.getCurrentCapper()));
         }
     }
 

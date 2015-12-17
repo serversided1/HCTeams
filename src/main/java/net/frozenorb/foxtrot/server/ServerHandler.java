@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class ServerHandler {
 
     public static int WARZONE_RADIUS = 1000;
+    public static int WARZONE_BORDER = 3000;
 
     // NEXT MAP //
     // http://minecraft.gamepedia.com/Potion#Data_value_table
@@ -181,7 +182,7 @@ public class ServerHandler {
             return (false);
         }
 
-        return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS);
+        return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS) || ((Math.abs(loc.getBlockX()) > WARZONE_BORDER || Math.abs(loc.getBlockZ()) > WARZONE_BORDER));
     }
 
     public void startLogoutSequence(final Player player) {

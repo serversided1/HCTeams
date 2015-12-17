@@ -25,7 +25,7 @@ public class TeamSetHQCommand {
                     sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");
                     return;
                 } else {
-                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check is being bypassed due to your rank.");
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "Setting HQ outside of your team's territory would normally be disallowed, but this check is being bypassed due to your rank.");
                 }
             }
 
@@ -34,7 +34,7 @@ public class TeamSetHQCommand {
                     sender.sendMessage(ChatColor.RED + "You can't set your HQ above  Y 100.");
                     return;
                 } else {
-                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "That action would normally be disallowed, but this check is being bypassed due to your rank.");
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.ITALIC + "Claiming above Y 100 would normally be disallowed, but this check is being bypassed due to your rank.");
                 }
             }
 

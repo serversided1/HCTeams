@@ -173,24 +173,23 @@ public class InventoryUtils {
         return (lore);
     }
 
-    public static List<String> getKOTHRewardKeyLore(String koth, int level) {
+    public static List<String> getKOTHRewardKeyLore(String koth) {
         List<String> lore = new ArrayList<>();
         DateFormat sdf = new SimpleDateFormat("M/d HH:mm:ss");
 
         lore.add("");
         lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Obtained from: " + ChatColor.YELLOW + "{" + ChatColor.BLUE + koth + ChatColor.YELLOW + "}");
-        lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Level: " + ChatColor.YELLOW + "{" + ChatColor.BLUE + level + ChatColor.YELLOW + "}");
         lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Time: " + ChatColor.YELLOW + "{" + ChatColor.BLUE + sdf.format(new Date()).replace(" AM", "").replace(" PM", "") + ChatColor.YELLOW + "}");
 
         return (lore);
     }
 
-    public static ItemStack generateKOTHRewardKey(String koth, int level) {
+    public static ItemStack generateKOTHRewardKey(String koth) {
         ItemStack key = new ItemStack(Material.GOLD_NUGGET);
         ItemMeta meta = key.getItemMeta();
 
         meta.setDisplayName(ChatColor.RED + "KOTH Reward Key");
-        meta.setLore(getKOTHRewardKeyLore(koth, level));
+        meta.setLore(getKOTHRewardKeyLore(koth));
 
         key.setItemMeta(meta);
         return (key);

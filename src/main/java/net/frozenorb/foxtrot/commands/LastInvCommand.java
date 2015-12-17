@@ -20,19 +20,16 @@ public class LastInvCommand {
 
             public void run() {
                 qLib.getInstance().runRedisCommand((redis) -> {
-                    String key = "lastInv:" + player.toString();
-
-                    if (!redis.exists(key)) {
+                    if (!redis.exists("lastInv:" + player + ":*")) {
                         sender.sendMessage(ChatColor.RED + "No last inventory recorded for " + FrozenUUIDCache.name(player));
                         return null;
                     }
 
-                    String json = redis.get(key);
-                    ItemStack[] inventory = qLib.PLAIN_GSON.fromJson(json, ItemStack[].class);
-
-                    sender.getInventory().setContents(inventory);
+                    sender.getInventory().setContents(qLib.PLAIN_GSON.fromJson(redis.get("lastInv:" + player + ":contents"), ItemStack[].class));
+                    sender.getInventory().setArmorContents(qLib.PLAIN_GSON.fromJson(redis.get("lastInv:" + player + ":armorContents"), ItemStack[].class));
                     sender.updateInventory();
-                    sender.sendMessage(ChatColor.GREEN + "Loaded " + FrozenUUIDCache.name(player) + "'s last inventory");
+
+                    sender.sendMessage(ChatColor.GREEN + "Loaded " + FrozenUUIDCache.name(player) + "'s last inventory.");
 
                     return null;
                 });
@@ -46,10 +43,8 @@ public class LastInvCommand {
 
             public void run() {
                 qLib.getInstance().runRedisCommand((redis) -> {
-                    String json = qLib.PLAIN_GSON.toJson(player.getInventory().getContents());
-                    String key = "lastInv:" + player.getUniqueId().toString();
-
-                    redis.set(key, json);
+                    redis.set("lastInv:" + player.getUniqueId().toString() + ":contents", qLib.PLAIN_GSON.toJson(player.getInventory().getContents()));
+                    redis.set("lastInv:" + player.getUniqueId().toString() + ":armorContents", qLib.PLAIN_GSON.toJson(player.getInventory().getArmorContents()));
                     return null;
                 });
             }
