@@ -146,10 +146,10 @@ public class KOTHListener implements Listener {
         } else {
             messages = new String[] {
                     ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.BLUE + event.getKOTH().getName() + ChatColor.YELLOW + " has been controlled by " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "!",
-                    ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Awarded" + ChatColor.BLUE + " Level " + event.getKOTH().getLevel() + " Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "."
+                    ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.YELLOW + "Awarded" + ChatColor.BLUE + " KOTH Key" + ChatColor.YELLOW + " to " + teamName + ChatColor.WHITE + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "."
             };
 
-            ItemStack rewardKey = InventoryUtils.generateKOTHRewardKey(event.getKOTH().getName() + " KOTH", event.getKOTH().getLevel());
+            ItemStack rewardKey = InventoryUtils.generateKOTHRewardKey(event.getKOTH().getName() + " KOTH");
             ItemStack kothSign = Foxtrot.getInstance().getServerHandler().generateKOTHSign(event.getKOTH().getName(), team == null ? event.getPlayer().getName() : team.getName());
 
             event.getPlayer().getInventory().addItem(rewardKey);
@@ -186,7 +186,6 @@ public class KOTHListener implements Listener {
         final BasicDBObject dbObject = new BasicDBObject();
 
         dbObject.put("KOTH", event.getKOTH().getName());
-        dbObject.put("Level", event.getKOTH().getLevel());
         dbObject.put("CapturedAt", new Date());
         dbObject.put("Capper", event.getPlayer().getUniqueId().toString().replace("-", ""));
         dbObject.put("CapperTeam", team == null ? null : team.getUniqueId().toString());

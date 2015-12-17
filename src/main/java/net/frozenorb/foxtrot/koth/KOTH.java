@@ -27,7 +27,6 @@ public class KOTH {
     @Getter private transient boolean active;
     @Getter private transient String currentCapper;
     @Getter private transient int remainingCapTime;
-    @Getter @Setter private transient int level;
     @Getter @Setter private transient boolean terminate;
 
     public KOTH(String name, Location location) {
@@ -36,7 +35,6 @@ public class KOTH {
         this.world = location.getWorld().getName();
         this.capDistance = 3;
         this.capTime = 60 * 15;
-        this.level = 2;
         this.terminate = false;
 
         Foxtrot.getInstance().getKOTHHandler().getKOTHs().add(this);
@@ -79,7 +77,6 @@ public class KOTH {
         this.active = true;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
-        this.level = 2;
         this.terminate = false;
 
         return (true);
@@ -95,7 +92,6 @@ public class KOTH {
         this.active = false;
         this.currentCapper = null;
         this.remainingCapTime = this.capTime;
-        this.level = 2;
         this.terminate = false;
 
         return (true);

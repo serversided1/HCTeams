@@ -98,7 +98,7 @@ public class KOTHRewardKeyListener implements Listener {
             builder.setLength(builder.length() - 2);
         }
 
-        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 3) + ChatColor.YELLOW + ".");
+        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "KOTH key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 3) + ChatColor.YELLOW + ".");
 
         new BukkitRunnable() {
 
@@ -106,7 +106,7 @@ public class KOTHRewardKeyListener implements Listener {
                 new BukkitRunnable() {
 
                     public void run() {
-                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " obtained " + builder.toString() + ChatColor.GOLD + "," + ChatColor.YELLOW + " from a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Level " + tier + " Key" + ChatColor.YELLOW + ".");
+                        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " obtained " + builder.toString() + ChatColor.GOLD + "," + ChatColor.YELLOW + " from a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "KOTH key" + ChatColor.YELLOW + ".");
                     }
 
                 }.runTaskAsynchronously(Foxtrot.getInstance());
