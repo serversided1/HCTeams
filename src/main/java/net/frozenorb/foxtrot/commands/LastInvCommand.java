@@ -8,8 +8,10 @@ import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class LastInvCommand {
@@ -20,13 +22,39 @@ public class LastInvCommand {
 
             public void run() {
                 qLib.getInstance().runRedisCommand((redis) -> {
-                    if (!redis.exists("lastInv:" + player + ":*")) {
+                    if (!redis.exists("lastInv:contents:" + player.toString())) {
                         sender.sendMessage(ChatColor.RED + "No last inventory recorded for " + FrozenUUIDCache.name(player));
                         return null;
                     }
 
-                    sender.getInventory().setContents(qLib.PLAIN_GSON.fromJson(redis.get("lastInv:" + player + ":contents"), ItemStack[].class));
-                    sender.getInventory().setArmorContents(qLib.PLAIN_GSON.fromJson(redis.get("lastInv:" + player + ":armorContents"), ItemStack[].class));
+                    ItemStack[] contents = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:contents:" + player.toString()), ItemStack[].class);
+                    for (ItemStack item : contents) {
+                        if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
+                            ItemMeta meta = item.getItemMeta();
+
+                            List<String> lore = item.getItemMeta().getLore();
+                            lore.remove(ChatColor.DARK_GRAY + "PVP Loot");
+                            meta.setLore(lore);
+
+                            item.setItemMeta(meta);
+                        }
+                    }
+
+                    ItemStack[] armor = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:armorContents:" + player.toString()), ItemStack[].class);
+                    for (ItemStack item : armor) {
+                        if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
+                            ItemMeta meta = item.getItemMeta();
+
+                            List<String> lore = item.getItemMeta().getLore();
+                            lore.remove(ChatColor.DARK_GRAY + "PVP Loot");
+                            meta.setLore(lore);
+
+                            item.setItemMeta(meta);
+                        }
+                    }
+
+                    sender.getInventory().setContents(contents);
+                    sender.getInventory().setArmorContents(armor);
                     sender.updateInventory();
 
                     sender.sendMessage(ChatColor.GREEN + "Loaded " + FrozenUUIDCache.name(player) + "'s last inventory.");
@@ -46,8 +74,8 @@ public class LastInvCommand {
 
             public void run() {
                 qLib.getInstance().runRedisCommand((redis) -> {
-                    redis.set("lastInv:" + player.getUniqueId().toString() + ":contents", qLib.PLAIN_GSON.toJson(contents));
-                    redis.set("lastInv:" + player.getUniqueId().toString() + ":armorContents", qLib.PLAIN_GSON.toJson(armor));
+                    redis.set("lastInv:contents:" + player.getUniqueId().toString(), qLib.PLAIN_GSON.toJson(contents));
+                    redis.set("lastInv:armorContents:" + player.getUniqueId().toString(), qLib.PLAIN_GSON.toJson(armor));
                     return null;
                 });
             }
