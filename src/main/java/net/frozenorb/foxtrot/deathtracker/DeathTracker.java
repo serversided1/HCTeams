@@ -41,7 +41,7 @@ public class DeathTracker {
                 BasicDBObject simplifiedDeath = new BasicDBObject();
 
                 simplifiedDeath.put("when", new Date());
-                simplifiedDeath.put("dyedUUID", player.getUniqueId().toString().replace("-", ""));
+                simplifiedDeath.put("victimUUID", player.getUniqueId().toString().replace("-", ""));
 
                 if (killer != null) {
                     simplifiedDeath.put("killerUUID", killer.getUniqueId().toString().replace("-", ""));
