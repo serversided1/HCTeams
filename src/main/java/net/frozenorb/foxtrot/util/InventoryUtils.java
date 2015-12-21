@@ -203,10 +203,6 @@ public class InventoryUtils {
         return (Integer.parseInt(getLoreData(item, 3)));
     }
 
-    public static int getKOTHRewardKeyTier(ItemStack item) {
-        return (Integer.parseInt(getLoreData(item, 2)));
-    }
-
     public static String getLoreData(ItemStack item, int index) {
         List<String> lore = item.getItemMeta().getLore();
 

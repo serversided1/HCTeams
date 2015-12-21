@@ -43,8 +43,7 @@ public class KOTHRewardKeyListener implements Listener {
             return;
         }
 
-        final int tier = InventoryUtils.getKOTHRewardKeyTier(event.getItem());
-        Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, tier + 3);
+        Block block = event.getClickedBlock().getRelative(BlockFace.DOWN, 3);
 
         if (block.getType() != Material.CHEST) {
             return;
