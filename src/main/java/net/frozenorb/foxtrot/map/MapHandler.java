@@ -17,6 +17,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
@@ -153,6 +154,23 @@ public class MapHandler {
         Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
         Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
         Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
+    }
+
+    public void saveBorder() {
+        File mapInfo = new File("mapInfo.json");
+
+        try {
+            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+            if (dbObject != null) {
+                dbObject.put("border", BorderListener.BORDER_SIZE); // update the border
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString()))); // save it exactly like it was except for the border that was changed.
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
