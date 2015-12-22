@@ -546,6 +546,11 @@ public class Team {
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Allies")) {
+                // Just cancel loading of allies if they're disabled (for switching # of allowed allies mid-map)
+                if (Foxtrot.getInstance().getMapHandler().getAllyLimit() == 0) {
+                    continue;
+                }
+
                 for (String ally : lineParts) {
                     ally = ally.replace("[", "").replace("]", "");
 
@@ -554,6 +559,11 @@ public class Team {
                     }
                 }
             } else if (identifier.equalsIgnoreCase("RequestedAllies")) {
+                // Just cancel loading of allies if they're disabled (for switching # of allowed allies mid-map)
+                if (Foxtrot.getInstance().getMapHandler().getAllyLimit() == 0) {
+                    continue;
+                }
+
                 for (String requestedAlly : lineParts) {
                     requestedAlly = requestedAlly.replace("[", "").replace("]", "");
 
