@@ -683,7 +683,7 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
-        teamString.append("HistoricalMembers").append(historicalMembers.toString());
+        teamString.append("HistoricalMembers").append(historicalMembers.toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("MaxOnline:").append(getMaxOnline()).append('\n');
