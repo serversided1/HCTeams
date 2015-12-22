@@ -25,6 +25,7 @@ import net.frozenorb.qlib.util.TimeUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -917,6 +918,9 @@ public class Team {
 
         dtrMessage.send(player);
 
+        if (isMember(player.getUniqueId()) || player.hasPermission("basic.staff")) {
+            player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
+        }
 
         if (DTRHandler.isOnCooldown(this)) {
             player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
