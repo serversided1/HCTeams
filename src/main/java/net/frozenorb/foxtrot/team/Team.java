@@ -43,52 +43,35 @@ public class Team {
     public static final String GRAY_LINE = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat("-", 53);
     public static final ChatColor ALLY_COLOR = ChatColor.BLUE;
     public static final int MAX_CLAIMS = 2;
+    public static final int MAX_FORCE_INVITES = 5;
 
     // Internal //
-    @Getter
-    private boolean needsSave = false;
-    @Getter
-    private boolean loading = false;
+    @Getter private boolean needsSave = false;
+    @Getter private boolean loading = false;
 
     // Persisted //
-    @Getter
-    @Setter
-    private ObjectId uniqueId;
-    @Getter
-    private String name;
-    @Getter
-    private Location HQ;
-    @Getter
-    private double balance;
-    @Getter
-    private double DTR;
-    @Getter
-    private long DTRCooldown;
-    @Getter
-    private List<Claim> claims = new ArrayList<>();
-    @Getter
-    private List<Subclaim> subclaims = new ArrayList<>();
-    @Getter
-    private UUID owner = null;
-    @Getter
-    private Set<UUID> members = new HashSet<>();
-    @Getter
-    private Set<UUID> captains = new HashSet<>();
-    @Getter
-    private Set<UUID> invitations = new HashSet<>();
-    @Getter
-    private Set<ObjectId> allies = new HashSet<>();
-    @Getter
-    private Set<ObjectId> requestedAllies = new HashSet<>();
-    @Getter
-    private String announcement;
-    @Getter
-    private int maxOnline = -1;
+    @Getter @Setter private ObjectId uniqueId;
+    @Getter private String name;
+    @Getter private Location HQ;
+    @Getter private double balance;
+    @Getter private double DTR;
+    @Getter private long DTRCooldown;
+    @Getter private List<Claim> claims = new ArrayList<>();
+    @Getter private List<Subclaim> subclaims = new ArrayList<>();
+    @Getter private UUID owner = null;
+    @Getter private Set<UUID> members = new HashSet<>();
+    @Getter private Set<UUID> captains = new HashSet<>();
+    @Getter private Set<UUID> invitations = new HashSet<>();
+    @Getter private Set<ObjectId> allies = new HashSet<>();
+    @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
+    @Getter private String announcement;
+    @Getter private int maxOnline = -1;
+
+    @Getter @Setter private int forceInvites = MAX_FORCE_INVITES;
+    @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
 
     // Not persisted //
-    @Getter
-    @Setter
-    private UUID focused;
+    @Getter @Setter private UUID focused;
 
     public Team(String name) {
         this.name = name;
@@ -149,6 +132,7 @@ public class Team {
 
     public void addMember(UUID member) {
         members.add(member);
+        historicalMembers.add(member);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + UUIDUtils.formatPretty(member));
         pushToMongoLog(new BasicDBObject("Type", "MemberAdded").append("Member", member.toString()));
         flagForSave();
@@ -518,6 +502,12 @@ public class Team {
                         getInvitations().add(UUID.fromString(name.trim()));
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("HistoricalMembers")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2) {
+                        getHistoricalMembers().add(UUID.fromString(name.trim()));
+                    }
+                }
             } else if (identifier.equalsIgnoreCase("HQ")) {
                 setHQ(parseLocation(lineParts));
             } else if (identifier.equalsIgnoreCase("DTR")) {
@@ -526,6 +516,8 @@ public class Team {
                 setBalance(Double.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("MaxOnline")) {
                 setMaxOnline(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("ForceInvites")) {
+                setForceInvites(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("DTRCooldown")) {
                 setDTRCooldown(Long.parseLong(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("FriendlyName")) {
@@ -638,6 +630,7 @@ public class Team {
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
         StringBuilder invites = new StringBuilder();
+        StringBuilder historicalMembers = new StringBuilder();
 
         for (UUID member : getMembers()) {
             members.append(member.toString()).append(", ");
@@ -649,6 +642,10 @@ public class Team {
 
         for (UUID invite : getInvitations()) {
             invites.append(invite.toString()).append(", ");
+        }
+
+        for (UUID member : getHistoricalMembers()) {
+            historicalMembers.append(member.toString()).append(", ");
         }
 
         if (members.length() > 2) {
@@ -663,6 +660,10 @@ public class Team {
             invites.setLength(invites.length() - 2);
         }
 
+        if (historicalMembers.length() > 2) {
+            historicalMembers.setLength(historicalMembers.length() - 2);
+        }
+
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
@@ -672,9 +673,11 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
+        teamString.append("HistoricalMembers").append(historicalMembers.toString());
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("MaxOnline:").append(getMaxOnline()).append('\n');
+        teamString.append("ForceInvites").append(getForceInvites()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
