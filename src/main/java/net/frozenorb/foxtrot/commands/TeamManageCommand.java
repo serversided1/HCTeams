@@ -7,7 +7,6 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.SetDTRCommand;
 import net.frozenorb.foxtrot.team.commands.SetTeamBalanceCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamCreateCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamRenameCommand;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.bukkit.ChatColor;

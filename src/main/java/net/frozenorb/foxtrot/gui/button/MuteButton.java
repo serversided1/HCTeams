@@ -1,12 +1,10 @@
 package net.frozenorb.foxtrot.gui.button;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.qlib.menu.Button;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;

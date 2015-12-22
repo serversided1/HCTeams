@@ -2,13 +2,10 @@ package net.frozenorb.foxtrot.gui.button;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.frozenorb.foxtrot.gui.menu.ConfirmMenu;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.ForceKickCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamKickCommand;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.util.UUIDUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

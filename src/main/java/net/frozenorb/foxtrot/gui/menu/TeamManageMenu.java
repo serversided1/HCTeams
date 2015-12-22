@@ -1,8 +1,10 @@
 package net.frozenorb.foxtrot.gui.menu;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
-import net.frozenorb.foxtrot.gui.button.*;
+import net.frozenorb.foxtrot.gui.button.DisbandTeamButton;
+import net.frozenorb.foxtrot.gui.button.OpenKickMenuButton;
+import net.frozenorb.foxtrot.gui.button.OpenMuteMenuButton;
+import net.frozenorb.foxtrot.gui.button.RenameButton;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;

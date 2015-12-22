@@ -4,11 +4,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.gui.button.ChangePromotionStatusButton;
-import net.frozenorb.foxtrot.gui.button.MakeLeaderButton;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
-import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

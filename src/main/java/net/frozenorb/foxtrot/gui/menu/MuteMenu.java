@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.gui.menu;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
-import net.frozenorb.foxtrot.gui.button.BooleanButton;
 import net.frozenorb.foxtrot.gui.button.MuteButton;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.menu.Button;

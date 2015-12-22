@@ -1,15 +1,11 @@
 package net.frozenorb.foxtrot.gui.button;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
 import net.frozenorb.foxtrot.gui.menu.ConfirmMenu;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.ForceDisbandCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamDisbandCommand;
 import net.frozenorb.qlib.menu.Button;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 

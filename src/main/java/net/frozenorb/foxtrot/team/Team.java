@@ -25,7 +25,6 @@ import net.frozenorb.qlib.util.TimeUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
