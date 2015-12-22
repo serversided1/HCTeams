@@ -97,65 +97,7 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
-
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
-            Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
-        }
-
-        Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
-        ServerHandler sm = Foxtrot.getInstance().getServerHandler();
-        RegionData from = sm.getRegion(ownerFrom, event.getFrom());
-        RegionData to = sm.getRegion(ownerTo, event.getTo());
-
-        if (!from.equals(to)) {
-            if (!to.getRegionType().getMoveHandler().handleMove(event)) {
-                return;
-            }
-
-            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
-            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
-
-            if (fromReduceDeathban && from.getData() != null) {
-                KOTH fromLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(from.getData().getName());
-
-                if (fromLinkedKOTH != null && !fromLinkedKOTH.isActive()) {
-                    fromReduceDeathban = false;
-                }
-            }
-
-            if (toReduceDeathban && to.getData() != null) {
-                KOTH toLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(to.getData().getName());
-
-                if (toLinkedKOTH != null && !toLinkedKOTH.isActive()) {
-                    toReduceDeathban = false;
-                }
-            }
-
-            // create leaving message
-            FancyMessage nowLeaving = new FancyMessage("Now leaving: ").color(ChatColor.YELLOW)
-                    .then(from.getName(event.getPlayer())).color(ChatColor.YELLOW);
-
-            if (ownerFrom != null) {
-                nowLeaving.command("/t i " + ownerFrom.getName()).tooltip(ChatColor.GREEN + "View team info");
-            }
-
-            nowLeaving.then(" (").color(ChatColor.YELLOW).then(fromReduceDeathban ? "Non-Deathban" : "Deathban").color(fromReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
-
-            // create entering message
-            FancyMessage nowEntering = new FancyMessage("Now entering: ").color(ChatColor.YELLOW)
-                    .then(to.getName(event.getPlayer())).color(ChatColor.YELLOW);
-
-            if (ownerTo != null) {
-                nowEntering.command("/t i " + ownerTo.getName()).tooltip(ChatColor.GREEN + "View team info");
-            }
-
-            nowEntering.then(" (").color(ChatColor.YELLOW).then(toReduceDeathban ? "Non-Deathban" : "Deathban").color(toReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
-
-            // send both
-            nowLeaving.send(event.getPlayer());
-            nowEntering.send(event.getPlayer());
-        }
+        processTerritoryInfo(event); // this only works because I'm lucky and PlayerTeleportEvent extends PlayerMoveEvent :0
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
@@ -170,65 +112,7 @@ public class FoxListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
         }
 
-        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
-
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
-            Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
-        }
-
-        Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
-        ServerHandler sm = Foxtrot.getInstance().getServerHandler();
-        RegionData from = sm.getRegion(ownerFrom, event.getFrom());
-        RegionData to = sm.getRegion(ownerTo, event.getTo());
-
-        if (!from.equals(to)) {
-            if (!to.getRegionType().getMoveHandler().handleMove(event)) {
-                return;
-            }
-
-            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
-            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
-
-            if (fromReduceDeathban && from.getData() != null) {
-                KOTH fromLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(from.getData().getName());
-
-                if (fromLinkedKOTH != null && !fromLinkedKOTH.isActive()) {
-                    fromReduceDeathban = false;
-                }
-            }
-
-            if (toReduceDeathban && to.getData() != null) {
-                KOTH toLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(to.getData().getName());
-
-                if (toLinkedKOTH != null && !toLinkedKOTH.isActive()) {
-                    toReduceDeathban = false;
-                }
-            }
-
-            // create leaving message
-            FancyMessage nowLeaving = new FancyMessage("Now leaving: ").color(ChatColor.YELLOW)
-                    .then(from.getName(event.getPlayer())).color(ChatColor.YELLOW);
-
-            if (ownerFrom != null) {
-                nowLeaving.command("/t i " + ownerFrom.getName()).tooltip(ChatColor.GREEN + "View team info");
-            }
-
-            nowLeaving.then(" (").color(ChatColor.YELLOW).then(fromReduceDeathban ? "Non-Deathban" : "Deathban").color(fromReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
-
-            // create entering message
-            FancyMessage nowEntering = new FancyMessage("Now entering: ").color(ChatColor.YELLOW)
-                    .then(to.getName(event.getPlayer())).color(ChatColor.YELLOW);
-
-            if (ownerTo != null) {
-                nowEntering.command("/t i " + ownerTo.getName()).tooltip(ChatColor.GREEN + "View team info");
-            }
-
-            nowEntering.then(" (").color(ChatColor.YELLOW).then(toReduceDeathban ? "Non-Deathban" : "Deathban").color(toReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
-
-            // send both
-            nowLeaving.send(event.getPlayer());
-            nowEntering.send(event.getPlayer());
-        }
+        processTerritoryInfo(event);
     }
 
     @EventHandler
@@ -554,6 +438,68 @@ public class FoxListener implements Listener {
         if (event.getEntity().getKiller() != null && !Double.isNaN(bal)) {
             Basic.get().getEconomyManager().depositPlayer(event.getEntity().getKiller().getName(), bal);
             event.getEntity().getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + event.getEntity().getDisplayName() + ChatColor.GOLD + "!");
+        }
+    }
+
+    private void processTerritoryInfo(PlayerMoveEvent event) {
+        Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
+
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
+            Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+        }
+
+        Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
+        ServerHandler sm = Foxtrot.getInstance().getServerHandler();
+        RegionData from = sm.getRegion(ownerFrom, event.getFrom());
+        RegionData to = sm.getRegion(ownerTo, event.getTo());
+
+        if (!from.equals(to)) {
+            if (!to.getRegionType().getMoveHandler().handleMove(event)) {
+                return;
+            }
+
+            boolean fromReduceDeathban = from.getData() != null && (from.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || from.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
+            boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
+
+            if (fromReduceDeathban && from.getData() != null) {
+                KOTH fromLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(from.getData().getName());
+
+                if (fromLinkedKOTH != null && !fromLinkedKOTH.isActive()) {
+                    fromReduceDeathban = false;
+                }
+            }
+
+            if (toReduceDeathban && to.getData() != null) {
+                KOTH toLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(to.getData().getName());
+
+                if (toLinkedKOTH != null && !toLinkedKOTH.isActive()) {
+                    toReduceDeathban = false;
+                }
+            }
+
+            // create leaving message
+            FancyMessage nowLeaving = new FancyMessage("Now leaving: ").color(ChatColor.YELLOW)
+                    .then(from.getName(event.getPlayer())).color(ChatColor.YELLOW);
+
+            if (ownerFrom != null) {
+                nowLeaving.command("/t i " + ownerFrom.getName()).tooltip(ChatColor.GREEN + "View team info");
+            }
+
+            nowLeaving.then(" (").color(ChatColor.YELLOW).then(fromReduceDeathban ? "Non-Deathban" : "Deathban").color(fromReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
+
+            // create entering message
+            FancyMessage nowEntering = new FancyMessage("Now entering: ").color(ChatColor.YELLOW)
+                    .then(to.getName(event.getPlayer())).color(ChatColor.YELLOW);
+
+            if (ownerTo != null) {
+                nowEntering.command("/t i " + ownerTo.getName()).tooltip(ChatColor.GREEN + "View team info");
+            }
+
+            nowEntering.then(" (").color(ChatColor.YELLOW).then(toReduceDeathban ? "Non-Deathban" : "Deathban").color(toReduceDeathban ? ChatColor.GREEN : ChatColor.RED).then(")").color(ChatColor.YELLOW);
+
+            // send both
+            nowLeaving.send(event.getPlayer());
+            nowEntering.send(event.getPlayer());
         }
     }
 

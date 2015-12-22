@@ -10,6 +10,7 @@ import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
@@ -53,6 +54,25 @@ public class TeamInviteCommand {
             sender.sendMessage(ChatColor.RED + "You may not invite players while your team is raidable!");
             return;
         }*/
+
+        if (team.getHistoricalMembers().contains(player)) {
+            if (team.getForceInvites() == 0) {
+                sender.sendMessage(ChatColor.RED + "You do not have any force-invites left, and that player was once a member of your team.");
+                return;
+            }
+
+            team.setForceInvites(team.getForceInvites() - 1);
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    sender.sendMessage(" ");
+                    sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "As that player was previously a member of your team, you used a force-invite.");
+                    sender.sendMessage(ChatColor.YELLOW + "You have " + ChatColor.RED + team.getForceInvites() + ChatColor.YELLOW + " of those left.");
+                    sender.sendMessage(" ");
+                }
+            }.runTask(Foxtrot.getInstance());
+        }
 
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(player);
