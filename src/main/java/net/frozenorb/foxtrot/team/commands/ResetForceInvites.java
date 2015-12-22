@@ -24,7 +24,7 @@ public class ResetForceInvites {
                         team.setForceInvites(Team.MAX_FORCE_INVITES);
                     }
 
-                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All teams have been forcibly disbanded!");
+                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All force invites have been reset!");
                     return (Prompt.END_OF_CONVERSATION);
                 }
 
