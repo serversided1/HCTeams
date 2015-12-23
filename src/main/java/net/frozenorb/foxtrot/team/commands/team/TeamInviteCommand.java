@@ -55,7 +55,7 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        if (team.getHistoricalMembers().contains(player)) {
+        if (team.getHistoricalMembers().contains(player) && team.getSize() > 10) {
             if (team.getForceInvites() == 0) {
                 sender.sendMessage(ChatColor.RED + "You do not have any force-invites left, and that player was once a member of your team.");
                 return;
