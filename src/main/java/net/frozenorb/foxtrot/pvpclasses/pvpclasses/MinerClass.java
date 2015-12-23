@@ -120,7 +120,7 @@ public class MinerClass extends PvPClass implements Listener {
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
+        if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof Player)) {
             return;
         }
 
