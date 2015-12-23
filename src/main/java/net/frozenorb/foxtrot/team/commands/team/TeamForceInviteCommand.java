@@ -10,13 +10,14 @@ import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-public class TeamInviteCommand {
+public class TeamForceInviteCommand {
 
-    @Command(names={ "team invite", "t invite", "f invite", "faction invite", "fac invite", "team inv", "t inv", "f inv", "faction inv", "fac inv" }, permissionNode="")
-    public static void teamInvite(Player sender, @Parameter(name="player") UUID player, @Parameter(name="override?", defaultValue="something-not-override") String override) {
+    @Command(names = {"team forceinvite", "t forceinvite", "f forceinvite", "faction forceinvite", "fac forceinvite"}, permissionNode = "")
+    public static void teamForceInvite(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -44,8 +45,8 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player) && !override.equalsIgnoreCase("override")) {
-            sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING! " + ChatColor.YELLOW + UUIDUtils.name(player) + " has previously betrayed another team. Are you sure you want to invite " + UUIDUtils.name(player) + "? Type '/t invite " + UUIDUtils.name(player) + " override' to ignore this warning.");
+        if (!team.getHistoricalMembers().contains(player)) {
+            sender.sendMessage(ChatColor.RED + "That player has never been a member of your faction. Please use /f invite.");
             return;
         }
 
@@ -54,13 +55,27 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        if (team.getHistoricalMembers().contains(player) && team.getSize() > 10) {
-            sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to reinvite " + UUIDUtils.name(player) + ". Type "
-                    + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
-            );
-
+        if (team.getForceInvites() == 0) {
+            sender.sendMessage(ChatColor.RED + "You do not have any force-invites left!");
             return;
         }
+
+        team.setForceInvites(team.getForceInvites() - 1);
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Force-invite used: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
+
+        // we use a runnable so this message gets displayed at the end
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have used a force-invite.");
+
+                if (team.getForceInvites() != 0) {
+                    sender.sendMessage(ChatColor.YELLOW + "You have " + ChatColor.RED + team.getForceInvites() + ChatColor.YELLOW + " of those left.");
+                } else {
+                    sender.sendMessage(ChatColor.YELLOW + "You have " + ChatColor.RED + "none" + ChatColor.YELLOW + " of those left.");
+                }
+            }
+        }.runTask(Foxtrot.getInstance());
 
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(player);
