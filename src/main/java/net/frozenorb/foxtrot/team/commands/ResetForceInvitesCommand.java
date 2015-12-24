@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 
-public class ResetForceInvites {
+public class ResetForceInvitesCommand {
 
     @Command(names = {"resetforceinvites"}, permissionNode = "op")
     public static void resetforceinvites(Player sender) {
