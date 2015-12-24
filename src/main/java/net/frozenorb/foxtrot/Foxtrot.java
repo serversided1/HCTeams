@@ -122,12 +122,13 @@ public class Foxtrot extends JavaPlugin {
     }
 
     private void setupHandlers() {
+        mapHandler = new MapHandler();
+        
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
 
         chatHandler = new ChatHandler();
         serverHandler = new ServerHandler();
-        mapHandler = new MapHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
         KOTHHandler = new KOTHHandler();
