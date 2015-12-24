@@ -475,6 +475,11 @@ public class Team {
         //System.out.println(str);
 
         for (String line : lines) {
+            if (line.indexOf(':') == -1) {
+                System.out.println("Found an invalid line... `" + line + "`");
+                continue;
+            }
+
             String identifier = line.substring(0, line.indexOf(':'));
             String[] lineParts = line.substring(line.indexOf(':') + 1).split(",");
 
@@ -683,7 +688,7 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
-        teamString.append("HistoricalMembers").append(historicalMembers.toString()).append('\n');
+        teamString.append("HistoricalMembers:").append(historicalMembers.toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("MaxOnline:").append(getMaxOnline()).append('\n');
