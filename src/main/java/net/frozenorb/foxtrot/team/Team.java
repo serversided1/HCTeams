@@ -692,7 +692,7 @@ public class Team {
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
         teamString.append("MaxOnline:").append(getMaxOnline()).append('\n');
-        teamString.append("ForceInvites").append(getForceInvites()).append('\n');
+        teamString.append("ForceInvites:").append(getForceInvites()).append('\n');
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
