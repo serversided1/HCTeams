@@ -83,4 +83,18 @@ public class LastInvCommand {
         }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
+    public static void recordInventory(UUID player, ItemStack[] contents, ItemStack[] armor) {
+        new BukkitRunnable() {
+
+            public void run() {
+                qLib.getInstance().runRedisCommand((redis) -> {
+                    redis.set("lastInv:contents:" + player.toString(), qLib.PLAIN_GSON.toJson(contents));
+                    redis.set("lastInv:armorContents:" + player.toString(), qLib.PLAIN_GSON.toJson(armor));
+                    return null;
+                });
+            }
+
+        }.runTaskAsynchronously(Foxtrot.getInstance());
+    }
+
 }

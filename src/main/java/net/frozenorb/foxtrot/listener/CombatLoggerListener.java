@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -64,7 +65,10 @@ public class CombatLoggerListener implements Listener {
             }
 
             // Drop the player's items.
-            for (ItemStack item : metadata.drops) {
+            for (ItemStack item : metadata.contents) {
+                event.getDrops().add(item);
+            }
+            for (ItemStack item : metadata.armor) {
                 event.getDrops().add(item);
             }
 
@@ -103,6 +107,8 @@ public class CombatLoggerListener implements Listener {
                 spoofWebsiteData(target, event.getEntity().getKiller());
                 target.saveData();
             }
+
+            LastInvCommand.recordInventory(metadata.playerUUID, metadata.contents, metadata.armor);
         }
     }
 
@@ -262,10 +268,6 @@ public class CombatLoggerListener implements Listener {
 
             ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
             ItemStack[] inv = event.getPlayer().getInventory().getContents();
-            ItemStack[] drops = new ItemStack[armor.length + inv.length];
-
-            System.arraycopy(armor, 0, drops, 0, armor.length);
-            System.arraycopy(inv, 0, drops, armor.length, inv.length);
 
             final Villager villager = (Villager) event.getPlayer().getWorld().spawnEntity(event.getPlayer().getLocation(), EntityType.VILLAGER);
 
@@ -276,7 +278,8 @@ public class CombatLoggerListener implements Listener {
 
             metadata.playerName = event.getPlayer().getName();
             metadata.playerUUID = event.getPlayer().getUniqueId();
-            metadata.drops = drops;
+            metadata.contents = inv;
+            metadata.armor = armor;
 
             villager.setMetadata(COMBAT_LOGGER_METADATA, new FixedMetadataValue(Foxtrot.getInstance(), metadata));
 
@@ -328,7 +331,8 @@ public class CombatLoggerListener implements Listener {
 
     public static class CombatLoggerMetadata {
 
-        private ItemStack[] drops;
+        private ItemStack[] contents;
+        private ItemStack[] armor;
         private String playerName;
         private UUID playerUUID;
 
