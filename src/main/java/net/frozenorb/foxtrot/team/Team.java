@@ -937,7 +937,17 @@ public class Team {
         }
 
         if (DTRHandler.isOnCooldown(this)) {
-            player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            if (!player.isOp()) {
+                player.sendMessage(ChatColor.YELLOW + "Time Until Regen: " + ChatColor.BLUE + TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000).trim());
+            } else {
+                FancyMessage message = new FancyMessage(ChatColor.YELLOW + "Time Until Regen: ")
+                        .tooltip(ChatColor.GREEN + "Click to remove regeneration timer").command("/startdtrregen " + getName());
+
+                message.then(TimeUtils.formatIntoDetailedString(((int) (getDTRCooldown() - System.currentTimeMillis())) / 1000)).color(ChatColor.BLUE)
+                        .tooltip(ChatColor.GREEN + "Click to remove regeneration timer").command("/startdtrregen " + getName());
+
+                message.send(player);
+            }
         }
 
         // Only show this if they're a member.
