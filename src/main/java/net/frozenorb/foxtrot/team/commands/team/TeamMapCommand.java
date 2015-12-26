@@ -12,9 +12,9 @@ public class TeamMapCommand {
         (new VisualClaim(sender, VisualClaimType.MAP, false)).draw(false);
     }
 
-    @Command(names={ "team map surface", "t map surface", "f map surface", "faction map surface", "fac map surface", "map surface" }, permissionNode="")
-    public static void teamMapSurface(Player sender) {
-        (new VisualClaim(sender, VisualClaimType.SURFACE_MAP, false)).draw(false);
-    }
+//    @Command(names={ "team map surface", "t map surface", "f map surface", "faction map surface", "fac map surface", "map surface" }, permissionNode="")
+//    public static void teamMapSurface(Player sender) {
+//        (new VisualClaim(sender, VisualClaimType.SURFACE_MAP, false)).draw(false);
+//    }
 
 }
