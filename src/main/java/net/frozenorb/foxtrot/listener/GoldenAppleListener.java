@@ -18,6 +18,12 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
+        if (Foxtrot.getInstance().getMapHandler().getGoppleCooldown() == -1) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Super golden apples are currently disabled..");
+            return;
+        }
+
         long cooldownUntil = Foxtrot.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId());
 
         if (cooldownUntil > System.currentTimeMillis()) {
