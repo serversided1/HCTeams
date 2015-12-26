@@ -14,6 +14,18 @@ import java.util.Set;
 public class KOTHType implements ParameterType<KOTH> {
 
     public KOTH transform(CommandSender sender, String source) {
+        if (source.equals("active")) {
+            for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+                if (koth.isActive() && !koth.isHidden()) {
+                    return koth;
+                }
+            }
+
+            sender.sendMessage(ChatColor.RED + "There is no active KOTH at the moment.");
+
+            return null;
+        }
+
         KOTH koth = Foxtrot.getInstance().getKOTHHandler().getKOTH(source);
 
         if (koth == null) {
