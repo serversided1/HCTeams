@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -118,6 +119,8 @@ public class ChatListener implements Listener {
                         }
                     }
                 }
+
+                simpleMessage.send(Bukkit.getConsoleSender());
                 break;
             case ALLIANCE:
                 String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
