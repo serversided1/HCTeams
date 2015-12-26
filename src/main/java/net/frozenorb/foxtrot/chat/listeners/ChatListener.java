@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -64,8 +65,20 @@ public class ChatListener implements Listener {
                     return;
                 }
 
-                String publicChatFormat = FoxConstants.publicChatFormat(playerTeam, highRollerPrefix, customPrefix);
-                String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
+                // create simple public chat message
+                FancyMessage simpleMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.YELLOW);
+                if (playerTeam != null) simpleMessage.command("/t i " + playerTeam.getName());
+                simpleMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
+
+                // create the message members see
+                FancyMessage memberMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.DARK_GREEN);
+                if (playerTeam != null) memberMessage.command("/t i " + playerTeam.getName());
+                memberMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
+
+                // create the message allies see
+                FancyMessage allyMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(Team.ALLY_COLOR);
+                if (playerTeam != null) allyMessage.command("/t i " + playerTeam.getName());
+                allyMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
                 // not online players
@@ -80,15 +93,14 @@ public class ChatListener implements Listener {
                         // If their chat is enabled (which it is by default) or the sender is op, send them the message
                         // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                         if (event.getPlayer().isOp() || Foxtrot.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
-                            player.sendMessage(finalMessage);
+                            simpleMessage.send(player);
                         }
                     } else {
+                        // send the appropriate message
                         if (playerTeam.isMember(player.getUniqueId())) {
-                            // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
+                            memberMessage.send(player);
                         } else if (playerTeam.isAlly(player.getUniqueId())) {
-                            // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
+                            allyMessage.send(player);
                         } else {
                             // We only check this here as...
                             // Team members always see their team's messages
@@ -101,13 +113,11 @@ public class ChatListener implements Listener {
                             // If their chat is enabled (which it is by default) or the sender is op, send them the message
                             // The isOp() fragment is so OP messages are sent regardless of if the player's chat is toggled
                             if (event.getPlayer().isOp() || Foxtrot.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(player.getUniqueId())) {
-                                player.sendMessage(finalMessage);
+                                simpleMessage.send(player);
                             }
                         }
                     }
                 }
-
-                Foxtrot.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
                 break;
             case ALLIANCE:
                 String allyChatFormat = FoxConstants.allyChatFormat(event.getPlayer(), event.getMessage());
