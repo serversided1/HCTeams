@@ -69,17 +69,17 @@ public class ChatListener implements Listener {
                 // create simple public chat message
                 FancyMessage simpleMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.YELLOW);
                 if (playerTeam != null) simpleMessage.command("/t i " + playerTeam.getName());
-                simpleMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
+                simpleMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // create the message members see
                 FancyMessage memberMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.DARK_GREEN);
                 if (playerTeam != null) memberMessage.command("/t i " + playerTeam.getName());
-                memberMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
+                memberMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // create the message allies see
                 FancyMessage allyMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(Team.ALLY_COLOR);
                 if (playerTeam != null) allyMessage.command("/t i " + playerTeam.getName());
-                allyMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(": " + event.getMessage());
+                allyMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
                 // not online players
