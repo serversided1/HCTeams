@@ -67,19 +67,37 @@ public class ChatListener implements Listener {
                 }
 
                 // create simple public chat message
-                FancyMessage simpleMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.YELLOW);
-                if (playerTeam != null) simpleMessage.command("/t i " + playerTeam.getName());
+                FancyMessage simpleMessage = new FancyMessage("[").color(ChatColor.GOLD);
+
+                if (playerTeam == null) {
+                    simpleMessage.then("-").color(ChatColor.YELLOW);
+                } else {
+                    simpleMessage.then(playerTeam.getName()).color(ChatColor.YELLOW).command("/t i " + playerTeam.getName()).tooltip(ChatColor.GREEN + "Click to view team info");
+                }
+
                 simpleMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // create the message members see
-                FancyMessage memberMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(ChatColor.DARK_GREEN);
-                if (playerTeam != null) memberMessage.command("/t i " + playerTeam.getName());
+                FancyMessage memberMessage = new FancyMessage("[").color(ChatColor.GOLD);
+
+                if (playerTeam == null) {
+                    simpleMessage.then("-").color(ChatColor.GREEN);
+                } else {
+                    simpleMessage.then(playerTeam.getName()).color(ChatColor.DARK_GREEN).command("/t i " + playerTeam.getName()).tooltip(ChatColor.GREEN + "Click to view team info");
+                }
+
                 memberMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // create the message allies see
-                FancyMessage allyMessage = new FancyMessage("[").color(ChatColor.GOLD).then(playerTeam == null ? "-" : playerTeam.getName()).color(Team.ALLY_COLOR);
-                if (playerTeam != null) allyMessage.command("/t i " + playerTeam.getName());
-                allyMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
+                FancyMessage allyMessage = new FancyMessage("[").color(ChatColor.GOLD);
+
+                if (playerTeam == null) {
+                    simpleMessage.then("-").color(Team.ALLY_COLOR);
+                } else {
+                    simpleMessage.then(playerTeam.getName()).color(Team.ALLY_COLOR).command("/t i " + playerTeam.getName()).tooltip(ChatColor.GREEN + "Click to view team info");
+                }
+
+                memberMessage.then("]").color(ChatColor.GOLD).then(highRollerPrefix).then(customPrefix).then(event.getPlayer().getDisplayName()).then(": " + event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
                 // not online players
