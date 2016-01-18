@@ -2,14 +2,13 @@ package net.frozenorb.foxtrot.listener;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
-import net.frozenorb.mShared.Shared;
+import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.ChatColor;
@@ -349,7 +348,7 @@ public class CombatLoggerListener implements Listener {
             playerDeath.append("killerHunger", killer.getFoodLevel());
 
             if (killer.getItemInHand() != null) {
-                playerDeath.append("item", Shared.get().getUtilities().getDatabaseRepresentation(killer.getItemInHand()));
+                playerDeath.append("item", ItemStackSerializer.serialize(killer.getItemInHand()));
             } else {
                 playerDeath.append("item", "NONE");
             }
@@ -366,18 +365,18 @@ public class CombatLoggerListener implements Listener {
         BasicDBObject playerInv = new BasicDBObject();
         BasicDBObject armor = new BasicDBObject();
 
-        armor.put("helmet", new ItemStackSerializer().serialize(killed.getInventory().getHelmet()));
-        armor.put("chestplate", new ItemStackSerializer().serialize(killed.getInventory().getChestplate()));
-        armor.put("leggings", new ItemStackSerializer().serialize(killed.getInventory().getLeggings()));
-        armor.put("boots", new ItemStackSerializer().serialize(killed.getInventory().getBoots()));
+        armor.put("helmet", ItemStackSerializer.serialize(killed.getInventory().getHelmet()));
+        armor.put("chestplate", ItemStackSerializer.serialize(killed.getInventory().getChestplate()));
+        armor.put("leggings", ItemStackSerializer.serialize(killed.getInventory().getLeggings()));
+        armor.put("boots", ItemStackSerializer.serialize(killed.getInventory().getBoots()));
 
         BasicDBList contents = new BasicDBList();
 
         for (int i = 0; i < 9; i++) {
             if (killed.getInventory().getItem(i) != null) {
-                contents.add(new ItemStackSerializer().serialize(killed.getInventory().getItem(i)));
+                contents.add(ItemStackSerializer.serialize(killed.getInventory().getItem(i)));
             } else {
-                contents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                contents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
             }
         }
 
@@ -390,18 +389,18 @@ public class CombatLoggerListener implements Listener {
             BasicDBObject killerInventory = new BasicDBObject();
             BasicDBObject killerArmor = new BasicDBObject();
 
-            armor.put("helmet", new ItemStackSerializer().serialize(killer.getInventory().getHelmet()));
-            armor.put("chestplate", new ItemStackSerializer().serialize(killer.getInventory().getChestplate()));
-            armor.put("leggings", new ItemStackSerializer().serialize(killer.getInventory().getLeggings()));
-            armor.put("boots", new ItemStackSerializer().serialize(killer.getInventory().getBoots()));
+            armor.put("helmet", ItemStackSerializer.serialize(killer.getInventory().getHelmet()));
+            armor.put("chestplate", ItemStackSerializer.serialize(killer.getInventory().getChestplate()));
+            armor.put("leggings", ItemStackSerializer.serialize(killer.getInventory().getLeggings()));
+            armor.put("boots", ItemStackSerializer.serialize(killer.getInventory().getBoots()));
 
             BasicDBList killerContents = new BasicDBList();
 
             for (int i = 0; i < 9; i++) {
                 if (killer.getInventory().getItem(i) != null) {
-                    killerContents.add(new ItemStackSerializer().serialize(killer.getInventory().getItem(i)));
+                    killerContents.add(ItemStackSerializer.serialize(killer.getInventory().getItem(i)));
                 } else {
-                    killerContents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                    killerContents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
                 }
             }
 

@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.gui.menu;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
 import net.frozenorb.foxtrot.gui.button.BooleanButton;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
+import net.frozenorb.qlib.util.Callback;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 

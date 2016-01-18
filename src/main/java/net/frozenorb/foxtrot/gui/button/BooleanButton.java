@@ -1,8 +1,8 @@
 package net.frozenorb.foxtrot.gui.button;
 
 import lombok.AllArgsConstructor;
-import net.frozenorb.Utilities.Interfaces.Callback;
 import net.frozenorb.qlib.menu.Button;
+import net.frozenorb.qlib.util.Callback;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

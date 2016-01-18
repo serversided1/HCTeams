@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.Utilities.Interfaces.Callback;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.gui.menu.*;
 import net.frozenorb.foxtrot.team.Team;
@@ -9,6 +8,7 @@ import net.frozenorb.foxtrot.team.commands.SetTeamBalanceCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamCreateCommand;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.util.Callback;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;

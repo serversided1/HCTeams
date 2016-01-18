@@ -64,7 +64,7 @@
 		<!-- MineHQ Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mShared</artifactId>
+			<artifactId>Bridge</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>

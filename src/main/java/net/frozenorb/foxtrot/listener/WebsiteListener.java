@@ -2,9 +2,8 @@ package net.frozenorb.foxtrot.listener;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import net.frozenorb.Utilities.Serialization.Serializers.ItemStackSerializer;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.mShared.Shared;
+import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -33,7 +32,7 @@ public class WebsiteListener implements Listener {
             playerDeath.append("killerHunger", event.getEntity().getKiller().getFoodLevel());
 
             if (event.getEntity().getKiller().getItemInHand() != null) {
-                playerDeath.append("item", Shared.get().getUtilities().getDatabaseRepresentation(event.getEntity().getKiller().getItemInHand()));
+                playerDeath.append("item", ItemStackSerializer.serialize(event.getEntity().getKiller().getItemInHand()));
             } else {
                 playerDeath.append("item", "NONE");
             }
@@ -50,18 +49,18 @@ public class WebsiteListener implements Listener {
         BasicDBObject playerInv = new BasicDBObject();
         BasicDBObject armor = new BasicDBObject();
 
-        armor.put("helmet", new ItemStackSerializer().serialize(event.getEntity().getInventory().getHelmet()));
-        armor.put("chestplate", new ItemStackSerializer().serialize(event.getEntity().getInventory().getChestplate()));
-        armor.put("leggings", new ItemStackSerializer().serialize(event.getEntity().getInventory().getLeggings()));
-        armor.put("boots", new ItemStackSerializer().serialize(event.getEntity().getInventory().getBoots()));
+        armor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getInventory().getHelmet()));
+        armor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getInventory().getChestplate()));
+        armor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getInventory().getLeggings()));
+        armor.put("boots", ItemStackSerializer.serialize(event.getEntity().getInventory().getBoots()));
 
         BasicDBList contents = new BasicDBList();
 
         for (int i = 0; i < 9; i++) {
             if (event.getEntity().getInventory().getItem(i) != null) {
-                contents.add(new ItemStackSerializer().serialize(event.getEntity().getInventory().getItem(i)));
+                contents.add(ItemStackSerializer.serialize(event.getEntity().getInventory().getItem(i)));
             } else {
-                contents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                contents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
             }
         }
 
@@ -74,18 +73,18 @@ public class WebsiteListener implements Listener {
             BasicDBObject killerInventory = new BasicDBObject();
             BasicDBObject killerArmor = new BasicDBObject();
 
-            armor.put("helmet", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getHelmet()));
-            armor.put("chestplate", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getChestplate()));
-            armor.put("leggings", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getLeggings()));
-            armor.put("boots", new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getBoots()));
+            armor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getHelmet()));
+            armor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getChestplate()));
+            armor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getLeggings()));
+            armor.put("boots", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getBoots()));
 
             BasicDBList killerContents = new BasicDBList();
 
             for (int i = 0; i < 9; i++) {
                 if (event.getEntity().getKiller().getInventory().getItem(i) != null) {
-                    killerContents.add(new ItemStackSerializer().serialize(event.getEntity().getKiller().getInventory().getItem(i)));
+                    killerContents.add(ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getItem(i)));
                 } else {
-                    killerContents.add(new ItemStackSerializer().serialize(new ItemStack(Material.AIR)));
+                    killerContents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
                 }
             }
 

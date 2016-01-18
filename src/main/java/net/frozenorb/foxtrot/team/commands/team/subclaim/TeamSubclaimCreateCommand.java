@@ -1,10 +1,10 @@
 package net.frozenorb.foxtrot.team.commands.team.subclaim;
 
-import net.frozenorb.Utilities.DataSystem.Regioning.CuboidRegion;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.util.CuboidRegion;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import org.apache.commons.lang.StringUtils;
