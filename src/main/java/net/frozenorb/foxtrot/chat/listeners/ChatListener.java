@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
-import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -11,7 +10,6 @@ import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bson.types.ObjectId;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
