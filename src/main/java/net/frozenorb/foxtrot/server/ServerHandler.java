@@ -194,7 +194,6 @@ public class ServerHandler {
 
             @Override
             public void run() {
-
                 if (player.hasMetadata("frozen")) {
                     player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
                     cancel();
@@ -205,7 +204,6 @@ public class ServerHandler {
                 player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds...");
 
                 if (seconds == 0) {
-
                     if (tasks.containsKey(player.getName())) {
                         tasks.remove(player.getName());
                         player.setMetadata("loggedout", new FixedMetadataValue(Foxtrot.getInstance(), true));
