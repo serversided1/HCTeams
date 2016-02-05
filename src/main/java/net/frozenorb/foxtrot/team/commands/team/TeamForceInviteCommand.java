@@ -20,6 +20,11 @@ public class TeamForceInviteCommand {
     public static void teamForceInvite(Player sender, @Parameter(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
+        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            sender.sendMessage(ChatColor.RED + "You don't need to use this during kit maps.");
+            return;
+        }
+
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
             return;

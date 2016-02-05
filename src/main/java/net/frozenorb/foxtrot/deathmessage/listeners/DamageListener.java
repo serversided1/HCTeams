@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import net.frozenorb.foxtrot.deathtracker.DeathTracker;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,6 +35,10 @@ public class DamageListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         List<Damage> record = DeathMessageHandler.getDamage(event.getEntity());
 
+        event.setDeathMessage(null);
+
+        String deathMessage;
+
         if (record != null) {
             Damage deathCause = record.get(record.size() - 1);
 
@@ -48,9 +53,35 @@ public class DamageListener implements Listener {
                 }
             }
 
-            event.setDeathMessage(deathCause.getDeathMessage());
+            deathMessage = deathCause.getDeathMessage();
         } else {
-            event.setDeathMessage((new UnknownDamage(event.getEntity().getName(), 1)).getDeathMessage());
+            deathMessage = new UnknownDamage(event.getEntity().getName(), 1).getDeathMessage();
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
+                player.sendMessage(deathMessage);
+            } else {
+                if (Foxtrot.getInstance().getTeamHandler().getTeam(player) == null) {
+                    continue;
+                }
+
+                // send them the message if the player who died was on their team
+                if (Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity()) != null &&
+                        Foxtrot.getInstance().getTeamHandler().getTeam(player).equals(Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity()))) {
+                    player.sendMessage(deathMessage);
+                }
+
+                // send them the message if the killer was on their team
+                if (event.getEntity().getKiller() != null) {
+                    Player killer = event.getEntity().getKiller();
+
+                    if (Foxtrot.getInstance().getTeamHandler().getTeam(killer) != null
+                            && Foxtrot.getInstance().getTeamHandler().getTeam(player).equals(Foxtrot.getInstance().getTeamHandler().getTeam(killer))) {
+                        player.sendMessage(deathMessage);
+                    }
+                }
+            }
         }
 
         DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
