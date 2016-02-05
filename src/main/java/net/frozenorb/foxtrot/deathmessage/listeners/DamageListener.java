@@ -61,6 +61,26 @@ public class DamageListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                 player.sendMessage(deathMessage);
+            } else {
+                if (Foxtrot.getInstance().getTeamHandler().getTeam(player) == null) {
+                    continue;
+                }
+
+                // send them the message if the player who died was on their team
+                if (Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity()) != null &&
+                        Foxtrot.getInstance().getTeamHandler().getTeam(player).equals(Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity()))) {
+                    player.sendMessage(deathMessage);
+                }
+
+                // send them the message if the killer was on their team
+                if (event.getEntity().getKiller() != null) {
+                    Player killer = event.getEntity().getKiller();
+
+                    if (Foxtrot.getInstance().getTeamHandler().getTeam(killer) != null
+                            && Foxtrot.getInstance().getTeamHandler().getTeam(player).equals(Foxtrot.getInstance().getTeamHandler().getTeam(killer))) {
+                        player.sendMessage(deathMessage);
+                    }
+                }
             }
         }
 
