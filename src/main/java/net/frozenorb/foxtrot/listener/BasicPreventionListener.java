@@ -11,6 +11,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -142,6 +143,20 @@ public class BasicPreventionListener implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.blockList().clear();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+
+        if (!event.isCancelled()) {
+            return;
+        }
+
+        if (player.getLocation().getBlock().getType().isSolid() && (event.getBlock().getX() != player.getLocation().getBlockX() || event.getBlock().getZ() != event.getPlayer().getLocation().getBlockZ())) {
+            player.teleport(player.getLocation().add(0.0D, 1.2D, 0.0D));
+            player.sendMessage(ChatColor.RED + "Nope.");
+        }
     }
 
 }

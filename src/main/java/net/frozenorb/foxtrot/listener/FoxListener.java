@@ -424,9 +424,11 @@ public class FoxListener implements Listener {
                 event.getDrops().add(skull);
             }
 
-            for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
-                event.getDrops().add(it);
-            }
+//            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+//                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
+//                    event.getDrops().add(it);
+//                }
+//            }
         }
 
         event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());

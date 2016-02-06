@@ -11,8 +11,10 @@ import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.libs.com.google.gson.internal.Pair;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -22,9 +24,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("deprecation")
@@ -34,6 +34,8 @@ public class ArcherClass extends PvPClass {
 
     private static Map<String, Long> lastSpeedUsage = new HashMap<>();
     @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
+
+    @Getter private static Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
     public ArcherClass() {
         super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR));
@@ -130,6 +132,9 @@ public class ArcherClass extends PvPClass {
 
                 getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
 
+                getMarkedBy().putIfAbsent(shooter.getName(), new HashSet<>());
+                getMarkedBy().get(shooter.getName()).add(new Pair<>(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
+
                 FrozenNametagHandler.reloadPlayer(player);
 
                 new BukkitRunnable() {
@@ -151,6 +156,17 @@ public class ArcherClass extends PvPClass {
             Player player = (Player) event.getEntity();
 
             if (isMarked(player)) {
+                Player damager = null;
+                if (event.getDamager() instanceof Player) {
+                    damager = (Player) event.getDamager();
+                } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+                    damager = (Player) ((Projectile) event.getDamager()).getShooter();
+                }
+
+                if (damager != null && !canUseMark(damager, player)) {
+                    return;
+                }
+
                 // Apply 125% damage if they're 'marked'
                 event.setDamage(event.getDamage() * 1.25D);
             }
@@ -168,7 +184,7 @@ public class ArcherClass extends PvPClass {
             long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
             String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
-            player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+            player.sendMessage(ChatColor.RED + "You cannot use this for another Â§cÂ§l" + msg + "Â§c.");
             return (false);
         }
 
@@ -179,6 +195,20 @@ public class ArcherClass extends PvPClass {
 
     public static boolean isMarked(Player player) {
         return (getMarkedPlayers().containsKey(player.getName()) && getMarkedPlayers().get(player.getName()) > System.currentTimeMillis());
+    }
+
+    private boolean canUseMark(Player player, Player victim) {
+        if (markedBy.containsKey(player.getName())) {
+            for (Pair<String, Long> pair : markedBy.get(player.getName())) {
+                if (victim.getName().equals(pair.first) && pair.second > System.currentTimeMillis()) {
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
+            return true;
+        }
     }
 
 }

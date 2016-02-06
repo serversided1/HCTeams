@@ -11,6 +11,7 @@ import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -72,15 +73,53 @@ public class CombatLoggerListener implements Listener {
             }
 
             if (event.getEntity().getKiller() != null) {
-                Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".");
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".";
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                        player.sendMessage(deathMessage);
+                    } else {
+                        if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
+                            continue;
+                        }
+
+                        if (Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID) != null
+                                && Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID).equals(Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()))) {
+                            player.sendMessage(deathMessage);
+                        }
+
+                        if (Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller().getUniqueId()) != null
+                                && Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller().getUniqueId()).equals(Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()))) {
+                            player.sendMessage(deathMessage);
+                        }
+                    }
+                }
 
                 // Add the death sign.
-                event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
+
+//                if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+//                    event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
+//                }
 
                 // and give them the kill
                 Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
             } else {
-                Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.");
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
+
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                        player.sendMessage(deathMessage);
+                    } else {
+                        if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
+                            continue;
+                        }
+
+                        if (Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID) != null
+                                && Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID).equals(Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()))) {
+                            player.sendMessage(deathMessage);
+                        }
+                    }
+                }
             }
 
             Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
