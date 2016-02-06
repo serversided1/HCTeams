@@ -194,6 +194,12 @@ public class ServerHandler {
 
             @Override
             public void run() {
+                if (player.hasMetadata("frozen")) {
+                    player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
+                    cancel();
+                    return;
+                }
+
                 seconds--;
                 player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds...");
 
