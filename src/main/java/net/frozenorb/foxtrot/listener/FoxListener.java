@@ -291,21 +291,6 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled=true)
-    public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getPlayer().hasMetadata("ModMode") || !event.getBlock().getType().hasGravity()) {
-            return;
-        }
-
-        PlaytimeMap playtime = Foxtrot.getInstance().getPlaytimeMap();
-        int playtimeTime = (int) (playtime.getPlaytime(event.getPlayer().getUniqueId()) + (playtime.getCurrentSession(event.getPlayer().getUniqueId()) / 1000));
-
-        if (playtimeTime < TimeUnit.HOURS.toSeconds(8)) {
-            event.setCancelled(true);
-            //event.getPlayer().sendMessage(ChatColor.RED + "You cannot place sand/gravel at this time.");
-        }
-    }
-
     @EventHandler
     public void onSignPlace(BlockPlaceEvent e) {
         Block block = e.getBlock();
