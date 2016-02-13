@@ -332,9 +332,9 @@ public class ServerHandler {
 
         // 1 to 2 hours based on the player's rank.
         if (player != null) {
-            if (player.hasPermission("PRO")) {
+            if (player.hasPermission("inherit.pro")) {
                 max = TimeUnit.HOURS.toSeconds(1);
-            } else if (player.hasPermission("VIP")) {
+            } else if (player.hasPermission("inherit.vip")) {
                 max = TimeUnit.HOURS.toSeconds(2);
             }
         }
