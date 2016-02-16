@@ -173,7 +173,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
-        getServer().getPluginManager().registerEvents(new MapXListener(), this);
     }
 
     private void setupPersistence() {

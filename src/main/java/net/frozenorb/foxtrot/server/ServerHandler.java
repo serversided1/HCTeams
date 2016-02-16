@@ -57,7 +57,8 @@ public class ServerHandler {
             8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
             8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
             8228, 8260, 16420, 16452, // Poison Potions
-            8234, 8266, 16426, 16458 // Slowness Potions
+            8234, 8266, 16426, 16458, // Slowness Potions
+            8238, 8270, 16430, 16462, 8206, 16398 // Invis potions
     );
 
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
