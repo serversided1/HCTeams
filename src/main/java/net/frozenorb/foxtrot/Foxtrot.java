@@ -131,7 +131,9 @@ public class Foxtrot extends JavaPlugin {
         chatHandler = new ChatHandler();
         serverHandler = new ServerHandler();
         citadelHandler = new CitadelHandler();
-        pvpClassHandler = new PvPClassHandler();
+        if (!serverHandler.isElite()) {
+            pvpClassHandler = new PvPClassHandler();
+        }
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
 

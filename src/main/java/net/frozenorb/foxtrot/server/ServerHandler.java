@@ -63,6 +63,8 @@ public class ServerHandler {
 
     @Getter private static Map<String, Integer> tasks = new HashMap<>();
 
+    @Getter private final boolean elite;
+
     @Getter private Set<UUID> highRollers = new HashSet<>();
     @Getter private Set<UUID> betrayers = new HashSet<>();
 
@@ -134,6 +136,8 @@ public class ServerHandler {
             }
 
         }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 3000L, 6000L);
+
+        elite = Foxtrot.getInstance().getConfig().getBoolean("elite");
     }
 
     public void save() {

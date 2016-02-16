@@ -1,3 +1,4 @@
 Queue:
   Redis:
     Host: '104.236.52.72'
+elite: false
