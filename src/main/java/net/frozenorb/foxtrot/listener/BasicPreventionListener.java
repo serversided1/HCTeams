@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.*;
@@ -154,7 +155,12 @@ public class BasicPreventionListener implements Listener {
         }
 
         if (player.getLocation().getBlock().getType().isSolid() && (event.getBlock().getX() != player.getLocation().getBlockX() || event.getBlock().getZ() != event.getPlayer().getLocation().getBlockZ())) {
-            player.teleport(player.getLocation().add(0.0D, 1.2D, 0.0D));
+            Location teleportTo = player.getLocation().add(0.0D, 1.2D, 0.0D);
+            if (!teleportTo.getBlock().isEmpty()) {
+                return;
+            }
+
+            player.teleport(teleportTo);
             player.sendMessage(ChatColor.RED + "Nope.");
         }
     }
