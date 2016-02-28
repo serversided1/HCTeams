@@ -26,6 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
@@ -184,11 +185,11 @@ public class ArcherClass extends PvPClass {
             long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
             String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
-            player.sendMessage(ChatColor.RED + "You cannot use this for another Â§cÂ§l" + msg + "Â§c.");
+            player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
             return (false);
         }
 
-        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + (1000L * 60 * 2));
+        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
         return (true);
     }
