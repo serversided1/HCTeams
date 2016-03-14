@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
@@ -23,7 +24,7 @@ public class MinerClass extends PvPClass implements Listener {
     private static final int Y_HEIGHT = 20;
 
     private Map<String, Integer> noDamage = new HashMap<>();
-    private Map<String, Integer> invis = new HashMap<>();
+    @Getter private Map<String, Integer> invis = new HashMap<>();
 
     public MinerClass() {
         super("Miner", 10, "IRON_", null);
@@ -50,7 +51,7 @@ public class MinerClass extends PvPClass implements Listener {
                 }
 
                 //Manage invisibility
-                for (String key : invis.keySet()){
+                for (String key : new HashMap<>(invis).keySet()){
                     Player player = Foxtrot.getInstance().getServer().getPlayerExact(key);
 
                     if (player != null) {
