@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -138,17 +137,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        Player damager = null;
-
-        if (event.getDamager() instanceof Player) {
-            damager = (Player) event.getDamager();
-        } else if (event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getDamager();
-
-            if (projectile.getShooter() instanceof Player) {
-                damager = (Player) projectile.getShooter();
-            }
-        }
+        Player damager = TeamListener.getDamageSource(event.getDamager()); // find the player damager if one exists
 
         if (damager != null) {
             Player victim = (Player) event.getEntity();

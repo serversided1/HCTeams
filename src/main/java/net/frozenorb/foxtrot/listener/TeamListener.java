@@ -6,12 +6,11 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,6 +21,8 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.UUID;
 
 public class TeamListener implements Listener {
 
@@ -288,17 +289,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Player damager = null;
-
-        if (event.getDamager() instanceof Player) {
-            damager = (Player) event.getDamager();
-        } else if (event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getDamager();
-
-            if (projectile.getShooter() instanceof Player) {
-                damager = (Player) projectile.getShooter();
-            }
-        }
+        Player damager = getDamageSource(event.getDamager()); // find the player damager if one exists
 
         if (damager != null) {
             Team team = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
@@ -311,6 +302,26 @@ public class TeamListener implements Listener {
                 } else if (team.isAlly(victim.getUniqueId())) {
                     damager.sendMessage(ChatColor.YELLOW + "Be careful, that's your ally " + Team.ALLY_COLOR + victim.getName() + ChatColor.YELLOW + ".");
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityHorseDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Horse)) {
+            return;
+        }
+
+        Player damager = getDamageSource(event.getDamager()); // find the player damager if one exists
+        Horse victim = (Horse) event.getEntity();
+
+        if (damager != null && victim.isTamed()) {
+            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
+            UUID owner = victim.getOwner().getUniqueId();
+
+            if(!damager.getUniqueId().equals(owner) && team.isMember(damager.getUniqueId())) {
+                event.setCancelled(true);
+                damager.sendMessage(ChatColor.YELLOW + "This horse belongs to " + ChatColor.DARK_GREEN + FrozenUUIDCache.name(owner) + ChatColor.YELLOW + " who is in your faction.");
             }
         }
     }
@@ -347,4 +358,22 @@ public class TeamListener implements Listener {
         }
     }
 
+    /**
+     * Convenience method used by multiple classes to find the player damager from damage events
+     */
+    public static Player getDamageSource(Entity entity) {
+        Player damager = null;
+
+        if (entity instanceof Player) {
+            damager = (Player) entity;
+        } else if (entity instanceof Projectile) {
+            Projectile projectile = (Projectile) entity;
+
+            if (projectile.getShooter() instanceof Player) {
+                damager = (Player) projectile.getShooter();
+            }
+        }
+
+        return damager;
+    }
 }
