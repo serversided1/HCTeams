@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -289,7 +290,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Player damager = getDamageSource(event.getDamager()); // find the player damager if one exists
+        Player damager = PlayerUtils.getDamageSource(event.getDamager()); // find the player damager if one exists
 
         if (damager != null) {
             Team team = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
@@ -312,7 +313,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        Player damager = getDamageSource(event.getDamager()); // find the player damager if one exists
+        Player damager = PlayerUtils.getDamageSource(event.getDamager()); // find the player damager if one exists
         Horse victim = (Horse) event.getEntity();
 
         if (damager != null && victim.isTamed()) {
@@ -356,24 +357,5 @@ public class TeamListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
         }
-    }
-
-    /**
-     * Convenience method used by multiple classes to find the player damager from damage events
-     */
-    public static Player getDamageSource(Entity entity) {
-        Player damager = null;
-
-        if (entity instanceof Player) {
-            damager = (Player) entity;
-        } else if (entity instanceof Projectile) {
-            Projectile projectile = (Projectile) entity;
-
-            if (projectile.getShooter() instanceof Player) {
-                damager = (Player) projectile.getShooter();
-            }
-        }
-
-        return damager;
     }
 }

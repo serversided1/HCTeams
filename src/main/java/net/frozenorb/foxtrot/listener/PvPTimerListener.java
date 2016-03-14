@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -95,7 +96,7 @@ public class PvPTimerListener implements Listener {
             return;
         }
 
-        Player damager = TeamListener.getDamageSource(event.getDamager()); // find the player damager if one exists
+        Player damager = PlayerUtils.getDamageSource(event.getDamager()); // find the player damager if one exists
 
         if (damager == null) {
             return;

@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -137,7 +138,7 @@ public class  SpawnListener implements Listener {
             return;
         }
 
-        Player damager = TeamListener.getDamageSource(event.getDamager()); // find the player damager if one exists
+        Player damager = PlayerUtils.getDamageSource(event.getDamager()); // find the player damager if one exists
 
         if (damager != null) {
             Player victim = (Player) event.getEntity();
