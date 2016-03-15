@@ -5,7 +5,6 @@ import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -422,7 +420,8 @@ public class FoxListener implements Listener {
         double bal = Basic.get().getEconomyManager().getBalance(event.getEntity().getName());
         Basic.get().getEconomyManager().withdrawPlayer(event.getEntity().getName(), bal);
 
-        if (event.getEntity().getKiller() != null && !Double.isNaN(bal)) {
+        // Only tell player they earned money if they actually earned something
+        if (event.getEntity().getKiller() != null && !Double.isNaN(bal) && bal > 0) {
             Basic.get().getEconomyManager().depositPlayer(event.getEntity().getKiller().getName(), bal);
             event.getEntity().getKiller().sendMessage(ChatColor.GOLD + "You earned " + ChatColor.BOLD + "$" + bal + ChatColor.GOLD + " for killing " + event.getEntity().getDisplayName() + ChatColor.GOLD + "!");
         }
