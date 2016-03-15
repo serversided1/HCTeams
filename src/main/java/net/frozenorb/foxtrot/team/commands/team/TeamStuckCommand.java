@@ -104,10 +104,14 @@ public class TeamStuckCommand implements Listener {
                     }.runTask(Foxtrot.getInstance());
                 }
 
+                Location loc = sender.getLocation();
+
                 if (seconds <= 0) {
                     if (nearest == null) {
                         kick(sender);
                     } else {
+                        Foxtrot.getInstance().getLogger().info("Moved " + sender.getName() + " " + loc.distance(nearest) + " blocks from " + toStr(loc) + " to " + toStr(nearest));
+
                         sender.teleport(nearest);
                         sender.sendMessage(ChatColor.YELLOW + "Teleported you to the nearest safe area!");
                     }
@@ -116,8 +120,6 @@ public class TeamStuckCommand implements Listener {
                     cancel();
                     return;
                 }
-
-                Location loc = sender.getLocation();
 
                 // More than 5 blocks away
                 if ((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)) {
@@ -137,6 +139,10 @@ public class TeamStuckCommand implements Listener {
         }.runTaskTimer(Foxtrot.getInstance(), 0L, 20L);
     }
 
+    private static String toStr(Location loc) {
+        return "{x=" + loc.getBlockX() + ", y=" + loc.getBlockY() + ", z=" + loc.getBlockZ() + "}";
+    }
+
     private static Location nearestSafeLocation(Location origin) {
         LandBoard landBoard = LandBoard.getInstance();
 
@@ -145,8 +151,8 @@ public class TeamStuckCommand implements Listener {
         }
 
         // Start iterating outward on both positive and negative X & Z.
-        for (int xPos = 0, xNeg = 0; xPos < 250; xPos++, xNeg--) {
-            for (int zPos = 0, zNeg = 0; zPos < 250; zPos++, zNeg--) {
+        for (int xPos = 0, xNeg = 0; xPos < 250; xPos += 5, xNeg -= 5) {
+            for (int zPos = 0, zNeg = 0; zPos < 250; zPos += 5, zNeg -= 5) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
