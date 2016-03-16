@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -151,14 +152,19 @@ public class TeamStuckCommand implements Listener {
         }
 
         // Start iterating outward on both positive and negative X & Z.
-        for (int xPos = 0, xNeg = 0; xPos < 250; xPos += 5, xNeg -= 5) {
-            for (int zPos = 0, zNeg = 0; zPos < 250; zPos += 5, zNeg -= 5) {
+        for (int xPos = 0, xNeg = 0; xPos < 250; xPos += 2, xNeg -= 2) {
+            for (int zPos = 0, zNeg = 0; zPos < 250; zPos += 2, zNeg -= 2) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
+
+                // Try to find a unclaimed location with no claims adjacent
+                if (landBoard.getClaim(atPos) == null && !isAdjacentClaimed(atPos)) {
+                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0, 1, 0));
+                }
+
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
-                if (landBoard.getClaim(atPos) == null) {
-                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0, 1, 0));
-                } else if (landBoard.getClaim(atNeg) == null) {
+                // Try again to find a unclaimed location with no claims adjacent
+                if (landBoard.getClaim(atNeg) == null && !isAdjacentClaimed(atNeg)) {
                     return (getActualHighestBlock(atNeg.getBlock()).getLocation().add(0, 1, 0));
                 }
             }
@@ -193,4 +199,35 @@ public class TeamStuckCommand implements Listener {
         player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
     }
 
+    /**
+     * @param base center block
+     * @return list of all adjacent locations
+     */
+    private static List<Location> getAdjacent(Location base) {
+        List<Location> adjacent = new ArrayList<>();
+
+        // Add all relevant locations surrounding the base block
+        for(BlockFace face : BlockFace.values()) {
+            if(face != BlockFace.DOWN && face != BlockFace.UP) {
+                adjacent.add(base.getBlock().getRelative(face).getLocation());
+            }
+        }
+
+        return adjacent;
+    }
+
+    /**
+     *
+     * @param location location to check for
+     * @return if any of it's blockfaces are claimed
+     */
+    private static boolean isAdjacentClaimed(Location location) {
+        for (Location adjacent : getAdjacent(location)) {
+            if (LandBoard.getInstance().getClaim(adjacent) != null) {
+                return true; // we found a claim on an adjacent block!
+            }
+        }
+
+        return false;
+    }
 }
