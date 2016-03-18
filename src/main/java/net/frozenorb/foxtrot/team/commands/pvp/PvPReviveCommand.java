@@ -31,7 +31,7 @@ public class PvPReviveCommand {
             return;
         }
 
-        if(Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
+        if(Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(player)) {
             sender.sendMessage(ChatColor.RED + "Betrayers may not be revived!");
             return;
         }

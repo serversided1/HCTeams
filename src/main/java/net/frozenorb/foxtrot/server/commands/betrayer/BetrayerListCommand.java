@@ -14,7 +14,7 @@ public class BetrayerListCommand {
     public static void betrayerList(Player sender) {
         StringBuilder betrayers = new StringBuilder();
 
-        for (UUID betrayer : Foxtrot.getInstance().getServerHandler().getBetrayers()) {
+        for (UUID betrayer : Foxtrot.getInstance().getServerHandler().getBetrayers().keySet()) {
             betrayers.append(ChatColor.GRAY).append(UUIDUtils.name(betrayer)).append(ChatColor.GOLD).append(", ");
         }
 

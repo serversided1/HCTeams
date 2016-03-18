@@ -41,7 +41,9 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
@@ -65,8 +67,9 @@ public class ServerHandler {
 
     @Getter private final boolean elite;
 
+    @Getter private Map<UUID, Long> betrayers = new ConcurrentHashMap<>();
+
     @Getter private Set<UUID> highRollers = new HashSet<>();
-    @Getter private Set<UUID> betrayers = new HashSet<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
@@ -82,14 +85,10 @@ public class ServerHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
             if (dbo != null) {
-                for (Object o : (BasicDBList) dbo.get("uuids")) {
-                    highRollers.add(UUID.fromString((String) o));
-                }
+                highRollers.addAll(((BasicDBList) dbo.get("uuids")).stream().map(o -> UUID.fromString((String) o)).collect(Collectors.toList()));
             }
 
-            for (UUID highRoller : highRollers) {
-                FrozenUUIDCache.ensure(highRoller);
-            }
+            highRollers.forEach(FrozenUUIDCache::ensure);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,14 +103,16 @@ public class ServerHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
             if (dbo != null) {
-                for (Object o : (BasicDBList) dbo.get("uuids")) {
-                    betrayers.add(UUID.fromString((String) o));
+                BasicDBList list = (BasicDBList) dbo.get("uuids");
+
+                for (Object obj : list) {
+                    String key = (String)obj;
+                    betrayers.put(UUID.fromString(key), (Long)list.get(key)); // load betrayers with dates
                 }
             }
 
-            for (UUID betrayer : betrayers) {
-                FrozenUUIDCache.ensure(betrayer);
-            }
+            betrayers.keySet().forEach(FrozenUUIDCache::ensure);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,11 +150,7 @@ public class ServerHandler {
             }
 
             BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = new BasicDBList();
-
-            for (UUID n : highRollers) {
-                list.add(n.toString());
-            }
+            BasicDBList list = highRollers.stream().map(UUID::toString).collect(Collectors.toCollection(BasicDBList::new));
 
             dbo.put("uuids", list);
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
@@ -171,8 +168,8 @@ public class ServerHandler {
             BasicDBObject dbo = new BasicDBObject();
             BasicDBList list = new BasicDBList();
 
-            for (UUID n : betrayers) {
-                list.add(n.toString());
+            for(Map.Entry<UUID, Long> entry : betrayers.entrySet()) {
+                list.put(entry.getKey().toString(), entry.getValue()); // save betrays with dates
             }
 
             dbo.put("uuids", list);
@@ -306,7 +303,7 @@ public class ServerHandler {
             return (TimeUnit.DAYS.toSeconds(1000));
         } else if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return (TimeUnit.SECONDS.toSeconds(10));
-        } else if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(playerUUID)) {
+        } else if (Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(playerUUID)) {
             return (TimeUnit.DAYS.toSeconds(1));
         }
 

@@ -32,7 +32,7 @@ public class PlayerInfoPacket implements XPacket {
                 long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
                 String livesLocked = null;
 
-                if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
+                if (Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(player)) {
                     livesLocked = "Betrayer";
                 }
 

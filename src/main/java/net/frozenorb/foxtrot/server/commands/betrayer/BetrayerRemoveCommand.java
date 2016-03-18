@@ -13,7 +13,7 @@ public class BetrayerRemoveCommand {
 
     @Command(names={ "betrayer remove" }, permissionNode="op")
     public static void betrayerRemove(Player sender, @Parameter(name="player") UUID player) {
-        if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
+        if (Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(player)) {
             Foxtrot.getInstance().getServerHandler().getBetrayers().remove(player);
             Foxtrot.getInstance().getServerHandler().save();
             sender.sendMessage(ChatColor.GREEN + "Removed " + UUIDUtils.name(player) + "'s betrayer tag.");

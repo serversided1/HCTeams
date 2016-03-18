@@ -13,8 +13,8 @@ public class BetrayerAddCommand {
 
     @Command(names={ "betrayer add" }, permissionNode="op")
     public static void betrayerAdd(Player sender, @Parameter(name="player") UUID player) {
-        if (!Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
-            Foxtrot.getInstance().getServerHandler().getBetrayers().add(player);
+        if (!Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(player)) {
+            Foxtrot.getInstance().getServerHandler().getBetrayers().put(player, System.currentTimeMillis());
             Foxtrot.getInstance().getServerHandler().save();
             sender.sendMessage(ChatColor.GREEN + "Added " + UUIDUtils.name(player) + "'s betrayer tag.");
         } else {
