@@ -31,6 +31,11 @@ public class PvPReviveCommand {
             return;
         }
 
+        if(Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
+            sender.sendMessage(ChatColor.RED + "Betrayers may not be revived!");
+            return;
+        }
+
         if (friendLives == 0) {
             // Use a transferable life.
             Foxtrot.getInstance().getTransferableLivesMap().setLives(sender.getUniqueId(), transferableLives - 1);
