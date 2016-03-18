@@ -58,6 +58,7 @@ public class KOTHRewardKeyListener implements Listener {
         int given = 0;
         int tries = 0;
 
+        toploop:
         while (given < 5 && tries < 100) {
             tries++;
 
@@ -67,18 +68,10 @@ public class KOTHRewardKeyListener implements Listener {
                 continue;
             }
 
-            // This is a dirty hack so we can run 'continue' on the while loop instead of the for loop.
-            // There's no better way to do this :/
-            boolean runContinue = false;
-
             for (ItemStack givenLoot : loot) {
                 if (givenLoot.getType() == chosenItem.getType()) {
-                    runContinue = true;
+                    continue toploop; // 'continue's while loop, not for loop.
                 }
-            }
-
-            if (runContinue) {
-                continue;
             }
 
             given++;
