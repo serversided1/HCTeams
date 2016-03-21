@@ -7,7 +7,7 @@ import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class GlowScanCommand {
+public class GlowCommand {
 
     @Command(names = "glow scan", permissionNode = "op")
     public static void glowScan(Player sender) {
@@ -25,6 +25,22 @@ public class GlowScanCommand {
 
             Foxtrot.getInstance().getGlowHandler().getGlowMountain().scan();
             Foxtrot.getInstance().getGlowHandler().save(); // save to file :D
+        } else {
+            sender.sendMessage(ChatColor.RED + "Create the team 'glowstone' and make a claim first!");
+        }
+    }
+
+    @Command(names = "glow reset", permissionNode = "op")
+    public static void glowReset(Player sender) {
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam("glowstone");
+
+        if(team != null) {
+            if(!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
+                sender.sendMessage(ChatColor.RED + "Error: You need to create the glowmtn first!");
+                return;
+            }
+
+            Foxtrot.getInstance().getGlowHandler().getGlowMountain().reset();
         } else {
             sender.sendMessage(ChatColor.RED + "Create the team 'glowstone' and make a claim first!");
         }
