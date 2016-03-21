@@ -71,8 +71,10 @@ public abstract class PersistMap<T> {
                 redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
                 DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                playersCollection.update(new BasicDBObject("_id", key.toString().replace("-", "")), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
+                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                playersCollection.update(player, new BasicDBObject("team", Foxtrot.getInstance().getTeamHandler().getTeam(key).getUniqueId()));
                 return (null);
             }
 
@@ -92,8 +94,10 @@ public abstract class PersistMap<T> {
                         redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
                         DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                        playersCollection.update(new BasicDBObject("_id", key.toString().replace("-", "")), new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                        BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
+                        playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                        playersCollection.update(player, new BasicDBObject("team", Foxtrot.getInstance().getTeamHandler().getTeam(key).getUniqueId()));
                         return (null);
                     }
 
