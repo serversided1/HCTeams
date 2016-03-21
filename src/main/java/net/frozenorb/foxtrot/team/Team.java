@@ -100,7 +100,9 @@ public class Team {
     }
 
     public String getName(Player player) {
-        if (owner == null) {
+        if (name.equals("glowstone")) {
+            return ChatColor.YELLOW + "Glowstone Mountain";
+        } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
                     case NETHER:

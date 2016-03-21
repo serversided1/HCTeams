@@ -7,6 +7,8 @@ import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.glowmtn.GlowHandler;
+import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.*;
@@ -49,6 +51,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CitadelHandler citadelHandler;
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
+    @Getter private GlowHandler glowHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -120,6 +123,7 @@ public class Foxtrot extends JavaPlugin {
 
         RedisSaveTask.save(false);
         Foxtrot.getInstance().getServerHandler().save();
+        Foxtrot.getInstance().getGlowHandler().save();
     }
 
     private void setupHandlers() {
@@ -134,6 +138,7 @@ public class Foxtrot extends JavaPlugin {
         pvpClassHandler = new PvPClassHandler();
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
+        glowHandler = new GlowHandler();
 
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
@@ -173,6 +178,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
+        getServer().getPluginManager().registerEvents(new GlowListener(), this);
     }
 
     private void setupPersistence() {
