@@ -21,13 +21,14 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PortalTrapListener implements Listener {
 
     public static final BlockFace[] FACES = new BlockFace[]{
             BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST
     };
-    Map<UUID, Long> lastMessaged = new HashMap<>();
+    private Map<UUID, Long> lastMessaged = new HashMap<>();
 
     @EventHandler
     public void onPortal(final PlayerPortalEvent event) {
@@ -76,7 +77,7 @@ public class PortalTrapListener implements Listener {
                 }.runTask(Foxtrot.getInstance());
             }
         }.runTaskLaterAsynchronously
-                (Foxtrot.getInstance(), 1l);
+                (Foxtrot.getInstance(), 1L);
     }
 
     @EventHandler
@@ -95,7 +96,7 @@ public class PortalTrapListener implements Listener {
                         if (entity instanceof Player) {
                             Player player = (Player) entity;
                             if (!lastMessaged.containsKey(player.getUniqueId())) {
-                                lastMessaged.put(player.getUniqueId(), -1l);
+                                lastMessaged.put(player.getUniqueId(), -1L);
                             }
 
                             if (System.currentTimeMillis() - lastMessaged.get(player.getUniqueId()) > 5000) {
@@ -130,15 +131,7 @@ public class PortalTrapListener implements Listener {
         }
     }
 
-    public List<Entity> getNearbyEntities(Location l, int radius) {
-        List<Entity> entities = new ArrayList<>();
-
-        for (Entity e : l.getWorld().getEntities()) {
-            if(l.distance(e.getLocation()) <= radius) {
-                entities.add(e);
-            }
-        }
-
-        return entities;
+    private List<Entity> getNearbyEntities(Location l, int radius) {
+        return l.getWorld().getEntities().stream().filter(e -> l.distance(e.getLocation()) <= radius).collect(Collectors.toList());
     }
 }
