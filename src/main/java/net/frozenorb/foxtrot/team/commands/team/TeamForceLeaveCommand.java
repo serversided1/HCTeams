@@ -9,11 +9,10 @@ import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings("deprecation")
-public class TeamLeaveCommand {
+public class TeamForceLeaveCommand {
 
-    @Command(names={ "team leave", "t leave", "f leave", "faction leave", "fac leave" }, permissionNode="")
-    public static void teamLeave(Player sender) {
+    @Command(names={  "team forceleave", "t forceleave", "f forceleave", "faction forceleave", "fac forceleave", "t fl", "team fl" }, permissionNode="")
+    public static void forceLeave(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -31,11 +30,6 @@ public class TeamLeaveCommand {
             return;
         }
 
-        if(SpawnTagHandler.isTagged(sender)) {
-            sender.sendMessage(ChatColor.RED + "You are combat-tagged! You can only leave your faction by using '" + ChatColor.YELLOW + "/f forceleave" + ChatColor.RED + "' which will cost your team 1 DTR.");
-            return;
-        }
-
         if (team.removeMember(sender.getUniqueId())) {
             team.disband();
             Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
@@ -43,13 +37,20 @@ public class TeamLeaveCommand {
         } else {
             Foxtrot.getInstance().getTeamHandler().setTeam(sender.getUniqueId(), null);
             team.flagForSave();
-            team.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
 
-            sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left the team!");
+            if (SpawnTagHandler.isTagged(sender)) {
+                team.setDTR(team.getDTR() - 1);
+                team.sendMessage(ChatColor.RED + sender.getName() + " forcibly left the team. Your team has lost 1 DTR.");
+
+                sender.sendMessage(ChatColor.RED + "You have forcibly left your team. Your team lost 1 DTR.");
+            } else {
+                team.sendMessage(ChatColor.YELLOW + sender.getName() + " has left the team.");
+
+                sender.sendMessage(ChatColor.DARK_AQUA + "Successfully left the team!");
+            }
         }
 
         FrozenNametagHandler.reloadPlayer(sender);
         FrozenNametagHandler.reloadOthersFor(sender);
     }
-
 }
