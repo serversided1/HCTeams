@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.glowmtn.listeners;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowMountain;
-import net.frozenorb.foxtrot.packetborder.PacketBorder;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.event.HourEvent;
@@ -21,35 +20,40 @@ import static org.bukkit.ChatColor.*;
 
 public class GlowListener implements Listener {
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onGlowstoneBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
+
+        if(Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(location)) {
+            return; // only care about glow stone mountains, they're always claimed.
+        }
+
         Team teamAt = LandBoard.getInstance().getTeam(location);
         GlowHandler glow = Foxtrot.getInstance().getGlowHandler();
 
-        if (teamAt != null && glow.hasGlowMountain() && teamAt.getName().equals(GlowHandler.getGlowTeamName())) {
-            if (event.getBlock().getType() == Material.GLOWSTONE) {
-                GlowMountain mtn = glow.getGlowMountain();
-                if (mtn.getGlowstone().contains(location.toVector().toBlockVector())) {
-                    event.setCancelled(false); // allow them to mine the glowstone
-                    mtn.getMined().add(location.toVector().toBlockVector());
+        if (event.getBlock().getType() == Material.GLOWSTONE && glow.hasGlowMountain() && teamAt.getName().equals(GlowHandler.getGlowTeamName())) {
+            GlowMountain mtn = glow.getGlowMountain();
 
-                    // Let's announce when a glow mountain is a half and fully mined
-                    double total = glow.getGlowMountain().getGlowstone().size();
-                    double mined = glow.getGlowMountain().getMined().size();
-                    double half; // 50% of the total glowstone
+            if (mtn.getGlowstone().contains(location.toVector().toBlockVector())) {
 
-                    if(total % 2 == 0) {
-                        half = total / 2;
-                    } else {
-                        half = Math.ceil(total / 2) - 1;
-                    }
+                event.setCancelled(false); // allow them to mine the glowstone
+                mtn.getMined().add(location.toVector().toBlockVector());
 
-                    if (total - mined == half) {
-                        Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + AQUA + " 50% of Glowstone has been mined!");
-                    } else if (total - mined == 0) {
-                        Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + RED + "  All Glowstone has been mined!");
-                    }
+                // Let's announce when a glow mountain is a half and fully mined
+                double total = glow.getGlowMountain().getGlowstone().size();
+                double mined = glow.getGlowMountain().getMined().size();
+                double half; // 50% of the total glowstone
+
+                if (total % 2 == 0) {
+                    half = total / 2;
+                } else {
+                    half = Math.ceil(total / 2) - 1;
+                }
+
+                if (total - mined == half) {
+                    Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + AQUA + " 50% of Glowstone has been mined!");
+                } else if (total - mined == 0) {
+                    Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + RED + "  All Glowstone has been mined!");
                 }
             }
         }
@@ -68,10 +72,10 @@ public class GlowListener implements Listener {
                 // Only "add" a new glowstone if there wasn't already a glowstone there
                 if(!glow.getGlowMountain().getGlowstone().contains(vector)) {
                     glow.getGlowMountain().getGlowstone().add(vector);
-                    event.getPlayer().sendMessage(GOLD + "[GlowMountain]" + GREEN + " Manually added a new glowstone to the claim!");
+                    event.getPlayer().sendMessage(GOLD + "[Glowstone Mountain]" + GREEN + " Manually added a new glowstone to the claim!");
                     glow.save(); // Save updated glow mountain to file
                 } else {
-                    event.getPlayer().sendMessage(GOLD + "[GlowMountain]" + GREEN + " A Glowstone already existed there, it'll regen on reset :P ");
+                    event.getPlayer().sendMessage(GOLD + "[Glowstone Mountain]" + GREEN + " A Glowstone already existed there, it'll regen on reset :P ");
                 }
             }
         }
@@ -84,7 +88,7 @@ public class GlowListener implements Listener {
         if (event.getHour() % 2 == 1 && handler.hasGlowMountain()) {
             handler.getGlowMountain().reset(); // reset all glowstone every other odd hour (offsetting koths)
 
-            Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + GREEN + " All glowstone has been reset!");
+            Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
         }
     }
 }
