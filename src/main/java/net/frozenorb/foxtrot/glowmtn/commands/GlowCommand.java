@@ -11,7 +11,7 @@ public class GlowCommand {
 
     @Command(names = "glow scan", permissionNode = "op")
     public static void glowScan(Player sender) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam("glowstone");
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam("Glowstone");
 
         if(team != null) {
             if(!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
@@ -26,13 +26,13 @@ public class GlowCommand {
             Foxtrot.getInstance().getGlowHandler().getGlowMountain().scan();
             Foxtrot.getInstance().getGlowHandler().save(); // save to file :D
         } else {
-            sender.sendMessage(ChatColor.RED + "Create the team 'glowstone' and make a claim first!");
+            sender.sendMessage(ChatColor.RED + "Create the team 'Glowstone' and make a claim first!");
         }
     }
 
     @Command(names = "glow reset", permissionNode = "op")
     public static void glowReset(Player sender) {
-        Team team = Foxtrot.getInstance().getTeamHandler().getTeam("glowstone");
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam("Glowstone");
 
         if(team != null) {
             if(!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
@@ -42,7 +42,7 @@ public class GlowCommand {
 
             Foxtrot.getInstance().getGlowHandler().getGlowMountain().reset();
         } else {
-            sender.sendMessage(ChatColor.RED + "Create the team 'glowstone' and make a claim first!");
+            sender.sendMessage(ChatColor.RED + "Create the team 'Glowstone' and make a claim first!");
         }
     }
 }
