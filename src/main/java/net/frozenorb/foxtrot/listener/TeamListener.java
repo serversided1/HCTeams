@@ -131,7 +131,7 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+    @EventHandler(ignoreCancelled=true) // normal priority
     public void onBlockBreak(BlockBreakEvent event) {
         if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;

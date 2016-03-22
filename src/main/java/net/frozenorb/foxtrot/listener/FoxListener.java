@@ -144,7 +144,16 @@ public class FoxListener implements Listener {
         }
     }
 
-
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onStealthPickaxe(BlockBreakEvent event) {
+        if(event.getPlayer().getItemInHand().getType() == GOLD_PICKAXE) {
+            /*
+             * Break block as if it was broken with a golden pickaxe
+             * Cancel block break if break naturally resulted in the block being destoyed
+             */
+            event.setCancelled(event.getBlock().breakNaturally(event.getPlayer().getItemInHand()));
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
