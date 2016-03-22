@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -78,12 +80,29 @@ public class TeamHandler {
         return (getTeam(player.getUniqueId()));
     }
 
-    public void setTeam(UUID playerUUID, Team team) {
+    public void setTeam(UUID playerUUID, Team team, boolean update) {
         if (team == null) {
              playerTeamMap.remove(playerUUID);
         } else {
             playerTeamMap.put(playerUUID, team);
         }
+
+        if(update) {
+            // update their team in mongo
+            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+            BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
+
+            if (team != null) {
+                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
+            } else {
+                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
+            }
+
+        }
+    }
+
+    public void setTeam(UUID playerUUID, Team team) {
+        setTeam(playerUUID, team, true); // standard cases we do update mongo
     }
 
     public void setupTeam(Team team) {
@@ -91,7 +110,7 @@ public class TeamHandler {
         teamUniqueIdMap.put(team.getUniqueId(), team);
 
         for (UUID member : team.getMembers()) {
-            setTeam(member, team);
+            setTeam(member, team, false); // no need to update mongo!
         }
     }
 

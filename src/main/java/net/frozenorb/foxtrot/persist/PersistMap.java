@@ -74,7 +74,6 @@ public abstract class PersistMap<T> {
                 BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
                 playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
-                playersCollection.update(player, new BasicDBObject("team", Foxtrot.getInstance().getTeamHandler().getTeam(key).getUniqueId()));
                 return (null);
             }
 
@@ -97,7 +96,6 @@ public abstract class PersistMap<T> {
                         BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
                         playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
-                        playersCollection.update(player, new BasicDBObject("team", Foxtrot.getInstance().getTeamHandler().getTeam(key).getUniqueId()));
                         return (null);
                     }
 
