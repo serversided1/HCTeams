@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
@@ -41,7 +42,6 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -67,7 +67,7 @@ public class ServerHandler {
 
     @Getter private final boolean elite;
 
-    @Getter private Map<UUID, Long> betrayers = new ConcurrentHashMap<>();
+    @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
     @Getter private Set<UUID> highRollers = new HashSet<>();
 
@@ -103,15 +103,20 @@ public class ServerHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
 
             if (dbo != null) {
-                BasicDBList list = (BasicDBList) dbo.get("uuids");
-
-                for (Object obj : list) {
-                    String key = (String)obj;
-                    betrayers.put(UUID.fromString(key), (Long)list.get(key)); // load betrayers with dates
+                for (Map.Entry<String, Object> obj : dbo.entrySet()) {
+                    BasicDBObject details = (BasicDBObject) obj.getValue();
+                    betrayers.add(new Betrayer(
+                                    UUID.fromString(obj.getKey()),
+                                    UUID.fromString(details.getString("AddedBy")),
+                                    details.getString("Reason"),
+                                    details.getLong("Time"))
+                    );
                 }
             }
 
-            betrayers.keySet().forEach(FrozenUUIDCache::ensure);
+            for (Betrayer betrayer : betrayers) {
+                FrozenUUIDCache.ensure(betrayer.getUuid());
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,13 +171,15 @@ public class ServerHandler {
             }
 
             BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = new BasicDBList();
 
-            for(Map.Entry<UUID, Long> entry : betrayers.entrySet()) {
-                list.put(entry.getKey().toString(), entry.getValue()); // save betrays with dates
+            for(Betrayer betrayer : betrayers) {
+                BasicDBObject details = new BasicDBObject();
+                details.put("AddedBy", betrayer.getAddedBy().toString());
+                details.put("Reason", betrayer.getReason());
+                details.put("Time", betrayer.getTime());
+                dbo.put(betrayer.getUuid().toString(), details);
             }
 
-            dbo.put("uuids", list);
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
@@ -297,13 +304,24 @@ public class ServerHandler {
         return (getDeathban(player.getUniqueId(), player.getLocation()));
     }
 
+    public Betrayer getBetrayer(UUID uuid) {
+        for(Betrayer betrayer : betrayers) {
+            if(uuid.equals(betrayer.getUuid())) {
+                return betrayer;
+            }
+        }
+
+        return null;
+    }
+
+
     public long getDeathban(UUID playerUUID, Location location) {
         // Things we already know and can easily eliminate.
         if (isPreEOTW()) {
             return (TimeUnit.DAYS.toSeconds(1000));
         } else if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return (TimeUnit.SECONDS.toSeconds(10));
-        } else if (Foxtrot.getInstance().getServerHandler().getBetrayers().containsKey(playerUUID)) {
+        } else if (getBetrayer(playerUUID) != null) {
             return (TimeUnit.DAYS.toSeconds(1));
         }
 
