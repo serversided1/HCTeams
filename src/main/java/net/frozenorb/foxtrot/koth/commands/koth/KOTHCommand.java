@@ -23,10 +23,10 @@ public class KOTHCommand {
                         .color(GOLD)
                         .then(koth.getName())
                             .color(YELLOW) // koth name should be yellow
-                            .tooltip(koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockZ())
-                            .color(GRAY) // should color KOTH coords gray
+                            .tooltip(YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockZ())
+                            .color(YELLOW) // should color KOTH coords gray
                         .then(" can be contested now.")
-                            .color(YELLOW)
+                            .color(GOLD)
                         .send(sender);
                 return;
             }
