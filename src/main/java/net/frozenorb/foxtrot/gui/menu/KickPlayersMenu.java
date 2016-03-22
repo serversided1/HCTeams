@@ -14,10 +14,8 @@ import java.util.*;
 
 @RequiredArgsConstructor
 public class KickPlayersMenu extends Menu {
-    @NonNull
-    @Getter
-    Team team;
 
+    @NonNull @Getter Team team;
 
     @Override
     public String getTitle(Player player) {
@@ -26,26 +24,18 @@ public class KickPlayersMenu extends Menu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-
         HashMap<Integer, Button> buttons = new HashMap<>();
-
         int index = 0;
 
         ArrayList<UUID> uuids = new ArrayList<>();
         uuids.addAll(team.getMembers());
 
-        Collections.sort(uuids, new Comparator<UUID>() {
-            public int compare(UUID u1, UUID u2) {
-                return UUIDUtils.name(u1).toLowerCase().compareTo(UUIDUtils.name(u2).toLowerCase());
-            }
-        });
+        Collections.sort(uuids, (u1, u2) -> UUIDUtils.name(u1).toLowerCase().compareTo(UUIDUtils.name(u2).toLowerCase()));
 
         for (UUID u : uuids) {
             buttons.put(index, new KickPlayerButton(u, team));
-
             index++;
         }
-
 
         return buttons;
     }

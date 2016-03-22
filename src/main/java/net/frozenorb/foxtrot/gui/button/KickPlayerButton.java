@@ -17,14 +17,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class KickPlayerButton extends Button {
 
-    @NonNull
-    private UUID uuid;
-    @NonNull
-    private Team team;
+    @NonNull private UUID uuid;
+    @NonNull private Team team;
 
     @Override
     public String getName(Player player) {
-
         return "§cKick §e" + UUIDUtils.name(uuid);
     }
 
@@ -35,15 +32,13 @@ public class KickPlayerButton extends Button {
         if (team.isOwner(uuid)) {
             lore.add("§e§lOwner");
         } else if (team.isCaptain(uuid)) {
-
             lore.add("§aCaptain");
         } else {
             lore.add("§7Member");
         }
+
         lore.add("");
-
         lore.add("§eClick to kick §b" + UUIDUtils.name(uuid) + "§e from team.");
-
 
         return lore;
     }

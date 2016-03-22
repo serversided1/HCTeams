@@ -13,6 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class OpenMuteMenuButton extends Button {
+
     private Team team;
 
     @Override

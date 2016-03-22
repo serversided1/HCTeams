@@ -19,33 +19,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ChangePromotionStatusButton extends Button {
 
-    @NonNull
-    private UUID uuid;
-    @NonNull
-    private Team team;
-    @NonNull
-    private boolean promote;
+    @NonNull private UUID uuid;
+    @NonNull private Team team;
+    @NonNull private boolean promote;
 
     @Override
     public String getName(Player player) {
-
-        if (promote) {
-            return "§aPromote §e" + UUIDUtils.name(uuid);
-
-        }
-        return "§cDemote §e" + UUIDUtils.name(uuid);
+        return promote ? "§aPromote §e" + UUIDUtils.name(uuid) : "§cDemote §e" + UUIDUtils.name(uuid);
     }
 
     @Override
     public List<String> getDescription(Player player) {
         ArrayList<String> lore = new ArrayList<>();
-
-        if (promote) {
-            lore.add("§eClick to promote §b" + UUIDUtils.name(uuid) + "§e to captain");
-        } else {
-            lore.add("§eClick to demote §b" + UUIDUtils.name(uuid) + "§e to member");
-        }
-
+        lore.add(promote ? "§eClick to promote §b" + UUIDUtils.name(uuid) + "§e to captain" : "§eClick to demote §b" + UUIDUtils.name(uuid) + "§e to member");
         return lore;
     }
 
@@ -61,9 +47,8 @@ public class ChangePromotionStatusButton extends Button {
 
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
-
-
         if (promote) {
+
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " captain?", (b) -> {
                 if (b) {
                     team.addCaptain(uuid);
@@ -77,9 +62,8 @@ public class ChangePromotionStatusButton extends Button {
                     player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a captain of " + team.getName() + ".");
                 }
             }).openMenu(player);
-
-
         } else {
+
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " member?", (b) -> {
                 if (b) {
                     team.removeCaptain(uuid);
@@ -93,10 +77,6 @@ public class ChangePromotionStatusButton extends Button {
                     player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a member of " + team.getName() + ".");
                 }
             }).openMenu(player);
-
-
         }
-
     }
-
 }

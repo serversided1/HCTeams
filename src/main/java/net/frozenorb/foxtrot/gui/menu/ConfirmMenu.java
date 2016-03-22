@@ -11,10 +11,6 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Kerem on 12/3/2015.
- */
-
 @AllArgsConstructor
 public class ConfirmMenu extends Menu {
     private String title;
@@ -25,11 +21,11 @@ public class ConfirmMenu extends Menu {
     public Map<Integer, Button> getButtons(Player player) {
         HashMap<Integer, Button> buttons = new HashMap<>();
 
-        for (int i = 0; i < 9;i++) {
+        for (int i = 0; i < 9; i++) {
             if (i == 3) {
                 buttons.put(i, new BooleanButton(true, response));
 
-            } else if (i ==5) {
+            } else if (i == 5) {
                 buttons.put(i, new BooleanButton(false, response));
 
             } else {

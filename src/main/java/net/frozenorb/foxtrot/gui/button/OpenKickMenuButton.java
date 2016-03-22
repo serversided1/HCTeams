@@ -13,6 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class OpenKickMenuButton extends Button {
+
     private Team team;
 
     @Override

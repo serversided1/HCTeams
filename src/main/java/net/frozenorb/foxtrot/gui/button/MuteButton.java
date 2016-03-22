@@ -15,6 +15,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class MuteButton extends Button {
+
     private int minutes;
     private Team team;
 

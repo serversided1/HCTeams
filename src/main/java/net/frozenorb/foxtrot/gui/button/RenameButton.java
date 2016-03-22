@@ -13,6 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class RenameButton extends Button {
+
     private Team team;
 
     @Override
