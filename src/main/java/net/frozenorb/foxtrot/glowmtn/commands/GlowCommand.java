@@ -41,7 +41,7 @@ public class GlowCommand {
 
         if (team != null) {
             if (!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
-                sender.sendMessage(RED + "Error: You need to create the glowmtn first!");
+                sender.sendMessage(RED + "Error: You need to create the team, claim, and scan first!");
                 return;
             }
 

@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.glowmtn.listeners;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowMountain;
+import net.frozenorb.foxtrot.packetborder.PacketBorder;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.event.HourEvent;
@@ -20,7 +21,7 @@ import static org.bukkit.ChatColor.*;
 
 public class GlowListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onGlowstoneBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
         Team teamAt = LandBoard.getInstance().getTeam(location);
@@ -32,17 +33,24 @@ public class GlowListener implements Listener {
                 if (mtn.getGlowstone().contains(location.toVector().toBlockVector())) {
                     event.setCancelled(false); // allow them to mine the glowstone
                     mtn.getMined().add(location.toVector().toBlockVector());
+
+                    // Let's announce when a glow mountain is a half and fully mined
+                    double total = glow.getGlowMountain().getGlowstone().size();
+                    double mined = glow.getGlowMountain().getMined().size();
+                    double half; // 50% of the total glowstone
+
+                    if(total % 2 == 0) {
+                        half = total / 2;
+                    } else {
+                        half = Math.ceil(total / 2) - 1;
+                    }
+
+                    if (total - mined == half) {
+                        Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + AQUA + " 50% of Glowstone has been mined!");
+                    } else if (total - mined == 0) {
+                        Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + RED + "  All Glowstone has been mined!");
+                    }
                 }
-            }
-
-            // Let's announce when a glow mountain is a half and fully mined
-            double total = glow.getGlowMountain().getGlowstone().size();
-            double mined = glow.getGlowMountain().getMined().size();
-
-            if (total - mined == Math.ceil(total / 2)) {
-                Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + AQUA + " 50% of Glowstone has been mined!");
-            } else if (total - mined == 0) {
-                Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + RED + "  All Glowstone has been mined!");
             }
         }
     }

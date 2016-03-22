@@ -22,8 +22,6 @@ public class GlowMountain {
     }
 
     public void scan() {
-        reset(); // any mined glowstone returned to correct state
-
         glowstone.clear(); // clean storage
 
         World world = Bukkit.getWorld(claim.getWorld());
