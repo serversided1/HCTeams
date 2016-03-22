@@ -73,7 +73,6 @@ public class Foxtrot extends JavaPlugin {
     @Getter private LastJoinMap lastJoinMap;
     @Getter private SoulboundLivesMap soulboundLivesMap;
     @Getter private FriendLivesMap friendLivesMap;
-    @Getter private TransferableLivesMap transferableLivesMap;
     @Getter private BaseStatisticMap enderPearlsUsedMap;
     @Getter private BaseStatisticMap expCollectedMap;
     @Getter private BaseStatisticMap itemsRepairedMap;
@@ -193,7 +192,6 @@ public class Foxtrot extends JavaPlugin {
         (fishingKitMap = new FishingKitMap()).loadFromRedis();
         (soulboundLivesMap = new SoulboundLivesMap()).loadFromRedis();
         (friendLivesMap = new FriendLivesMap()).loadFromRedis();
-        (transferableLivesMap = new TransferableLivesMap()).loadFromRedis();
         (chatSpyMap = new ChatSpyMap()).loadFromRedis();
         (diamondMinedMap = new DiamondMinedMap()).loadFromRedis();
         (goldMinedMap = new GoldMinedMap()).loadFromRedis();

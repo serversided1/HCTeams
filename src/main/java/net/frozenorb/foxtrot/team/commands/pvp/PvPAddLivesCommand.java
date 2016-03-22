@@ -19,11 +19,8 @@ public class PvPAddLivesCommand {
         } else if (lifeType.equalsIgnoreCase("friend")) {
             Foxtrot.getInstance().getFriendLivesMap().setLives(player, Foxtrot.getInstance().getFriendLivesMap().getLives(player) + amount);
             sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " friend lives.");
-        } else if (lifeType.equalsIgnoreCase("transferable")) {
-            Foxtrot.getInstance().getTransferableLivesMap().setLives(player, Foxtrot.getInstance().getTransferableLivesMap().getLives(player) + amount);
-            sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " transferable lives.");
-        } else {
-            sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound, friend, or transferable.");
+        }  else {
+            sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound or friend");
         }
     }
 
