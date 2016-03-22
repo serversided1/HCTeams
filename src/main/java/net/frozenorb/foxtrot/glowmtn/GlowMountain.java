@@ -9,16 +9,13 @@ import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class GlowMountain {
 
     @Getter private Claim claim;
     @Getter private final Set<BlockVector> glowstone = new HashSet<>();
-    @Getter private final Map<UUID, Set<BlockVector>> minedMap = new ConcurrentHashMap<>(); //TODO: Use this data more :)
+    @Getter private final Set<BlockVector> mined = new HashSet<>();
 
     public GlowMountain(Claim claim) {
         this.claim = claim;
@@ -43,7 +40,7 @@ public class GlowMountain {
     }
 
     public void reset() {
-        minedMap.clear(); // erase mining history
+        mined.clear(); // erase mining history
         World world = Bukkit.getWorld(claim.getWorld());
 
         for(BlockVector vector : glowstone) {

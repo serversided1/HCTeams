@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
@@ -100,8 +101,8 @@ public class Team {
     }
 
     public String getName(Player player) {
-        if (name.equals("glowstone")) {
-            return ChatColor.YELLOW + "Glowstone Mountain";
+        if (name.equals(GlowHandler.getGlowTeamName())) {
+            return ChatColor.GOLD + "Glowstone Mountain"; // override team name
         } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {

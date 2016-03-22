@@ -16,43 +16,32 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.BlockVector;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static org.bukkit.ChatColor.*;
 
 public class GlowListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onGlowstoneBreak(BlockBreakEvent event) {
         Location location = event.getBlock().getLocation();
         Team teamAt = LandBoard.getInstance().getTeam(location);
         GlowHandler glow = Foxtrot.getInstance().getGlowHandler();
 
-        if (teamAt != null && glow.hasGlowMountain() && teamAt.getName().equals("glowmtn") && teamAt.getOwner() == null) {
+        if (teamAt != null && glow.hasGlowMountain() && teamAt.getName().equals(GlowHandler.getGlowTeamName())) {
             if (event.getBlock().getType() == Material.GLOWSTONE) {
                 GlowMountain mtn = glow.getGlowMountain();
                 if (mtn.getGlowstone().contains(location.toVector().toBlockVector())) {
                     event.setCancelled(false); // allow them to mine the glowstone
-                    Set<BlockVector> mined;
-
-                    if (mtn.getMinedMap().containsKey(event.getPlayer().getUniqueId())) {
-                        mined = mtn.getMinedMap().get(event.getPlayer().getUniqueId());
-                    } else {
-                        mined = new HashSet<>(); // user hasnt mined any glowstone yet, start a new set
-                    }
-
-                    mined.add(location.toVector().toBlockVector());
-                    glow.getGlowMountain().getMinedMap().put(event.getPlayer().getUniqueId(), mined);
+                    mtn.getMined().add(location.toVector().toBlockVector());
                 }
             }
 
             // Let's announce when a glow mountain is a half and fully mined
             double total = glow.getGlowMountain().getGlowstone().size();
-            double mined = glow.getGlowMountain().getMinedMap().size();
-            if (total / mined == 0.50D) {
+            double mined = glow.getGlowMountain().getMined().size();
+
+            if (total - mined == Math.ceil(total / 2)) {
                 Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + AQUA + " 50% of Glowstone has been mined!");
-            } else if (total / mined == 0) {
+            } else if (total - mined == 0) {
                 Bukkit.broadcastMessage(GOLD + "[GlowMountain]" + RED + "  All Glowstone has been mined!");
             }
         }
@@ -65,10 +54,17 @@ public class GlowListener implements Listener {
             Team teamAt = LandBoard.getInstance().getTeam(location);
             GlowHandler glow = Foxtrot.getInstance().getGlowHandler();
 
-            if (teamAt != null && glow.hasGlowMountain() && teamAt.getName().equals("glowmtn") && teamAt.getOwner() == null) {
-                glow.getGlowMountain().getGlowstone().add(location.toVector().toBlockVector());
-                event.getPlayer().sendMessage(GOLD + "[GlowMountain] Manually added a new glowstone to the claim!");
-                glow.save(); // Save updated glow mountain to file
+            if (teamAt != null && glow.hasGlowMountain() && teamAt.getName().equals(GlowHandler.getGlowTeamName())) {
+                BlockVector vector = location.toVector().toBlockVector();
+
+                // Only "add" a new glowstone if there wasn't already a glowstone there
+                if(!glow.getGlowMountain().getGlowstone().contains(vector)) {
+                    glow.getGlowMountain().getGlowstone().add(vector);
+                    event.getPlayer().sendMessage(GOLD + "[GlowMountain]" + GREEN + " Manually added a new glowstone to the claim!");
+                    glow.save(); // Save updated glow mountain to file
+                } else {
+                    event.getPlayer().sendMessage(GOLD + "[GlowMountain]" + GREEN + " A Glowstone already existed there, it'll regen on reset :P ");
+                }
             }
         }
     }

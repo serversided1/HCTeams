@@ -11,15 +11,16 @@ import java.io.IOException;
 
 public class GlowHandler {
 
+    private final static File file = new File("glowmtn.json");
+    @Getter private final static String glowTeamName = "Glowstone";
     @Getter @Setter private GlowMountain glowMountain;
-    private File file = new File("glowmtn.json");
 
     public GlowHandler() {
         try {
             if (!file.exists()) {
                 glowMountain = null;
 
-                if(file.createNewFile()) {
+                if (file.createNewFile()) {
                     Foxtrot.getInstance().getLogger().warning("Created a new glow mountain json file.");
                 }
             } else {
