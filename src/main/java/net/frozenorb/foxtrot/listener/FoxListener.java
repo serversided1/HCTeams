@@ -141,11 +141,7 @@ public class FoxListener implements Listener {
     @EventHandler
     public void onBookDrop(PlayerDropItemEvent event) {
         if (event.getItemDrop().getItemStack().equals(FIRST_SPAWN_BOOK)) {
-            event.setCancelled(true); // cancel item drop
-            event.getPlayer().getInventory().remove(FIRST_SPAWN_BOOK); // kill item
-        } else if (event.getItemDrop().getItemStack().equals(FIRST_SPAWN_FISHING_ROD)) {
-            event.setCancelled(true); // cancel item drop
-            event.getPlayer().getInventory().remove(FIRST_SPAWN_FISHING_ROD); // kill item
+            event.getItemDrop().remove(); // kill the book
         }
     }
 
