@@ -146,12 +146,26 @@ public class FoxListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onStealthPickaxe(BlockBreakEvent event) {
-        if(event.getPlayer().getItemInHand().getType() == GOLD_PICKAXE) {
-            /*
-             * Break block as if it was broken with a golden pickaxe
-             * Cancel block break if break naturally resulted in the block being destoyed
-             */
-            event.setCancelled(event.getBlock().breakNaturally(event.getPlayer().getItemInHand()));
+        Block block = event.getBlock();
+        ItemStack inHand = event.getPlayer().getItemInHand();
+        if (inHand.getType() == GOLD_PICKAXE && inHand.hasItemMeta()) {
+            if (inHand.getItemMeta().getDisplayName().equals(GOLD + ITALIC.toString() + "Stealth Pickaxe")) {
+                event.setCancelled(true);
+
+                block.breakNaturally(inHand);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onStealthItemPickup(PlayerPickupItemEvent event) {
+        ItemStack inHand = event.getPlayer().getItemInHand();
+        if (inHand.getType() == GOLD_PICKAXE && inHand.hasItemMeta()) {
+            if (inHand.getItemMeta().getDisplayName().equals(GOLD + ITALIC.toString() + "Stealth Pickaxe")) {
+                event.setCancelled(true);
+                event.getPlayer().getInventory().addItem(event.getItem().getItemStack());
+                event.getItem().remove();
+            }
         }
     }
 
