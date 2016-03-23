@@ -43,6 +43,11 @@ public class GlowMountain {
 
     public void reset() {
         mined.clear(); // erase mining history
+
+        if(this.claim == null) {
+            this.claim = GlowHandler.getClaim();
+        }
+
         World world = Bukkit.getWorld(claim.getWorld());
 
         for(BlockVector vector : glowstone) {
