@@ -17,8 +17,8 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class TeamForceKickCommand {
 
-    @Command(names={ "team forcekick", "t forcekick", "f forcekick", "faction forcekick", "fac forcekick" }, permissionNode="")
-    public static void teamForceKick(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names = {"team forcekick", "t forcekick", "f forcekick", "faction forcekick", "fac forcekick"}, permissionNode = "")
+    public static void teamForceKick(Player sender, @Parameter(name = "player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -46,8 +46,7 @@ public class TeamForceKickCommand {
             return;
         }
 
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " was kicked by " + sender.getName() + "!");
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(player) + " [Kicked by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(player) + " [Force Kicked by: " + sender.getName() + "]");
 
         if (team.removeMember(player)) {
             team.disband();
@@ -56,13 +55,14 @@ public class TeamForceKickCommand {
         }
 
         Foxtrot.getInstance().getTeamHandler().setTeam(player, null);
-
-        if (SpawnTagHandler.isTagged(sender)) {
-            team.setDTR(team.getDTR() - 1);
-            team.sendMessage(ChatColor.RED + "Your team lost 1 DTR due to force kicking " + UUIDUtils.name(player));
-        }
-
         Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
+
+        if (SpawnTagHandler.isTagged(bukkitPlayer)) {
+            team.setDTR(team.getDTR() - 1);
+            team.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " was force kicked by " + sender.getName() + " and your team lost 1 DTR!");
+        } else {
+            team.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " was force kicked by " + sender.getName() + "!");
+        }
 
         if (bukkitPlayer != null) {
             FrozenNametagHandler.reloadPlayer(bukkitPlayer);

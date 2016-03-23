@@ -9,7 +9,6 @@ import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.UUIDUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,8 +17,8 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class TeamKickCommand {
 
-    @Command(names={ "team kick", "t kick", "f kick", "faction kick", "fac kick" }, permissionNode="")
-    public static void teamKick(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names = {"team kick", "t kick", "f kick", "faction kick", "fac kick"}, permissionNode = "")
+    public static void teamKick(Player sender, @Parameter(name = "player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -47,9 +46,11 @@ public class TeamKickCommand {
             return;
         }
 
-        if(SpawnTagHandler.isTagged(Bukkit.getPlayer(player))) {
-            sender.sendMessage(ChatColor.RED + "itsjhalt is currently combat-tagged! You can forcibly kick itsjhalt by using '"
-                    + ChatColor.YELLOW + "/f forcekick itsjhalt" + ChatColor.RED + "' which will cost your team 1 DTR.");
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
+
+        if (SpawnTagHandler.isTagged(bukkitPlayer)) {
+            sender.sendMessage(ChatColor.RED + bukkitPlayer.getName() + " is currently combat-tagged! You can forcibly kick " + bukkitPlayer.getName() + " by using '"
+                    + ChatColor.YELLOW + "/f forcekick " + bukkitPlayer.getName() + ChatColor.RED + "' which will cost your team 1 DTR.");
             return;
         }
 
@@ -63,7 +64,6 @@ public class TeamKickCommand {
         }
 
         Foxtrot.getInstance().getTeamHandler().setTeam(player, null);
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (bukkitPlayer != null) {
             FrozenNametagHandler.reloadPlayer(bukkitPlayer);
