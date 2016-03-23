@@ -153,8 +153,8 @@ public class TeamStuckCommand implements Listener {
         }
 
         // Start iterating outward on both positive and negative X & Z.
-        for (int xPos = 0, xNeg = 0; xPos < 250; xPos += 2, xNeg -= 2) {
-            for (int zPos = 0, zNeg = 0; zPos < 250; zPos += 2, zNeg -= 2) {
+        for (int xPos = 2, xNeg = -2; xPos < 250; xPos += 2, xNeg -= 2) {
+            for (int zPos = 2, zNeg = -2; zPos < 250; zPos += 2, zNeg -= 2) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
 
                 // Try to find a unclaimed location with no claims adjacent
