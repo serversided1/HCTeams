@@ -23,6 +23,7 @@ public class KOTHCommand {
                         .color(GOLD)
                         .then(koth.getName())
                             .color(YELLOW) // koth name should be yellow
+                            .style(UNDERLINE)
                             .tooltip(YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockZ())
                             .color(YELLOW) // should color KOTH coords gray
                         .then(" can be contested now.")
