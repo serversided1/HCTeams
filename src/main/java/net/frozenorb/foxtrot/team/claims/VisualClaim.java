@@ -784,7 +784,7 @@ public class VisualClaim implements Listener {
                         break;
                     case RIGHT_CLICK_AIR:
                         cancel();
-                        player.sendMessage(ChatColor.RED + "You have unset your first and second locations!");
+                        player.sendMessage(ChatColor.RED + "You have cancelled the claiming process.");
                         break;
                     case LEFT_CLICK_BLOCK:
                         if (player.isSneaking()) {
