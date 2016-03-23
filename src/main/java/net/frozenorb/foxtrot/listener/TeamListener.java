@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import org.bukkit.ChatColor;
@@ -141,6 +142,10 @@ public class TeamListener implements Listener {
 
         if (event.getBlock().getType() == Material.GLOWSTONE && Foxtrot.getInstance().getGlowHandler().hasGlowMountain() && team.getName().equals(GlowHandler.getGlowTeamName())) {
             return; // don't concern ourselves with glowstone breaks in glowstone mountains
+        }
+
+        if (team.getDTR() == DTRBitmask.ROAD.getBitmask() && event.getBlock().getY() <= 40) {
+            return; // allow players to mine under roads
         }
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
