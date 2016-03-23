@@ -33,7 +33,7 @@ public class CrateListener implements Listener {
                             player.getInventory().remove(inHand); // use create
 
                             // unzip fully enchanted set into players inventory
-                            for(ItemStack is : crate.getEnchantedInventory()) {
+                            for(ItemStack is : crate.getInventory()) {
                                 player.getInventory().addItem(is);
                             }
 
