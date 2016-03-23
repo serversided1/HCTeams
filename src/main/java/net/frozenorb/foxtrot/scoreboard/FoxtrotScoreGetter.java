@@ -7,8 +7,11 @@ import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
+import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
+import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
 import net.frozenorb.qlib.scoreboard.ScoreGetter;
 import org.bson.types.ObjectId;
@@ -30,6 +33,8 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String archerMarkScore = getArcherMarkScore(player);
         String bardEffectScore = getBardEffectScore(player);
         String bardEnergyScore = getBardEnergyScore(player);
+        String fstuckScore = getFStuckScore(player);
+        String logoutScore = getLogoutScore(player);
 
         if (spawnTagScore != null) {
             scores.add("&c&lSpawn Tag&7: &c" + spawnTagScore);
@@ -81,6 +86,14 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             scores.add("&b&lBard Energy&7: &c" + bardEnergyScore);
         }
 
+        if (fstuckScore != null) {
+            scores.add("&4&lStuck&7: &c" + fstuckScore);
+        }
+
+        if (logoutScore != null) {
+            scores.add("&4&lLogout&7: &c" + logoutScore);
+        }
+
         ConquestGame conquest = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (conquest != null) {
@@ -116,6 +129,32 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         return (scores.toArray(new String[scores.size()]));
+    }
+
+    public String getFStuckScore(Player player) {
+        if (TeamStuckCommand.getWarping().containsKey(player.getName())) {
+            float diff = TeamStuckCommand.getWarping().get(player.getName()) - System.currentTimeMillis();
+
+            if (diff >= 0) {
+                return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+            }
+        }
+
+        return null;
+    }
+
+    public String getLogoutScore(Player player) {
+        Logout logout = ServerHandler.getTasks().get(player.getName());
+
+        if(logout != null) {
+            float diff = logout.getLogoutTime() - System.currentTimeMillis();
+
+            if (diff >= 0) {
+                return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+            }
+        }
+
+        return null;
     }
 
     public String getSpawnTagScore(Player player) {

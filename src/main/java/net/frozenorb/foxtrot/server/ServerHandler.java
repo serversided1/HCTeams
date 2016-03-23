@@ -13,6 +13,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -63,7 +64,7 @@ public class ServerHandler {
             8238, 8270, 16430, 16462, 8206, 16398 // Invis potions
     );
 
-    @Getter private static Map<String, Integer> tasks = new HashMap<>();
+    @Getter private static Map<String, Logout> tasks = new HashMap<>();
 
     @Getter private final boolean elite;
 
@@ -224,11 +225,7 @@ public class ServerHandler {
             }
         }.runTaskTimer(Foxtrot.getInstance(), 20L, 20L);
 
-        if (tasks.containsKey(player.getName())) {
-            Foxtrot.getInstance().getServer().getScheduler().cancelTask(tasks.remove(player.getName()));
-        }
-
-        tasks.put(player.getName(), taskid.getTaskId());
+        tasks.put(player.getName(), new Logout(taskid.getTaskId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30)));
     }
 
     public RegionData getRegion(Team ownerTo, Location location) {

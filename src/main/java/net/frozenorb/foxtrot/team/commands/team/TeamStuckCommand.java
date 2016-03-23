@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -16,10 +17,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class TeamStuckCommand implements Listener {
 
@@ -48,12 +48,12 @@ public class TeamStuckCommand implements Listener {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new TeamStuckCommand(), Foxtrot.getInstance());
     }
 
-    private static List<String> warping = Lists.newArrayList();
+    @Getter private static Map<String, Long> warping = new ConcurrentHashMap<>();
     private static List<String> damaged = Lists.newArrayList();
 
     @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck", "team unstuck", "t unstuck", "f unstuck", "faction unstuck", "fac unstuck", "unstuck"}, permissionNode="")
     public static void teamStuck(final Player sender) {
-        if (warping.contains(sender.getName())) {
+        if (warping.containsKey(sender.getName())) {
             sender.sendMessage(ChatColor.RED +"You are already being warped!");
             return;
         }
@@ -63,7 +63,8 @@ public class TeamStuckCommand implements Listener {
             return;
         }
 
-        warping.add(sender.getName());
+        int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5 : 300;
+        warping.put(sender.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
 
         new BukkitRunnable() {
 
@@ -178,7 +179,7 @@ public class TeamStuckCommand implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (warping.contains(player.getName())) {
+            if (warping.containsKey(player.getName())) {
                 damaged.add(player.getName());
             }
         }

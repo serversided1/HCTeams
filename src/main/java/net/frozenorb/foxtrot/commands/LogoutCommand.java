@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,6 +13,11 @@ public class LogoutCommand {
         if (sender.hasMetadata("frozen")) {
             sender.sendMessage(ChatColor.RED + "You can't log out while you're frozen!");
             return;
+        }
+
+        if(ServerHandler.getTasks().containsKey(sender.getName())) {
+            sender.sendMessage(ChatColor.RED + "You are already logging out.");
+            return; // dont potato and let them spam logouts
         }
 
         Foxtrot.getInstance().getServerHandler().startLogoutSequence(sender);
