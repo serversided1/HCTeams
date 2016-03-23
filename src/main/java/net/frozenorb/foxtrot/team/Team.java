@@ -797,7 +797,14 @@ public class Team {
         if (getOwner() == null) {
             player.sendMessage(GRAY_LINE);
             player.sendMessage(getName(player));
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+
+            if (HQ.getWorld().getEnvironment() != World.Environment.NORMAL) {
+                String world = HQ.getWorld().getEnvironment() == World.Environment.NETHER ? "Nether" : "End"; // if it's not the nether, it's the end
+                player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ() + " (" + world + ")"));
+            } else {
+                player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+            }
+
             player.sendMessage(GRAY_LINE);
             return;
         }
