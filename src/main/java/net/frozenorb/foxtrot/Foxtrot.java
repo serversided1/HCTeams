@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
+import net.frozenorb.foxtrot.crates.CrateListener;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
@@ -179,6 +180,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
+        getServer().getPluginManager().registerEvents(new CrateListener(), this);
     }
 
     private void setupPersistence() {

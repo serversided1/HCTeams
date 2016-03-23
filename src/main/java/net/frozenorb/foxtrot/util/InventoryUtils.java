@@ -203,6 +203,14 @@ public class InventoryUtils {
         return (Integer.parseInt(getLoreData(item, 3)));
     }
 
+    public static boolean isArmor(ItemStack item) {
+        return item.getTypeId() > 297 && item.getTypeId() < 318;
+    }
+
+    public static boolean isBoots(ItemStack item) {
+        return item.getTypeId() == 301 || item.getTypeId() == 305 || item.getTypeId() == 309 || item.getTypeId() == 313 || item.getTypeId() == 317;
+    }
+
     public static String getLoreData(ItemStack item, int index) {
         List<String> lore = item.getItemMeta().getLore();
 
