@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.glowmtn;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
@@ -42,5 +43,9 @@ public class GlowHandler {
 
     public boolean hasGlowMountain() {
         return glowMountain != null;
+    }
+
+    public static Claim getClaim() {
+        return Foxtrot.getInstance().getTeamHandler().getTeam(glowTeamName).getClaims().get(0); // null if no glowmtn is set!
     }
 }

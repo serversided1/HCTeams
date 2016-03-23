@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.glowmtn;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,7 +15,7 @@ import java.util.Set;
 
 public class GlowMountain {
 
-    @Getter private Claim claim;
+    @Getter private transient Claim claim;
     @Getter private final Set<BlockVector> glowstone = new HashSet<>();
     @Getter private final Set<BlockVector> mined = new HashSet<>();
 
@@ -23,6 +25,8 @@ public class GlowMountain {
 
     public void scan() {
         glowstone.clear(); // clean storage
+
+        this.claim = GlowHandler.getClaim(); // update claim
 
         World world = Bukkit.getWorld(claim.getWorld());
         for(int x = claim.getX1(); x < claim.getX2(); x++) {
