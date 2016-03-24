@@ -69,6 +69,10 @@ public class PortalTrapListener implements Listener {
                 new BukkitRunnable() {
                     public void run() {
                         if (player.getWorld().getEnvironment() == World.Environment.NETHER) {
+                            if (Math.abs(player.getLocation().getX()) <= 10 && Math.abs(player.getLocation().getZ()) <= 10) {
+                                return;
+                            }
+
                             portal.patchNether();
                         } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
                             portal.patchOverworld();
