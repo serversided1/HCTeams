@@ -89,7 +89,7 @@ public class Foxtrot extends JavaPlugin {
         saveDefaultConfig();
 
         try {
-            mongoPool = new MongoClient();
+            mongoPool = new MongoClient(getConfig().getString("Mongo.Host", "127.0.0.1"));
             queuePool = new JedisPool(getConfig().getString("Queue.Redis.Host"));
         } catch (Exception e) {
             e.printStackTrace();
