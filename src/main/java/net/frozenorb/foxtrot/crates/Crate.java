@@ -18,7 +18,7 @@ import static org.bukkit.Material.*;
 import static org.bukkit.enchantments.Enchantment.*;
 
 @AllArgsConstructor
-enum Crate {
+public enum Crate {
 
     ARCHER(getEnchantedInventory(
             ImmutableSet.of(
@@ -96,6 +96,14 @@ enum Crate {
         Collections.sort(enchanted, (o1, o2) -> Ints.compare(o1.getTypeId(), o2.getTypeId()));
 
         return enchanted;
+    }
+
+    public List<String> getLore() {
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.LIGHT_PURPLE + "Right click to open this " + getKitName() + ChatColor.LIGHT_PURPLE + " crate.");
+        lore.add("");
+        lore.add(ChatColor.YELLOW + "Crate requires " + ChatColor.GRAY + getSize() + ChatColor.YELLOW + " empty slots to open.");
+        return lore;
     }
 
     public int getSize() {

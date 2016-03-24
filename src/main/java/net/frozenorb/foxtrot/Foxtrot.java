@@ -143,6 +143,7 @@ public class Foxtrot extends JavaPlugin {
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.glowmtn.commands");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.crates.commands");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.conquest");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.koth");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.server");
