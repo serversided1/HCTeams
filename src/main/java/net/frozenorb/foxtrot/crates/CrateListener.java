@@ -65,7 +65,7 @@ public class CrateListener implements Listener {
 
             for (Crate crate : Crate.values()) {
                 if (name.equals(crate.getKitName())) {
-                    event.setCancelled(true);
+                    event.setCancelled(true); // to be certain the enderchest cannot be placed if it's a crate
                     return;
                 }
             }
