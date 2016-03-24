@@ -17,13 +17,12 @@ public class PayCommand {
     @Command(names={ "Pay", "P2P" }, permissionNode="")
     public static void pay(Player sender, @Parameter(name="player") UUID player, @Parameter(name="amount") float amount) {
         double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
+        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
-        if (!Foxtrot.getInstance().getPlaytimeMap().hasPlayed(player)) {
-            sender.sendMessage(ChatColor.RED + "Player not found.");
+        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
+            sender.sendMessage(ChatColor.RED + "That player is not online.");
             return;
         }
-
-        Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (sender.equals(bukkitPlayer)) {
             sender.sendMessage(ChatColor.RED + "You cannot send money to yourself!");
@@ -61,9 +60,7 @@ public class PayCommand {
 
         sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + ".");
 
-        if (bukkitPlayer != null) {
-            bukkitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + ".");
-        }
+        bukkitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " sent you " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + ".");
     }
 
 }

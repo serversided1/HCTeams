@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -235,6 +236,16 @@ public class CombatLoggerListener implements Listener {
             }
 
             SpawnTagHandler.addSeconds(damager, SpawnTagHandler.MAX_SPAWN_TAG);
+        }
+    }
+
+    // Prevent combatloggers from activating a pressure plate
+    @EventHandler
+    public void onEntityPressurePlate(EntityInteractEvent event) {
+        if(event.getBlock().getType() == Material.STONE_PLATE || event.getBlock().getType() == Material.GOLD_PLATE || event.getBlock().getType() == Material.IRON_PLATE) {
+            if(event.getEntity() instanceof Villager && event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+                event.setCancelled(true);
+            }
         }
     }
 

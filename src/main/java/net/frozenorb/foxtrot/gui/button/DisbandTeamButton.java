@@ -14,6 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class DisbandTeamButton extends Button {
+
     private Team team;
 
     @Override

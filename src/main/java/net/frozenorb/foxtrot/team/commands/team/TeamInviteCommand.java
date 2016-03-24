@@ -44,7 +44,7 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player) && !override.equalsIgnoreCase("override")) {
+        if (Foxtrot.getInstance().getServerHandler().getBetrayer(player) != null && !override.equalsIgnoreCase("override")) {
             sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "WARNING! " + ChatColor.YELLOW + UUIDUtils.name(player) + " has previously betrayed another team. Are you sure you want to invite " + UUIDUtils.name(player) + "? Type '/t invite " + UUIDUtils.name(player) + " override' to ignore this warning.");
             return;
         }

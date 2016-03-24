@@ -28,11 +28,11 @@ public class PlayerInfoPacket implements XPacket {
         new BukkitRunnable() {
 
             public void run() {
-                int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player) + Foxtrot.getInstance().getTransferableLivesMap().getLives(player);
+                int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player);
                 long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
                 String livesLocked = null;
 
-                if (Foxtrot.getInstance().getServerHandler().getBetrayers().contains(player)) {
+                if (Foxtrot.getInstance().getServerHandler().getBetrayer(player) != null) {
                     livesLocked = "Betrayer";
                 }
 

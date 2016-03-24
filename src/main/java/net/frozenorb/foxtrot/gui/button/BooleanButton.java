@@ -13,24 +13,25 @@ import java.util.List;
 
 @AllArgsConstructor
 public class BooleanButton extends Button {
-    private boolean elAccepto;
+
+    private boolean accept;
     private Callback<Boolean> callback;
 
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
-        if (elAccepto) {
+        if (accept) {
             player.playSound(player.getLocation(), Sound.NOTE_PIANO, 20f, 0.1f);
         } else {
             player.playSound(player.getLocation(), Sound.DIG_GRAVEL, 20f, 0.1F);
         }
         player.closeInventory();
 
-        callback.callback(elAccepto);
+        callback.callback(accept);
     }
 
     @Override
     public String getName(Player player) {
-        return elAccepto ? "§aConfirm" : "§cCancel";
+        return accept ? "§aConfirm" : "§cCancel";
     }
 
     @Override
@@ -40,7 +41,7 @@ public class BooleanButton extends Button {
 
     @Override
     public byte getDamageValue(Player player) {
-        return elAccepto ? (byte) 5 : (byte) 14;
+        return accept ? (byte) 5 : (byte) 14;
     }
 
     @Override

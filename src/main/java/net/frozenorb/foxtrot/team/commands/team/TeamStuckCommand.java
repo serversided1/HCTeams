@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -16,9 +17,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class TeamStuckCommand implements Listener {
 
@@ -47,12 +48,12 @@ public class TeamStuckCommand implements Listener {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new TeamStuckCommand(), Foxtrot.getInstance());
     }
 
-    private static List<String> warping = Lists.newArrayList();
+    @Getter private static Map<String, Long> warping = new ConcurrentHashMap<>();
     private static List<String> damaged = Lists.newArrayList();
 
     @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck", "team unstuck", "t unstuck", "f unstuck", "faction unstuck", "fac unstuck", "unstuck"}, permissionNode="")
     public static void teamStuck(final Player sender) {
-        if (warping.contains(sender.getName())) {
+        if (warping.containsKey(sender.getName())) {
             sender.sendMessage(ChatColor.RED +"You are already being warped!");
             return;
         }
@@ -62,7 +63,8 @@ public class TeamStuckCommand implements Listener {
             return;
         }
 
-        warping.add(sender.getName());
+        int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5 : 300;
+        warping.put(sender.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
 
         new BukkitRunnable() {
 
@@ -104,10 +106,14 @@ public class TeamStuckCommand implements Listener {
                     }.runTask(Foxtrot.getInstance());
                 }
 
+                Location loc = sender.getLocation();
+
                 if (seconds <= 0) {
                     if (nearest == null) {
                         kick(sender);
                     } else {
+                        Foxtrot.getInstance().getLogger().info("Moved " + sender.getName() + " " + loc.distance(nearest) + " blocks from " + toStr(loc) + " to " + toStr(nearest));
+
                         sender.teleport(nearest);
                         sender.sendMessage(ChatColor.YELLOW + "Teleported you to the nearest safe area!");
                     }
@@ -116,8 +122,6 @@ public class TeamStuckCommand implements Listener {
                     cancel();
                     return;
                 }
-
-                Location loc = sender.getLocation();
 
                 // More than 5 blocks away
                 if ((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)) {
@@ -137,6 +141,10 @@ public class TeamStuckCommand implements Listener {
         }.runTaskTimer(Foxtrot.getInstance(), 0L, 20L);
     }
 
+    private static String toStr(Location loc) {
+        return "{x=" + loc.getBlockX() + ", y=" + loc.getBlockY() + ", z=" + loc.getBlockZ() + "}";
+    }
+
     private static Location nearestSafeLocation(Location origin) {
         LandBoard landBoard = LandBoard.getInstance();
 
@@ -145,14 +153,19 @@ public class TeamStuckCommand implements Listener {
         }
 
         // Start iterating outward on both positive and negative X & Z.
-        for (int xPos = 0, xNeg = 0; xPos < 250; xPos++, xNeg--) {
-            for (int zPos = 0, zNeg = 0; zPos < 250; zPos++, zNeg--) {
+        for (int xPos = 2, xNeg = -2; xPos < 250; xPos += 2, xNeg -= 2) {
+            for (int zPos = 2, zNeg = -2; zPos < 250; zPos += 2, zNeg -= 2) {
                 Location atPos = origin.clone().add(xPos, 0, zPos);
+
+                // Try to find a unclaimed location with no claims adjacent
+                if (landBoard.getClaim(atPos) == null && !isAdjacentClaimed(atPos)) {
+                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0, 1, 0));
+                }
+
                 Location atNeg = origin.clone().add(xNeg, 0, zNeg);
 
-                if (landBoard.getClaim(atPos) == null) {
-                    return (getActualHighestBlock(atPos.getBlock()).getLocation().add(0, 1, 0));
-                } else if (landBoard.getClaim(atNeg) == null) {
+                // Try again to find a unclaimed location with no claims adjacent
+                if (landBoard.getClaim(atNeg) == null && !isAdjacentClaimed(atNeg)) {
                     return (getActualHighestBlock(atNeg.getBlock()).getLocation().add(0, 1, 0));
                 }
             }
@@ -166,7 +179,7 @@ public class TeamStuckCommand implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (warping.contains(player.getName())) {
+            if (warping.containsKey(player.getName())) {
                 damaged.add(player.getName());
             }
         }
@@ -187,4 +200,35 @@ public class TeamStuckCommand implements Listener {
         player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
     }
 
+    /**
+     * @param base center block
+     * @return list of all adjacent locations
+     */
+    private static List<Location> getAdjacent(Location base) {
+        List<Location> adjacent = new ArrayList<>();
+
+        // Add all relevant locations surrounding the base block
+        for(BlockFace face : BlockFace.values()) {
+            if(face != BlockFace.DOWN && face != BlockFace.UP) {
+                adjacent.add(base.getBlock().getRelative(face).getLocation());
+            }
+        }
+
+        return adjacent;
+    }
+
+    /**
+     *
+     * @param location location to check for
+     * @return if any of it's blockfaces are claimed
+     */
+    private static boolean isAdjacentClaimed(Location location) {
+        for (Location adjacent : getAdjacent(location)) {
+            if (LandBoard.getInstance().getClaim(adjacent) != null) {
+                return true; // we found a claim on an adjacent block!
+            }
+        }
+
+        return false;
+    }
 }

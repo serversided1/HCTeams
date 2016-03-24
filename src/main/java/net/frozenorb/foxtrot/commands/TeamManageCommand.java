@@ -48,7 +48,8 @@ public class TeamManageCommand {
     @Command(names = {"manageteam dtr"}, permissionNode = "basic.staff")
     public static void dtrTeam(Player sender, @Parameter(name = "team") Team team) {
         conversationDouble(sender, "§eEnter a new DTR for " + team.getName() + ".", (d) -> {
-            SetDTRCommand.setDTR(sender, team, d.floatValue());
+            team.setDTR(d.floatValue());
+            sender.sendRawMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + " has a new DTR of " + ChatColor.LIGHT_PURPLE + d.floatValue() + ChatColor.YELLOW + ".");
         });
     }
 
@@ -72,8 +73,8 @@ public class TeamManageCommand {
     @Command(names = {"manageteam manage"}, permissionNode = "basic.staff")
     public static void manageTeam(Player sender, @Parameter(name = "team") Team team) {
         new TeamManageMenu(team).openMenu(sender);
-
     }
+
     private static void conversationDouble(Player p, String prompt, Callback<Double> callback) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 

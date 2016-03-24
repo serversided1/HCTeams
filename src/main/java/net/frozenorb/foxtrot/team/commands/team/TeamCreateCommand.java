@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
@@ -10,11 +11,13 @@ import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class TeamCreateCommand {
 
     public static final Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
+    private static final Set<String> disallowedTeamNames = ImmutableSet.of("list", "Glowstone");
 
     @Command(names={ "team create", "t create", "f create", "faction create", "fac create" }, permissionNode="")
     public static void teamCreate(Player sender, @Parameter(name="team") String team) {
@@ -30,6 +33,11 @@ public class TeamCreateCommand {
 
         if (team.length() < 3) {
             sender.sendMessage(ChatColor.RED + "Minimum team name size is 3 characters!");
+            return;
+        }
+
+        if(disallowedTeamNames.contains(team.toLowerCase())) {
+            sender.sendMessage(ChatColor.RED + "That faction name is not allowed.");
             return;
         }
 

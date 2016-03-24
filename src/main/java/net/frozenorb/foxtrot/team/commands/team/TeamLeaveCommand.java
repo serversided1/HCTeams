@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
@@ -27,6 +28,11 @@ public class TeamLeaveCommand {
 
         if (LandBoard.getInstance().getTeam(sender.getLocation()) == team) {
             sender.sendMessage(ChatColor.RED + "You cannot leave your team while on team territory.");
+            return;
+        }
+
+        if(SpawnTagHandler.isTagged(sender)) {
+            sender.sendMessage(ChatColor.RED + "You are combat-tagged! You can only leave your faction by using '" + ChatColor.YELLOW + "/f forceleave" + ChatColor.RED + "' which will cost your team 1 DTR.");
             return;
         }
 

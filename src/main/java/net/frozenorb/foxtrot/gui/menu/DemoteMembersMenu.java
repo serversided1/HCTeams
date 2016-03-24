@@ -15,8 +15,8 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 public class DemoteMembersMenu extends Menu {
-    @NonNull @Getter Team team;
 
+    @NonNull @Getter Team team;
 
     @Override
     public String getTitle(Player player) {

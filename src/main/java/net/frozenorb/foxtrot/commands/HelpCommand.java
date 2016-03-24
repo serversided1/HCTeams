@@ -13,6 +13,7 @@ public class HelpCommand {
     public static void help(Player sender) {
          String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
          String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
+         String bow = "Power " + Enchantment.ARROW_DAMAGE.getMaxLevel();
 
         sender.sendMessage(new String[] {
 
@@ -23,7 +24,7 @@ public class HelpCommand {
                 "§eCurrent Map: §7" + Foxtrot.getInstance().getMapHandler().getMapStartedString(),
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
-                "§eEnchant Limits: §7" + sharp + ", " + prot,
+                "§eEnchant Limits: §7" + sharp + ", " + prot + ", " + bow,
                 "§eDeathban: §7" + "§6PRO§7: 1 Hour, §aVIP§7: 2 Hours, §fDefault§7: 3 Hours",
                 "§eWorld Map: §7" + "http://www.hcteams.com/map/",
 

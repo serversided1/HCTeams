@@ -19,10 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MakeLeaderButton extends Button {
 
-    @NonNull
-    private UUID uuid;
-    @NonNull
-    private Team team;
+    @NonNull private UUID uuid;
+    @NonNull private Team team;
 
     @Override
     public String getName(Player player) {
@@ -55,7 +53,6 @@ public class MakeLeaderButton extends Button {
 
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
-
         if (team.isOwner(uuid)) {
             player.sendMessage(ChatColor.RED + "That player is already the leader!");
             return;

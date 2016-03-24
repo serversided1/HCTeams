@@ -1,15 +1,18 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -131,13 +134,21 @@ public class TeamListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+    @EventHandler(ignoreCancelled=true) // normal priority
     public void onBlockBreak(BlockBreakEvent event) {
         if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || Foxtrot.getInstance().getServerHandler().isUnclaimedOrRaidable(event.getBlock().getLocation())) {
             return;
         }
 
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
+
+        if (event.getBlock().getType() == Material.GLOWSTONE && Foxtrot.getInstance().getGlowHandler().hasGlowMountain() && team.getName().equals(GlowHandler.getGlowTeamName())) {
+            return; // don't concern ourselves with glowstone breaks in glowstone mountains
+        }
+
+        if (team.getDTR() == DTRBitmask.ROAD.getBitmask() && event.getBlock().getY() <= 40) {
+            return; // allow players to mine under roads
+        }
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");

@@ -11,10 +11,6 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Kerem on 12/3/2015.
- */
-
 @AllArgsConstructor
 public class MuteMenu extends Menu {
     private Team team;

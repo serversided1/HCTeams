@@ -22,16 +22,9 @@ public class UseLifePacket implements XPacket {
             public void run() {
                 int soulboundLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player);
                 int friendLives = Foxtrot.getInstance().getFriendLivesMap().getLives(player);
-                int transferableLives = Foxtrot.getInstance().getTransferableLivesMap().getLives(player);
 
                 if (soulboundLives == 0) {
-                    if (friendLives == 0) {
-                        // Use a transferable life.
-                        Foxtrot.getInstance().getTransferableLivesMap().setLives(player, transferableLives - 1);
-                    } else {
-                        // Use a friend life.
-                        Foxtrot.getInstance().getFriendLivesMap().setLives(player, friendLives - 1);
-                    }
+                    Foxtrot.getInstance().getFriendLivesMap().setLives(player, friendLives - 1);
                 } else {
                     // Use a soulbound life.
                     Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, soulboundLives - 1);

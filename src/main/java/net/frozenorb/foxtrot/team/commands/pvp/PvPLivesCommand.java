@@ -17,7 +17,6 @@ public class PvPLivesCommand {
 
         sender.sendMessage(ChatColor.GOLD + name + "'s Soulbound Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getSoulboundLivesMap().getLives(player));
         sender.sendMessage(ChatColor.GOLD + name + "'s Friend Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getFriendLivesMap().getLives(player));
-        sender.sendMessage(ChatColor.GOLD + name + "'s Transferable Lives: " + ChatColor.WHITE + Foxtrot.getInstance().getTransferableLivesMap().getLives(player));
     }
 
 }

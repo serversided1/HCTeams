@@ -1,11 +1,13 @@
 package net.frozenorb.foxtrot.listener;
 
 import com.google.common.collect.ImmutableSet;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +23,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +80,7 @@ public class EnchantmentLimiterListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getInventory() instanceof MerchantInventory) {
             for (ItemStack item : event.getInventory()) {
@@ -98,8 +101,34 @@ public class EnchantmentLimiterListener implements Listener {
             if (meta != null && meta.hasDisplayName()) {
                 ItemStack previous = event.getInventory().getItem(0);
 
-                if (previous != null && previous.hasItemMeta() && previous.getItemMeta().hasDisplayName() && previous.getItemMeta().getDisplayName().contains(ChatColor.AQUA.toString())) {
-                    meta.setDisplayName(previous.getItemMeta().getDisplayName());
+                if (previous != null && previous.hasItemMeta() && previous.getItemMeta().hasDisplayName() && containsColor(previous.getItemMeta().getDisplayName())) {
+                    /* Admin item, dont allow repair or rename */
+                    event.setCancelled(false);
+                    event.setResult(Event.Result.DENY);
+
+                    /* Start stupid workaround to update exp */
+                    view.close();
+
+                    new BukkitRunnable() {
+
+                        @Override
+                        public void run() {
+                            ((Player) event.getWhoClicked()).giveExp(5);
+                        }
+
+                    }.runTaskLater(Foxtrot.getInstance(), 2L);
+
+                    new BukkitRunnable() {
+
+                        @Override
+                        public void run() {
+                            ((Player) event.getWhoClicked()).giveExp(-5);
+                        }
+
+                    }.runTaskLater(Foxtrot.getInstance(), 6L);
+                    /* End stupid workaround to update exp */
+
+                    return;
                 } else {
                     meta.setDisplayName(fixName(meta.getDisplayName()));
                 }
@@ -108,6 +137,10 @@ public class EnchantmentLimiterListener implements Listener {
                 event.setCurrentItem(item);
             }
         }
+    }
+
+    private boolean containsColor(String displayName) {
+        return !ChatColor.stripColor(displayName).equals(displayName);
     }
 
     private String fixName(String name) {

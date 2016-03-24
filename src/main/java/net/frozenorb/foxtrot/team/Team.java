@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.team.claims.Claim;
@@ -64,6 +65,7 @@ public class Team {
     @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
+    @Getter private Set<ObjectId> ignoring = new HashSet<>();
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
 
@@ -100,7 +102,9 @@ public class Team {
     }
 
     public String getName(Player player) {
-        if (owner == null) {
+        if (name.equals(GlowHandler.getGlowTeamName())) {
+            return ChatColor.GOLD + "Glowstone Mountain"; // override team name
+        } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
                     case NETHER:
@@ -575,6 +579,14 @@ public class Team {
                         requestedAllies.add(new ObjectId(requestedAlly.trim()));
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("Ignoring")) {
+                for (String ignore : lineParts) {
+                    ignore = ignore.replace("[", "").replace("]", "");
+
+                    if (ignore.length() != 0) {
+                        ignoring.add(new ObjectId(ignore.trim()));
+                    }
+                }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
@@ -688,6 +700,7 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
+        teamString.append("Ignoring:").append(getIgnoring().toString()).append('\n');
         teamString.append("HistoricalMembers:").append(historicalMembers.toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
@@ -715,6 +728,7 @@ public class Team {
         dbObject.put("Invitations", UUIDUtils.uuidsToStrings(getInvitations()));
         dbObject.put("Allies", getAllies());
         dbObject.put("RequestedAllies", getRequestedAllies());
+        dbObject.put("Ignoring", getIgnoring());
         dbObject.put("DTR", getDTR());
         dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
@@ -794,7 +808,14 @@ public class Team {
         if (getOwner() == null) {
             player.sendMessage(GRAY_LINE);
             player.sendMessage(getName(player));
-            player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+
+            if (HQ.getWorld().getEnvironment() != World.Environment.NORMAL) {
+                String world = HQ.getWorld().getEnvironment() == World.Environment.NETHER ? "Nether" : "End"; // if it's not the nether, it's the end
+                player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ() + " (" + world + ")"));
+            } else {
+                player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
+            }
+
             player.sendMessage(GRAY_LINE);
             return;
         }

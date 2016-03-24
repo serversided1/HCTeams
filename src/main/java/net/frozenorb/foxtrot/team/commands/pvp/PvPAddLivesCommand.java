@@ -4,26 +4,38 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
 public class PvPAddLivesCommand {
 
-    @Command(names={ "pvptimer addlives", "timer addlives", "pvp addlives", "pvptimer addlives", "timer addlives", "pvp addlives" }, permissionNode="worldedit.*")
-    public static void pvpSetLives(CommandSender sender, @Parameter(name="player") UUID player, @Parameter(name="life type") String lifeType, @Parameter(name="amount") int amount) {
+    @Command(names = {"pvptimer addlives", "timer addlives", "pvp addlives", "pvptimer addlives", "timer addlives", "pvp addlives"}, permissionNode = "worldedit.*")
+    public static void pvpSetLives(CommandSender sender, @Parameter(name = "player") UUID player, @Parameter(name = "life type") String lifeType, @Parameter(name = "amount") int amount) {
         if (lifeType.equalsIgnoreCase("soulbound")) {
             Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + amount);
             sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " soulbound lives.");
+
+            Player bukkitPlayer = Bukkit.getPlayer(player);
+            if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+                String suffix = sender instanceof Player ? " from " + sender.getName() : "";
+                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received 2 lives" + suffix);
+            }
+
         } else if (lifeType.equalsIgnoreCase("friend")) {
             Foxtrot.getInstance().getFriendLivesMap().setLives(player, Foxtrot.getInstance().getFriendLivesMap().getLives(player) + amount);
             sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " friend lives.");
-        } else if (lifeType.equalsIgnoreCase("transferable")) {
-            Foxtrot.getInstance().getTransferableLivesMap().setLives(player, Foxtrot.getInstance().getTransferableLivesMap().getLives(player) + amount);
-            sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " transferable lives.");
+
+            Player bukkitPlayer = Bukkit.getPlayer(player);
+            if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
+                String suffix = sender instanceof Player ? " from " + sender.getName() : "";
+                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received 2 lives" + suffix);
+            }
         } else {
-            sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound, friend, or transferable.");
+            sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound or friend");
         }
     }
 

@@ -65,6 +65,9 @@ public class EnderpearlListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             return;
+        } else if(!enderpearlCooldown.containsKey(event.getPlayer().getName())) {
+            event.setCancelled(true); // only reason for this would be player died before pearl landed, so cancel it!
+            return;
         }
 
         Location target = event.getTo();
