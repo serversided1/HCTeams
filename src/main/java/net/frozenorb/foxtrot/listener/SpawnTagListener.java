@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -16,18 +17,9 @@ public class SpawnTagListener implements Listener {
             return;
         }
 
-        Player damager = null;
+        Player damager = PlayerUtils.getDamageSource(event.getDamager());
 
-        if (event.getDamager() instanceof Player) {
-            damager = (Player) event.getDamager();
-        } else if (event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getDamager();
-
-            if (projectile.getShooter() instanceof Player) {
-                damager = (Player) projectile.getShooter();
-            }
-        }
-
+        /* Only tag player damagers, and deny tagging self */
         if (damager != null && damager != event.getEntity()) {
             SpawnTagHandler.addSeconds(damager, SpawnTagHandler.MAX_SPAWN_TAG);
             SpawnTagHandler.addSeconds((Player) event.getEntity(), SpawnTagHandler.MAX_SPAWN_TAG);
