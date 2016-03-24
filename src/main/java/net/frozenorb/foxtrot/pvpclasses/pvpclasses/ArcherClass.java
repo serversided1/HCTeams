@@ -118,17 +118,30 @@ public class ArcherClass extends PvPClass {
                 }
 
                 if (invis != null) {
-                    final PotionEffect invisFinal = invis;
+                    PvPClass playerClass = PvPClassHandler.getPvPClass(player);
 
                     player.removePotionEffect(invis.getType());
 
-                    new BukkitRunnable() {
+                    final PotionEffect invisFinal = invis;
 
-                        public void run() {
-                            player.addPotionEffect(invisFinal);
-                        }
+                    /* Handle returning their invisibility after the archer tag is done */
+                    if (playerClass instanceof MinerClass) {
+                        /* Queue player to have invis returned. (MinerClass takes care of this) */
+                        ((MinerClass) playerClass).getInvis().put(player.getName(), MARK_SECONDS);
+                    } else {
+                        /* player has no class but had invisibility, return it after their tag expires */
+                        new BukkitRunnable() {
 
-                    }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+                            public void run() {
+                                if(invisFinal.getDuration() > 1_000_000) {
+                                    return; // Ensure we never apply an infinite invis to a non miner
+                                }
+
+                                player.addPotionEffect(invisFinal);
+                            }
+
+                        }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+                    }
                 }
 
                 getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
