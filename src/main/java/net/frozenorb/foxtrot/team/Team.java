@@ -65,6 +65,7 @@ public class Team {
     @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
+    @Getter private Set<ObjectId> ignoring = new HashSet<>();
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
 
@@ -578,6 +579,14 @@ public class Team {
                         requestedAllies.add(new ObjectId(requestedAlly.trim()));
                     }
                 }
+            } else if (identifier.equalsIgnoreCase("Ignoring")) {
+                for (String ignore : lineParts) {
+                    ignore = ignore.replace("[", "").replace("]", "");
+
+                    if (ignore.length() != 0) {
+                        ignoring.add(new ObjectId(ignore.trim()));
+                    }
+                }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
@@ -691,6 +700,7 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
+        teamString.append("Ignoring:").append(getIgnoring().toString()).append('\n');
         teamString.append("HistoricalMembers:").append(historicalMembers.toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
@@ -718,6 +728,7 @@ public class Team {
         dbObject.put("Invitations", UUIDUtils.uuidsToStrings(getInvitations()));
         dbObject.put("Allies", getAllies());
         dbObject.put("RequestedAllies", getRequestedAllies());
+        dbObject.put("Ignoring", getIgnoring());
         dbObject.put("DTR", getDTR());
         dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
