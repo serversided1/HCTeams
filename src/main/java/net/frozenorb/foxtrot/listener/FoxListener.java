@@ -42,11 +42,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BlockVector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.Material.*;
@@ -54,6 +53,7 @@ import static org.bukkit.Material.*;
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
 
+    private static final Map<BlockVector, UUID> pressurePlates = new ConcurrentHashMap<>();
     public static final ItemStack FIRST_SPAWN_BOOK = new ItemStack(WRITTEN_BOOK);
     public static final ItemStack FIRST_SPAWN_FISHING_ROD = new ItemStack(FISHING_ROD);
     public static final Set<PotionEffectType> DEBUFFS = ImmutableSet.of(PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.WEAKNESS, PotionEffectType.HARM, PotionEffectType.WITHER);
@@ -110,6 +110,44 @@ public class FoxListener implements Listener {
         }
 
         processTerritoryInfo(event);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerPressurePlate(PlayerInteractEvent event) {
+        if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() == Material.STONE_PLATE) {
+            BlockVector vector = event.getClickedBlock().getLocation().toVector().toBlockVector();
+
+            if (!pressurePlates.containsKey(vector)) {
+                pressurePlates.put(vector, event.getPlayer().getUniqueId()); // when this person steps off the plate, it will be depressed
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerMoveOffPressurePlate(PlayerMoveEvent event) {
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
+
+        if (event.getFrom().getBlock().getType() == Material.STONE_PLATE) {
+            BlockVector vector = event.getFrom().toVector().toBlockVector();
+
+            if (pressurePlates.containsKey(vector) && event.getPlayer().getUniqueId().equals(pressurePlates.get(vector))) {
+                final Block block = event.getFrom().getBlock();
+                pressurePlates.remove(vector);
+
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        // pop pressure plate up
+                        block.setType(Material.STONE_PLATE);
+                        block.setData((byte) 0);
+                        block.getState().update(true);
+                    }
+                }.runTaskLater(Foxtrot.getInstance(), 1L);
+            }
+        }
     }
 
     @EventHandler
