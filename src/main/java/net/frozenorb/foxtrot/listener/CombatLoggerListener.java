@@ -11,10 +11,9 @@ import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import org.bukkit.*;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHumanEntity;
@@ -354,6 +353,76 @@ public class CombatLoggerListener implements Listener {
                 }
 
             }.runTaskLater(Foxtrot.getInstance(), 30 * 20L);
+
+            if (villager.getWorld().getEnvironment() == World.Environment.THE_END) {
+                // check every second if the villager fell out of the world and kill the player if that happened.
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        if (villager.getLocation().getBlockY() >= 0) {
+                            return;
+                        }
+
+                        Foxtrot.getInstance().getLogger().info(metadata.playerName + "'s combat logger at (" + villager.getLocation().getBlockX() + ", " + villager.getLocation().getBlockY() + ", " + villager.getLocation().getBlockZ() + ") died.");
+
+                        // Deathban the player
+                        Foxtrot.getInstance().getDeathbanMap().deathban(metadata.playerUUID, Foxtrot.getInstance().getServerHandler().getDeathban(metadata.playerUUID, villager.getLocation()));
+                        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID);
+
+                        // Take away DTR.
+                        if (team != null) {
+                            team.playerDeath(metadata.playerName, Foxtrot.getInstance().getServerHandler().getDTRLoss(villager.getLocation()));
+                        }
+
+                        String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
+
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                                player.sendMessage(deathMessage);
+                            } else {
+                                if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
+                                    continue;
+                                }
+
+                                if (Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID) != null
+                                        && Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID).equals(Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()))) {
+                                    player.sendMessage(deathMessage);
+                                }
+                            }
+                        }
+
+                        Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
+
+                        if (target == null) {
+                            // Create an entity to load the player data
+                            MinecraftServer server = ((CraftServer) Foxtrot.getInstance().getServer()).getServer();
+                            EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), new GameProfile(metadata.playerUUID, metadata.playerName), new PlayerInteractManager(server.getWorldServer(0)));
+                            target = entity.getBukkitEntity();
+
+                            if (target != null) {
+                                target.loadData();
+                            }
+                        }
+
+                        if (target != null) {
+                            EntityHuman humanTarget = ((CraftHumanEntity) target).getHandle();
+
+                            target.getInventory().clear();
+                            target.getInventory().setArmorContents(null);
+                            humanTarget.setHealth(0);
+
+                            spoofWebsiteData(target, villager.getKiller());
+                            target.saveData();
+                        }
+
+                        LastInvCommand.recordInventory(metadata.playerUUID, metadata.contents, metadata.armor);
+
+                        cancel();
+                    }
+
+                }.runTaskTimer(Foxtrot.getInstance(), 0L, 20L);
+            }
         }
     }
 
