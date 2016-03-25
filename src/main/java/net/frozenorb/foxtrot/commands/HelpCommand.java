@@ -2,10 +2,13 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+
+import static net.frozenorb.foxtrot.server.Deathban.*;
 
 public class HelpCommand {
 
@@ -25,7 +28,7 @@ public class HelpCommand {
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + sharp + ", " + prot + ", " + bow,
-                "§eDeathban: §7" + "§6PRO§7: 2 Hour, §aVIP§7: 3 Hours, §fDefault§7: 4 Hours",
+                "§eDeathban: §7" + "§6PRO§7: " + PRO.inHours() + ", §aVIP§7: " + VIP.inHours() + ", §fDefault§7: " + DEFAULT.inHours(),
                 "§eWorld Map: §7" + "http://www.hcteams.com/map/",
 
                 "",
