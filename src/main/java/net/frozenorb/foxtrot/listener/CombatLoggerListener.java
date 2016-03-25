@@ -358,9 +358,16 @@ public class CombatLoggerListener implements Listener {
                 // check every second if the villager fell out of the world and kill the player if that happened.
                 new BukkitRunnable() {
 
+                    int tries = 0;
+
                     @Override
                     public void run() {
                         if (villager.getLocation().getBlockY() >= 0) {
+                            tries++;
+
+                            if (tries == 30) {
+                                cancel();
+                            }
                             return;
                         }
 
