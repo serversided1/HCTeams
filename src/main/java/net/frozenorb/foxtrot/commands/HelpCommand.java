@@ -25,7 +25,7 @@ public class HelpCommand {
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + sharp + ", " + prot + ", " + bow,
-                "§eDeathban: §7" + "§6PRO§7: 1 Hour, §aVIP§7: 2 Hours, §fDefault§7: 3 Hours",
+                "§eDeathban: §7" + "§6PRO§7: 2 Hour, §aVIP§7: 3 Hours, §fDefault§7: 4 Hours",
                 "§eWorld Map: §7" + "http://www.hcteams.com/map/",
 
                 "",
