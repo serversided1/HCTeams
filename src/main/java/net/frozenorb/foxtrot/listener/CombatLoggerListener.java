@@ -242,10 +242,8 @@ public class CombatLoggerListener implements Listener {
     // Prevent combatloggers from activating a pressure plate
     @EventHandler
     public void onEntityPressurePlate(EntityInteractEvent event) {
-        if(event.getBlock().getType() == Material.STONE_PLATE || event.getBlock().getType() == Material.GOLD_PLATE || event.getBlock().getType() == Material.IRON_PLATE) {
-            if(event.getEntity() instanceof Villager && event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
-                event.setCancelled(true);
-            }
+        if (event.getBlock().getType() == Material.STONE_PLATE && event.getEntity() instanceof Villager && event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+            event.setCancelled(true); // block is stone, entity is a combat tagged villager
         }
     }
 
