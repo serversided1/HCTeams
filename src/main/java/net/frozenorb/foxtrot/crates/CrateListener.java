@@ -29,7 +29,7 @@ public class CrateListener implements Listener {
                     if (name.equals(crate.getKitName())) {
 
                         // Ensure player has enough free slots in their inventory to unzip the crate
-                        if(getFreeSlots(player.getInventory()) >= crate.getSize()) {
+                        if(getFreeSlots(player.getInventory()) >= (crate.getSize() - 1)) {
                             player.getInventory().remove(inHand); // use create
 
                             // unzip fully enchanted set into players inventory
@@ -65,7 +65,7 @@ public class CrateListener implements Listener {
 
             for (Crate crate : Crate.values()) {
                 if (name.equals(crate.getKitName())) {
-                    event.setCancelled(true);
+                    event.setCancelled(true); // to be certain the enderchest cannot be placed if it's a crate
                     return;
                 }
             }

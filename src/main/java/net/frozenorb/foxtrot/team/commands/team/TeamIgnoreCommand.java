@@ -27,6 +27,7 @@ public class TeamIgnoreCommand {
 
                 if (!senderTeam.getIgnoring().contains(targetTeam.getUniqueId())) {
                     senderTeam.getIgnoring().add(targetTeam.getUniqueId());
+                    senderTeam.flagForSave();
 
                     senderTeam.sendMessage(GREEN + "Your team is now ignoring " + RED + targetTeam.getName() + GREEN + ".");
                 } else {

@@ -100,9 +100,9 @@ public enum Crate {
 
     public List<String> getLore() {
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.LIGHT_PURPLE + "Right click to open this " + getKitName() + ChatColor.LIGHT_PURPLE + " crate.");
+        lore.add(ChatColor.DARK_PURPLE + "Right click to open this " + getKitName() + ChatColor.DARK_PURPLE + " crate.");
         lore.add("");
-        lore.add(ChatColor.YELLOW + "Crate requires " + ChatColor.GRAY + getSize() + ChatColor.YELLOW + " empty slots to open.");
+        lore.add(ChatColor.YELLOW + "Crate requires " + ChatColor.DARK_GRAY + getSize() + ChatColor.YELLOW + " empty slots to open.");
         return lore;
     }
 
