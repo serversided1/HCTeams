@@ -1,4 +1,6 @@
 Queue:
   Redis:
     Host: '104.236.52.72'
+Mongo:
+    Host: '127.0.0.1'
 elite: false
