@@ -424,6 +424,7 @@ public class CombatLoggerListener implements Listener {
                         LastInvCommand.recordInventory(metadata.playerUUID, metadata.contents, metadata.armor);
 
                         cancel();
+                        villager.remove();
                     }
 
                 }.runTaskTimer(Foxtrot.getInstance(), 0L, 20L);

@@ -72,6 +72,8 @@ public enum Crate {
             } else if (is.getType() == BOW) {
                 is.addUnsafeEnchantment(ARROW_DAMAGE, ARROW_DAMAGE.getMaxLevel());
                 is.addUnsafeEnchantment(ARROW_FIRE, ARROW_FIRE.getMaxLevel());
+                is.addUnsafeEnchantment(ARROW_INFINITE, ARROW_INFINITE.getMaxLevel());
+                is.addUnsafeEnchantment(DURABILITY, 5);
 
                 int punchMax = ARROW_KNOCKBACK.getMaxLevel();
 

@@ -16,6 +16,7 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.mBasic.Basic;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
@@ -187,7 +188,7 @@ public class FoxListener implements Listener {
         Block block = event.getBlock();
         ItemStack inHand = event.getPlayer().getItemInHand();
         if (inHand.getType() == GOLD_PICKAXE && inHand.hasItemMeta()) {
-            if (inHand.getItemMeta().getDisplayName().equals(GOLD + ITALIC.toString() + "Stealth Pickaxe")) {
+            if (inHand.getItemMeta().getDisplayName().startsWith(ChatColor.AQUA.toString())) {
                 event.setCancelled(true);
 
                 block.breakNaturally(inHand);
@@ -199,7 +200,7 @@ public class FoxListener implements Listener {
     public void onStealthItemPickup(PlayerPickupItemEvent event) {
         ItemStack inHand = event.getPlayer().getItemInHand();
         if (inHand.getType() == GOLD_PICKAXE && inHand.hasItemMeta()) {
-            if (inHand.getItemMeta().getDisplayName().equals(GOLD + ITALIC.toString() + "Stealth Pickaxe")) {
+            if (inHand.getItemMeta().getDisplayName().startsWith(ChatColor.AQUA.toString())) {
                 event.setCancelled(true);
                 event.getPlayer().getInventory().addItem(event.getItem().getItemStack());
                 event.getItem().remove();
