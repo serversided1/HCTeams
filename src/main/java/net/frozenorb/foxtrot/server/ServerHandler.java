@@ -345,14 +345,13 @@ public class ServerHandler {
         }
 
         // The default max.
-        long max = TimeUnit.HOURS.toSeconds(4);
+        long max = Deathban.DEFAULT.inSeconds();
 
-        // 1 to 2 hours based on the player's rank.
         if (player != null) {
-            if (player.hasPermission("inherit.pro")) {
-                max = TimeUnit.HOURS.toSeconds(2);
-            } else if (player.hasPermission("inherit.vip")) {
-                max = TimeUnit.HOURS.toSeconds(3);
+            for (Deathban deathban : Deathban.values()) {
+                if (max > deathban.inSeconds() && player.hasPermission(deathban.getPermission())) {
+                    max = deathban.inSeconds(); // sets max deathban lower if player has permission
+                }
             }
         }
 
