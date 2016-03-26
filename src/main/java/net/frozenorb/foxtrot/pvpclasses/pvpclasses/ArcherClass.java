@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -34,12 +35,13 @@ public class ArcherClass extends PvPClass {
     public static final int MARK_SECONDS = 10;
 
     private static Map<String, Long> lastSpeedUsage = new HashMap<>();
+    private static Map<String, Long> lastJumpUsage = new HashMap<>();
     @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
 
     @Getter private static Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
     public ArcherClass() {
-        super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR));
+        super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR, Material.FEATHER));
     }
 
     @Override
@@ -194,17 +196,33 @@ public class ArcherClass extends PvPClass {
 
     @Override
     public boolean itemConsumed(Player player, Material material) {
-        if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
-            long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
-            String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
+        if (material == Material.SUGAR) {
+            if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
+                long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
+                String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
-            player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
-            return (false);
+                player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+                return (false);
+            }
+
+            lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
+            return (true);
+        } else {
+            if (lastJumpUsage.containsKey(player.getName()) && lastJumpUsage.get(player.getName()) > System.currentTimeMillis()) {
+                long millisLeft = lastJumpUsage.get(player.getName()) - System.currentTimeMillis();
+                String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
+
+                player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+                return (false);
+            }
+
+            lastJumpUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 4));
+
+            SpawnTagHandler.addSeconds(player, SpawnTagHandler.MAX_SPAWN_TAG);
+            return (true);
         }
-
-        lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
-        return (true);
     }
 
     public static boolean isMarked(Player player) {
