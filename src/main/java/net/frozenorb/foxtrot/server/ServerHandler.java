@@ -477,7 +477,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 100;
+        int radius = 200;
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
