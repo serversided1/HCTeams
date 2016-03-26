@@ -81,9 +81,12 @@ public enum Crate {
                     is.addUnsafeEnchantment(ARROW_KNOCKBACK, punchMax);
                 }
 
+                ItemMeta meta = is.getItemMeta();
+                meta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.RED + ChatColor.ITALIC.toString() + "Koth Bow"); // &b&c&o
+                is.setItemMeta(meta); // actually set custom name
             } else if (is.getType() == DIAMOND_SWORD) {
                 is.addUnsafeEnchantment(DAMAGE_ALL, DAMAGE_ALL.getMaxLevel());
-                is.addUnsafeEnchantment(DURABILITY, DURABILITY.getMaxLevel());
+                is.addUnsafeEnchantment(DURABILITY, 5);
                 is.addUnsafeEnchantment(FIRE_ASPECT, 1);
 
                 ItemMeta meta = is.getItemMeta();
