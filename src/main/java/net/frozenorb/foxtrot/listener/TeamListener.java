@@ -328,12 +328,12 @@ public class TeamListener implements Listener {
         Horse victim = (Horse) event.getEntity();
 
         if (damager != null && victim.isTamed()) {
-            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
-            UUID owner = victim.getOwner().getUniqueId();
+            Team damagerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(damager);
+            UUID horseOwner = victim.getOwner().getUniqueId();
 
-            if(!damager.getUniqueId().equals(owner) && team.isMember(damager.getUniqueId())) {
+            if(!damager.getUniqueId().equals(horseOwner) && damagerTeam != null && damagerTeam.isMember(horseOwner)) {
                 event.setCancelled(true);
-                damager.sendMessage(ChatColor.YELLOW + "This horse belongs to " + ChatColor.DARK_GREEN + FrozenUUIDCache.name(owner) + ChatColor.YELLOW + " who is in your faction.");
+                damager.sendMessage(ChatColor.YELLOW + "This horse belongs to " + ChatColor.DARK_GREEN + FrozenUUIDCache.name(horseOwner) + ChatColor.YELLOW + " who is in your faction.");
             }
         }
     }
