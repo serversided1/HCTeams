@@ -113,7 +113,7 @@ public class FoxListener implements Listener {
         processTerritoryInfo(event);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    /*@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPressurePlate(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() == Material.STONE_PLATE) {
             BlockVector vector = event.getClickedBlock().getLocation().toVector().toBlockVector();
@@ -149,7 +149,7 @@ public class FoxListener implements Listener {
                 }.runTaskLater(Foxtrot.getInstance(), 1L);
             }
         }
-    }
+    }*/
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
