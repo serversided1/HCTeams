@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
@@ -209,6 +210,11 @@ public class ArcherClass extends PvPClass {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
             return (true);
         } else {
+            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+                player.sendMessage(ChatColor.RED + "You can't use this in spawn!");
+                return (false);
+            }
+
             if (lastJumpUsage.containsKey(player.getName()) && lastJumpUsage.get(player.getName()) > System.currentTimeMillis()) {
                 long millisLeft = lastJumpUsage.get(player.getName()) - System.currentTimeMillis();
                 String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
@@ -221,7 +227,7 @@ public class ArcherClass extends PvPClass {
             player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 4));
 
             SpawnTagHandler.addSeconds(player, SpawnTagHandler.MAX_SPAWN_TAG);
-            return (true);
+            return (false);
         }
     }
 
