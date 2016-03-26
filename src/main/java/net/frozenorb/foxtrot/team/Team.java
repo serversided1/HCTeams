@@ -809,7 +809,7 @@ public class Team {
             player.sendMessage(GRAY_LINE);
             player.sendMessage(getName(player));
 
-            if (HQ.getWorld().getEnvironment() != World.Environment.NORMAL) {
+            if ( HQ != null && HQ.getWorld().getEnvironment() != World.Environment.NORMAL) {
                 String world = HQ.getWorld().getEnvironment() == World.Environment.NETHER ? "Nether" : "End"; // if it's not the nether, it's the end
                 player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ() + " (" + world + ")"));
             } else {
