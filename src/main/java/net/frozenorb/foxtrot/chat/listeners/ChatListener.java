@@ -86,7 +86,7 @@ public class ChatListener implements Listener {
                         if (!player.hasPermission("basic.staff")) {
                             Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-                            if (team.getIgnoring().contains(playerTeam.getUniqueId())) {
+                            if (team != null && team.getIgnoring().contains(playerTeam.getUniqueId())) {
                                 continue; // recipient ignores this message sender
                             }
                         }
