@@ -28,7 +28,7 @@ public final class FoxConstants {
 
     public static String publicChatFormat(Team team, String highRollerString, String customPrefixString) {
         if (team == null) {
-            return (ChatColor.GOLD + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+            return ((customPrefixString == null ? ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" : ChatColor.GOLD.toString()) + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
         } else {
             return (ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
         }
