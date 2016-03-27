@@ -211,7 +211,7 @@ public class ServerHandler {
                 }
 
                 seconds--;
-                player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds...");
+                //player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds..."); // logout is now in the scoreboard, don't bother spamming them
 
                 if (seconds == 0) {
                     if (tasks.containsKey(player.getName())) {

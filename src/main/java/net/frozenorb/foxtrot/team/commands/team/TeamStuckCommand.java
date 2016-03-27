@@ -131,9 +131,11 @@ public class TeamStuckCommand implements Listener {
                     return;
                 }
 
+                /* Not necessary if we put the stuck timer in sidebar
                 if (warn.contains(seconds)) {
                     sender.sendMessage(ChatColor.YELLOW + "You will be teleported in " + ChatColor.RED.toString() + ChatColor.BOLD + TimeUtils.formatIntoMMSS(seconds) + ChatColor.YELLOW + "!");
                 }
+                */
 
                 seconds--;
             }
