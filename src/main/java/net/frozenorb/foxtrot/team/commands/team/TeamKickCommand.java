@@ -48,7 +48,7 @@ public class TeamKickCommand {
 
         Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
-        if (SpawnTagHandler.isTagged(bukkitPlayer)) {
+        if (bukkitPlayer != null && SpawnTagHandler.isTagged(bukkitPlayer)) {
             sender.sendMessage(ChatColor.RED + bukkitPlayer.getName() + " is currently combat-tagged! You can forcibly kick " + bukkitPlayer.getName() + " by using '"
                     + ChatColor.YELLOW + "/f forcekick " + bukkitPlayer.getName() + ChatColor.RED + "' which will cost your team 1 DTR.");
             return;
