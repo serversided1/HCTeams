@@ -4,8 +4,6 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.configuration.Configuration;
 import net.frozenorb.qlib.configuration.annotations.ConfigData;
-import net.frozenorb.qlib.configuration.annotations.ConfigSerializer;
-import net.frozenorb.qlib.configuration.serializers.StringListSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
 public class TeamGeneralConfiguration extends Configuration {
 
     @ConfigData( path = "teams.disallowed_names")
-    @ConfigSerializer( serializer = StringListSerializer.class )
     @Getter
     private static List<String> disallowedNames = new ArrayList<>(  );
 
