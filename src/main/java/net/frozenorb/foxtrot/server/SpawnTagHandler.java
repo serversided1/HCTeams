@@ -40,7 +40,11 @@ public class SpawnTagHandler {
     }
 
     public static boolean isTagged(Player player) {
-        return spawnTags.containsKey(player.getName()) && spawnTags.get(player.getName()) > System.currentTimeMillis();
+        if (player != null) {
+            return spawnTags.containsKey(player.getName()) && spawnTags.get(player.getName()) > System.currentTimeMillis();
+        } else {
+            return false;
+        }
     }
 
 }
