@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.configuration.TeamGeneralConfiguration;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
@@ -36,7 +37,7 @@ public class TeamCreateCommand {
             return;
         }
 
-        if(disallowedTeamNames.contains(team.toLowerCase())) {
+        if( TeamGeneralConfiguration.getDisallowedNames().contains( team.toLowerCase() )) {
             sender.sendMessage(ChatColor.RED + "That faction name is not allowed.");
             return;
         }
