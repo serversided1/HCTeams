@@ -11,6 +11,6 @@ public class KitCommand {
         String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
         String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
         String bow = "Power " + Enchantment.ARROW_DAMAGE.getMaxLevel();
-        sender.sendMessage("§eEnchant Limits: §7" + sharp + ", " + prot + ", " + bow);
+        sender.sendMessage("§eEnchant Limits: §7" + prot + ", " + sharp + ", " + bow);
     }
 }
