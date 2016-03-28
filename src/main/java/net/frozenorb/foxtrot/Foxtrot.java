@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.ChatHandler;
+import net.frozenorb.foxtrot.chunklimiter.ChunkLimiterListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.crates.CrateListener;
@@ -190,6 +191,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
+        getServer().getPluginManager().registerEvents( new ChunkLimiterListener(), this );
     }
 
     private void setupPersistence() {
