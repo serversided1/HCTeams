@@ -180,13 +180,15 @@ public class EndListener implements Listener {
             event.setTo(new Location(event.getTo().getWorld(), 0.6, 72, 125.5));
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             //Don't allow factions of to large size to enter the mini end.
-            Team team = LandBoard.getInstance().getTeam( event.getFrom() );
-            if( team != null && team.getName().equalsIgnoreCase( MiniEndConfiguration.getTeamName() ) ) {
-                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam( event.getPlayer() );
-                if( playerTeam == null || playerTeam.getSize() <= MiniEndConfiguration.getMaximumTeamSize() ) {
-                    event.setTo( MiniEndConfiguration.getSpawnLocation() );
+            Team team = LandBoard.getInstance().getTeam(event.getFrom());
+            if (team != null && team.getName().equalsIgnoreCase(MiniEndConfiguration.getTeamName())) {
+                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+                if (playerTeam == null || playerTeam.getSize() <= MiniEndConfiguration.getMaximumTeamSize()) {
+                    event.setTo(MiniEndConfiguration.getSpawnLocation());
                 } else {
-                    event.getPlayer().sendMessage( ChatColor.RED + "You cannot enter this end portal, it is for factions under the size of " + ChatColor.YELLOW + MiniEndConfiguration.getMaximumTeamSize() + ChatColor.RED + " players." );
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter this end portal, it is for factions under the size of " + ChatColor.YELLOW + MiniEndConfiguration.getMaximumTeamSize() + ChatColor.RED + " players.");
+                    event.setCancelled(true);
+                    return;
                 }
 
             }

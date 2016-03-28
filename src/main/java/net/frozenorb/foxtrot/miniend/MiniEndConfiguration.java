@@ -9,11 +9,6 @@ import net.frozenorb.qlib.configuration.serializers.LocationSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-/**
- * ---------- hcteams ----------
- * Created by Fraser.Cumming on 27/03/2016.
- * © 2016 Fraser Cumming All Rights Reserved
- */
 public class MiniEndConfiguration extends Configuration {
 
     @ConfigData( path = "miniend.maximum_team_size" )
