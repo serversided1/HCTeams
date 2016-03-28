@@ -28,6 +28,8 @@ import java.util.Map;
 public class EndListener implements Listener {
 
     public static boolean endActive = true;
+    private static Location endReturn; // cached end -> world teleport location
+
     private Map<String, Long> msgCooldown = new HashMap<>();
 
     // Display a message and give the killer the egg (when the dragon is killed)
@@ -175,7 +177,11 @@ public class EndListener implements Listener {
                 }
             }
 
-            event.setTo(new Location(event.getTo().getWorld(), 0.6, 72, 125.5));
+            if (endReturn == null) {
+                endReturn = new Location(event.getTo().getWorld(), 0.6, 64, 346.5); // cache location since it's static once established.
+            }
+
+            event.setTo(endReturn);
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
             if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
