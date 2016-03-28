@@ -43,8 +43,8 @@ public class TeamHQCommand {
 
         Team inClaim = LandBoard.getInstance().getTeam(sender.getLocation());
 
-        if (inClaim != null && inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
-            String prompt = "§cTeleporting to your teams HQ will remove your pvp timer. §eAre you sure? Type in yes or no";
+        if (inClaim != null && inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
+            String prompt = "§cTeleporting to your teams HQ will remove your PvP Timer. §eAre you sure? Type in yes or no";
 
             conversationBoolean(sender, prompt, toContinue -> {
                 if (toContinue) {
