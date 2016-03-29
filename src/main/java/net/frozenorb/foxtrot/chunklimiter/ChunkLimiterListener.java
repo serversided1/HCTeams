@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.chunklimiter;
 
+import lombok.Getter;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
@@ -15,6 +16,7 @@ import java.util.UUID;
 public class ChunkLimiterListener implements Listener {
 
     private HashMap<UUID, Integer> defaultView = new HashMap<>();
+    @Getter private static HashMap<UUID, Integer> viewDistances = new HashMap<>();
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -24,11 +26,16 @@ public class ChunkLimiterListener implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         defaultView.remove(event.getPlayer().getUniqueId());
+        viewDistances.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() >> 4 == event.getTo().getBlockX() >> 4 && event.getFrom().getBlockY() >> 4 == event.getTo().getBlockY() >> 4 && event.getFrom().getBlockZ() >> 4 == event.getTo().getBlockZ() >> 4) {
+            return;
+        }
+
+        if( viewDistances.containsKey(event.getPlayer().getUniqueId())) {
             return;
         }
 

@@ -159,6 +159,7 @@ public class Foxtrot extends JavaPlugin {
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.koth");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.server");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.team");
+        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.chunklimiter");
 
         DeathMessageHandler.init();
     }
@@ -193,8 +194,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
-        getServer().getPluginManager().registerEvents( new ChunkLimiterListener(), this );
-        getServer().getPluginManager().registerEvents( new IPListener(), this );
+        getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
+        getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
 
     private void setupPersistence() {
