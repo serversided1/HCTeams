@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
@@ -968,6 +969,13 @@ public class Team {
                         .tooltip(ChatColor.GREEN + "Click to remove regeneration timer").command("/startdtrregen " + getName());
 
                 message.send(player);
+            }
+        }
+
+        if( this.getName().equalsIgnoreCase("Citadel")) {
+            Team t = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
+            if( t != null ) {
+                player.sendMessage(ChatColor.YELLOW + "Currently Owned By: " + ChatColor.RED + t.getName() );
             }
         }
 

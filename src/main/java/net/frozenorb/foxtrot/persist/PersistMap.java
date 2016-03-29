@@ -105,11 +105,11 @@ public abstract class PersistMap<T> {
         }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
-    public T getValue(UUID key) {
+    protected T getValue(UUID key) {
         return (wrappedMap.get(key));
     }
 
-    public boolean contains(UUID key) {
+    protected boolean contains(UUID key) {
         return (wrappedMap.containsKey(key));
     }
 

@@ -71,7 +71,7 @@ public abstract class StringPersistMap<T> {
                 redis.hset(keyPrefix, key, getRedisValue(getValue(key)));
 
                 DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                BasicDBObject player = new BasicDBObject("_id", key.replace("-", ""));
+                BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
                 playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
                 return (null);
@@ -105,11 +105,11 @@ public abstract class StringPersistMap<T> {
         }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
-    public T getValue(String key) {
+    protected T getValue(String key) {
         return (wrappedMap.get(key));
     }
 
-    public boolean contains(String key) {
+    protected boolean contains(String key) {
         return (wrappedMap.containsKey(key));
     }
 

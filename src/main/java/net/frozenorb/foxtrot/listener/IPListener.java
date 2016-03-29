@@ -19,9 +19,9 @@ public class IPListener implements Listener {
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
         String ip = event.getAddress().getHostName();
         if(Foxtrot.getInstance().getIpMap().contains(ip)) {
-            List<UUID> uuidList = Foxtrot.getInstance().getIpMap().getValue(ip);
+            List<UUID> uuidList = Foxtrot.getInstance().getIpMap().get(ip);
             if(Foxtrot.getInstance().getWhitelistedIPMap().contains(event.getUniqueId())) {
-                UUID other = Foxtrot.getInstance().getWhitelistedIPMap().getValue(event.getUniqueId());
+                UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(event.getUniqueId());
                 if( !uuidList.contains(other) ) {
                     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                     event.setKickMessage("Error while logging into HCTeams, please join our teamspeak at ts.minehq.com and our staff can help you resolve this problem");

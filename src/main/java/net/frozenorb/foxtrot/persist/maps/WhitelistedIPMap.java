@@ -29,4 +29,20 @@ public class WhitelistedIPMap extends PersistMap<UUID> {
     public UUID getJavaObject(String str) {
         return UUID.fromString(str);
     }
+
+    public boolean contains( UUID id ) {
+        return super.contains( id );
+    }
+
+    public void add( UUID id, UUID ass ) {
+        this.updateValueAsync(id, ass);
+    }
+
+    public UUID get( UUID id ) {
+        return super.getValue(id);
+    }
+
+    public boolean containsValue( UUID id ) {
+        return wrappedMap.values().contains(id);
+    }
 }

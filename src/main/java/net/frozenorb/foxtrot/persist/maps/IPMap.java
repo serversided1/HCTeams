@@ -40,4 +40,20 @@ public class IPMap extends StringPersistMap<List<UUID>> {
         }
         return ret;
     }
+
+    public boolean contains( String ip ) {
+        return super.contains( ip );
+    }
+
+    public void add( String ip, UUID id ) {
+        List<UUID> list = get(ip);
+        list.add((id));
+        this.updateValueAsync(ip, list);
+    }
+
+    public List<UUID> get( String ip ) {
+        return super.getValue(ip);
+    }
+
+
 }
