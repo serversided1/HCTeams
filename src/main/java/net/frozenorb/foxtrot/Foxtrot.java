@@ -85,6 +85,8 @@ public class Foxtrot extends JavaPlugin {
     @Getter private WrappedBalanceMap wrappedBalanceMap;
     @Getter private ToggleFoundDiamondsMap toggleFoundDiamondsMap;
     @Getter private ToggleDeathMessageMap toggleDeathMessageMap;
+    @Getter private IPMap ipMap;
+    @Getter private WhitelistedIPMap whitelistedIPMap;
 
     @Override
     public void onEnable() {
@@ -192,6 +194,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
         getServer().getPluginManager().registerEvents( new ChunkLimiterListener(), this );
+        getServer().getPluginManager().registerEvents( new IPListener(), this );
     }
 
     private void setupPersistence() {
@@ -223,6 +226,8 @@ public class Foxtrot extends JavaPlugin {
         (wrappedBalanceMap = new WrappedBalanceMap()).loadFromRedis();
         (toggleFoundDiamondsMap = new ToggleFoundDiamondsMap()).loadFromRedis();
         (toggleDeathMessageMap = new ToggleDeathMessageMap()).loadFromRedis();
+        (ipMap = new IPMap()).loadFromRedis();
+        (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
     }
 
 }

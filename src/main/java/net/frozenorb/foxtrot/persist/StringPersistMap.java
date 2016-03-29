@@ -12,14 +12,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class PersistMap<T> {
+public abstract class StringPersistMap<T> {
 
-    protected Map<UUID, T> wrappedMap = new ConcurrentHashMap<>();
+    protected Map<String, T> wrappedMap = new ConcurrentHashMap<>();
 
     private String keyPrefix;
     private String mongoName;
 
-    public PersistMap(String keyPrefix, String mongoName) {
+    public StringPersistMap(String keyPrefix, String mongoName) {
         this.keyPrefix = keyPrefix;
         this.mongoName = mongoName;
 
@@ -37,7 +37,7 @@ public abstract class PersistMap<T> {
                     T object = getJavaObjectSafe(resultEntry.getKey(), resultEntry.getValue());
 
                     if (object != null) {
-                        wrappedMap.put(UUID.fromString(resultEntry.getKey()), object);
+                        wrappedMap.put(resultEntry.getKey(), object);
                     }
                 }
 
@@ -61,17 +61,17 @@ public abstract class PersistMap<T> {
         });
     }
 
-    protected void updateValueSync(final UUID key, final T value) {
+    protected void updateValueSync(final String key, final T value) {
         wrappedMap.put(key, value);
 
         qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
 
             @Override
             public Object execute(Jedis redis) {
-                redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
+                redis.hset(keyPrefix, key, getRedisValue(getValue(key)));
 
                 DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
+                BasicDBObject player = new BasicDBObject("_id", key.replace("-", ""));
 
                 playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
                 return (null);
@@ -80,7 +80,7 @@ public abstract class PersistMap<T> {
         });
     }
 
-    protected void updateValueAsync(final UUID key, T value) {
+    protected void updateValueAsync(final String key, T value) {
         wrappedMap.put(key, value);
 
         new BukkitRunnable() {
@@ -90,10 +90,10 @@ public abstract class PersistMap<T> {
 
                     @Override
                     public Object execute(Jedis redis) {
-                        redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
+                        redis.hset(keyPrefix, key, getRedisValue(getValue(key)));
 
                         DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
-                        BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
+                        BasicDBObject player = new BasicDBObject("_id", key.replace("-", ""));
 
                         playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
                         return (null);
@@ -105,11 +105,11 @@ public abstract class PersistMap<T> {
         }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
-    public T getValue(UUID key) {
+    public T getValue(String key) {
         return (wrappedMap.get(key));
     }
 
-    public boolean contains(UUID key) {
+    public boolean contains(String key) {
         return (wrappedMap.containsKey(key));
     }
 
