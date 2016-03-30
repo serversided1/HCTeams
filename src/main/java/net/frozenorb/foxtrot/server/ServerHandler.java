@@ -211,7 +211,7 @@ public class ServerHandler {
                 }
 
                 seconds--;
-                player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds...");
+                //player.sendMessage(ChatColor.RED + "" + seconds + "§e seconds..."); // logout is now in the scoreboard, don't bother spamming them
 
                 if (seconds == 0) {
                     if (tasks.containsKey(player.getName())) {
@@ -397,6 +397,13 @@ public class ServerHandler {
 
         player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
 
+        /**
+         * Give player heads up now. They should have 10 seconds to move even just an inch to cancel the tp if they want
+         */
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Your PvP Timer will be removed if the teleport is not cancelled.");
+        }
+
         new BukkitRunnable() {
 
             int time = warmup;
@@ -477,7 +484,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 200;
+        int radius = 100;
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 

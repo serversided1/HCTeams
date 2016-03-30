@@ -22,7 +22,7 @@ public class PvPAddLivesCommand {
             Player bukkitPlayer = Bukkit.getPlayer(player);
             if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
                 String suffix = sender instanceof Player ? " from " + sender.getName() : "";
-                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received 2 lives" + suffix);
+                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received " + amount + " lives" + suffix);
             }
 
         } else if (lifeType.equalsIgnoreCase("friend")) {
@@ -32,7 +32,7 @@ public class PvPAddLivesCommand {
             Player bukkitPlayer = Bukkit.getPlayer(player);
             if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
                 String suffix = sender instanceof Player ? " from " + sender.getName() : "";
-                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received 2 lives" + suffix);
+                bukkitPlayer.sendMessage(ChatColor.GREEN + "You have received " + amount + " lives" + suffix);
             }
         } else {
             sender.sendMessage(ChatColor.RED + "Not a valid life type: Options are soulbound or friend");

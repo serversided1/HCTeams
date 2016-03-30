@@ -127,7 +127,7 @@ public class Foxtrot extends JavaPlugin {
             PvPClassHandler.getEquippedKits().get(playerName).remove(getServer().getPlayerExact(playerName));
         }
 
-        RedisSaveTask.save(false);
+        RedisSaveTask.save(null, false);
         Foxtrot.getInstance().getServerHandler().save();
         Foxtrot.getInstance().getGlowHandler().save();
     }
