@@ -22,14 +22,17 @@ public class IPListener implements Listener {
             List<UUID> uuidList = Foxtrot.getInstance().getIpMap().get(ip);
             if(Foxtrot.getInstance().getWhitelistedIPMap().contains(event.getUniqueId())) {
                 UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(event.getUniqueId());
-                if( !uuidList.contains(other) ) {
+                if( !uuidList.contains(other) && !uuidList.contains(event.getUniqueId()) ) {
                     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                     event.setKickMessage("Error while logging into HCTeams, please join our teamspeak at ts.minehq.com and our staff can help you resolve this problem");
                 }
-            } else if( !uuidList.isEmpty() ){
+            } else if( !uuidList.isEmpty() && !uuidList.contains(event.getUniqueId()) ){
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage("Error while logging into HCTeams, please join our teamspeak at ts.minehq.com and our staff can help you resolve this problem");
             }
+        }
+        if( !event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_OTHER) ) {
+            Foxtrot.getInstance().getIpMap().add(ip, event.getUniqueId());
         }
     }
 }

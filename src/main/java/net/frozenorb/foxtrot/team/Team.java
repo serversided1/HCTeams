@@ -817,6 +817,13 @@ public class Team {
                 player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
             }
 
+            if( this.getName().equalsIgnoreCase("Citadel")) {
+                Team t = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
+                if( t != null ) {
+                    player.sendMessage(ChatColor.YELLOW + "Currently Owned By: " + ChatColor.RED + t.getName() );
+                }
+            }
+
             player.sendMessage(GRAY_LINE);
             return;
         }
@@ -969,13 +976,6 @@ public class Team {
                         .tooltip(ChatColor.GREEN + "Click to remove regeneration timer").command("/startdtrregen " + getName());
 
                 message.send(player);
-            }
-        }
-
-        if( this.getName().equalsIgnoreCase("Citadel")) {
-            Team t = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-            if( t != null ) {
-                player.sendMessage(ChatColor.YELLOW + "Currently Owned By: " + ChatColor.RED + t.getName() );
             }
         }
 

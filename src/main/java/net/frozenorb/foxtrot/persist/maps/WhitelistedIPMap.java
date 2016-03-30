@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -44,5 +46,9 @@ public class WhitelistedIPMap extends PersistMap<UUID> {
 
     public boolean containsValue( UUID id ) {
         return wrappedMap.values().contains(id);
+    }
+
+    public Map<UUID, UUID> getMap() {
+        return wrappedMap;
     }
 }

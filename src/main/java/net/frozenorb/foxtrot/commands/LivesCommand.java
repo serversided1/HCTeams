@@ -17,8 +17,8 @@ public class LivesCommand {
         int shared = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
         int soulbound = Foxtrot.getInstance().getSoulboundLivesMap().getLives(sender.getUniqueId());
         sender.sendMessage(ChatColor.YELLOW + "Lives are used to revive you instantly upon death. You can purchase more lives at: " + ChatColor.RED + "http://minehq.com/store");
-        sender.sendMessage(ChatColor.YELLOW + "Sharable Lives: " + ChatColor.RED + shared);
+        sender.sendMessage(ChatColor.YELLOW + "Friend Lives: " + ChatColor.RED + shared);
         sender.sendMessage(ChatColor.YELLOW + "Soulbound Lives: " + ChatColor.RED + soulbound);
-        sender.sendMessage(ChatColor.RED + "You cannot send soulbound lives to other players.");
+        sender.sendMessage(ChatColor.RED + "You cannot revive other players with soulbound lives.");
     }
 }

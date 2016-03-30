@@ -87,13 +87,11 @@ public class MinerClass extends PvPClass implements Listener {
         }
 
         int diamonds = Foxtrot.getInstance().getDiamondMinedMap().getMined( player.getUniqueId() );
-        int level = 0;
-        if (diamonds > 125) {
+        int level = 1;
+         if (diamonds > 125) {
             level = 3;
         } else if (diamonds > 50) {
             level = 2;
-        } else {
-            level = 1;
         }
 
         if (shouldApplyPotion( player, PotionEffectType.FAST_DIGGING, level)) {

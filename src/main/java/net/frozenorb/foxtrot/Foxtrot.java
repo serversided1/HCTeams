@@ -159,7 +159,6 @@ public class Foxtrot extends JavaPlugin {
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.koth");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.server");
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.team");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.chunklimiter");
 
         DeathMessageHandler.init();
     }

@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -20,9 +21,9 @@ public class AssociateAccounts {
         if(Foxtrot.getInstance().getWhitelistedIPMap().contains(player)) {
             UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(player);
             Foxtrot.getInstance().getWhitelistedIPMap().add(playertwo, other);
-            //ASS 1 to 2
         } else if( Foxtrot.getInstance().getWhitelistedIPMap().contains(playertwo)) {
             UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(playertwo);
+            Foxtrot.getInstance().getWhitelistedIPMap().add(player, other);
         } else {
             if( Foxtrot.getInstance().getWhitelistedIPMap().containsValue(player)) {
                 Foxtrot.getInstance().getWhitelistedIPMap().add(playertwo, player);
@@ -32,6 +33,9 @@ public class AssociateAccounts {
                 Foxtrot.getInstance().getWhitelistedIPMap().add(playertwo, player);
             }
         }
+        sender.sendMessage(ChatColor.GREEN + "You have successfully associated these accounts");
     }
+
+
 
 }

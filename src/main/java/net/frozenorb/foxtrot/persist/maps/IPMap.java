@@ -47,6 +47,7 @@ public class IPMap extends StringPersistMap<List<UUID>> {
 
     public void add( String ip, UUID id ) {
         List<UUID> list = get(ip);
+        if( list == null ) list = new ArrayList<>();
         list.add((id));
         this.updateValueAsync(ip, list);
     }
