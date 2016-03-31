@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PvPClass implements Listener {
@@ -19,6 +20,7 @@ public abstract class PvPClass implements Listener {
     @Getter int warmup;
     @Getter String armorContains;
     @Getter List<Material> consumables;
+    @Getter private List<PotionEffect> reapply = new ArrayList<>();
 
     public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
         this.name = name;
@@ -38,7 +40,11 @@ public abstract class PvPClass implements Listener {
     }
 
     public void tick(Player player) {
-
+        if( !reapply.isEmpty() ) {
+            for( PotionEffect potionEffect : reapply ) {
+                player.addPotionEffect(potionEffect);
+            }
+        }
     }
 
     public void remove(Player player) {
@@ -66,7 +72,7 @@ public abstract class PvPClass implements Listener {
                        armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
     }
 
-    public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues) {
+    public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues, PvPClass pvpClass) {
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
             if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                 continue;
@@ -100,7 +106,11 @@ public abstract class PvPClass implements Listener {
                     continue;
                 }
 
-                new BukkitRunnable() {
+                if( activePotionEffect.getDuration() < 1_000_000L ) {
+                    pvpClass.getReapply().add(activePotionEffect);
+                }
+
+                /*new BukkitRunnable() {
 
                     public void run() {
                         // Don't give back infinite potions.
@@ -111,7 +121,7 @@ public abstract class PvPClass implements Listener {
                         player.addPotionEffect(activePotionEffect);
                     }
 
-                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);
+                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);*/
             }
         }
 

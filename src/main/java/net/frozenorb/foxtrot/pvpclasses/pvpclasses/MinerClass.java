@@ -133,6 +133,7 @@ public class MinerClass extends PvPClass implements Listener {
         if( level >= 0 && shouldApplyPotion(player,PotionEffectType.DAMAGE_RESISTANCE, level)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, level), true);
         }
+        super.tick(player);
     }
 
     public boolean shouldApplyPotion( Player player, PotionEffectType eff, int level ) {
