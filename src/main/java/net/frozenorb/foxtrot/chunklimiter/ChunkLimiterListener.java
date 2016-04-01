@@ -50,14 +50,12 @@ public class ChunkLimiterListener implements Listener {
                 target = defaultView.get(event.getPlayer().getUniqueId());
             }
         } else {
-            if (event.getTo().getBlockY() < 32) {
+            if (event.getTo().getBlockY() < 20) {
                 target = 1;
             } else {
                 target = defaultView.get(event.getPlayer().getUniqueId());
             }
         }
-
-        System.out.println("[" + event.getPlayer().getName() + "]Target has been set to: " + target + " and view is: " + view);
 
         if (target != view) {
             ((CraftPlayer) event.getPlayer()).spigot().setViewDistance(target);

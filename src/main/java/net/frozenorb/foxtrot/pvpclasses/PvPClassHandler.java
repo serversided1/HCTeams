@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,15 +21,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     @Getter private static Map<String, PvPClass> equippedKits = new HashMap<>();
+    @Getter private static Map<UUID, PvPClass.SavedPotion> savedPotions = new HashMap<>();
     @Getter List<PvPClass> pvpClasses = new ArrayList<>();
 
     public PvPClassHandler() {
@@ -48,6 +47,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     @Override
     public void run() {
+        checkSavedPotions();
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             // Remove kit if player took off armor, otherwise .tick();
             if (equippedKits.containsKey(player.getName())) {
@@ -72,6 +72,26 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                         player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
                     }
                 }
+            }
+        }
+    }
+
+    public void checkSavedPotions() {
+        Iterator<UUID> idIterator = savedPotions.keySet().iterator();
+        while( idIterator.hasNext() ) {
+            UUID id = idIterator.next();
+            Player player = Bukkit.getPlayer(id);
+            if( player != null && player.isOnline() ) {
+                PvPClass.SavedPotion potion = savedPotions.get(id);
+                if( potion.getTime() < System.currentTimeMillis() ) {
+                    player.addPotionEffect(potion.getPotionEffect());
+                    System.out.println("ADDED POTION EFFECT FOR PLAYER: " + player.getName() + " Potion: " + potion.getPotionEffect().toString() );
+                    savedPotions.remove(id);
+                } else {
+                    System.out.println("Pending potion effect, will arrive in: " + ( potion.getTime() - System.currentTimeMillis() ) / 1000 + "s");
+                }
+            } else {
+                savedPotions.remove(id);
             }
         }
     }

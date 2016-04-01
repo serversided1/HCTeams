@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,11 +26,11 @@ public class IPListener implements Listener {
                 UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(event.getUniqueId());
                 if( !uuidList.contains(other) && !uuidList.contains(event.getUniqueId()) ) {
                     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                    event.setKickMessage("We have detected you as a potential alternate account of " + Bukkit.getOfflinePlayer(other) + ". Please join our teamspeak (ts.minehq.com) and speak with our staff to resolve this issue.");
+                    event.setKickMessage("We have detected you as a potential alternate account of " + FrozenUUIDCache.name(other) + ". Please join our teamspeak (ts.minehq.com) and speak with our staff to resolve this issue.");
                 }
             } else if( !uuidList.isEmpty() && !uuidList.contains(event.getUniqueId()) ){
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage("We have detected you as a potential alternate account of " + Bukkit.getOfflinePlayer(uuidList.get(0)) + ". Please join our teamspeak (ts.minehq.com) and speak with our staff to resolve this issue.");
+                event.setKickMessage("We have detected you as a potential alternate account of " + FrozenUUIDCache.name(uuidList.get(0)) + ". Please join our teamspeak (ts.minehq.com) and speak with our staff to resolve this issue.");
             }
         }
         if( !event.getLoginResult().equals(AsyncPlayerPreLoginEvent.Result.KICK_OTHER) ) {
