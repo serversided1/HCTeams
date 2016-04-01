@@ -11,6 +11,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class PvPClass implements Listener {
@@ -20,7 +22,7 @@ public abstract class PvPClass implements Listener {
     @Getter int warmup;
     @Getter String armorContains;
     @Getter List<Material> consumables;
-    @Getter private List<PotionEffect> reapply = new ArrayList<>();
+    @Getter private HashMap<PotionEffect, Long> reapply = new HashMap<>();
 
     public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
         this.name = name;
@@ -41,8 +43,13 @@ public abstract class PvPClass implements Listener {
 
     public void tick(Player player) {
         if( !reapply.isEmpty() ) {
-            for( PotionEffect potionEffect : reapply ) {
-                player.addPotionEffect(potionEffect);
+            Iterator<PotionEffect> peIterator = reapply.keySet().iterator();
+            while( peIterator.hasNext() ) {
+                PotionEffect effect = peIterator.next();
+                if( reapply.get(effect) < System.currentTimeMillis() ) {
+                    player.addPotionEffect(effect);
+                    peIterator.remove();
+                }
             }
         }
     }
@@ -107,7 +114,7 @@ public abstract class PvPClass implements Listener {
                 }
 
                 if( activePotionEffect.getDuration() < 1_000_000L ) {
-                    pvpClass.getReapply().add(activePotionEffect);
+                    pvpClass.getReapply().put(activePotionEffect, System.currentTimeMillis() + (potionEffect.getDuration() + 1) * 20 * 1000);
                 }
 
                 /*new BukkitRunnable() {
