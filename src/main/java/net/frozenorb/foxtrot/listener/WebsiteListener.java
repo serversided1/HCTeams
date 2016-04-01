@@ -132,7 +132,7 @@ public class WebsiteListener implements Listener {
 
         switch (event.getBlock().getType()) {
             case DIAMOND_ORE:
-                Foxtrot.getInstance().getDiamondMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+                Foxtrot.getInstance().getDiamondMinedMap().setMined(event.getPlayer(), Foxtrot.getInstance().getDiamondMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
                 break;
             case GOLD_ORE:
                 Foxtrot.getInstance().getGoldMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getGoldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);

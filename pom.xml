@@ -5,9 +5,9 @@
 	<artifactId>Foxtrot</artifactId>
 	<version>1.0</version>
 
-    <properties>
-        <access-level>high</access-level>
-    </properties>
+	<properties>
+		<access-level>high</access-level>
+	</properties>
 
 	<build>
 		<plugins>
@@ -60,7 +60,7 @@
 			<artifactId>mSpigot</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		
+
 		<!-- MineHQ Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
@@ -72,18 +72,18 @@
 			<artifactId>mBasic</artifactId>
 			<version>LATEST</version>
 		</dependency>
-        <dependency>
-            <groupId>net.frozenorb</groupId>
-            <artifactId>qLib</artifactId>
-            <version>LATEST</version>
-        </dependency>
+		<dependency>
+			<groupId>net.frozenorb</groupId>
+			<artifactId>qLib</artifactId>
+			<version>LATEST</version>
+		</dependency>
 
 		<!-- Misc. Jars -->
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>LATEST</version>
-        </dependency>
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>LATEST</version>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

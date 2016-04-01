@@ -86,9 +86,65 @@ public class MinerClass extends PvPClass implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
         }
 
-        if (!player.hasPotionEffect(PotionEffectType.FAST_DIGGING)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 1), true);
+        int diamonds = Foxtrot.getInstance().getDiamondMinedMap().getMined( player.getUniqueId() );
+        int level = 1;
+         if (diamonds > 125) {
+            level = 3;
+        } else if (diamonds > 50) {
+            level = 2;
         }
+
+        if (shouldApplyPotion( player, PotionEffectType.FAST_DIGGING, level)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, level), true);
+        }
+
+        level = -1;
+
+        if( diamonds > 400 ) {
+            level = 1;
+        } else if( diamonds >  100 ) {
+            level = 0;
+        }
+
+        if( level != -1 && shouldApplyPotion(player, PotionEffectType.SPEED, level ) ) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, level), true);
+        }
+
+        if( diamonds > 250 ) {
+            if( shouldApplyPotion(player, PotionEffectType.FIRE_RESISTANCE, 0) ) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+            }
+        }
+
+        if( diamonds > 600 ) {
+            if (shouldApplyPotion(player, PotionEffectType.REGENERATION, 1)) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0), true);
+            }
+        }
+
+        level = -1;
+
+        if( diamonds >= 1000 ) {
+            level = 1;
+        } else if( diamonds >= 750 ) {
+            level = 0;
+        }
+
+        if( level >= 0 && shouldApplyPotion(player,PotionEffectType.DAMAGE_RESISTANCE, level)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, level), true);
+        }
+        super.tick(player);
+    }
+
+    public boolean shouldApplyPotion( Player player, PotionEffectType eff, int level ) {
+        int potionLevel = -1;
+        for( PotionEffect effect : player.getActivePotionEffects() ) {
+            if( effect.getType().equals(eff)) {
+                potionLevel = effect.getAmplifier();
+                break;
+            }
+        }
+        return player.hasPotionEffect(eff) || potionLevel < level;
     }
 
     @Override

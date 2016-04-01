@@ -38,6 +38,15 @@ public class ArrowTracker implements Listener {
                 Arrow arrow = (Arrow) entityDamageByEntityEvent.getDamager();
 
                 if (arrow.getShooter() instanceof Player) {
+                    /*LOGIC TEST
+                    Location l = arrow.getLocation();
+                    Location l2 = event.getPlayer().getLocation();
+                    if( l.getBlockX() != l2.getBlockX() || l.getBlockZ() != l2.getBlockZ() ) {
+                        entityDamageByEntityEvent.setCancelled(true);
+                        System.out.println("Cancelled arrow hit! Hit through a wall!");
+                        return;
+                    }
+                    LOGIC TEST - FAILED WILL TODO: INVESTIGATE FURTHER */
                     Player shooter = (Player) arrow.getShooter();
 
                     for (MetadataValue value : arrow.getMetadata("ShotFromDistance")) {
