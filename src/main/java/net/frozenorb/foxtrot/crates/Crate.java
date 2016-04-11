@@ -61,40 +61,39 @@ public enum Crate {
     private static List<ItemStack> getEnchantedInventory(Set<ItemStack> source) {
         List<ItemStack> enchanted = new ArrayList<>();
 
-        for (ItemStack is : source) {
-            if (InventoryUtils.isArmor(is)) {
-                is.addUnsafeEnchantment(PROTECTION_ENVIRONMENTAL, PROTECTION_ENVIRONMENTAL.getMaxLevel());
-                is.addUnsafeEnchantment(DURABILITY, DURABILITY.getMaxLevel());
+        for (ItemStack itemStack : source) {
+            ItemMeta meta = itemStack.getItemMeta();
 
-                if (InventoryUtils.isBoots(is)) {
-                    is.addUnsafeEnchantment(PROTECTION_FALL, PROTECTION_FALL.getMaxLevel());
+            if (InventoryUtils.isArmor(itemStack)) {
+                meta.addEnchant(PROTECTION_ENVIRONMENTAL, PROTECTION_ENVIRONMENTAL.getMaxLevel(), true);
+                meta.addEnchant(DURABILITY, DURABILITY.getMaxLevel(), true);
+
+                if (InventoryUtils.isBoots(itemStack)) {
+                    meta.addEnchant(PROTECTION_FALL, PROTECTION_FALL.getMaxLevel(), true);
                 }
-            } else if (is.getType() == BOW) {
-                is.addUnsafeEnchantment(ARROW_DAMAGE, ARROW_DAMAGE.getMaxLevel());
-                is.addUnsafeEnchantment(ARROW_FIRE, ARROW_FIRE.getMaxLevel());
-                is.addUnsafeEnchantment(ARROW_INFINITE, ARROW_INFINITE.getMaxLevel());
-                is.addUnsafeEnchantment(DURABILITY, 5);
+            } else if (itemStack.getType() == BOW) {
+                meta.addEnchant(ARROW_DAMAGE, ARROW_DAMAGE.getMaxLevel(), true);
+                meta.addEnchant(ARROW_FIRE, ARROW_FIRE.getMaxLevel(), true);
+                meta.addEnchant(ARROW_INFINITE, ARROW_INFINITE.getMaxLevel(), true);
+                meta.addEnchant(DURABILITY, 5, true);
 
                 int punchMax = ARROW_KNOCKBACK.getMaxLevel();
 
                 if (punchMax > 0) {
-                    is.addUnsafeEnchantment(ARROW_KNOCKBACK, punchMax);
+                    meta.addEnchant(ARROW_KNOCKBACK, punchMax, true);
                 }
 
-                ItemMeta meta = is.getItemMeta();
                 meta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.RED + ChatColor.ITALIC.toString() + "Koth Bow"); // &b&c&o
-                is.setItemMeta(meta); // actually set custom name
-            } else if (is.getType() == DIAMOND_SWORD) {
-                is.addUnsafeEnchantment(DAMAGE_ALL, DAMAGE_ALL.getMaxLevel());
-                is.addUnsafeEnchantment(DURABILITY, 5);
-                is.addUnsafeEnchantment(FIRE_ASPECT, 1);
+            } else if (itemStack.getType() == DIAMOND_SWORD) {
+                meta.addEnchant(DAMAGE_ALL, DAMAGE_ALL.getMaxLevel(), true);
+                meta.addEnchant(DURABILITY, 5, true);
+                meta.addEnchant(FIRE_ASPECT, 1, true);
 
-                ItemMeta meta = is.getItemMeta();
                 meta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.RED + ChatColor.ITALIC.toString() + "Koth Fire"); // &b&c&o
-                is.setItemMeta(meta); // actually set custom name
             }
 
-            enchanted.add(is);
+            itemStack.setItemMeta(meta); // set custom name and enchantments
+            enchanted.add(itemStack);
         }
 
         // lowest item id first (swords/bows/arrows, then armor from helm to boots)
