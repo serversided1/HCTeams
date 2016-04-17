@@ -66,7 +66,7 @@ public class ServerHandler {
 
     @Getter private static Map<String, Logout> tasks = new HashMap<>();
 
-    @Getter private final boolean elite;
+    @Getter private final boolean squads;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -144,7 +144,7 @@ public class ServerHandler {
 
         }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 3000L, 6000L);
 
-        elite = Foxtrot.getInstance().getConfig().getBoolean("elite");
+        squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
     }
 
     public void save() {

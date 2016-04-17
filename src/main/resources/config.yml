@@ -4,4 +4,4 @@ Queue:
 Mongo:
     Host: '127.0.0.1'
     DBName: 'HCTeams'
-elite: false
+squads: false

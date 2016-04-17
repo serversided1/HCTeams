@@ -3,11 +3,13 @@ package net.frozenorb.foxtrot.team.dtr;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class DTRHandler extends BukkitRunnable {
 
@@ -29,35 +31,16 @@ public class DTRHandler extends BukkitRunnable {
     private static Set<String> wasOnCooldown = new HashSet<>();
 
     public static void loadDTR() {
-        FileConfiguration configuration = Foxtrot.getInstance().getConfig();
+        if (Foxtrot.getInstance().getServerHandler().isSquads()) {
+            MAX_DTR = new double[] {
+                    1.01, 1.44, 1.80, 2.20, // 1 to 4
+                    2.60, 3.00, 3.40, 3.80, // 5 to 8
 
-        List<Double> baseIncrement = configuration.getDoubleList("DTR.BaseDTRIncrement");
-        List<Double> maxDTR = configuration.getDoubleList("DTR.Max");
-
-        if (baseIncrement != null && !baseIncrement.isEmpty()) {
-            double[] doubles = new double[baseIncrement.size()];
-
-            for (int i = 0; i < baseIncrement.size(); i++) {
-                doubles[i] = baseIncrement.get(i);
-            }
-
-            BASE_DTR_INCREMENT = doubles;
-        } else {
-            configuration.set("DTR.BaseDTRIncrement", Arrays.asList(BASE_DTR_INCREMENT));
-            Foxtrot.getInstance().saveConfig();
-        }
-
-        if (maxDTR != null && !maxDTR.isEmpty()) {
-            double[] doubles = new double[maxDTR.size()];
-
-            for (int i = 0; i < maxDTR.size(); i++) {
-                doubles[i] = maxDTR.get(i);
-            }
-
-            BASE_DTR_INCREMENT = doubles;
-        } else {
-            configuration.set("DTR.Max", Arrays.asList(MAX_DTR));
-            Foxtrot.getInstance().saveConfig();
+                    3.80, 3.80, 3.80, 3.80,
+                    3.80, 3.80, 3.80, 3.80,
+                    3.80, 3.80, 3.80, 3.80,
+                    3.80, 3.80, 3.80, 3.80,
+                    3.80, 3.80, 3.80, 3.80 }; // Padding
         }
     }
 
