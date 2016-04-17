@@ -88,7 +88,7 @@ public class MinerClass extends PvPClass implements Listener {
 
         int diamonds = Foxtrot.getInstance().getDiamondMinedMap().getMined( player.getUniqueId() );
         int level = 1;
-         if (diamonds > 125) {
+        if (diamonds > 125) {
             level = 3;
         } else if (diamonds > 50) {
             level = 2;
@@ -106,21 +106,21 @@ public class MinerClass extends PvPClass implements Listener {
             level = 0;
         }
 
-        if( level != -1 && shouldApplyPotion(player, PotionEffectType.SPEED, level ) ) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, level), true);
-        }
-
-        if( diamonds > 250 ) {
-            if( shouldApplyPotion(player, PotionEffectType.FIRE_RESISTANCE, 0) ) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), true);
-            }
-        }
-
-        if( diamonds > 600 ) {
-            if (shouldApplyPotion(player, PotionEffectType.REGENERATION, 1)) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0), true);
-            }
-        }
+//        if( level != -1 && shouldApplyPotion(player, PotionEffectType.SPEED, level ) ) {
+//            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, level), true);
+//        }
+//
+//        if( diamonds > 250 ) {
+//            if( shouldApplyPotion(player, PotionEffectType.FIRE_RESISTANCE, 0) ) {
+//                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+//            }
+//        }
+//
+//        if( diamonds > 600 ) {
+//            if (shouldApplyPotion(player, PotionEffectType.REGENERATION, 1)) {
+//                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0), true);
+//            }
+//        }
 
         level = -1;
 
