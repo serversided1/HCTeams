@@ -232,7 +232,7 @@ public class Team {
 
                 });
 
-                DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Teams");
+                DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Teams");
                 teamsCollection.remove(getJSONIdentifier());
             }
 
@@ -791,7 +791,7 @@ public class Team {
 //                    return;
 //                }
 //
-//                DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("TeamLog");
+//                DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("TeamLog");
 //
 //                toLog.put("Team", getUniqueId().toString());
 //                toLog.put("TeamName", getName());

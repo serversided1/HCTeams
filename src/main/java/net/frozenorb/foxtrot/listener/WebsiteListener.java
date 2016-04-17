@@ -102,7 +102,7 @@ public class WebsiteListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Deaths").insert(playerDeath);
+                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Deaths").insert(playerDeath);
             }
 
         }.runTaskAsynchronously(Foxtrot.getInstance());

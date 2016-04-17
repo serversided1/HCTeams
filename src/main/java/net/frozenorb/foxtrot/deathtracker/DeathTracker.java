@@ -36,7 +36,7 @@ public class DeathTracker {
         new BukkitRunnable() {
 
             public void run() {
-                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("DetailedKills").insert(data);
+                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("DetailedKills").insert(data);
 
                 BasicDBObject simplifiedDeath = new BasicDBObject();
 
@@ -47,7 +47,7 @@ public class DeathTracker {
                     simplifiedDeath.put("killerUUID", killer.getUniqueId().toString().replace("-", ""));
                 }
 
-                Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("simplifiedDeaths").insert(simplifiedDeath);
+                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("simplifiedDeaths").insert(simplifiedDeath);
 
                 File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
                 File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");

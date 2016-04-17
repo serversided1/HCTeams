@@ -194,7 +194,7 @@ public class KOTHListener implements Listener {
         new BukkitRunnable() {
 
             public void run() {
-                DBCollection kothCapturesCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("KOTHCaptures");
+                DBCollection kothCapturesCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("KOTHCaptures");
                 kothCapturesCollection.insert(dbObject);
             }
 
