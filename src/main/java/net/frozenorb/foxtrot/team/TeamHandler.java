@@ -89,7 +89,7 @@ public class TeamHandler {
 
         if(update) {
             // update their team in mongo
-            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
             BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
 
             if (team != null) {

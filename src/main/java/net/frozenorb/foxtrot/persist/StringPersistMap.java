@@ -70,7 +70,7 @@ public abstract class StringPersistMap<T> {
             public Object execute(Jedis redis) {
                 redis.hset(keyPrefix, key, getRedisValue(getValue(key)));
 
-                DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+                DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
                 BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
                 playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
@@ -92,7 +92,7 @@ public abstract class StringPersistMap<T> {
                     public Object execute(Jedis redis) {
                         redis.hset(keyPrefix, key, getRedisValue(getValue(key)));
 
-                        DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB("HCTeams").getCollection("Players");
+                        DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
                         BasicDBObject player = new BasicDBObject("_id", key.replace("-", ""));
 
                         playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
