@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.xpacket.FrozenXPacketHandler;
 import net.frozenorb.qlib.xpacket.XPacket;
+import net.frozenorb.qqueue.qQueue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PlayerInfoPacket implements XPacket {
 
+    @Getter private String queue;
     @Getter private UUID player;
     @Getter private int totalLives;
     @Getter private long deathbannedUntil;
@@ -40,7 +42,7 @@ public class PlayerInfoPacket implements XPacket {
                     livesLocked = "EOTW";
                 }
 
-                PlayerInfoPacket packet = new PlayerInfoPacket(player, totalLives, deathbannedUntil, livesLocked);
+                PlayerInfoPacket packet = new PlayerInfoPacket(qQueue.getInstance().getQueueHandler().getQueueId(), player, totalLives, deathbannedUntil, livesLocked);
                 FrozenXPacketHandler.sendToAll(packet);
             }
 
