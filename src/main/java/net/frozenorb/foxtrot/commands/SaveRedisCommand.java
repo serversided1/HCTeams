@@ -6,14 +6,14 @@ import org.bukkit.command.CommandSender;
 
 public class SaveRedisCommand {
 
-    @Command(names={ "SaveRedis", "Save" }, permissionNode="op")
+    @Command(names = {"SaveRedis", "Save"}, permissionNode = "op")
     public static void saveRedis(CommandSender sender) {
-        RedisSaveTask.save(false);
+        RedisSaveTask.save(sender, false);
     }
 
-    @Command(names={ "SaveRedis ForceAll", "Save ForceAll" }, permissionNode="op")
+    @Command(names = {"SaveRedis ForceAll", "Save ForceAll"}, permissionNode = "op")
     public static void saveRedisForceAll(CommandSender sender) {
-        RedisSaveTask.save(true);
+        RedisSaveTask.save(sender, true);
     }
 
 }

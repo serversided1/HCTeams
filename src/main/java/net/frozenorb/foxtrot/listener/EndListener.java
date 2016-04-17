@@ -1,8 +1,10 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.miniend.MiniEndConfiguration;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
@@ -28,6 +30,8 @@ import java.util.Map;
 public class EndListener implements Listener {
 
     public static boolean endActive = true;
+    private static Location endReturn; // cached end -> world teleport location
+
     private Map<String, Long> msgCooldown = new HashMap<>();
 
     // Display a message and give the killer the egg (when the dragon is killed)
@@ -175,8 +179,26 @@ public class EndListener implements Listener {
                 }
             }
 
-            event.setTo(new Location(event.getTo().getWorld(), 0.6, 72, 125.5));
+            if (endReturn == null) {
+                endReturn = new Location(event.getTo().getWorld(), 0.6, 64, 346.5); // cache location since it's static once established.
+            }
+
+            event.setTo(endReturn);
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
+            //Don't allow factions of to large size to enter the mini end.
+            Team team = LandBoard.getInstance().getTeam(event.getFrom());
+            if (team != null && team.getName().equalsIgnoreCase(MiniEndConfiguration.getTeamName())) {
+                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+                if (playerTeam == null || playerTeam.getSize() <= MiniEndConfiguration.getMaximumTeamSize()) {
+                    event.setTo(MiniEndConfiguration.getSpawnLocation());
+                } else {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter this end portal, it is for factions under the size of " + ChatColor.YELLOW + MiniEndConfiguration.getMaximumTeamSize() + ChatColor.RED + " players.");
+                    event.setCancelled(true);
+                    return;
+                }
+
+            }
+
             // Don't let players enter the end while they have their PvP timer (or haven't activated it)
             if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                 event.setCancelled(true);

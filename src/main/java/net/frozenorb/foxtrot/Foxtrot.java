@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.ChatHandler;
+import net.frozenorb.foxtrot.chunklimiter.ChunkLimiterListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.crates.CrateListener;
@@ -14,6 +15,7 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
+import net.frozenorb.foxtrot.miniend.MiniEndConfiguration;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
@@ -28,6 +30,7 @@ import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
+import net.frozenorb.foxtrot.team.configuration.TeamGeneralConfiguration;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -82,6 +85,8 @@ public class Foxtrot extends JavaPlugin {
     @Getter private WrappedBalanceMap wrappedBalanceMap;
     @Getter private ToggleFoundDiamondsMap toggleFoundDiamondsMap;
     @Getter private ToggleDeathMessageMap toggleDeathMessageMap;
+    @Getter private IPMap ipMap;
+    @Getter private WhitelistedIPMap whitelistedIPMap;
 
     @Override
     public void onEnable() {
@@ -102,6 +107,7 @@ public class Foxtrot extends JavaPlugin {
         setupHandlers();
         setupPersistence();
         setupListeners();
+        setupConfigurations();
 
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
@@ -121,9 +127,14 @@ public class Foxtrot extends JavaPlugin {
             PvPClassHandler.getEquippedKits().get(playerName).remove(getServer().getPlayerExact(playerName));
         }
 
-        RedisSaveTask.save(false);
+        RedisSaveTask.save(null, false);
         Foxtrot.getInstance().getServerHandler().save();
         Foxtrot.getInstance().getGlowHandler().save();
+    }
+
+    private void setupConfigurations() {
+        new MiniEndConfiguration();
+        new TeamGeneralConfiguration();
     }
 
     private void setupHandlers() {
@@ -182,6 +193,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
+        getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
+        getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
 
     private void setupPersistence() {
@@ -213,6 +226,8 @@ public class Foxtrot extends JavaPlugin {
         (wrappedBalanceMap = new WrappedBalanceMap()).loadFromRedis();
         (toggleFoundDiamondsMap = new ToggleFoundDiamondsMap()).loadFromRedis();
         (toggleDeathMessageMap = new ToggleDeathMessageMap()).loadFromRedis();
+        (ipMap = new IPMap()).loadFromRedis();
+        (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
     }
 
 }

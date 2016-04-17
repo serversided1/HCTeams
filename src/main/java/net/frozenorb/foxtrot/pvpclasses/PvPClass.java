@@ -10,6 +10,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class PvPClass implements Listener {
@@ -66,7 +69,7 @@ public abstract class PvPClass implements Listener {
                        armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
     }
 
-    public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues) {
+    public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues, PvPClass pvpClass) {
         for (PotionEffect activePotionEffect : player.getActivePotionEffects()) {
             if (!activePotionEffect.getType().equals(potionEffect.getType())) {
                 continue;
@@ -100,7 +103,11 @@ public abstract class PvPClass implements Listener {
                     continue;
                 }
 
-                new BukkitRunnable() {
+                if( activePotionEffect.getDuration() < 1_000_000L ) {
+                   PvPClassHandler.getSavedPotions().put( player.getUniqueId(), new SavedPotion(activePotionEffect, System.currentTimeMillis() + ((potionEffect.getDuration() ) * 50) + 50));
+                }
+
+                /*new BukkitRunnable() {
 
                     public void run() {
                         // Don't give back infinite potions.
@@ -111,11 +118,23 @@ public abstract class PvPClass implements Listener {
                         player.addPotionEffect(activePotionEffect);
                     }
 
-                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);
+                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);*/
             }
         }
 
         player.addPotionEffect(potionEffect, true);
+    }
+
+    static class SavedPotion {
+
+        @Getter PotionEffect potionEffect;
+        @Getter long time;
+
+        public SavedPotion( PotionEffect potionEffect, long time ) {
+            this.potionEffect = potionEffect;
+            this.time = time;
+        }
+
     }
 
 }

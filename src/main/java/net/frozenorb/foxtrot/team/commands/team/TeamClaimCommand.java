@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.MapHandler;
+import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
@@ -55,7 +57,7 @@ public class TeamClaimCommand implements Listener {
         }
 
         if (Foxtrot.getInstance().getServerHandler().isWarzone(sender.getLocation())) {
-            sender.sendMessage(ChatColor.RED + "You are currently in the Warzone and can't claim land here. The Warzone ends at 1000 blocks.");
+            sender.sendMessage(ChatColor.RED + "You are currently in the Warzone and can't claim land here. The Warzone ends at " + ServerHandler.WARZONE_RADIUS + ".");
             return;
         }
 

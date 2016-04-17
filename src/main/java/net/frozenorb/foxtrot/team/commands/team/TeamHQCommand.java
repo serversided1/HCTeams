@@ -33,7 +33,11 @@ public class TeamHQCommand {
             return;
         }
 
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "Use /pvp enable to toggle your PvP Timer off!");
+            return;
+        }
+
         Foxtrot.getInstance().getServerHandler().beginHQWarp(sender, team, 10);
     }
-
 }

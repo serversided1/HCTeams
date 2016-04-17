@@ -135,6 +135,7 @@ public class BardClass extends PvPClass implements Listener {
 
             giveBardEffect(player, BARD_PASSIVE_EFFECTS.get(player.getItemInHand().getType()), true, false);
         }
+        super.tick(player);
     }
 
 
@@ -214,7 +215,7 @@ public class BardClass extends PvPClass implements Listener {
             }
 
             if (bardEffect.getPotionEffect() != null) {
-                smartAddPotion(player, bardEffect.getPotionEffect(), persistOldValues);
+                smartAddPotion(player, bardEffect.getPotionEffect(), persistOldValues, this);
             } else {
                 Material material = source.getItemInHand().getType();
                 giveCustomBardEffect(player, material);
