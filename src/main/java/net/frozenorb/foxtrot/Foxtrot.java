@@ -164,6 +164,7 @@ public class Foxtrot extends JavaPlugin {
         FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.team");
 
         DeathMessageHandler.init();
+        DTRHandler.loadDTR();
     }
 
     private void setupListeners() {

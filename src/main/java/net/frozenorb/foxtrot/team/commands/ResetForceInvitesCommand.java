@@ -26,6 +26,7 @@ public class ResetForceInvitesCommand {
                     }
 
                     Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All force invites have been reset!");
+                    cc.getForWhom().sendRawMessage(ChatColor.RED.toString() + ChatColor.BOLD + "All force invites have been reset!");
                     return (Prompt.END_OF_CONVERSATION);
                 }
 
