@@ -5,6 +5,7 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -37,6 +38,7 @@ public class MapHandler {
     @Getter private boolean craftingGopple;
     @Getter private boolean craftingReducedMelon;
     @Getter private int goppleCooldown;
+    @Getter private int minForceInviteMembers = 10;
 
     public MapHandler() {
         try {
@@ -48,6 +50,7 @@ public class MapHandler {
                 BasicDBObject dbObject = new BasicDBObject();
                 BasicDBObject looting = new BasicDBObject();
                 BasicDBObject crafting = new BasicDBObject();
+                BasicDBObject deathban = new BasicDBObject();
 
                 dbObject.put("kitMap", false);
                 dbObject.put("allyLimit", 0);
@@ -71,6 +74,14 @@ public class MapHandler {
                 crafting.put("reducedMelon", true);
 
                 dbObject.put("crafting", crafting);
+
+                deathban.put("PRO", 90);
+                deathban.put("VIP", 120);
+                deathban.put("Default", 240);
+
+                dbObject.put("deathban", deathban);
+
+                dbObject.put("minForceInviteMembers", 10);
 
                 FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString())));
             }
@@ -100,6 +111,16 @@ public class MapHandler {
 
                 this.craftingGopple = crafting.getBoolean("gopple");
                 this.craftingReducedMelon = crafting.getBoolean("reducedMelon");
+
+                if (dbObject.containsKey("deathban")) {
+                    BasicDBObject deathban = (BasicDBObject) dbObject.get("deathban");
+
+                    Deathban.load(deathban);
+                }
+
+                if (dbObject.containsKey("minForceInviteMembers")) {
+                    minForceInviteMembers = dbObject.getInt("minForceInviteMembers");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
