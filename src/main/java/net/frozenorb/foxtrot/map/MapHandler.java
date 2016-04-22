@@ -47,43 +47,19 @@ public class MapHandler {
             if (!mapInfo.exists()) {
                 mapInfo.createNewFile();
 
-                BasicDBObject dbObject = new BasicDBObject();
-                BasicDBObject looting = new BasicDBObject();
-                BasicDBObject crafting = new BasicDBObject();
-                BasicDBObject deathban = new BasicDBObject();
-
-                dbObject.put("kitMap", false);
-                dbObject.put("allyLimit", 0);
-                dbObject.put("teamSize", 30);
-                dbObject.put("regenTimeDeath", 60);
-                dbObject.put("regenTimeRaidable", 60);
-                dbObject.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
-                dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
-                dbObject.put("warzone", 1000);
-                dbObject.put("border", 3000);
-                dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
-
-                looting.put("base", 1D);
-                looting.put("level1", 1.2D);
-                looting.put("level2", 1.4D);
-                looting.put("level3", 2D);
-
-                dbObject.put("looting", looting);
-
-                crafting.put("gopple", true);
-                crafting.put("reducedMelon", true);
-
-                dbObject.put("crafting", crafting);
-
-                deathban.put("PRO", 90);
-                deathban.put("VIP", 120);
-                deathban.put("Default", 240);
-
-                dbObject.put("deathban", deathban);
-
-                dbObject.put("minForceInviteMembers", 10);
+                BasicDBObject dbObject = getDefaults();
 
                 FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString())));
+            } else {
+                // basically check for any new keys in the defaults which aren't contained in the actual file
+                // if there are any, add them to the file.
+                BasicDBObject file = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+                BasicDBObject defaults = getDefaults();
+
+                defaults.keySet().stream().filter(key -> !file.containsKey(key)).forEach(key -> file.put(key, defaults.get(key)));
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(file.toString())));
             }
 
             BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
@@ -175,6 +151,47 @@ public class MapHandler {
         Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
         Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
         Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
+    }
+
+    private BasicDBObject getDefaults() {
+        BasicDBObject dbObject = new BasicDBObject();
+
+        BasicDBObject looting = new BasicDBObject();
+        BasicDBObject crafting = new BasicDBObject();
+        BasicDBObject deathban = new BasicDBObject();
+
+        dbObject.put("kitMap", false);
+        dbObject.put("allyLimit", 0);
+        dbObject.put("teamSize", 30);
+        dbObject.put("regenTimeDeath", 60);
+        dbObject.put("regenTimeRaidable", 60);
+        dbObject.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
+        dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
+        dbObject.put("warzone", 1000);
+        dbObject.put("border", 3000);
+        dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
+
+        looting.put("base", 1D);
+        looting.put("level1", 1.2D);
+        looting.put("level2", 1.4D);
+        looting.put("level3", 2D);
+
+        dbObject.put("looting", looting);
+
+        crafting.put("gopple", true);
+        crafting.put("reducedMelon", true);
+
+        dbObject.put("crafting", crafting);
+
+        deathban.put("PRO", 90);
+        deathban.put("VIP", 120);
+        deathban.put("Default", 240);
+
+        dbObject.put("deathban", deathban);
+
+        dbObject.put("minForceInviteMembers", 10);
+
+        return dbObject;
     }
 
     public void saveBorder() {
