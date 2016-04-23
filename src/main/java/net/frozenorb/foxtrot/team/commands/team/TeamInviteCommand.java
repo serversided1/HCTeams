@@ -54,8 +54,8 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && team.getSize() > 10) {
-            sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to reinvite " + UUIDUtils.name(player) + ". Type "
+        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && team.getSize() > Foxtrot.getInstance().getMapHandler().getMinForceInviteMembers()) {
+            sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to re-invite " + UUIDUtils.name(player) + ". Type "
                     + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
             );
 
