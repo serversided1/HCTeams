@@ -185,7 +185,7 @@ public class MapHandler {
 
         deathban.put("PRO", 90);
         deathban.put("VIP", 120);
-        deathban.put("Default", 240);
+        deathban.put("DEFAULT", 240);
 
         dbObject.put("deathban", deathban);
 
