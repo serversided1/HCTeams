@@ -16,6 +16,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.mBasic.Basic;
 import net.frozenorb.mBasic.Utilities.Lag;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
@@ -32,11 +33,13 @@ public class DeathTracker {
 
     public static void logDeath(final Player player, final Player killer) {
         final BasicDBObject data = generateDeathData(player, killer);
+        final BasicDBObject websiteData = generateWebsiteDeathData(player, killer);
 
         new BukkitRunnable() {
 
             public void run() {
                 Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("DetailedKills").insert(data);
+                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("WebKills").insert(websiteData);
 
                 BasicDBObject simplifiedDeath = new BasicDBObject();
 
@@ -71,6 +74,17 @@ public class DeathTracker {
         deathData.put("Killer", killer == null ? "N/A" : generatePlayerData(killer, false));
         deathData.put("Player", generatePlayerData(player, true));
         deathData.put("Server", generateServerData());
+
+        return (deathData);
+    }
+
+    public static BasicDBObject generateWebsiteDeathData(Player player, Player killer) {
+        BasicDBObject deathData = generateDeathData(player, killer);
+
+        if (killer != null) {
+            deathData.put("KillerInventory", PlayerInventorySerializer.serialize(killer));
+        }
+        deathData.put("PlayerInventory", PlayerInventorySerializer.serialize(player));
 
         return (deathData);
     }
