@@ -5,6 +5,8 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
+import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
 import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.qLib;
@@ -39,6 +41,10 @@ public class MapHandler {
     @Getter private boolean craftingReducedMelon;
     @Getter private int goppleCooldown;
     @Getter private int minForceInviteMembers = 10;
+
+    // Kit-Map only stuff:
+    @Getter private StatsHandler statsHandler;
+    @Getter private KillstreakHandler killstreakHandler;
 
     public MapHandler() {
         try {
@@ -151,6 +157,11 @@ public class MapHandler {
         Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
         Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
         Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
+
+        if (isKitMap()) {
+            statsHandler = new StatsHandler();
+            killstreakHandler = new KillstreakHandler();
+        }
     }
 
     private BasicDBObject getDefaults() {
@@ -185,7 +196,7 @@ public class MapHandler {
 
         deathban.put("PRO", 90);
         deathban.put("VIP", 120);
-        deathban.put("Default", 240);
+        deathban.put("DEFAULT", 240);
 
         dbObject.put("deathban", deathban);
 
