@@ -113,6 +113,7 @@ public class DeathTracker {
 
             teamData.put("RegenTime", TimeUtils.formatIntoMMSS(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000));
             teamData.put("Name", playerTeam.getName());
+            teamData.put("TeamID", playerTeam.getUniqueId());
             teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
         }
