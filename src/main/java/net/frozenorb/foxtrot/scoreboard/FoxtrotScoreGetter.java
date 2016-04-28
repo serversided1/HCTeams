@@ -162,7 +162,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             float diff = SpawnTagHandler.getTag(player);
 
             if (diff >= 0) {
-                return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+                return (ScoreFunction.TIME_SIMPLE.apply(diff / 1000F));
             }
         }
 
