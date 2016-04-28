@@ -77,7 +77,7 @@ public class ServerHandler {
 
     public ServerHandler() {
         try {
-            File f = new File("highRollers.json");
+            File f = new File(Foxtrot.getInstance().getDataFolder(), "highRollers.json");
 
             if (!f.exists()) {
                 f.createNewFile();
