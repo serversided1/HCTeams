@@ -12,12 +12,14 @@ import java.io.IOException;
 
 public class GlowHandler {
 
-    private final static File file = new File("glowmtn.json");
+    private static File file;
     @Getter private final static String glowTeamName = "Glowstone";
     @Getter @Setter private GlowMountain glowMountain;
 
     public GlowHandler() {
         try {
+            file = new File(Foxtrot.getInstance().getDataFolder(), "glowmtn.json");
+
             if (!file.exists()) {
                 glowMountain = null;
 
