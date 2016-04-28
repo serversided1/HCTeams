@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MapHandler {
 
+    private transient File mapInfo;
     @Getter private boolean kitMap;
     @Getter private int allyLimit;
     @Getter private int teamSize;
@@ -42,7 +43,7 @@ public class MapHandler {
 
     public MapHandler() {
         try {
-            File mapInfo = new File("mapInfo.json");
+            mapInfo = new File(Foxtrot.getInstance().getDataFolder(), "mapInfo.json");
 
             if (!mapInfo.exists()) {
                 mapInfo.createNewFile();
@@ -195,8 +196,6 @@ public class MapHandler {
     }
 
     public void saveBorder() {
-        File mapInfo = new File("mapInfo.json");
-
         try {
             BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
 

@@ -90,7 +90,7 @@ public class KOTHHandler {
         KOTHSchedule.clear();
 
         try {
-            File kothSchedule = new File("kothSchedule.json");
+            File kothSchedule = new File(Foxtrot.getInstance().getDataFolder(), "kothSchedule.json");
 
             if (!kothSchedule.exists()) {
                 kothSchedule.createNewFile();
@@ -148,7 +148,7 @@ public class KOTHHandler {
         KOTHSigns.clear();
 
         try {
-            File kothSigns = new File("kothSigns.json");
+            File kothSigns = new File(Foxtrot.getInstance().getDataFolder(), "kothSigns.json");
 
             if (!kothSigns.exists()) {
                 kothSigns.createNewFile();
@@ -171,7 +171,7 @@ public class KOTHHandler {
 
     public void saveKOTHs() {
         try {
-            File kothsBase = new File("KOTHs");
+            File kothsBase = new File(Foxtrot.getInstance().getDataFolder(), "KOTHs");
 
             if (!kothsBase.exists()) {
                 kothsBase.mkdir();
@@ -192,7 +192,7 @@ public class KOTHHandler {
 
     public void saveSigns() {
         try {
-            File kothSigns = new File("kothSigns.json");
+            File kothSigns = new File(Foxtrot.getInstance().getDataFolder(), "kothSigns.json");
             BasicDBObject dbo = new BasicDBObject();
             BasicDBList signs = new BasicDBList();
 
