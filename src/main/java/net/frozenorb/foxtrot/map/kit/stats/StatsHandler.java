@@ -2,6 +2,8 @@ package net.frozenorb.foxtrot.map.kit.stats;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
@@ -10,6 +12,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.ParameterType;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.minecraft.util.com.google.common.collect.Iterables;
 import net.minecraft.util.com.google.common.reflect.TypeToken;
@@ -27,10 +30,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StatsHandler implements Listener {
 
-    private final Map<UUID, StatsEntry> stats = Maps.newConcurrentMap();
+    private Map<UUID, StatsEntry> stats = Maps.newConcurrentMap();
 
     @Getter private Map<Location, Integer> leaderboardSigns = Maps.newHashMap();
     @Getter private Map<Location, Integer> leaderboardHeads = Maps.newHashMap();
@@ -38,25 +42,34 @@ public class StatsHandler implements Listener {
     public StatsHandler() {
         qLib.getInstance().runRedisCommand(redis -> {
             if (redis.exists("stats")) {
-                Map<String, String> statistics = redis.hgetAll("stats");
+                stats = qLib.PLAIN_GSON.fromJson(redis.get("stats"), new TypeToken<Map<UUID, StatsEntry>>() {}.getType());
 
-                for (Map.Entry<String, String> entry : statistics.entrySet()) {
-                    UUID owner = UUID.fromString(entry.getKey());
-                    StatsEntry theirStats = qLib.PLAIN_GSON.fromJson(entry.getValue(), StatsEntry.class);
-
-                    stats.put(owner, theirStats);
-                }
-
-                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + statistics.size() + " stats.");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + stats.size() + " stats.");
             }
 
             if (redis.exists("leaderboardSigns")) {
-                leaderboardSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<Map<Location, Integer>>() {}.getType());
+                List<String> serializedSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<List<String>>() {}.getType());
+
+                for (String sign : serializedSigns) {
+                    Location location = LocationSerializer.deserialize((BasicDBObject) JSON.parse(sign.split("----")[0]));
+                    int place = Integer.parseInt(sign.split("----")[1]);
+
+                    leaderboardSigns.put(location, place);
+                }
+
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardSigns.size() + " leaderboard signs.");
             }
 
             if (redis.exists("leaderboardHeads")) {
-                leaderboardHeads = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardHeads"), new TypeToken<Map<Location, Integer>>() {}.getType());
+                List<String> serializedHeads = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardHeads"), new TypeToken<List<String>>() {}.getType());
+
+                for (String sign : serializedHeads) {
+                    Location location = LocationSerializer.deserialize((BasicDBObject) JSON.parse(sign.split("----")[0]));
+                    int place = Integer.parseInt(sign.split("----")[1]);
+
+                    leaderboardHeads.put(location, place);
+                }
+
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardHeads.size() + " leaderboard heads.");
             }
 
@@ -117,12 +130,13 @@ public class StatsHandler implements Listener {
 
     public void save() {
         qLib.getInstance().runRedisCommand(redis -> {
-            for (StatsEntry stats : this.stats.values()) {
-                redis.hset("stats", stats.getOwner().toString(), qLib.PLAIN_GSON.toJson(stats));
-            }
+            redis.set("stats", qLib.PLAIN_GSON.toJson(stats));
 
-            redis.set("leaderboardSigns", qLib.PLAIN_GSON.toJson(leaderboardSigns));
-            redis.set("leaderboardHeads", qLib.PLAIN_GSON.toJson(leaderboardHeads));
+            List<String> serializedSigns = leaderboardSigns.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
+            List<String> serializedHeads = leaderboardHeads.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
+
+            redis.set("leaderboardSigns", qLib.PLAIN_GSON.toJson(serializedSigns));
+            redis.set("leaderboardHeads", qLib.PLAIN_GSON.toJson(serializedHeads));
             return null;
         });
     }
@@ -211,6 +225,18 @@ public class StatsHandler implements Listener {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public void clearAll() {
+        stats.clear();
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), this::save);
+    }
+
+    public void clearLeaderboards() {
+        leaderboardHeads.clear();
+        leaderboardSigns.clear();
+
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), this::save);
     }
 
     public Map<StatsEntry, String> getLeaderboards(StatsTopCommand.StatsObjective objective, int range) {
