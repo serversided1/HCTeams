@@ -47,12 +47,12 @@ public class StatsHandler {
             }
 
             if (redis.exists("leaderboardSigns")) {
-                leaderboardSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<Map<Sign, Integer>>() {}.getType());
+                leaderboardSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<Map<Location, Integer>>() {}.getType());
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardSigns.size() + " leaderboard signs.");
             }
 
             if (redis.exists("leaderboardHeads")) {
-                leaderboardHeads = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardHeads"), new TypeToken<Map<Skull, Integer>>() {}.getType());
+                leaderboardHeads = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardHeads"), new TypeToken<Map<Location, Integer>>() {}.getType());
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardHeads.size() + " leaderboard heads.");
             }
 

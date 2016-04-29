@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.map.kit.stats.command;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -30,6 +31,7 @@ public class StatsCommand {
         sender.sendMessage(ChatColor.YELLOW + "Deaths: " + ChatColor.RED + stats.getDeaths());
         sender.sendMessage(ChatColor.YELLOW + "Killstreak: " + ChatColor.RED + stats.getKillstreak());
         sender.sendMessage(ChatColor.YELLOW + "Highest Killstreak: " + ChatColor.RED + stats.getHighestKillstreak());
+        sender.sendMessage(ChatColor.YELLOW + "KD: " + ChatColor.RED + (stats.getDeaths() == 0 ? "Infinity" : Team.DTR_FORMAT.format((double) stats.getKills() / (double) stats.getDeaths())));
 
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));
     }
