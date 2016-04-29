@@ -2,7 +2,10 @@ package net.frozenorb.foxtrot.map.kit.stats.listener;
 
 import com.google.common.collect.Maps;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
 import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,7 +25,7 @@ public class StatsListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        if (killer.equals(victim) || isNaked(victim) || (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 2)) {
+        if (killer == null || killer.equals(victim) || isNaked(victim) || (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 2)) {
             return;
         }
 
@@ -40,6 +43,14 @@ public class StatsListener implements Listener {
         killerStats.addKill();
 
         lastKilled.put(killer.getUniqueId(), victim.getUniqueId());
+
+        Killstreak killstreak = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().check(killerStats.getKillstreak());
+
+        if (killstreak != null) {
+            killstreak.apply(killer);
+
+            Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+        }
     }
 
     private boolean isNaked(Player player) {
