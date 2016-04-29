@@ -21,10 +21,14 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 
 import java.util.*;
 
-public class StatsHandler {
+public class StatsHandler implements Listener {
 
     private final Map<UUID, StatsEntry> stats = Maps.newConcurrentMap();
 
@@ -60,6 +64,7 @@ public class StatsHandler {
         });
 
         Bukkit.getPluginManager().registerEvents(new StatsListener(), Foxtrot.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, Foxtrot.getInstance());
 
         FrozenCommandHandler.loadCommandsFromPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.stats.command");
 
@@ -269,6 +274,25 @@ public class StatsHandler {
             }
 
             return leaderboards;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onBlockBreak(BlockBreakEvent event) {
+        Player player = event.getPlayer();
+
+        if (leaderboardHeads.containsKey(event.getBlock().getLocation())) {
+            leaderboardHeads.remove(event.getBlock().getLocation());
+            player.sendMessage(ChatColor.YELLOW + "Removed this skull from leaderboards.");
+
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), this::save);
+        }
+
+        if (leaderboardSigns.containsKey(event.getBlock().getLocation())) {
+            leaderboardSigns.remove(event.getBlock().getLocation());
+            player.sendMessage(ChatColor.YELLOW + "Removed this sign from leaderboards.");
+
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), this::save);
         }
     }
 
