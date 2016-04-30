@@ -126,6 +126,7 @@ public class StatsHandler implements Listener {
         });
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(Foxtrot.getInstance(), this::save, 30 * 20L, 30 * 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Foxtrot.getInstance(), this::updatePhysicalLeaderboards, 10 * 20L, 10 * 20L);
     }
 
     public void save() {
@@ -215,7 +216,13 @@ public class StatsHandler implements Listener {
             base.put(entry, entry.getKills());
         }
 
-        TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> -Integer.compare(first.getKills(), second.getKills()));
+        TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
+            if (first.getKills() >= second.getKills()) {
+                return -1;
+            }
+            return 1;
+        });
+
         ordered.putAll(base);
 
         Map<StatsEntry, String> leaderboards = Maps.newLinkedHashMap();
@@ -258,10 +265,13 @@ public class StatsHandler implements Listener {
                 base.put(entry, entry.get(objective));
             }
 
-            TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> -Integer.compare(
-                    first.get(objective),
-                    second.get(objective)
-            ));
+            TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
+                if (first.get(objective) >= second.get(objective)) {
+                    return -1;
+                }
+
+                return 1;
+            });
             ordered.putAll(base);
 
             Map<StatsEntry, String> leaderboards = Maps.newLinkedHashMap();
@@ -285,10 +295,13 @@ public class StatsHandler implements Listener {
                 base.put(entry, entry.getKD());
             }
 
-            TreeMap<StatsEntry, Double> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> -Double.compare(
-                    first.getKD(),
-                    second.getKD()
-            ));
+            TreeMap<StatsEntry, Double> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
+                if (first.getKD() > second.getKD()) {
+                    return -1;
+                }
+
+                return 1;
+            });
             ordered.putAll(base);
 
             Map<StatsEntry, String> leaderboards = Maps.newHashMap();

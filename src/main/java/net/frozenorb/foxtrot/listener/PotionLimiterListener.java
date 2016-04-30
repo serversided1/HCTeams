@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -29,10 +30,12 @@ public class PotionLimiterListener implements Listener {
             }
         }
 
-        for (int i : ServerHandler.DISALLOWED_POTIONS) {
-            if (i == (int) potion.getDurability()) {
-                event.setCancelled(true);
-                return;
+        if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            for (int i : ServerHandler.DISALLOWED_POTIONS) {
+                if (i == (int) potion.getDurability()) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
 
