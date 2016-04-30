@@ -5,6 +5,7 @@ import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -508,8 +509,19 @@ public class FoxListener implements Listener {
     private void processTerritoryInfo(PlayerMoveEvent event) {
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
-            Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+            if (ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
+                Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+            }
+
+            if (ownerTo != null && !ownerTo.isMember(event.getPlayer().getUniqueId())) {
+                event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
+                event.getPlayer().sendMessage(ChatColor.RED + "You have been sent to spawn because you have entered another team's claim with PvP Protection.");
+            }
+
+            if ((DTRBitmask.KOTH.appliesAt(event.getTo()) || DTRBitmask.CITADEL.appliesAt(event.getTo()))) {
+                Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+            }
         }
 
         Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());

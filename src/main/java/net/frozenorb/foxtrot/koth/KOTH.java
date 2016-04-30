@@ -173,7 +173,7 @@ public class KOTH {
             List<Player> onCap = new ArrayList<>();
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL && !player.hasMetadata("invisible")) {
+                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL && !player.hasMetadata("invisible") && !Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                     onCap.add(player);
                 }
             }
