@@ -173,12 +173,10 @@ public class StatsHandler implements Listener {
 
             Sign sign = (Sign) entry.getKey().getBlock().getState();
 
-            String kd = stats.getDeaths() == 0 ? "Infinity" : Team.DTR_FORMAT.format((double) stats.getKills() / (double) stats.getDeaths());
-
             sign.setLine(0, trim(UUIDUtils.name(stats.getOwner())));
-            sign.setLine(1, ChatColor.GREEN + "K " + ChatColor.BLACK + stats.getKills());
-            sign.setLine(2, ChatColor.RED + "D " + ChatColor.BLACK + stats.getDeaths());
-            sign.setLine(3, ChatColor.YELLOW + "KD " + ChatColor.BLACK + kd);
+            sign.setLine(1, ChatColor.DARK_GRAY + "#" + entry.getValue());
+            sign.setLine(2, ChatColor.GREEN + "K " + ChatColor.BLACK + stats.getKills());
+            sign.setLine(3, ChatColor.RED + "D " + ChatColor.BLACK + stats.getDeaths());
 
             sign.update();
         }
@@ -220,8 +218,21 @@ public class StatsHandler implements Listener {
         TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> -Integer.compare(first.getKills(), second.getKills()));
         ordered.putAll(base);
 
+        Map<StatsEntry, String> leaderboards = Maps.newLinkedHashMap();
+
+        int index = 0;
+        for (Map.Entry<StatsEntry, Integer> entry : ordered.entrySet()) {
+            leaderboards.put(entry.getKey(), entry.getValue() + "");
+
+            index++;
+
+            if (index == place + 1) {
+                break;
+            }
+        }
+
         try {
-            return Iterables.get(ordered.keySet(), place - 1);
+            return Iterables.get(leaderboards.keySet(), place - 1);
         } catch (Exception e) {
             return null;
         }
@@ -244,7 +255,7 @@ public class StatsHandler implements Listener {
             Map<StatsEntry, Integer> base = Maps.newHashMap();
 
             for (StatsEntry entry : stats.values()) {
-                base.put(entry, entry.getKills());
+                base.put(entry, entry.get(objective));
             }
 
             TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> -Integer.compare(
