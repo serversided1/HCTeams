@@ -70,7 +70,7 @@ public class KOTHHandler {
 
     public void loadKOTHs() {
         try {
-            File kothsBase = new File("KOTHs");
+            File kothsBase = new File(Foxtrot.getInstance().getDataFolder(), "KOTHs");
 
             if (!kothsBase.exists()) {
                 kothsBase.mkdir();
