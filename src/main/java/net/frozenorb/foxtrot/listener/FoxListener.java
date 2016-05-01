@@ -175,6 +175,15 @@ public class FoxListener implements Listener {
             event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
 
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
+
+            /* Populate these fields in mongo for Ariel, doesnt want them to be empty if player has no kills */
+            if (Foxtrot.getInstance().getDeathsMap().getDeaths(event.getPlayer().getUniqueId()) == 0) {
+                Foxtrot.getInstance().getDeathsMap().setDeaths(event.getPlayer().getUniqueId(), 0);
+            }
+
+            if (Foxtrot.getInstance().getKillsMap().getKills(event.getPlayer().getUniqueId()) == 0) {
+                Foxtrot.getInstance().getKillsMap().setKills(event.getPlayer().getUniqueId(), 0);
+            }
         }
     }
 
