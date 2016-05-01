@@ -56,7 +56,12 @@ public class CombatLoggerListener implements Listener {
             Foxtrot.getInstance().getLogger().info(metadata.playerName + "'s combat logger at (" + event.getEntity().getLocation().getBlockX() + ", " + event.getEntity().getLocation().getBlockY() + ", " + event.getEntity().getLocation().getBlockZ() + ") died.");
 
             // Deathban the player
-            Foxtrot.getInstance().getDeathbanMap().deathban(metadata.playerUUID, Foxtrot.getInstance().getServerHandler().getDeathban(metadata.playerUUID, event.getEntity().getLocation()));
+            Foxtrot.getInstance().getDeathbanMap().deathban(metadata.playerUUID, metadata.deathBanTime);
+
+            // Increment players deaths
+            int deaths = Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID);
+            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, deaths + 1);
+
             Team team = Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID);
 
             // Take away DTR.

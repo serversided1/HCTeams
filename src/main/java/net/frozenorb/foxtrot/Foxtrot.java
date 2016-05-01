@@ -60,6 +60,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private OppleMap oppleMap;
     @Getter private DeathbanMap deathbanMap;
     @Getter private PvPTimerMap PvPTimerMap;
+    @Getter private DeathsMap deathsMap;
     @Getter private KillsMap killsMap;
     @Getter private ChatModeMap chatModeMap;
     @Getter private FishingKitMap fishingKitMap;
@@ -203,6 +204,7 @@ public class Foxtrot extends JavaPlugin {
         (oppleMap = new OppleMap()).loadFromRedis();
         (deathbanMap = new DeathbanMap()).loadFromRedis();
         (PvPTimerMap = new PvPTimerMap()).loadFromRedis();
+        (deathsMap = new DeathsMap()).loadFromRedis();
         (killsMap = new KillsMap()).loadFromRedis();
         (chatModeMap = new ChatModeMap()).loadFromRedis();
         (toggleGlobalChatMap = new ToggleGlobalChatMap()).loadFromRedis();
