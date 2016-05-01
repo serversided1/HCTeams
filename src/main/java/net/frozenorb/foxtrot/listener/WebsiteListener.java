@@ -27,7 +27,6 @@ public class WebsiteListener implements Listener {
         if (event.getEntity().getKiller() != null) {
             playerDeath.append("soups", -1);
             playerDeath.append("healthLeft", (int) event.getEntity().getKiller().getHealth());
-            playerDeath.append("killer", event.getEntity().getKiller().getName());
             playerDeath.append("killerUUID", event.getEntity().getKiller().getUniqueId().toString().replace("-", ""));
             playerDeath.append("killerHunger", event.getEntity().getKiller().getFoodLevel());
 
@@ -95,7 +94,6 @@ public class WebsiteListener implements Listener {
 
         playerDeath.append("ip", event.getEntity().getAddress().toString().split(":")[0].replace("/", ""));
         playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
-        playerDeath.append("player", event.getEntity().getName());
         playerDeath.append("type", "death");
         playerDeath.append("when", new Date());
 

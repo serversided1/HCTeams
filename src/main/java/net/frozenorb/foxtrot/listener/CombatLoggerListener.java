@@ -476,7 +476,6 @@ public class CombatLoggerListener implements Listener {
         if (killer != null) {
             playerDeath.append("soups", -1);
             playerDeath.append("healthLeft", (int) killer.getHealth());
-            playerDeath.append("killer", killer.getName());
             playerDeath.append("killerUUID", killer.getUniqueId().toString().replace("-", ""));
             playerDeath.append("killerHunger", killer.getFoodLevel());
 
