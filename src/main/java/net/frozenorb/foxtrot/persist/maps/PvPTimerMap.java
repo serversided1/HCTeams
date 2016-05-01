@@ -11,8 +11,7 @@ import java.util.UUID;
 public class PvPTimerMap extends PersistMap<Integer> {
 
     public PvPTimerMap() {
-        super("PvPTimers", "PvPTimer");
-
+        super("PvPTimers", "PvPTimer", false); // dont save this data to mongo
         // This should probably use a bit smarter of a system... but for now it's fine.
         new BukkitRunnable() {
 
