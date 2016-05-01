@@ -84,7 +84,7 @@ public class DamageListener implements Listener {
             }
         }
 
-        DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
+        //DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         DeathMessageHandler.clearDamage(event.getEntity());
     }
 
