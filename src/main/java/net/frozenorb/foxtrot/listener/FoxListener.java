@@ -5,11 +5,11 @@ import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -519,17 +519,29 @@ public class FoxListener implements Listener {
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
-            if (ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
-                Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
-            }
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getTo())) {
 
-            if (ownerTo != null && !ownerTo.isMember(event.getPlayer().getUniqueId())) {
-                event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
-                event.getPlayer().sendMessage(ChatColor.RED + "You have been sent to spawn because you have entered another team's claim with PvP Protection.");
-            }
+                if (DTRBitmask.KOTH.appliesAt(event.getTo()) || DTRBitmask.CITADEL.appliesAt(event.getTo())) {
+                    Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
 
-            if ((DTRBitmask.KOTH.appliesAt(event.getTo()) || DTRBitmask.CITADEL.appliesAt(event.getTo()))) {
-                Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+                    event.getPlayer().sendMessage(ChatColor.RED + "Your PvP Protection has been removed for entering claimed land.");
+                } else if (ownerTo != null && ownerTo.getOwner() != null) {
+                    if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
+                        event.setCancelled(true);
+
+                        for (Claim claim : ownerTo.getClaims()) {
+                            if (claim.contains(event.getFrom())) {
+                                event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
+                                event.getPlayer().sendMessage(ChatColor.RED + "Moved you to spawn because you were in land that was claimed.");
+                                return;
+                            }
+                        }
+
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter another team's territory with PvP Protection.");
+                        event.getPlayer().sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your protection.");
+                        return;
+                    }
+                }
             }
         }
 
