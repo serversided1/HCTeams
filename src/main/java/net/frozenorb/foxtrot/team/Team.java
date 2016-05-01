@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
@@ -70,7 +69,7 @@ public class Team {
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
 
-    @Getter @Setter private int forceInvites = MAX_FORCE_INVITES;
+    @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
 
     // Not persisted //
@@ -267,6 +266,11 @@ public class Team {
             claim.setName(claim.getName().replaceAll(oldName, newName));
         }
 
+        flagForSave();
+    }
+
+    public void setForceInvites(int forceInvites) {
+        this.forceInvites = forceInvites;
         flagForSave();
     }
 
