@@ -178,7 +178,7 @@ public class EndListener implements Listener {
             }
 
             if (endReturn == null) {
-                endReturn = new Location(event.getTo().getWorld(), 0.6, 64, 346.5); // cache location since it's static once established.
+                endReturn = new Location(event.getTo().getWorld(), 0.6, 73, 346.5); // cache location since it's static once established.
             }
 
             event.setTo(endReturn);
