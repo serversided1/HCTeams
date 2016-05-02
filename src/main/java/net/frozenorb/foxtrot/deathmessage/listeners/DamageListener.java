@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
+import com.google.common.collect.Maps;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
@@ -7,7 +8,10 @@ import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
 import net.frozenorb.foxtrot.deathtracker.DeathTracker;
+import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
+import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,8 +21,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class DamageListener implements Listener {
+
+    // kit-map only
+    private Map<UUID, UUID> lastKilled = Maps.newHashMap();
+    private Map<UUID, Integer> boosting = Maps.newHashMap();
 
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onEntityDamage(EntityDamageEvent event) {
@@ -49,7 +59,41 @@ public class DamageListener implements Listener {
 
                 if (killer != null) {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
-                    Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
+
+                    if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                        Player victim = event.getEntity();
+
+                        if (killer.equals(victim) || isNaked(victim) || (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 2)) {
+                            return;
+                        }
+
+                        if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {
+                            boosting.putIfAbsent(killer.getUniqueId(), 0);
+                            boosting.put(killer.getUniqueId(), boosting.get(killer.getUniqueId()) + 1);
+                        } else {
+                            boosting.put(killer.getUniqueId(), 0);
+                        }
+
+                        StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
+                        StatsEntry killerStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(killer);
+
+                        victimStats.addDeath();
+                        killerStats.addKill();
+
+                        lastKilled.put(killer.getUniqueId(), victim.getUniqueId());
+
+                        Killstreak killstreak = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().check(killerStats.getKillstreak());
+
+                        if (killstreak != null) {
+                            killstreak.apply(killer);
+
+                            Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+                        }
+
+                        Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
+                    } else {
+                        Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
+                    }
                 }
             }
 
@@ -87,5 +131,13 @@ public class DamageListener implements Listener {
         DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         DeathMessageHandler.clearDamage(event.getEntity());
     }
+
+    private boolean isNaked(Player player) {
+        return player.getInventory().getHelmet() == null &&
+                player.getInventory().getChestplate() == null &&
+                player.getInventory().getLeggings() == null &&
+                player.getInventory().getBoots() == null;
+    }
+
 
 }

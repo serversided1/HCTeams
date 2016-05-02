@@ -20,6 +20,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class  SpawnListener implements Listener {
 
@@ -46,8 +47,21 @@ public class  SpawnListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
         } else if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build this close to spawn!");
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        if (event.getBlock().getType() == Material.WEB) {
+                            event.getBlock().setType(Material.AIR);
+                        }
+                    }
+
+                }.runTaskLater(Foxtrot.getInstance(), 10 * 20L);
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build this close to spawn!");
+            }
         }
     }
 

@@ -7,7 +7,6 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
-import net.frozenorb.foxtrot.map.kit.stats.listener.StatsListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.ParameterType;
@@ -76,7 +75,6 @@ public class StatsHandler implements Listener {
             return null;
         });
 
-        Bukkit.getPluginManager().registerEvents(new StatsListener(), Foxtrot.getInstance());
         Bukkit.getPluginManager().registerEvents(this, Foxtrot.getInstance());
 
         FrozenCommandHandler.loadCommandsFromPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.stats.command");

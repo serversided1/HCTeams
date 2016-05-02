@@ -37,6 +37,16 @@ public abstract class Killstreak {
 
             if (current == null || current.getType() == Material.AIR) {
                 player.getInventory().setItem(i, item);
+                return;
+            }
+        }
+
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack current = player.getInventory().getItem(i);
+
+            if (current != null && current.getType() == Material.POTION) {
+                player.getInventory().setItem(i, item);
+                return;
             }
         }
     }

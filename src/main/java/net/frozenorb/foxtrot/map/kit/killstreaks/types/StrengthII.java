@@ -27,7 +27,8 @@ public class StrengthII extends Killstreak {
         ItemStack item = new ItemStack(Material.POTION);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
 
-        meta.addCustomEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 30 * 20, 0), false);
+        meta.setMainEffect(PotionEffectType.INCREASE_DAMAGE);
+        meta.addCustomEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 30 * 20, 1), true);
         item.setItemMeta(meta);
 
         give(player, item);

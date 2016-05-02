@@ -14,7 +14,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -119,8 +122,21 @@ public class TeamListener implements Listener {
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
-            event.setCancelled(true);
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        if (event.getBlock().getType() == Material.WEB) {
+                            event.getBlock().setType(Material.AIR);
+                        }
+                    }
+
+                }.runTaskLater(Foxtrot.getInstance(), 10 * 20L);
+            } else {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+                event.setCancelled(true);
+            }
             return;
         }
 
