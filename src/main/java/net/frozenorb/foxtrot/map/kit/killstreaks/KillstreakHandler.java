@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.map.kit.killstreaks;
 
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.ClassUtils;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class KillstreakHandler {
 
-    private List<Killstreak> killstreaks = Lists.newArrayList();
+    @Getter private List<Killstreak> killstreaks = Lists.newArrayList();
 
     public KillstreakHandler() {
         ClassUtils.getClassesInPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.killstreaks.types").stream().filter(Killstreak.class::isAssignableFrom).forEach(clazz -> {
@@ -19,6 +20,17 @@ public class KillstreakHandler {
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
+        });
+
+        killstreaks.sort((first, second) -> {
+            int firstNumber = first.getKills()[0];
+            int secondNumber = second.getKills()[0];
+
+            if (firstNumber < secondNumber) {
+                return -1;
+            }
+            return 1;
+
         });
     }
 

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;
@@ -47,7 +48,7 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onInventoryOpen(InventoryOpenEvent event) {
-        if (event.getInventory().getType() == InventoryType.ENDER_CHEST) {
+        if (event.getInventory().getType() == InventoryType.ENDER_CHEST && !ChestCommand.getBYPASS().contains(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }

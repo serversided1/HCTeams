@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.map.kit.killstreaks.types;
 
 import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 
 public class Debuffs extends Killstreak {
 
@@ -21,8 +21,14 @@ public class Debuffs extends Killstreak {
 
     @Override
     public void apply(Player player) {
-        give(player, new ItemStack(Material.POTION, 1, (byte) 16388));
-        give(player, new ItemStack(Material.POTION, 1, (byte) 16421));
+        Potion poison = new Potion(PotionType.POISON);
+        poison.setSplash(true);
+
+        Potion slowness = new Potion(PotionType.SLOWNESS);
+        slowness.setSplash(true);
+
+        give(player, poison.toItemStack(1));
+        give(player, slowness.toItemStack(1));
     }
 
 }

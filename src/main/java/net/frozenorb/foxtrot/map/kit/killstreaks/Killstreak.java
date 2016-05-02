@@ -3,6 +3,9 @@ package net.frozenorb.foxtrot.map.kit.killstreaks;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 
 public abstract class Killstreak {
 
@@ -45,8 +48,12 @@ public abstract class Killstreak {
             ItemStack current = player.getInventory().getItem(i);
 
             if (current != null && current.getType() == Material.POTION) {
-                player.getInventory().setItem(i, item);
-                return;
+                Potion potion = Potion.fromItemStack(current);
+
+                if (potion.getType() == PotionType.INSTANT_HEAL && potion.isSplash()) {
+                    player.getInventory().setItem(i, item);
+                    return;
+                }
             }
         }
     }

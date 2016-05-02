@@ -60,12 +60,9 @@ public class DamageListener implements Listener {
                 if (killer != null) {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
 
+                    // kit-map death handling
                     if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
                         Player victim = event.getEntity();
-
-                        if (killer.equals(victim) || isNaked(victim) || (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 2)) {
-                            return;
-                        }
 
                         if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {
                             boosting.putIfAbsent(killer.getUniqueId(), 0);
@@ -74,23 +71,35 @@ public class DamageListener implements Listener {
                             boosting.put(killer.getUniqueId(), 0);
                         }
 
-                        StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
-                        StatsEntry killerStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(killer);
+                        if (killer.equals(victim) || isNaked(victim)) {
+                            StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
 
-                        victimStats.addDeath();
-                        killerStats.addKill();
+                            victimStats.addDeath();
+                        } else if (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 1) {
+                            killer.sendMessage(ChatColor.RED + "Boost Check: You've killed " + victim.getName() + " " + boosting.get(killer.getUniqueId()) + " times.");
 
-                        lastKilled.put(killer.getUniqueId(), victim.getUniqueId());
+                            StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
 
-                        Killstreak killstreak = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().check(killerStats.getKillstreak());
+                            victimStats.addDeath();
+                        } else {
+                            StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
+                            StatsEntry killerStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(killer);
 
-                        if (killstreak != null) {
-                            killstreak.apply(killer);
+                            victimStats.addDeath();
+                            killerStats.addKill();
 
-                            Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+                            lastKilled.put(killer.getUniqueId(), victim.getUniqueId());
+
+                            Killstreak killstreak = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().check(killerStats.getKillstreak());
+
+                            if (killstreak != null) {
+                                killstreak.apply(killer);
+
+                                Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+                            }
+
+                            Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
                         }
-
-                        Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
                     } else {
                         Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
                     }
