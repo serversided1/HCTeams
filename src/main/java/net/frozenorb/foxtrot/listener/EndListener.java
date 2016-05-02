@@ -1,8 +1,11 @@
 package net.frozenorb.foxtrot.listener;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.qLib;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
@@ -28,7 +31,7 @@ import java.util.Map;
 public class EndListener implements Listener {
 
     public static boolean endActive = true;
-    private static Location endReturn; // cached end -> world teleport location
+    @Getter @Setter private static Location endReturn; // end -> overworld teleport location
 
     private Map<String, Long> msgCooldown = new HashMap<>();
 
@@ -177,9 +180,7 @@ public class EndListener implements Listener {
                 }
             }
 
-            if (endReturn == null) {
-                endReturn = new Location(event.getTo().getWorld(), 0.6, 64, 346.5); // cache location since it's static once established.
-            }
+            loadEndReturn();
 
             event.setTo(endReturn);
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
@@ -251,6 +252,28 @@ public class EndListener implements Listener {
         if (event.getEntity() instanceof EnderDragon) {
             event.setCancelled(true);
         }
+    }
+
+    public static void saveEndReturn() {
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), () -> qLib.getInstance().runRedisCommand(redis -> {
+            redis.set("endReturn", qLib.PLAIN_GSON.toJson(endReturn));
+            return null;
+        }));
+    }
+
+    public static void loadEndReturn() {
+        if (endReturn != null) {
+            return;
+        }
+
+        qLib.getInstance().runRedisCommand(redis -> {
+            if (redis.exists("endReturn")) {
+                endReturn = qLib.PLAIN_GSON.fromJson(redis.get("endReturn"), Location.class);
+            } else {
+                endReturn = new Location(Bukkit.getWorlds().get(0), 0.6, 64, 346.5);
+            }
+            return null;
+        });
     }
 
 }
