@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class ToggleDeathMessageMap extends PersistMap<Boolean> {
     }
 
     public boolean areDeathMessagesEnabled(UUID check) {
-        return (contains(check) ? getValue(check) : true);
+        return (contains(check) ? getValue(check) : !Foxtrot.getInstance().getMapHandler().isKitMap());
     }
 
 }
