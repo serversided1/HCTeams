@@ -32,7 +32,6 @@ public class StatsEntry {
         }
 
         modified = true;
-        Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
     }
 
     public void addDeath() {
@@ -40,7 +39,6 @@ public class StatsEntry {
         killstreak = 0;
 
         modified = true;
-        Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
     }
 
     public void clear() {
@@ -50,7 +48,6 @@ public class StatsEntry {
         highestKillstreak = 0;
 
         modified = true;
-        Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
     }
 
     public double getKD() {
