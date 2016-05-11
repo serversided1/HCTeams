@@ -14,8 +14,9 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
-import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.ItemUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
@@ -487,7 +488,7 @@ public class ServerHandler {
     }
 
     public void handleShopSign(Sign sign, Player player) {
-        ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : Basic.get().getItemDb().get(sign.getLine(2).toLowerCase().replace(" ", "")));
+        ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : ItemUtils.get(sign.getLine(2).toLowerCase().replace(" ", "")));
 
         if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));
@@ -505,23 +506,23 @@ public class ServerHandler {
                 return;
             }
 
-            if (Basic.get().getEconomyManager().getBalance(player.getName()) >= price) {
+            if (FrozenEconomyHandler.getBalance(player.getUniqueId()) >= price) {
 
-                if (Basic.get().getEconomyManager().getBalance(player.getName()) > 100000) {
+                if (FrozenEconomyHandler.getBalance(player.getUniqueId()) > 100000) {
                     player.sendMessage("§cYour balance is too high. Please contact an admin to do this.");
                     Bukkit.getLogger().severe("[ECONOMY] " + player.getName() + " tried to buy shit at spawn with over 100K." );
                     return;
                 }
 
 
-                if (Double.isNaN(Basic.get().getEconomyManager().getBalance(player.getName()))) {
-                    Basic.get().getEconomyManager().setBalance(player.getName(), 0);
+                if (Double.isNaN(FrozenEconomyHandler.getBalance(player.getUniqueId()))) {
+                    FrozenEconomyHandler.setBalance(player.getUniqueId(), 0);
                     player.sendMessage("§cYour balance was fucked, but we unfucked it.");
                     return;
                 }
 
                 if (player.getInventory().firstEmpty() != -1) {
-                    Basic.get().getEconomyManager().withdrawPlayer(player.getName(), price);
+                    FrozenEconomyHandler.withdraw(player.getUniqueId(), price);
 
                     itemStack.setAmount(amount);
                     player.getInventory().addItem(itemStack);
@@ -531,7 +532,7 @@ public class ServerHandler {
                             "§aBOUGHT§r " + amount,
                             "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(price),
                             "New Balance:",
-                            "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+                            "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) FrozenEconomyHandler.getBalance(player.getUniqueId()))
                     );
                 } else {
                     showSignPacket(player, sign,
@@ -577,13 +578,13 @@ public class ServerHandler {
                 removeItem(player, itemStack, amountInInventory);
                 player.updateInventory();
 
-                Basic.get().getEconomyManager().depositPlayer(player.getName(), totalPrice);
+                FrozenEconomyHandler.deposit(player.getUniqueId(), totalPrice);
 
                 showSignPacket(player, sign,
                         "§aSOLD§r " + amountInInventory,
                         "for §a$" + NumberFormat.getNumberInstance(Locale.US).format(totalPrice),
                         "New Balance:",
-                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) Basic.get().getEconomyManager().getBalance(player.getName()))
+                        "§a$" + NumberFormat.getNumberInstance(Locale.US).format((int) FrozenEconomyHandler.getBalance(player.getUniqueId()))
                 );
             }
         }

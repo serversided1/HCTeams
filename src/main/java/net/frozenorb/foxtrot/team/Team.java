@@ -18,7 +18,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
-import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.redis.RedisCommand;
 import net.frozenorb.qlib.serialization.LocationSerializer;
@@ -200,7 +200,7 @@ public class Team {
     public void disband() {
         try {
             if (owner != null) {
-                Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(owner), balance);
+                FrozenEconomyHandler.deposit(owner, balance);
                 Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + balance + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
             }
         } catch (Exception e) {

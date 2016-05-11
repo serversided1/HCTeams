@@ -69,7 +69,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mBasic</artifactId>
+			<artifactId>Basic</artifactId>
 			<version>LATEST</version>
 		</dependency>
 		<dependency>

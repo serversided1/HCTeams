@@ -4,9 +4,9 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -27,7 +27,7 @@ public class TeamDepositCommand {
             return;
         }
 
-        if (Basic.get().getEconomyManager().getBalance(sender.getName()) > 100000) {
+        if (FrozenEconomyHandler.getBalance(sender.getUniqueId()) > 100000) {
             sender.sendMessage("§cYour balance is too high to deposit money. Please contact an admin to do this.");
             Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to deposit " + amount + "to " + team);
             return;
@@ -38,12 +38,12 @@ public class TeamDepositCommand {
             return;
         }
 
-        if (Basic.get().getEconomyManager().getBalance(sender.getName()) < amount) {
+        if (FrozenEconomyHandler.getBalance(sender.getUniqueId()) < amount) {
             sender.sendMessage(ChatColor.RED + "You don't have enough money to do this!");
             return;
         }
 
-        Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), amount);
+        FrozenEconomyHandler.withdraw(sender.getUniqueId(), amount);
 
         sender.sendMessage(ChatColor.YELLOW + "You have added " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " to the team balance!");
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() + amount) + " [Amount: " + amount + ", Deposited by: " + sender.getName() + "]");
@@ -53,7 +53,7 @@ public class TeamDepositCommand {
 
     @Command(names={ "team deposit all", "t deposit all", "f deposit all", "faction deposit all", "fac deposit all", "team d all", "t d all", "f d all", "faction d all", "fac d all", "team m d all", "t m d all", "f m d all", "faction m d all", "fac m d all" }, permissionNode="")
     public static void teamDepositAll(Player sender) {
-        teamDeposit(sender, (float) Basic.get().getEconomyManager().getBalance(sender.getName()));
+        teamDeposit(sender, (float) FrozenEconomyHandler.getBalance(sender.getUniqueId()));
     }
 
 }

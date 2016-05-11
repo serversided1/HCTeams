@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
-import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -58,13 +57,13 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                     player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.RED + "Disabled!");
                     equippedPvPClass.remove(player);
                     PvPClass.removeInfiniteEffects(player);
-                } else if(!Freeze.isFrozen(player)){
+                } else if(!player.hasMetadata("frozen")){
                     equippedPvPClass.tick(player);
                 }
             } else {
                 // Start kit warmup
                 for (PvPClass pvpClass : pvpClasses) {
-                    if (pvpClass.qualifies(player.getInventory()) && pvpClass.canApply(player) && !Freeze.isFrozen(player)) {
+                    if (pvpClass.qualifies(player.getInventory()) && pvpClass.canApply(player) && !player.hasMetadata("frozen")) {
                         pvpClass.apply(player);
                         PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
 

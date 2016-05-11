@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -28,7 +27,7 @@ public class TeamHQCommand {
             return;
         }
 
-        if (Freeze.isFrozen(sender)) {
+        if (sender.hasMetadata("frozen")) {
             sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters while you're frozen!");
             return;
         }

@@ -2,12 +2,12 @@ package net.frozenorb.foxtrot.listener;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
@@ -274,9 +274,8 @@ public class CombatLoggerListener implements Listener {
             return;
         }
 
-        // If they're frozen
-        // TODO: Make this check if the server is frozen
-        if (Freeze.isFrozen(event.getPlayer())) {
+        // If they're frozen or the server is
+        if (event.getPlayer().hasMetadata("frozen") || Basic.getInstance().getServerManager().isFrozen()) {
             return;
         }
 

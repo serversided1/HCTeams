@@ -1,9 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +16,7 @@ public class PayCommand {
 
     @Command(names={ "Pay", "P2P" }, permissionNode="")
     public static void pay(Player sender, @Parameter(name="player") UUID player, @Parameter(name="amount") float amount) {
-        double balance = Basic.get().getEconomyManager().getBalance(sender.getName());
+        double balance = FrozenEconomyHandler.getBalance(sender.getUniqueId());
         Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 
         if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
@@ -55,8 +55,8 @@ public class PayCommand {
             return;
         }
 
-        Basic.get().getEconomyManager().depositPlayer(UUIDUtils.name(player), amount);
-        Basic.get().getEconomyManager().withdrawPlayer(sender.getName(), amount);
+        FrozenEconomyHandler.deposit(player, amount);
+        FrozenEconomyHandler.withdraw(sender.getUniqueId(), amount);
 
         sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + ".");
 

@@ -13,10 +13,10 @@ import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.mBasic.Basic;
-import net.frozenorb.mBasic.Utilities.Lag;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
+import net.frozenorb.qlib.util.TPSUtils;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
@@ -189,7 +189,7 @@ public class DeathTracker {
         playerData.put("Hunger", player.getFoodLevel());
         playerData.put("Team", teamData == null ? "N/A" : teamData);
         playerData.put("PotionEffects", potionEffects);
-        playerData.put("Balance", Basic.get().getEconomyManager().getBalance(player.getName()));
+        playerData.put("Balance", FrozenEconomyHandler.getBalance(player.getUniqueId()));
         playerData.put("GoppleCooldown", Foxtrot.getInstance().getOppleMap().getCooldown(player.getUniqueId()) > System.currentTimeMillis());
         playerData.put("PvPClass", PvPClassHandler.getEquippedKits().containsKey(player.getName()) ? PvPClassHandler.getEquippedKits().get(player.getName()).getName() : "N/A");
         playerData.put("HeldItem", player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR ? "N/A" : player.getItemInHand().getType().name());
@@ -205,7 +205,7 @@ public class DeathTracker {
         BasicDBObject serverData = new BasicDBObject();
 
         //serverData.put("Playercount", Foxtrot.getInstance().getServer().getOnlinePlayers().size());
-        serverData.put("TPS", Lag.getTPS());
+        serverData.put("TPS", TPSUtils.getTPS());
 
         return (serverData);
     }
