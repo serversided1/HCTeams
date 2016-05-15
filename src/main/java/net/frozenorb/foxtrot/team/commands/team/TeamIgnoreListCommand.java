@@ -10,7 +10,7 @@ import static org.bukkit.ChatColor.*;
 
 public class TeamIgnoreListCommand {
 
-    @Command(names = {"team ignore list", "t ignore list", "f ignore list", "faction ignore list", "fac ignore list"}, permissionNode = "")
+    @Command(names = {"team ignore list", "t ignore list", "f ignore list", "faction ignore list", "fac ignore list"}, permission = "")
     public static void ignoreTeam(Player sender) {
         Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

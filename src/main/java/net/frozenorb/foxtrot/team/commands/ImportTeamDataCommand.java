@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,8 +13,8 @@ import java.io.FileInputStream;
 
 public class ImportTeamDataCommand {
 
-    @Command(names={ "importteamdata" }, permissionNode="op")
-    public static void importTeamData(Player sender, @Parameter(name="file") String fileName) {
+    @Command(names={ "importteamdata" }, permission="op")
+    public static void importTeamData(Player sender, @Param(name="file") String fileName) {
         File file = new File(fileName);
 
         if (!file.exists()) {

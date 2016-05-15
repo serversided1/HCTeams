@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class TeamDisbandCommand {
 
-    @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permissionNode="")
+    @Command(names={ "team disband", "t disband", "f disband", "faction disband", "fac disband" }, permission="")
     public static void teamDisband(Player player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 

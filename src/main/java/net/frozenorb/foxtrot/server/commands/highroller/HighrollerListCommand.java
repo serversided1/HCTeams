@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class HighrollerListCommand {
 
-    @Command(names={ "highroller list", "highrollers list" }, permissionNode="op")
+    @Command(names={ "highroller list", "highrollers list" }, permission="op")
     public static void highrollerList(Player sender) {
         StringBuilder highRollers = new StringBuilder();
 

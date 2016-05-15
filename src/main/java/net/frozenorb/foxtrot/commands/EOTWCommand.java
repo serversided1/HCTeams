@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class EOTWCommand {
 
-    @Command(names={ "EOTW" }, permissionNode="op")
+    @Command(names={ "EOTW" }, permission="op")
     public static void eotw(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
@@ -38,7 +38,7 @@ public class EOTWCommand {
         }
     }
 
-    @Command(names={ "EOTW TpAll" }, permissionNode="op")
+    @Command(names={ "EOTW TpAll" }, permission="op")
     public static void eotwTpAll(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
@@ -57,7 +57,7 @@ public class EOTWCommand {
         sender.sendMessage(ChatColor.RED + "Players teleported.");
     }
 
-    @Command(names={ "PreEOTW" }, permissionNode="op")
+    @Command(names={ "PreEOTW" }, permission="op")
     public static void preeotw(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");

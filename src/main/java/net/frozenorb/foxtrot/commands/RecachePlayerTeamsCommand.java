@@ -10,14 +10,14 @@ import java.util.*;
 
 public class RecachePlayerTeamsCommand {
 
-    @Command(names={ "playerteamcache rebuild" }, permissionNode="op")
+    @Command(names={ "playerteamcache rebuild" }, permission="op")
     public static void recachePlayerTeamsRebuild(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Rebuilding player team cache...");
         Foxtrot.getInstance().getTeamHandler().recachePlayerTeams();
         sender.sendMessage(ChatColor.DARK_PURPLE + "The player death cache has been rebuilt.");
     }
 
-    @Command(names={ "playerteamcache check" }, permissionNode="op")
+    @Command(names={ "playerteamcache check" }, permission="op")
     public static void recachePlayerTeams(Player sender) {
         sender.sendMessage(ChatColor.DARK_PURPLE + "Checking player team cache...");
         Map<UUID, String> dealtWith = new HashMap<>();

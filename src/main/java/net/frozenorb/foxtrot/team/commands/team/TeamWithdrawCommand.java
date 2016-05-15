@@ -5,15 +5,15 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamWithdrawCommand {
 
-    @Command(names={ "team withdraw", "t withdraw", "f withdraw", "faction withdraw", "fac withdraw", "team w", "t w", "f w", "faction w", "fac w" }, permissionNode="")
-    public static void teamWithdraw(Player sender, @Parameter(name = "amount") float amount) {
+    @Command(names={ "team withdraw", "t withdraw", "f withdraw", "faction withdraw", "fac withdraw", "team w", "t w", "f w", "faction w", "fac w" }, permission="")
+    public static void teamWithdraw(Player sender, @Param(name = "amount") float amount) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

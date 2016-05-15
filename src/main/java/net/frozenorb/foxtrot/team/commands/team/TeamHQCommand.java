@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class TeamHQCommand {
 
-    @Command(names={ "team hq", "t hq", "f hq", "faction hq", "fac hq", "team home", "t home", "f home", "faction home", "fac home", "home", "hq" }, permissionNode="")
+    @Command(names={ "team hq", "t hq", "f hq", "faction hq", "fac hq", "team home", "t home", "f home", "faction home", "fac home", "home", "hq" }, permission="")
     public static void teamHQ(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

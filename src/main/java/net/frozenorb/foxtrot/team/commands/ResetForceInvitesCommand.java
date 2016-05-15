@@ -3,14 +3,14 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
 
 public class ResetForceInvitesCommand {
 
-    @Command(names = {"resetforceinvites all"}, permissionNode = "op")
+    @Command(names = {"resetforceinvites all"}, permission = "op")
     public static void resetforceinvites_all(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
@@ -45,8 +45,8 @@ public class ResetForceInvitesCommand {
         sender.beginConversation(con);
     }
 
-    @Command(names = "resetforceinvites", permissionNode = "op")
-    public static void resetforceinvites(Player sender, @Parameter(name = "team") Team team) {
+    @Command(names = "resetforceinvites", permission = "op")
+    public static void resetforceinvites(Player sender, @Param(name = "team") Team team) {
         team.setForceInvites(Team.MAX_FORCE_INVITES);
         sender.sendMessage(ChatColor.GREEN + team.getName() + " now has " + team.getForceInvites() + " force invites.");
     }

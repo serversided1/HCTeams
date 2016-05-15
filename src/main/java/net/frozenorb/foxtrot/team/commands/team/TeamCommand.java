@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class TeamCommand {
 
-    @Command(names={ "team", "t", "f", "faction", "fac" }, permissionNode="")
+    @Command(names={ "team", "t", "f", "faction", "fac" }, permission="")
     public static void team(Player sender) {
 
         String[] msg = {

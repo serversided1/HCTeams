@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class TeamSubclaimListCommand {
 
-    @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list", "team sub list", "t sub list", "f sub list", "faction sub list", "fac sub list" }, permissionNode="")
+    @Command(names={ "team subclaim list", "t subclaim list", "f subclaim list", "faction subclaim list", "fac subclaim list", "team sub list", "t sub list", "f sub list", "faction sub list", "fac sub list" }, permission="")
     public static void teamSubclaimList(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

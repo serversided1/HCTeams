@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.crates.commands;
 
 import net.frozenorb.foxtrot.crates.Crate;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,8 +13,8 @@ import static org.bukkit.ChatColor.RED;
 
 public class CrateCommand {
 
-    @Command(names = "crate", permissionNode = "op")
-    public static void onCreateKit(Player sender, @Parameter(name = "kit") String kit) {
+    @Command(names = "crate", permission = "op")
+    public static void onCreateKit(Player sender, @Param(name = "kit") String kit) {
         ItemStack enderChest = new ItemStack(Material.ENDER_CHEST, 1);
         ItemMeta itemMeta = enderChest.getItemMeta();
 

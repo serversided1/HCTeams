@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class BetrayerListCommand {
 
-    @Command(names = {"betrayer list", "betrayers"}, permissionNode = "")
+    @Command(names = {"betrayer list", "betrayers"}, permission = "")
     public static void betrayerList(Player sender) {
         StringBuilder betrayers = new StringBuilder();
 

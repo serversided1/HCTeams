@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public class SetBalCommand {
 
-    @Command(names={ "SetBal" }, permissionNode="foxtrot.setbal")
-    public static void setBal(CommandSender sender, @Parameter(name="player") UUID player, @Parameter(name="amount") float amount) {
+    @Command(names={ "SetBal" }, permission="foxtrot.setbal")
+    public static void setBal(CommandSender sender, @Param(name="player") UUID player, @Param(name="amount") float amount) {
         if (amount > 10000 && sender instanceof Player && !sender.isOp()) {
             sender.sendMessage("§cYou cannot set a balance this high. This action has been logged.");
             return;

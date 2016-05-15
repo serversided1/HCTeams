@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class ForceLeaveCommand {
 
-    @Command(names={ "forceleave" }, permissionNode="foxtrot.forceleave")
+    @Command(names={ "forceleave" }, permission="foxtrot.forceleave")
     public static void forceLeave(Player player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 

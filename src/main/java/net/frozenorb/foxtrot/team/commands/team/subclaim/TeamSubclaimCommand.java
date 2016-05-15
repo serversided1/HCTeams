@@ -46,7 +46,7 @@ public class TeamSubclaimCommand implements Listener {
         SELECTION_WAND.setItemMeta(meta);
     }
 
-    @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim", "team sub", "t sub", "f sub", "faction sub", "fac sub" }, permissionNode="")
+    @Command(names={ "team subclaim", "t subclaim", "f subclaim", "faction subclaim", "fac subclaim", "team sub", "t sub", "f sub", "faction sub", "fac sub" }, permission="")
     public static void teamSubclaim(Player sender) {
         sender.sendMessage(ChatColor.RED + "/t subclaim start - starts the subclaiming process");
         sender.sendMessage(ChatColor.RED + "/t subclaim map - toggles a visual subclaim map");

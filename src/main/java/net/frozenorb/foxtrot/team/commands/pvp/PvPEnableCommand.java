@@ -2,14 +2,14 @@ package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PvPEnableCommand {
 
-    @Command(names={ "pvptimer enable", "timer enable", "pvp enable", "pvptimer remove", "timer remove", "pvp remove" }, permissionNode="")
-    public static void pvpEnable(Player sender, @Parameter(name="target", defaultValue="self") Player target) {
+    @Command(names={ "pvptimer enable", "timer enable", "pvp enable", "pvptimer remove", "timer remove", "pvp remove" }, permission="")
+    public static void pvpEnable(Player sender, @Param(name="target", defaultValue="self") Player target) {
         if (target != sender && !sender.isOp()) {
             sender.sendMessage(ChatColor.RED + "No permission.");
             return;

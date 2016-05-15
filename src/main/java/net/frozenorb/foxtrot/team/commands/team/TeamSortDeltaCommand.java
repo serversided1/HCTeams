@@ -1,6 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -10,8 +10,8 @@ public class TeamSortDeltaCommand {
     public static final float KB_MAX = 0.5F;
     public static final float KB_MIN = -0.5F;
 
-    @Command(names={ "team sortdelta" }, permissionNode="op")
-    public static void teamSortDelta(Player sender, @Parameter(name="team") Player player, @Parameter(name="delta") float mod) {
+    @Command(names={ "team sortdelta" }, permission="op")
+    public static void teamSortDelta(Player sender, @Param(name="team") Player player, @Param(name="delta") float mod) {
         if (mod > KB_MAX) {
             sender.sendMessage(ChatColor.RED + "The modifier you entered (" + mod + ") was greater than the max (" + KB_MAX + ") - it has been reduced.");
             mod = KB_MAX;

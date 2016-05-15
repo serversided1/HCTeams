@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class CSVExportCommand {
 
-    @Command(names={ "csvexport" }, permissionNode="op")
+    @Command(names={ "csvexport" }, permission="op")
     public static void csvExport(Player sender) {
         try (FileWriter fileWriter = new FileWriter("export.csv")) {
             fileWriter.append("Name,HasTeam,TeamBalance,TeamSize,CoalMined,DiamondMined,EmeraldMined,FishingKitUses,FriendLives,GoldMined,IronMined,Kills,LapisMined,Playtime,RedstoneMined,SoulboundLives,Balance,Whitelisted,OP").append('\n');

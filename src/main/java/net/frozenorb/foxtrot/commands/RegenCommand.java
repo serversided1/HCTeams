@@ -3,15 +3,15 @@ package net.frozenorb.foxtrot.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class RegenCommand {
 
-    @Command(names={ "Regen", "DTR" }, permissionNode="")
-    public static void regen(Player sender, @Parameter(name="team", defaultValue="self") Team team) {
+    @Command(names={ "Regen", "DTR" }, permission="")
+    public static void regen(Player sender, @Param(name="team", defaultValue="self") Team team) {
         if (!sender.isOp()) {
             team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
         }

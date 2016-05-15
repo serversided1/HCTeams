@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class TeamSubclaimMapCommand {
 
-    @Command(names={ "team subclaim map", "t subclaim map", "f subclaim map", "faction subclaim map", "fac subclaim map", "team sub map", "t sub map", "f sub map", "faction sub map", "fac sub map" }, permissionNode="")
+    @Command(names={ "team subclaim map", "t subclaim map", "f subclaim map", "faction subclaim map", "fac subclaim map", "team sub map", "t sub map", "f sub map", "faction sub map", "fac sub map" }, permission="")
     public static void teamSubclaimMap(Player sender) {
         (new VisualClaim(sender, VisualClaimType.SUBCLAIM_MAP, false)).draw(false);
     }

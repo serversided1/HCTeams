@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class GoppleCommand {
 
-    @Command(names={ "Gopple", "Opple", "GoppleTime", "OppleTime", "GoppleTimer", "OppleTimer" }, permissionNode="")
+    @Command(names={ "Gopple", "Opple", "GoppleTime", "OppleTime", "GoppleTimer", "OppleTimer" }, permission="")
     public static void gopple(Player sender) {
         if (Foxtrot.getInstance().getOppleMap().isOnCooldown(sender.getUniqueId())) {
             long millisLeft = Foxtrot.getInstance().getOppleMap().getCooldown(sender.getUniqueId()) - System.currentTimeMillis();

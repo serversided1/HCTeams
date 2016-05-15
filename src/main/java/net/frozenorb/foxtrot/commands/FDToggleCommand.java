@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class FDToggleCommand {
 
-    @Command(names={ "FD Toggle", "ToggleFoundDiamonds", "ToggleFD" }, permissionNode="")
+    @Command(names={ "FD Toggle", "ToggleFoundDiamonds", "ToggleFD" }, permission="")
     public static void fdToggle(Player sender) {
         boolean val = !Foxtrot.getInstance().getToggleFoundDiamondsMap().isFoundDiamondToggled(sender.getUniqueId());
 

@@ -7,12 +7,12 @@ import org.bukkit.entity.Player;
 
 public class TeamMapCommand {
 
-    @Command(names={ "team map", "t map", "f map", "faction map", "fac map", "map" }, permissionNode="")
+    @Command(names={ "team map", "t map", "f map", "faction map", "fac map", "map" }, permission="")
     public static void teamMap(Player sender) {
         (new VisualClaim(sender, VisualClaimType.MAP, false)).draw(false);
     }
 
-//    @Command(names={ "team map surface", "t map surface", "f map surface", "faction map surface", "fac map surface", "map surface" }, permissionNode="")
+//    @Command(names={ "team map surface", "t map surface", "f map surface", "faction map surface", "fac map surface", "map surface" }, permission="")
 //    public static void teamMapSurface(Player sender) {
 //        (new VisualClaim(sender, VisualClaimType.SURFACE_MAP, false)).draw(false);
 //    }

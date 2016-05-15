@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class TeamSubclaimStartCommand {
 
-    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim start", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub start", "faction sub start", "fac sub start" }, permissionNode="")
+    @Command(names={ "team subclaim start", "t subclaim start", "f subclaim start", "faction subclaim start", "fac subclaim start", "team sub start", "t sub start", "f sub start", "faction sub start", "fac sub start" }, permission="")
     public static void teamSubclaimStart(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

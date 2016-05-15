@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
@@ -16,8 +16,8 @@ import java.util.UUID;
 
 public class StatsCommand {
 
-    @Command(names = {"stats"}, permissionNode = "")
-    public static void stats(CommandSender sender, @Parameter(name = "player", defaultValue = "self") UUID uuid) {
+    @Command(names = {"stats"}, permission = "")
+    public static void stats(CommandSender sender, @Param(name = "player", defaultValue = "self") UUID uuid) {
         StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(uuid);
 
         if (stats == null) {
@@ -38,7 +38,7 @@ public class StatsCommand {
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));
     }
 
-    @Command(names = {"clearallstats"}, permissionNode = "op")
+    @Command(names = {"clearallstats"}, permission = "op")
     public static void clearallstats(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 

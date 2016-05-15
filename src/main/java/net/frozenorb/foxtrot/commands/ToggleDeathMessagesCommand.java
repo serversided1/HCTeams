@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class ToggleDeathMessagesCommand {
 
-    @Command(names = {"toggledeathmessages", "tdm"}, permissionNode = "")
+    @Command(names = {"toggledeathmessages", "tdm"}, permission = "")
     public static void toggledeathmessages(Player sender) {
         boolean val = !Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(sender.getUniqueId());
 

@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public class ForceLeaderCommand {
 
-    @Command(names={ "ForceLeader" }, permissionNode="foxtrot.forceleader")
-    public static void forceLeader(Player sender, @Parameter(name="player", defaultValue="self") UUID player) {
+    @Command(names={ "ForceLeader" }, permission="foxtrot.forceleader")
+    public static void forceLeader(Player sender, @Param(name="player", defaultValue="self") UUID player) {
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (playerTeam == null) {

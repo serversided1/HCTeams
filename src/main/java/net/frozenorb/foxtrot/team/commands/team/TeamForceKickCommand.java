@@ -6,7 +6,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
@@ -17,8 +17,8 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class TeamForceKickCommand {
 
-    @Command(names = {"team forcekick", "t forcekick", "f forcekick", "faction forcekick", "fac forcekick"}, permissionNode = "")
-    public static void teamForceKick(Player sender, @Parameter(name = "player") UUID player) {
+    @Command(names = {"team forcekick", "t forcekick", "f forcekick", "faction forcekick", "fac forcekick"}, permission = "")
+    public static void teamForceKick(Player sender, @Param(name = "player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

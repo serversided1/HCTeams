@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,8 +15,8 @@ import java.util.UUID;
 
 public class TeamUninviteCommand {
 
-    @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permissionNode="")
-    public static void teamUninvite(final Player sender, @Parameter(name="all | player") final String allPlayer) {
+    @Command(names={ "team uninvite", "t uninvite", "f uninvite", "faction uninvite", "fac uninvite", "team revoke", "t revoke", "f revoke", "faction revoke", "fac revoke" }, permission="")
+    public static void teamUninvite(final Player sender, @Param(name="all | player") final String allPlayer) {
         final Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

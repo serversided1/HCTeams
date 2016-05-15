@@ -14,7 +14,7 @@ public class ChestCommand {
 
     @Getter private static final Set<UUID> BYPASS = new HashSet<>();
 
-    @Command(names = {"chest"}, permissionNode = "")
+    @Command(names = {"chest"}, permission = "")
     public static void chest(Player sender) {
         if (!DTRBitmask.SAFE_ZONE.appliesAt(sender.getLocation())) {
             sender.sendMessage(ChatColor.RED + "You can only do this at spawn.");

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class TagMeCommand {
 
-    @Command(names={ "tagme" }, permissionNode="op")
+    @Command(names={ "tagme" }, permission="op")
     public static void tagMe(Player sender) {
         SpawnTagHandler.addSeconds(sender, SpawnTagHandler.MAX_SPAWN_TAG);
     }

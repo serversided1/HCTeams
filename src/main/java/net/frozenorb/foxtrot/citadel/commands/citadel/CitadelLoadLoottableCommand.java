@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class CitadelLoadLoottableCommand {
 
-    @Command(names={"citadel loadloottable"}, permissionNode="op")
+    @Command(names={"citadel loadloottable"}, permission="op")
     public static void citadelLoadLoottable(Player sender) {
         sender.getInventory().clear();
         int itemIndex = 0;

@@ -12,7 +12,7 @@ import static org.bukkit.ChatColor.*;
 
 public class KOTHListCommand {
 
-    @Command(names={ "KOTH List" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH List" }, permission="foxtrot.koth")
     public static void kothList(Player sender) {
         if(Foxtrot.getInstance().getKOTHHandler().getKOTHs().isEmpty()) {
             sender.sendMessage(RED + "There aren't any KOTHs set.");

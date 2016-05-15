@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
@@ -16,8 +16,8 @@ import java.util.UUID;
 
 public class LastInvCommand {
 
-    @Command(names={ "lastinv" }, permissionNode="foxtrot.lastinv")
-    public static void lastInv(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names={ "lastinv" }, permission="foxtrot.lastinv")
+    public static void lastInv(Player sender, @Param(name="player") UUID player) {
         new BukkitRunnable() {
 
             public void run() {

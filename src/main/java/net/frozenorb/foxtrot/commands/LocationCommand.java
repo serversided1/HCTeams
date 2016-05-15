@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class LocationCommand {
 
-    @Command(names={ "Location", "Here", "WhereAmI", "Loc" }, permissionNode="")
+    @Command(names={ "Location", "Here", "WhereAmI", "Loc" }, permission="")
     public static void location(Player sender) {
         Location loc = sender.getLocation();
         Team owner = LandBoard.getInstance().getTeam(loc);

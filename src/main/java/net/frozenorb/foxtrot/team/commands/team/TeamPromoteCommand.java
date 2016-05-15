@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,8 +12,8 @@ import java.util.UUID;
 
 public class TeamPromoteCommand {
 
-    @Command(names={ "team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain", "team mod", "t mod", "f mod", "faction mod", "fac mod" }, permissionNode="")
-    public static void teamPromote(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names={ "team promote", "t promote", "f promote", "faction promote", "fac promote", "team captain", "t captain", "f captain", "faction captain", "fac captain", "team mod", "t mod", "f mod", "faction mod", "fac mod" }, permission="")
+    public static void teamPromote(Player sender, @Param(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

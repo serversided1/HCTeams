@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class TeamInvitesCommand {
 
-    @Command(names={ "team invites", "t invites", "f invites", "faction invites", "fac invites" }, permissionNode="")
+    @Command(names={ "team invites", "t invites", "f invites", "faction invites", "fac invites" }, permission="")
     public static void teamInvites(Player sender) {
         StringBuilder yourInvites = new StringBuilder();
 

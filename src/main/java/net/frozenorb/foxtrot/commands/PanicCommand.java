@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class PanicCommand {
 
-    @Command(names={ "panic", "p" }, permissionNode="foxtrot.panic")
+    @Command(names={ "panic", "p" }, permission="foxtrot.panic")
     public static void panic(Player sender) {
         if (sender.hasMetadata("frozen")) {
             Basic.getInstance().getServerManager().unfreeze(sender.getUniqueId());

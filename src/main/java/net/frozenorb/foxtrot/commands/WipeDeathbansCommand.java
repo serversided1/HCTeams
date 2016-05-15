@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class WipeDeathbansCommand {
 
-    @Command(names={ "WipeDeathbans" }, permissionNode="op")
+    @Command(names={ "WipeDeathbans" }, permission="op")
     public static void wipeDeathbans(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 

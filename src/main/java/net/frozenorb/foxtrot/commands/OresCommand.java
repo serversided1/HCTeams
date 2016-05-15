@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public class OresCommand {
 
-    @Command(names={ "Ores" }, permissionNode="")
-    public static void ores(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names={ "Ores" }, permission="")
+    public static void ores(Player sender, @Param(name="player") UUID player) {
         sender.sendMessage(ChatColor.AQUA + "Diamond mined: " + ChatColor.WHITE + Foxtrot.getInstance().getDiamondMinedMap().getMined(player));
         sender.sendMessage(ChatColor.GREEN + "Emerald mined: " + ChatColor.WHITE + Foxtrot.getInstance().getEmeraldMinedMap().getMined(player));
         sender.sendMessage(ChatColor.RED + "Redstone mined: " + ChatColor.WHITE + Foxtrot.getInstance().getRedstoneMinedMap().getMined(player));

@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public class PvPAddLivesCommand {
 
-    @Command(names = {"pvptimer addlives", "timer addlives", "pvp addlives", "pvptimer addlives", "timer addlives", "pvp addlives"}, permissionNode = "worldedit.*")
-    public static void pvpSetLives(CommandSender sender, @Parameter(name = "player") UUID player, @Parameter(name = "life type") String lifeType, @Parameter(name = "amount") int amount) {
+    @Command(names = {"pvptimer addlives", "timer addlives", "pvp addlives", "pvptimer addlives", "timer addlives", "pvp addlives"}, permission = "worldedit.*")
+    public static void pvpSetLives(CommandSender sender, @Param(name = "player") UUID player, @Param(name = "life type") String lifeType, @Param(name = "amount") int amount) {
         if (lifeType.equalsIgnoreCase("soulbound")) {
             Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + amount);
             sender.sendMessage(ChatColor.YELLOW + "Gave " + ChatColor.GREEN + UUIDUtils.name(player) + ChatColor.YELLOW + " " + amount + " soulbound lives.");

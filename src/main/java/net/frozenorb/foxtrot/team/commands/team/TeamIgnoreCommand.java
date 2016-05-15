@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,8 +13,8 @@ import static org.bukkit.ChatColor.*;
 
 public class TeamIgnoreCommand {
 
-    @Command(names = {"team ignore", "t ignore", "f ignore", "faction ignore", "fac ignore"}, permissionNode = "")
-    public static void ignoreTeam(Player sender, @Parameter(name = "team") String target) {
+    @Command(names = {"team ignore", "t ignore", "f ignore", "faction ignore", "fac ignore"}, permission = "")
+    public static void ignoreTeam(Player sender, @Param(name = "team") String target) {
         Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
         Team targetTeam = Foxtrot.getInstance().getTeamHandler().getTeam(target);
 

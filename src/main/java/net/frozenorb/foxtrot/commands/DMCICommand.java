@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 
 public class DMCICommand {
 
-    @Command(names={ "dmci" }, permissionNode="op")
+    @Command(names={ "dmci" }, permission="op")
     public static void dmci(Player sender) {
         Chunk chunk = sender.getLocation().getChunk();
         CraftChunk cChunk = (CraftChunk) chunk;

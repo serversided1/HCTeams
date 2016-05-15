@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 
 public class KillstreaksCommand {
 
-    @Command(names = {"killstreaks", "ks", "killstreak"}, permissionNode = "")
+    @Command(names = {"killstreaks", "ks", "killstreak"}, permission = "")
     public static void killstreaks(CommandSender sender) {
 
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));

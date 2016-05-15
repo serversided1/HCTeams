@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class KOTHHelpCommand {
 
-    @Command(names={ "KOTH Help" }, permissionNode="foxtrot.koth")
+    @Command(names={ "KOTH Help" }, permission="foxtrot.koth")
     public static void kothHelp(Player sender) {
         sender.sendMessage(ChatColor.RED + "/koth list - Lists KOTHs");
         sender.sendMessage(ChatColor.RED + "/koth activate <name> - Activates a KOTH");

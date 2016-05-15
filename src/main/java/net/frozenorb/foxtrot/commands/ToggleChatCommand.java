@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class ToggleChatCommand {
 
-    @Command(names={ "ToggleChat", "ToggleGlobalChat", "TGC" }, permissionNode="")
+    @Command(names={ "ToggleChat", "ToggleGlobalChat", "TGC" }, permission="")
     public static void toggleChat(Player sender) {
         boolean val = !Foxtrot.getInstance().getToggleGlobalChatMap().isGlobalChatToggled(sender.getUniqueId());
 

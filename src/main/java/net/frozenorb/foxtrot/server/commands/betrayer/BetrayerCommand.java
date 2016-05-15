@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class BetrayerCommand {
 
-    @Command(names = {"betrayer"}, permissionNode = "op")
+    @Command(names = {"betrayer"}, permission = "op")
     public static void betrayer(Player sender) {
         String[] msges = {
                 "§c/betrayer list - Shows all betrayers.",

@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -16,8 +16,8 @@ import java.util.UUID;
 public class AssociateAccounts {
 
 
-    @Command(names={ "ass", "associate" }, permissionNode="op")
-    public static void associate(Player sender, @Parameter(name="player") UUID player, @Parameter(name = "associate") UUID playertwo) {
+    @Command(names={ "ass", "associate" }, permission="op")
+    public static void associate(Player sender, @Param(name="player") UUID player, @Param(name = "associate") UUID playertwo) {
         if(Foxtrot.getInstance().getWhitelistedIPMap().contains(player)) {
             UUID other = Foxtrot.getInstance().getWhitelistedIPMap().get(player);
             Foxtrot.getInstance().getWhitelistedIPMap().add(playertwo, other);

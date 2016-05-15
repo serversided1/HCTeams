@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.server.commands.betrayer;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,8 +14,8 @@ import static org.bukkit.ChatColor.*;
 
 public class BetrayerAddCommand {
 
-    @Command(names = {"betrayer add"}, permissionNode = "op")
-    public static void betrayerAdd(Player sender, @Parameter(name = "player") UUID player, @Parameter(name = "reason", wildcard=true) String reason) {
+    @Command(names = {"betrayer add"}, permission = "op")
+    public static void betrayerAdd(Player sender, @Param(name = "player") UUID player, @Param(name = "reason", wildcard=true) String reason) {
         if (Foxtrot.getInstance().getServerHandler().getBetrayer(player) == null) {
             Betrayer betrayer = new Betrayer(player, sender.getUniqueId(), reason);
             Foxtrot.getInstance().getServerHandler().getBetrayers().add(betrayer);

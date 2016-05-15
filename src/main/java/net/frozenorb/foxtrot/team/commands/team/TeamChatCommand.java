@@ -4,14 +4,14 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamChatCommand {
 
-    @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permissionNode="")
-    public static void teamChat(Player sender, @Parameter(name="chat mode", defaultValue="toggle") String chatMode) {
+    @Command(names={ "team chat", "t chat", "f chat", "faction chat", "fac chat", "team c", "t c", "f c", "faction c", "fac c", "mc" }, permission="")
+    public static void teamChat(Player sender, @Param(name="chat mode", defaultValue="toggle") String chatMode) {
         ChatMode parsedChatMode = null;
 
         if (chatMode.equalsIgnoreCase("t") || chatMode.equalsIgnoreCase("team") || chatMode.equalsIgnoreCase("f") || chatMode.equalsIgnoreCase("fac") || chatMode.equalsIgnoreCase("faction") || chatMode.equalsIgnoreCase("fc")) {
@@ -25,12 +25,12 @@ public class TeamChatCommand {
         setChat(sender, parsedChatMode);
     }
 
-    @Command(names={ "fc", "tc" }, permissionNode="")
+    @Command(names={ "fc", "tc" }, permission="")
     public static void fc(Player sender) {
         setChat(sender, ChatMode.TEAM);
     }
 
-    @Command(names={ "gc", "pc" }, permissionNode="")
+    @Command(names={ "gc", "pc" }, permission="")
     public static void gc(Player sender) {
         setChat(sender, ChatMode.PUBLIC);
     }

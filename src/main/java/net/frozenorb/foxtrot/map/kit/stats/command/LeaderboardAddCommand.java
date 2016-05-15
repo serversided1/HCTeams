@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.map.kit.stats.command;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 
 public class LeaderboardAddCommand {
 
-    @Command(names = {"leaderboard add"}, permissionNode = "op")
-    public static void leaderboardAdd(Player sender, @Parameter(name = "place") int place) {
+    @Command(names = {"leaderboard add"}, permission = "op")
+    public static void leaderboardAdd(Player sender, @Param(name = "place") int place) {
         Block block = sender.getTargetBlock(null, 10);
 
         if (block == null || !(block.getState() instanceof Skull || block.getState() instanceof Sign)) {
@@ -42,7 +42,7 @@ public class LeaderboardAddCommand {
         }
     }
 
-    @Command(names = {"clearleaderboards"}, permissionNode = "op")
+    @Command(names = {"clearleaderboards"}, permission = "op")
     public static void clearallstats(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 

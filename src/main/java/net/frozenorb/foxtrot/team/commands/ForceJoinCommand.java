@@ -3,14 +3,14 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ForceJoinCommand {
 
-    @Command(names={ "ForceJoin" }, permissionNode="foxtrot.forcejoin")
-    public static void forceJoin(Player sender, @Parameter(name="team") Team team, @Parameter(name="player", defaultValue="self") Player player) {
+    @Command(names={ "ForceJoin" }, permission="foxtrot.forcejoin")
+    public static void forceJoin(Player sender, @Param(name="team") Team team, @Param(name="player", defaultValue="self") Player player) {
         if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
             if (player == sender) {
                 sender.sendMessage(ChatColor.RED + "Leave your current team before attempting to forcejoin.");

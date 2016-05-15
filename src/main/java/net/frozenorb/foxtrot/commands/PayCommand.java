@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
@@ -14,8 +14,8 @@ import java.util.UUID;
 
 public class PayCommand {
 
-    @Command(names={ "Pay", "P2P" }, permissionNode="")
-    public static void pay(Player sender, @Parameter(name="player") UUID player, @Parameter(name="amount") float amount) {
+    @Command(names={ "Pay", "P2P" }, permission="")
+    public static void pay(Player sender, @Param(name="player") UUID player, @Param(name="amount") float amount) {
         double balance = FrozenEconomyHandler.getBalance(sender.getUniqueId());
         Player bukkitPlayer = Foxtrot.getInstance().getServer().getPlayer(player);
 

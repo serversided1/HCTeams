@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -14,8 +14,8 @@ import java.util.Date;
 
 public class ExportTeamDataCommand {
 
-    @Command(names={ "exportteamdata" }, permissionNode="op")
-    public static void exportTeamData(Player sender, @Parameter(name="file") String fileName) {
+    @Command(names={ "exportteamdata" }, permission="op")
+    public static void exportTeamData(Player sender, @Param(name="file") String fileName) {
         File file = new File(fileName);
 
         if (file.exists()) {

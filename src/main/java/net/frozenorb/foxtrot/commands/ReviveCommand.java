@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.commands;
 import com.google.common.io.Files;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +16,8 @@ import java.util.UUID;
 
 public class ReviveCommand {
 
-    @Command(names={ "Revive" }, permissionNode="worldedit.*")
-    public static void revive(CommandSender sender, @Parameter(name="player") UUID player, @Parameter(name="reason", wildcard=true) String reason) {
+    @Command(names={ "Revive" }, permission="worldedit.*")
+    public static void revive(CommandSender sender, @Param(name="player") UUID player, @Param(name="reason", wildcard=true) String reason) {
         if (reason.equals(".")) {
             sender.sendMessage(ChatColor.RED + ". is not a good reason...");
             return;

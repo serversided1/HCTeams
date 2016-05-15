@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class ToggleEndCommand {
 
-    @Command(names={ "ToggleEnd" }, permissionNode="foxtrot.toggleend")
+    @Command(names={ "ToggleEnd" }, permission="foxtrot.toggleend")
     public static void toggleEnd(Player sender) {
         EndListener.endActive = !EndListener.endActive;
         sender.sendMessage(ChatColor.YELLOW + "End enabled? " + ChatColor.LIGHT_PURPLE + (EndListener.endActive ? "Yes" : "No"));

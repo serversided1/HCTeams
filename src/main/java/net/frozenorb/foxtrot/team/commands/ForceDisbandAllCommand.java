@@ -14,7 +14,7 @@ public class ForceDisbandAllCommand {
 
     private static Runnable confirmRunnable;
 
-    @Command(names={ "forcedisbandall" }, permissionNode="op")
+    @Command(names={ "forcedisbandall" }, permission="op")
     public static void forceDisbandAll(CommandSender sender) {
         if (!(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(ChatColor.RED + "No permission.");
@@ -38,7 +38,7 @@ public class ForceDisbandAllCommand {
         sender.sendMessage(ChatColor.RED + "Are you sure you want to disband all factions? Type " + ChatColor.DARK_RED + "/forcedisbandall confirm" + ChatColor.RED + " to confirm or " + ChatColor.GREEN + "/forcedisbandall cancel" + ChatColor.RED +" to cancel.");
     }
 
-    @Command(names = {"forcedisbandall confirm"}, permissionNode = "op")
+    @Command(names = {"forcedisbandall confirm"}, permission = "op")
     public static void confirm(CommandSender sender) {
         if (!(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(ChatColor.RED + "No permission.");
@@ -54,7 +54,7 @@ public class ForceDisbandAllCommand {
         confirmRunnable.run();
     }
 
-    @Command(names = {"forcedisbandall cancel"}, permissionNode = "op")
+    @Command(names = {"forcedisbandall cancel"}, permission = "op")
     public static void cancel(CommandSender sender) {
         if (!(sender instanceof ConsoleCommandSender)) {
             sender.sendMessage(ChatColor.RED + "No permission.");

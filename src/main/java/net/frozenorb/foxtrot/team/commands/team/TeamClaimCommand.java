@@ -47,7 +47,7 @@ public class TeamClaimCommand implements Listener {
         SELECTION_WAND.setItemMeta(meta);
     }
 
-    @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permissionNode="")
+    @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permission="")
     public static void teamClaim(final Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

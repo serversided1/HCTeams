@@ -12,7 +12,7 @@ import static net.frozenorb.foxtrot.server.Deathban.*;
 
 public class HelpCommand {
 
-    @Command(names={ "Help" }, permissionNode="")
+    @Command(names={ "Help" }, permission="")
     public static void help(Player sender) {
          String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
          String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();

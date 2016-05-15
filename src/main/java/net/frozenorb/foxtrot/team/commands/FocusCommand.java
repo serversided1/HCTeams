@@ -4,15 +4,15 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class FocusCommand {
 
-    @Command(names={ "focus" }, permissionNode="")
-    public static void focus(Player sender, @Parameter(name="player") Player target) {
+    @Command(names={ "focus" }, permission="")
+    public static void focus(Player sender, @Param(name="player") Player target) {
         Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
         Team targetTeam = Foxtrot.getInstance().getTeamHandler().getTeam(target);
 

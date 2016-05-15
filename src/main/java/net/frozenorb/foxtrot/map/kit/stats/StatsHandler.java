@@ -80,7 +80,7 @@ public class StatsHandler implements Listener {
 
         Bukkit.getPluginManager().registerEvents(this, Foxtrot.getInstance());
 
-        FrozenCommandHandler.loadCommandsFromPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.stats.command");
+        FrozenCommandHandler.registerPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.stats.command");
 
         FrozenCommandHandler.registerParameterType(StatsTopCommand.StatsObjective.class, new ParameterType<StatsTopCommand.StatsObjective>() {
 

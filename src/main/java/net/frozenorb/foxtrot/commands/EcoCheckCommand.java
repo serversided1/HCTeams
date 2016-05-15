@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class EcoCheckCommand {
 
-    @Command(names={ "ecocheck" }, permissionNode="op")
+    @Command(names={ "ecocheck" }, permission="op")
     public static void ecoCheck(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");

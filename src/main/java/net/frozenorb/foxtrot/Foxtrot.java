@@ -156,14 +156,14 @@ public class Foxtrot extends JavaPlugin {
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
 
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.citadel");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.commands");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.glowmtn.commands");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.crates.commands");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.conquest");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.koth");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.server");
-        FrozenCommandHandler.loadCommandsFromPackage(this, "net.frozenorb.foxtrot.team");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.citadel");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.commands");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.glowmtn.commands");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.crates.commands");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.conquest");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.koth");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.server");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.team");
 
         DeathMessageHandler.init();
         DTRHandler.loadDTR();

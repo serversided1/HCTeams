@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class StatsTopCommand {
 
-    @Command(names = {"statstop", "leaderboards"}, permissionNode = "")
-    public static void statstop(CommandSender sender, @Parameter(name = "objective", defaultValue = "kills") StatsObjective objective) {
+    @Command(names = {"statstop", "leaderboards"}, permission = "")
+    public static void statstop(CommandSender sender, @Param(name = "objective", defaultValue = "kills") StatsObjective objective) {
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));
         sender.sendMessage(ChatColor.YELLOW + "Leaderboards for: " + ChatColor.RED + objective.getName());
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));

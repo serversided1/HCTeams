@@ -2,14 +2,14 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class TeamSaveStringCommand {
 
-    @Command(names={ "team savestring", "t savestring", "f savestring", "faction savestring", "fac savestring" }, permissionNode="op")
-    public static void teamSaveString(CommandSender sender, @Parameter(name="team", defaultValue="self") Team team) {
+    @Command(names={ "team savestring", "t savestring", "f savestring", "faction savestring", "fac savestring" }, permission="op")
+    public static void teamSaveString(CommandSender sender, @Param(name="team", defaultValue="self") Team team) {
         String saveString = team.saveString(false);
 
         sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + "Save String (" + team.getName() + ")");

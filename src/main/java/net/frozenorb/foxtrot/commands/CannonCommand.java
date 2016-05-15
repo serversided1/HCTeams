@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,13 +21,13 @@ public class CannonCommand {
     public static final int SPAWN_CANNON_MAX_DISTANCE = 600;
     public static final int SPAWN_CANNON_MIN_DISTANCE = 100;
 
-    @Command(names={ "cannon" }, permissionNode="")
+    @Command(names={ "cannon" }, permission="")
     public static void cannon(Player sender) {
         sender.sendMessage(ChatColor.RED + "/cannon launch - cannons to random coordinates");
         sender.sendMessage(ChatColor.RED + "/cannon aim <x> <z> - cannons to the given coordinate");
     }
 
-    @Command(names={ "cannon launch", "spawncannon launch" }, permissionNode="")
+    @Command(names={ "cannon launch", "spawncannon launch" }, permission="")
     public static void cannonLaunch(Player sender) {
         if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
             sender.sendMessage(ChatColor.RED + "Spawn cannon disabled: Server is in EOTW mode.");
@@ -53,8 +53,8 @@ public class CannonCommand {
         spawnCannon(sender, x, z);
     }
 
-    @Command(names={ "cannon aim", "spawncannon aim" }, permissionNode="foxtrot.spawncannon.aim")
-    public static void cannonAim(Player sender, @Parameter(name="x") int x, @Parameter(name="z") int z) {
+    @Command(names={ "cannon aim", "spawncannon aim" }, permission="foxtrot.spawncannon.aim")
+    public static void cannonAim(Player sender, @Param(name="x") int x, @Param(name="z") int z) {
         if (Foxtrot.getInstance().getServerHandler().isEOTW()) {
             sender.sendMessage(ChatColor.RED + "Spawn cannon disabled: Server is in EOTW mode.");
             return;

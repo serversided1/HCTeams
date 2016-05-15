@@ -6,7 +6,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,8 +21,8 @@ public class TeamShadowMuteCommand {
 
     @Getter public static Map<UUID, String> teamShadowMutes = new HashMap<>();
 
-    @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permissionNode="foxtrot.mutefaction")
-    public static void teamShadowMute(Player sender, @Parameter(name = "team") final Team team, @Parameter(name = "time") int time) {
+    @Command(names={ "team shadowmute", "t shadowmute", "f shadowmute", "faction shadowmute", "fac shadowmute" }, permission="foxtrot.mutefaction")
+    public static void teamShadowMute(Player sender, @Param(name = "team") final Team team, @Param(name = "time") int time) {
         int timeSeconds = time * 60;
 
         for (UUID player : team.getMembers()) {

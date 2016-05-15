@@ -51,7 +51,7 @@ public class TeamStuckCommand implements Listener {
     @Getter private static Map<String, Long> warping = new ConcurrentHashMap<>();
     private static List<String> damaged = Lists.newArrayList();
 
-    @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck", "team unstuck", "t unstuck", "f unstuck", "faction unstuck", "fac unstuck", "unstuck"}, permissionNode="")
+    @Command(names={ "team stuck", "t stuck", "f stuck", "faction stuck", "fac stuck", "stuck", "team unstuck", "t unstuck", "f unstuck", "faction unstuck", "fac unstuck", "unstuck"}, permission="")
     public static void teamStuck(final Player sender) {
         if (warping.containsKey(sender.getName())) {
             sender.sendMessage(ChatColor.RED +"You are already being warped!");

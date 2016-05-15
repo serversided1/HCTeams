@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("deprecation")
 public class TeamLeaveCommand {
 
-    @Command(names={ "team leave", "t leave", "f leave", "faction leave", "fac leave" }, permissionNode="")
+    @Command(names={ "team leave", "t leave", "f leave", "faction leave", "fac leave" }, permission="")
     public static void teamLeave(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

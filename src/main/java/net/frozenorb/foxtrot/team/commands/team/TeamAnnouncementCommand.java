@@ -3,15 +3,15 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamAnnouncementCommand {
 
     // anouncement is here for those who can't spell.
-    @Command(names={ "team announcement", "t announcement", "f announcement", "faction announcement", "fac announcement", "team anouncement", "t anouncement", "f anouncement", "faction anouncement", "fac anouncement" }, permissionNode="")
-    public static void teamAnnouncement(Player sender, @Parameter(name="new announcement", wildcard=true) String newAnnouncement) {
+    @Command(names={ "team announcement", "t announcement", "f announcement", "faction announcement", "fac announcement", "team anouncement", "t anouncement", "f anouncement", "faction anouncement", "fac anouncement" }, permission="")
+    public static void teamAnnouncement(Player sender, @Param(name="new announcement", wildcard=true) String newAnnouncement) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

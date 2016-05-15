@@ -5,14 +5,14 @@ import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class ConquestAdminSetScoreCommand {
 
-    @Command(names={ "conquestadmin setscore" }, permissionNode="op")
-    public static void conquestAdminSetScore(CommandSender sender, @Parameter(name="team") Team team, @Parameter(name="score") int score) {
+    @Command(names={ "conquestadmin setscore" }, permission="op")
+    public static void conquestAdminSetScore(CommandSender sender, @Param(name="team") Team team, @Param(name="score") int score) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 
         if (game == null) {

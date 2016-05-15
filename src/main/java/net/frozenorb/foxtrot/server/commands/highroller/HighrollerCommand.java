@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class HighrollerCommand {
 
-    @Command(names={ "highroller", "highrollers" }, permissionNode="op")
+    @Command(names={ "highroller", "highrollers" }, permission="op")
     public static void highroller(Player sender) {
         String[] msges = {
                 "§c/highroller list - Shows all HighRollers.",

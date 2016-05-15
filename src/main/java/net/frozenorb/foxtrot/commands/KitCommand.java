@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class KitCommand {
 
-    @Command(names = "kit", permissionNode = "")
+    @Command(names = "kit", permission = "")
     public static void kit(Player sender) {
         String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
         String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();

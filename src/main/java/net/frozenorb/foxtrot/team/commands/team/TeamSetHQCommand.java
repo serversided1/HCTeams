@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("deprecation")
 public class TeamSetHQCommand {
 
-    @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome", "sethq" }, permissionNode="")
+    @Command(names={ "team sethq", "t sethq", "f sethq", "faction sethq", "fac sethq", "team sethome", "t sethome", "f sethome", "faction sethome", "fac sethome", "sethome", "sethq" }, permission="")
     public static void teamSetHQ(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 

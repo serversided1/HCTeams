@@ -3,14 +3,14 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamRenameCommand {
 
-    @Command(names={ "team rename", "t rename", "f rename", "faction rename", "fac rename" }, permissionNode="")
-    public static void teamRename(Player sender, @Parameter(name="new name") String newName) {
+    @Command(names={ "team rename", "t rename", "f rename", "faction rename", "fac rename" }, permission="")
+    public static void teamRename(Player sender, @Param(name="new name") String newName) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {

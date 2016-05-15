@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class SpawnCommand {
 
-    @Command(names={ "spawn" }, permissionNode="")
+    @Command(names={ "spawn" }, permission="")
     public static void spawn(Player sender) {
         if (sender.hasPermission("foxtrot.spawn")) {
             sender.teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());

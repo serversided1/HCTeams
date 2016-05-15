@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class PvPTimeCommand {
 
-    @Command(names={ "pvptimer time", "timer time", "pvp time" }, permissionNode="")
+    @Command(names={ "pvptimer time", "timer time", "pvp time" }, permission="")
     public static void pvpTime(Player sender) {
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You have " + TimeUtils.formatIntoMMSS(Foxtrot.getInstance().getPvPTimerMap().getSecondsRemaining(sender.getUniqueId())) + " left on your PVP Timer.");

@@ -15,7 +15,7 @@ import static org.bukkit.ChatColor.*;
 public class KOTHCommand {
 
     // Make this pretty.
-    @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permissionNode="")
+    @Command(names={ "KOTH", "KOTH Next", "KOTH Info", "KOTH" }, permission="")
     public static void koth(Player sender) {
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (!koth.isHidden() && koth.isActive()) {

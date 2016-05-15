@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class TeamChatSpyListCommand {
 
-    @Command(names={ "team chatspy list", "t chatspy list", "f chatspy list", "faction chatspy list", "fac chatspy list" }, permissionNode="foxtrot.chatspy")
+    @Command(names={ "team chatspy list", "t chatspy list", "f chatspy list", "faction chatspy list", "fac chatspy list" }, permission="foxtrot.chatspy")
     public static void teamChatSpyList(Player sender) {
         StringBuilder stringBuilder = new StringBuilder();
 

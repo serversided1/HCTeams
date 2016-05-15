@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class FreezeRostersCommand {
 
-    @Command(names={ "freezerosters" }, permissionNode="op")
+    @Command(names={ "freezerosters" }, permission="op")
     public static void freezeRosters(Player sender) {
         TeamHandler teamHandler = Foxtrot.getInstance().getTeamHandler();
         teamHandler.setRostersLocked(!teamHandler.isRostersLocked());

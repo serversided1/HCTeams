@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.team.commands.pvp;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,8 +11,8 @@ import java.util.UUID;
 
 public class PvPReviveCommand {
 
-    @Command(names = {"pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive", "f revive"}, permissionNode = "")
-    public static void pvpRevive(Player sender, @Parameter(name = "player") UUID player) {
+    @Command(names = {"pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive", "f revive"}, permission = "")
+    public static void pvpRevive(Player sender, @Param(name = "player") UUID player) {
         int friendLives = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
 
         if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {

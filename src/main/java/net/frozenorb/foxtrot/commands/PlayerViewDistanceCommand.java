@@ -7,8 +7,8 @@ package net.frozenorb.foxtrot.commands;
  */
 public class PlayerViewDistanceCommand {
 
-//    @Command(names={ "playerviewdistance", "playervd" }, permissionNode="op")
-//    public static void playerviewdistance(Player sender, @Parameter(name="player") Player p, @Parameter(name = "value") int value) {
+//    @Command(names={ "playerviewdistance", "playervd" }, permission="op")
+//    public static void playerviewdistance(Player sender, @Param(name="player") Player p, @Param(name = "value") int value) {
 //        if( value <= 15 && value >= 2 ) {
 //            ((CraftPlayer)p).spigot().setViewDistance(value);
 //            ChunkLimiterListener.getViewDistances().put(p.getUniqueId(), value);

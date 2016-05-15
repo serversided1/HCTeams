@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class SetEndExitCommand {
 
-    @Command(names = {"setendexit"}, permissionNode = "op")
+    @Command(names = {"setendexit"}, permission = "op")
     public static void setendexit(Player sender) {
         Location previous = EndListener.getEndReturn();
         EndListener.setEndReturn(sender.getLocation());

@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 
 public class ConquestAdminStopCommand {
 
-    @Command(names={ "conquestadmin stop" }, permissionNode="op")
+    @Command(names={ "conquestadmin stop" }, permission="op")
     public static void conquestAdminStop(CommandSender sender) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 

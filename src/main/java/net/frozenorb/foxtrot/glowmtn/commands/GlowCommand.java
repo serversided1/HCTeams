@@ -12,7 +12,7 @@ import static org.bukkit.ChatColor.*;
 
 public class GlowCommand {
 
-    @Command(names = "glow scan", permissionNode = "op")
+    @Command(names = "glow scan", permission = "op")
     public static void glowScan(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(GlowHandler.getGlowTeamName());
 
@@ -35,7 +35,7 @@ public class GlowCommand {
         }
     }
 
-    @Command(names = "glow reset", permissionNode = "op")
+    @Command(names = "glow reset", permission = "op")
     public static void glowReset(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(GlowHandler.getGlowTeamName());
 

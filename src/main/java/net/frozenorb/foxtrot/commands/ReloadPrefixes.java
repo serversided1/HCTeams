@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class ReloadPrefixes {
 
-    @Command(names={ "reloadprefixes" }, permissionNode="op")
+    @Command(names={ "reloadprefixes" }, permission="op")
     public static void reloadPrefixes(Player sender) {
         Foxtrot.getInstance().getChatHandler().reloadCustomPrefixes();
         sender.sendMessage(ChatColor.DARK_PURPLE + "Reloaded prefixes from file.");

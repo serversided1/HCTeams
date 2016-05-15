@@ -2,14 +2,14 @@ package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamTPCommand {
 
-    @Command(names={ "team tp", "t tp", "f tp", "faction tp", "fac tp" }, permissionNode="worldedit.*")
-    public static void teamTP(Player sender, @Parameter(name="team", defaultValue="self") Team team) {
+    @Command(names={ "team tp", "t tp", "f tp", "faction tp", "fac tp" }, permission="worldedit.*")
+    public static void teamTP(Player sender, @Param(name="team", defaultValue="self") Team team) {
         if (team.getHQ() != null) {
             sender.sendMessage(ChatColor.YELLOW + "Teleported to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
             sender.teleport(team.getHQ());

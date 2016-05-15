@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class CitadelSaveLoottableCommand {
 
-    @Command(names={"citadel saveloottable"}, permissionNode="op")
+    @Command(names={"citadel saveloottable"}, permission="op")
     public static void citadelSaveLoottable(Player sender) {
         Foxtrot.getInstance().getCitadelHandler().getCitadelLoot().clear();
 

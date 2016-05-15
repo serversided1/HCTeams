@@ -6,7 +6,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,8 +19,8 @@ public class TeamCreateCommand {
     public static final Pattern ALPHA_NUMERIC = Pattern.compile("[^a-zA-Z0-9]");
     private static final Set<String> disallowedTeamNames = ImmutableSet.of("list", "Glowstone");
 
-    @Command(names = {"team create", "t create", "f create", "faction create", "fac create"}, permissionNode = "")
-    public static void teamCreate(Player sender, @Parameter(name = "team") String team) {
+    @Command(names = {"team create", "t create", "f create", "faction create", "fac create"}, permission = "")
+    public static void teamCreate(Player sender, @Param(name = "team") String team) {
         if (Foxtrot.getInstance().getTeamHandler().getTeam(sender) != null) {
             sender.sendMessage(ChatColor.GRAY + "You're already in a team!");
             return;

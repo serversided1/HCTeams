@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class TeamNullLeaderCommand {
 
-    @Command(names={ "team nullleader", "t nullleader", "f nullleader", "faction nullleader", "fac nullleader" }, permissionNode="op")
+    @Command(names={ "team nullleader", "t nullleader", "f nullleader", "faction nullleader", "fac nullleader" }, permission="op")
     public static void teamNullLeader(Player sender) {
         int nullLeaders = 0;
 

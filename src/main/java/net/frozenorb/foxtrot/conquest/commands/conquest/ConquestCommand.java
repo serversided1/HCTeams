@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ConquestCommand {
 
-    @Command(names={ "conquest" }, permissionNode="")
+    @Command(names={ "conquest" }, permission="")
     public static void conquest(Player sender) {
         ConquestGame game = Foxtrot.getInstance().getConquestHandler().getGame();
 

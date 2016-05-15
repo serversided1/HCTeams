@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class SetSpawnCommand {
 
-    @Command(names={ "SetSpawn" }, permissionNode="op")
+    @Command(names={ "SetSpawn" }, permission="op")
     public static void setSpawn(Player sender) {
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 

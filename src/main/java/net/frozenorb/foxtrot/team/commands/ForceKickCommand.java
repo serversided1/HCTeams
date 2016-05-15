@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.team.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,8 +13,8 @@ import java.util.UUID;
 
 public class ForceKickCommand {
 
-    @Command(names={ "forcekick" }, permissionNode="foxtrot.forcekick")
-    public static void forceKick(Player sender, @Parameter(name="player") UUID player) {
+    @Command(names={ "forcekick" }, permission="foxtrot.forcekick")
+    public static void forceKick(Player sender, @Param(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         if (team == null) {

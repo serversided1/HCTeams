@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
  */
 public class LivesCommand {
 
-    @Command(names={ "lives" }, permissionNode="")
+    @Command(names={ "lives" }, permission="")
     public static void lives(Player sender) {
         int shared = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
         int soulbound = Foxtrot.getInstance().getSoulboundLivesMap().getLives(sender.getUniqueId());

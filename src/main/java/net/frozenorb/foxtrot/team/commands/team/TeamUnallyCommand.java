@@ -3,15 +3,15 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Parameter;
+import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class TeamUnallyCommand {
 
-    @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permissionNode="")
-    public static void teamUnally(Player sender, @Parameter(name="team") Team team) {
+    @Command(names={ "team unally", "t unally", "f unally", "faction unally", "fac unally" }, permission="")
+    public static void teamUnally(Player sender, @Param(name="team") Team team) {
         Team senderTeam = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (senderTeam == null) {
