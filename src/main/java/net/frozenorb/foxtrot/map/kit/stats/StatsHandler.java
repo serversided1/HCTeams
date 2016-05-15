@@ -40,11 +40,14 @@ public class StatsHandler implements Listener {
 
     public StatsHandler() {
         qLib.getInstance().runRedisCommand(redis -> {
-            if (redis.exists("stats")) {
-                stats = qLib.PLAIN_GSON.fromJson(redis.get("stats"), new TypeToken<Map<UUID, StatsEntry>>() {}.getType());
+            for (String key : redis.keys("stats.*")) {
+                UUID uuid = UUID.fromString(key.split(".")[1]);
+                StatsEntry entry = qLib.PLAIN_GSON.fromJson(redis.get(key), StatsEntry.class);
 
-                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + stats.size() + " stats.");
+                stats.put(uuid, entry);
             }
+
+            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + stats.size() + " stats.");
 
             if (redis.exists("leaderboardSigns")) {
                 List<String> serializedSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<List<String>>() {}.getType());
@@ -129,13 +132,16 @@ public class StatsHandler implements Listener {
 
     public void save() {
         qLib.getInstance().runRedisCommand(redis -> {
-            redis.set("stats", qLib.PLAIN_GSON.toJson(stats));
-
             List<String> serializedSigns = leaderboardSigns.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
             List<String> serializedHeads = leaderboardHeads.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
 
             redis.set("leaderboardSigns", qLib.PLAIN_GSON.toJson(serializedSigns));
             redis.set("leaderboardHeads", qLib.PLAIN_GSON.toJson(serializedHeads));
+
+            // stats
+            for (StatsEntry entry : stats.values()) {
+                redis.set("stats." + entry.getOwner().toString(), qLib.PLAIN_GSON.toJson(entry));
+            }
             return null;
         });
     }

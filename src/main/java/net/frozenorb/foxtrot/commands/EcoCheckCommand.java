@@ -2,15 +2,15 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.mBasic.Basic;
 import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
+import net.frozenorb.qlib.util.UUIDUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class EcoCheckCommand {
 
@@ -28,13 +28,11 @@ public class EcoCheckCommand {
         }
 
         try {
-            Field balancesField = Basic.get().getEconomyManager().getClass().getDeclaredField("balances");
-            balancesField.setAccessible(true);
-            HashMap<String, Double> balances = (HashMap<String, Double>) balancesField.get(Basic.get().getEconomyManager());
+            Map<UUID, Double> balances = FrozenEconomyHandler.getBalances();
 
-            for (Map.Entry<String, Double> balanceEntry  : balances.entrySet()) {
-                if (isBad(balanceEntry.getValue().doubleValue())) {
-                    sender.sendMessage(ChatColor.YELLOW + "Player: " + ChatColor.WHITE + balanceEntry.getKey());
+            for (Map.Entry<UUID, Double> balanceEntry  : balances.entrySet()) {
+                if (isBad(balanceEntry.getValue())) {
+                    sender.sendMessage(ChatColor.YELLOW + "Player: " + ChatColor.WHITE + UUIDUtils.name(balanceEntry.getKey()));
                 }
             }
         } catch (Exception e) {

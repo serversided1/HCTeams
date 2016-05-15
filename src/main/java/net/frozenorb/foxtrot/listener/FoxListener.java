@@ -15,7 +15,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
-import net.frozenorb.mBasic.Basic;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
@@ -168,7 +168,7 @@ public class FoxListener implements Listener {
         if (!event.getPlayer().hasPlayedBefore()) {
             Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
-            Basic.get().getEconomyManager().setBalance(event.getPlayer().getName(), 100D);
+            FrozenEconomyHandler.setBalance(event.getPlayer().getUniqueId(), 100D);
 
             event.getPlayer().getInventory().addItem(FIRST_SPAWN_BOOK);
             event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
@@ -495,12 +495,12 @@ public class FoxListener implements Listener {
         event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
 
         // Transfer money
-        double bal = Basic.get().getEconomyManager().getBalance(event.getEntity().getName());
-        Basic.get().getEconomyManager().withdrawPlayer(event.getEntity().getName(), bal);
+        double bal = FrozenEconomyHandler.getBalance(event.getEntity().getUniqueId());
+        FrozenEconomyHandler.withdraw(event.getEntity().getUniqueId(), bal);
 
         // Only tell player they earned money if they actually earned something
         if (event.getEntity().getKiller() != null && !Double.isNaN(bal) && bal > 0) {
-            Basic.get().getEconomyManager().depositPlayer(event.getEntity().getKiller().getName(), bal);
+            FrozenEconomyHandler.deposit(event.getEntity().getKiller().getUniqueId(), bal);
             event.getEntity().getKiller().sendMessage(GOLD + "You earned " + BOLD + "$" + bal + GOLD + " for killing " + event.getEntity().getDisplayName() + GOLD + "!");
         }
     }

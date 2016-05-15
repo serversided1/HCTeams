@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.commands;
 
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.mBasic.CommandSystem.Commands.Freeze;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,13 +11,13 @@ public class PanicCommand {
 
     @Command(names={ "panic", "p" }, permissionNode="foxtrot.panic")
     public static void panic(Player sender) {
-        if (Freeze.isFrozen(sender)) {
-            Freeze.unfreeze(sender);
+        if (sender.hasMetadata("frozen")) {
+            Basic.getInstance().getServerManager().unfreeze(sender.getUniqueId());
         } else {
             new BukkitRunnable() {
 
                 public void run() {
-                    if (!Freeze.isFrozen(sender)) {
+                    if (!sender.hasMetadata("frozen")) {
                         cancel();
                         return;
                     }
@@ -31,7 +31,7 @@ public class PanicCommand {
 
             }.runTaskTimer(Foxtrot.getInstance(), 1L, 15 * 20L);
 
-            Freeze.freeze(sender);
+            Basic.getInstance().getServerManager().freeze(sender);
         }
     }
 

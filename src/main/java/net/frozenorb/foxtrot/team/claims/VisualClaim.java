@@ -13,8 +13,8 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
-import net.frozenorb.mBasic.Utilities.ItemDb;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.ItemUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -150,9 +150,9 @@ public class VisualClaim implements Listener {
                         Claim claim = mapEntry.getKey().getKey();
 
                         if (team.getOwner() == null) {
-                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + team.getName(player) + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(mapEntry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName(player));
+                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + team.getName(player) + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemUtils.getName(new ItemStack(mapEntry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName(player));
                         } else {
-                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + claim.getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(mapEntry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName());
+                            player.sendMessage(ChatColor.YELLOW + "Land " + ChatColor.BLUE + claim.getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemUtils.getName(new ItemStack(mapEntry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + team.getName());
                         }
                     }
                 }
@@ -264,7 +264,7 @@ public class VisualClaim implements Listener {
 
                 if (!silent) {
                     for (Map.Entry<Subclaim, Material> entry : subclaimMaterialMap.entrySet()) {
-                        player.sendMessage(ChatColor.YELLOW + "Subclaim " + ChatColor.BLUE + entry.getKey().getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemDb.getFriendlyName(new ItemStack(entry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + senderTeam.getName());
+                        player.sendMessage(ChatColor.YELLOW + "Subclaim " + ChatColor.BLUE + entry.getKey().getName() + ChatColor.GREEN + "(" + ChatColor.AQUA + ItemUtils.getName(new ItemStack(entry.getValue())) + ChatColor.GREEN + ") " + ChatColor.YELLOW + "is claimed by " + ChatColor.BLUE + senderTeam.getName());
                     }
                 }
 

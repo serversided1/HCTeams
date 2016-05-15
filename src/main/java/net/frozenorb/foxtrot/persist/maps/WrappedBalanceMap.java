@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
-import net.frozenorb.mBasic.EconomySystem.EconomyListener;
-import net.frozenorb.qlib.util.UUIDUtils;
 
 import java.util.UUID;
 
@@ -34,22 +32,6 @@ public class WrappedBalanceMap extends PersistMap<Double> {
 
     public void setBalance(UUID update, double balance) {
         updateValueAsync(update, balance);
-    }
-
-    private class FoxEconomyListener implements EconomyListener {
-
-        public void onDeposit(String var1, double var2) {
-            setBalance(UUIDUtils.uuid(var1), var2);
-        }
-
-        public void onWithdraw(String var1, double var2) {
-            setBalance(UUIDUtils.uuid(var1), var2);
-        }
-
-        public void onBalanceChanged(String var1, double var2) {
-            setBalance(UUIDUtils.uuid(var1), var2);
-        }
-
     }
 
 }
