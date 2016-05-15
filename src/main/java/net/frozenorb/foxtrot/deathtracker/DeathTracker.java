@@ -125,8 +125,9 @@ public class DeathTracker {
         if (playerTeam != null) {
             teamData = new BasicDBObject();
 
-            teamData.put("RegenTime", TimeUtils.formatIntoMMSS(((int) (playerTeam.getDTRCooldown() - System.currentTimeMillis())) / 1000));
+            teamData.put("RegenTime", (playerTeam.getDTRCooldown() - System.currentTimeMillis())); // milleseconds until cooldown over
             teamData.put("Name", playerTeam.getName());
+            teamData.put("TeamID", playerTeam.getUniqueId());
             teamData.put("DTR", playerTeam.getDTR());
             teamData.put("MembersOnline", playerTeam.getOnlineMemberAmount());
         }

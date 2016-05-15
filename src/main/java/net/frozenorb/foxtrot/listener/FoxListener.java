@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -174,6 +175,15 @@ public class FoxListener implements Listener {
             event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
 
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
+
+            /* Populate these fields in mongo for Ariel, doesnt want them to be empty if player has no kills */
+            if (Foxtrot.getInstance().getDeathsMap().getDeaths(event.getPlayer().getUniqueId()) == 0) {
+                Foxtrot.getInstance().getDeathsMap().setDeaths(event.getPlayer().getUniqueId(), 0);
+            }
+
+            if (Foxtrot.getInstance().getKillsMap().getKills(event.getPlayer().getUniqueId()) == 0) {
+                Foxtrot.getInstance().getKillsMap().setKills(event.getPlayer().getUniqueId(), 0);
+            }
         }
     }
 
@@ -508,8 +518,31 @@ public class FoxListener implements Listener {
     private void processTerritoryInfo(PlayerMoveEvent event) {
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
-        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId()) && ownerTo != null && ownerTo.isMember(event.getPlayer().getUniqueId())) {
-            Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+        if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getTo())) {
+
+                if (DTRBitmask.KOTH.appliesAt(event.getTo()) || DTRBitmask.CITADEL.appliesAt(event.getTo())) {
+                    Foxtrot.getInstance().getPvPTimerMap().removeTimer(event.getPlayer().getUniqueId());
+
+                    event.getPlayer().sendMessage(ChatColor.RED + "Your PvP Protection has been removed for entering claimed land.");
+                } else if (ownerTo != null && ownerTo.getOwner() != null) {
+                    if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
+                        event.setCancelled(true);
+
+                        for (Claim claim : ownerTo.getClaims()) {
+                            if (claim.contains(event.getFrom())) {
+                                event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
+                                event.getPlayer().sendMessage(ChatColor.RED + "Moved you to spawn because you were in land that was claimed.");
+                                return;
+                            }
+                        }
+
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter another team's territory with PvP Protection.");
+                        event.getPlayer().sendMessage(ChatColor.RED + "Use " + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + " to remove your protection.");
+                        return;
+                    }
+                }
+            }
         }
 
         Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());

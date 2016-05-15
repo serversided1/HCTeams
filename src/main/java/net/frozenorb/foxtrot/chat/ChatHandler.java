@@ -20,11 +20,12 @@ import java.util.UUID;
 public class ChatHandler {
 
     public static final String HIGHROLLER_PREFIX = ChatColor.DARK_PURPLE + "[HighRoller]";
-    public static final File CUSTOM_PREFIXES_FILE = new File("customPrefixes.json");
+    private static File customPrefixesFile;
 
     private Map<UUID, String> customPrefixes = new HashMap<>();
 
     public ChatHandler() {
+        customPrefixesFile = new File(Foxtrot.getInstance().getDataFolder(), "customPrefixes.json");
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new ChatListener(), Foxtrot.getInstance());
         (new SaveCustomPrefixesTask()).runTaskTimerAsynchronously(Foxtrot.getInstance(), 5 * 60 * 20, 5 * 60 * 20); // Every 5 minutes.
         reloadCustomPrefixes();
@@ -34,11 +35,11 @@ public class ChatHandler {
         long started = System.currentTimeMillis();
 
         try {
-            if (!CUSTOM_PREFIXES_FILE.exists()) {
-                CUSTOM_PREFIXES_FILE.createNewFile();
+            if (!customPrefixesFile.exists()) {
+                customPrefixesFile.createNewFile();
             }
 
-            BasicDBObject json = (BasicDBObject) JSON.parse(FileUtils.readFileToString(CUSTOM_PREFIXES_FILE));
+            BasicDBObject json = (BasicDBObject) JSON.parse(FileUtils.readFileToString(customPrefixesFile));
             customPrefixes.clear();
 
             for (Map.Entry<String, Object> prefixEntry : ((BasicDBObject) json.get("prefixes")).entrySet()) {
@@ -58,7 +59,7 @@ public class ChatHandler {
             long started = System.currentTimeMillis();
 
             BasicDBObject json = new BasicDBObject("prefixes", customPrefixes);
-            FileUtils.write(CUSTOM_PREFIXES_FILE, qLib.GSON.toJson(new JsonParser().parse(json.toString())));
+            FileUtils.write(customPrefixesFile, qLib.GSON.toJson(new JsonParser().parse(json.toString())));
 
             int loaded = customPrefixes.size();
             long timeElapsed = System.currentTimeMillis() - started;

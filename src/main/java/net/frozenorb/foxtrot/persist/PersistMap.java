@@ -18,10 +18,16 @@ public abstract class PersistMap<T> {
 
     private String keyPrefix;
     private String mongoName;
+    private boolean useMongo;
 
     public PersistMap(String keyPrefix, String mongoName) {
+        this(keyPrefix, mongoName, true); // use mongo by default
+    }
+
+    public PersistMap(String keyPrefix, String mongoName, boolean useMongo) {
         this.keyPrefix = keyPrefix;
         this.mongoName = mongoName;
+        this.useMongo = useMongo;
 
         loadFromRedis();
     }
@@ -70,10 +76,12 @@ public abstract class PersistMap<T> {
             public Object execute(Jedis redis) {
                 redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-                DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
-                BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
+                if (useMongo) {
+                    DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
+                    BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
-                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                }
                 return (null);
             }
 
@@ -92,10 +100,12 @@ public abstract class PersistMap<T> {
                     public Object execute(Jedis redis) {
                         redis.hset(keyPrefix, key.toString(), getRedisValue(getValue(key)));
 
-                        DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
-                        BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
+                        if (useMongo) {
+                            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
+                            BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
-                        playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                            playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                        }
                         return (null);
                     }
 

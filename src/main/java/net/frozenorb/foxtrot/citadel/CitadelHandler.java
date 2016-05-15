@@ -33,6 +33,7 @@ public class CitadelHandler {
 
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
 
+    private File citadelInfo;
     @Getter private ObjectId capper;
     @Getter private Date lootable;
 
@@ -40,6 +41,8 @@ public class CitadelHandler {
     @Getter private List<ItemStack> citadelLoot = new ArrayList<>();
 
     public CitadelHandler() {
+        citadelInfo = new File(Foxtrot.getInstance().getDataFolder(), "citadelInfo.json");
+
         loadCitadelInfo();
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new CitadelListener(), Foxtrot.getInstance());
 
@@ -48,8 +51,6 @@ public class CitadelHandler {
 
     public void loadCitadelInfo() {
         try {
-            File citadelInfo = new File("citadelInfo.json");
-
             if (!citadelInfo.exists() && citadelInfo.createNewFile()) {
                 BasicDBObject dbo = new BasicDBObject();
 
@@ -86,7 +87,6 @@ public class CitadelHandler {
 
     public void saveCitadelInfo() {
         try {
-            File citadelInfo = new File("citadelInfo.json");
             BasicDBObject dbo = new BasicDBObject();
 
             dbo.put("capper", capper == null ? null : capper.toString());
