@@ -17,7 +17,7 @@ import java.util.UUID;
  * Created by Fraser.Cumming on 29/03/2016.
  * © 2016 Fraser Cumming All Rights Reserved
  */
-public class AssociateView {
+public class AssociateViewCommand {
 
     @Command(names={ "assview", "associateview" }, permission="op")
     public static void associate(Player sender, @Param(name="player") UUID player) {

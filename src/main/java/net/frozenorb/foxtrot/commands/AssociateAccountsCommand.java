@@ -13,7 +13,7 @@ import java.util.UUID;
  * Created by Fraser.Cumming on 29/03/2016.
  * © 2016 Fraser Cumming All Rights Reserved
  */
-public class AssociateAccounts {
+public class AssociateAccountsCommand {
 
 
     @Command(names={ "ass", "associate" }, permission="op")
