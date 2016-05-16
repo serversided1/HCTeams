@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.map.kit.stats;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
 
 import java.util.UUID;

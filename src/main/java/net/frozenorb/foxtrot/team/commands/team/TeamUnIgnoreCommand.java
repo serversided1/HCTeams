@@ -7,8 +7,6 @@ import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 import static org.bukkit.ChatColor.*;
 
 public class TeamUnIgnoreCommand {

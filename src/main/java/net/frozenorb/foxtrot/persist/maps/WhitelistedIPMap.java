@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.persist.maps;
 
 import net.frozenorb.foxtrot.persist.PersistMap;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 

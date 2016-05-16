@@ -4,7 +4,6 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
-import net.frozenorb.foxtrot.deathmessage.trackers.EntityTracker;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;

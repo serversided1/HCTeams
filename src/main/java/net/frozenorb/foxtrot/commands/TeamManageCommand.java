@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.commands;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.gui.menu.*;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.commands.SetDTRCommand;
 import net.frozenorb.foxtrot.team.commands.SetTeamBalanceCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamCreateCommand;
 import net.frozenorb.qlib.command.Command;

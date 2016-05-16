@@ -6,8 +6,6 @@ import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.entity.Player;
 
-import java.util.Set;
-
 import static org.bukkit.ChatColor.*;
 
 public class KOTHListCommand {

@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowMountain;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import static org.bukkit.ChatColor.*;

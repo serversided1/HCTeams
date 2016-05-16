@@ -5,7 +5,6 @@ import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;

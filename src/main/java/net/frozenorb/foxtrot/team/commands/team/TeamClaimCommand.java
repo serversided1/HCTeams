@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.VisualClaim;

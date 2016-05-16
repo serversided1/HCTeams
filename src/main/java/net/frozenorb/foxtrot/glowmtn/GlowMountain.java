@@ -1,8 +1,6 @@
 package net.frozenorb.foxtrot.glowmtn;
 
 import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.listener.FoxListener;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
