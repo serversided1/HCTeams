@@ -5,7 +5,7 @@ import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowMountain;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.qlib.event.HourEvent;
+import net.frozenorb.qlib.event.HalfHourEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -82,10 +82,21 @@ public class GlowListener implements Listener {
     }
 
     @EventHandler
-    public void onHour(HourEvent event) {
+    public void onHour(HalfHourEvent event) {
         // Every other odd hour
         GlowHandler handler = Foxtrot.getInstance().getGlowHandler();
-        if (event.getHour() % 2 == 1 && handler.hasGlowMountain()) {
+
+        if (!handler.hasGlowMountain()) {
+            return;
+        }
+
+        if (!Foxtrot.getInstance().getServerHandler().isSquads()) {
+            if (event.getHour() % 2 == 1 && event.getMinute() == 0) {
+                handler.getGlowMountain().reset(); // reset all glowstone every other odd hour (offsetting koths)
+
+                Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
+            }
+        } else {
             handler.getGlowMountain().reset(); // reset all glowstone every other odd hour (offsetting koths)
 
             Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
