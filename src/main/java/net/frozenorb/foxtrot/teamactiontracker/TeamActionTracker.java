@@ -25,7 +25,7 @@ public class TeamActionTracker {
 
     public static void logAction(Team team, TeamActionType actionType, String message) {
         // If the team is still being setup this will happen.
-        if (team == null || team.isLoading()) {
+        if (team == null || team.isLoading() || (Foxtrot.getInstance().getMapHandler() != null && Foxtrot.getInstance().getMapHandler().isKitMap())) {
             return;
         }
 
