@@ -31,42 +31,6 @@ import java.util.List;
 
 public class DeathTracker {
 
-    public static void logDeath(final Player player, final Player killer) {
-        final BasicDBObject data = generateDeathData(player, killer);
-        final BasicDBObject websiteData = generateWebsiteDeathData(player, killer);
-
-        new BukkitRunnable() {
-
-            public void run() {
-                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("DetailedKills").insert(data);
-                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("WebKills").insert(websiteData);
-
-                BasicDBObject simplifiedDeath = new BasicDBObject();
-
-                simplifiedDeath.put("when", new Date());
-                simplifiedDeath.put("victimUUID", player.getUniqueId().toString().replace("-", ""));
-
-                if (killer != null) {
-                    simplifiedDeath.put("killerUUID", killer.getUniqueId().toString().replace("-", ""));
-                }
-
-                Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("simplifiedDeaths").insert(simplifiedDeath);
-
-                File logToFolder = new File("foxlogs" + File.separator + "deathtracker" + File.separator + player.getName());
-                File logTo = new File(logToFolder, player.getName() + "-" + (killer == null ? "Environment" : killer.getName()) + "-" + (new Date().toString()) + ".log");
-
-                try {
-                    logTo.getParentFile().mkdirs();
-                    logTo.createNewFile();
-                    FileUtils.write(logTo, qLib.GSON.toJson(new JsonParser().parse(data.toString())));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }.runTaskAsynchronously(Foxtrot.getInstance());
-    }
-
     public static BasicDBObject generateDeathData(Player player, Player killer) {
         BasicDBObject deathData = new BasicDBObject();
 
