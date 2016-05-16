@@ -18,6 +18,7 @@ public class PlayerInfoPacket implements XPacket {
     @Getter private int totalLives;
     @Getter private long deathbannedUntil;
     @Getter private String livesLocked;
+    @Getter private boolean eotwJoinAllowed;
 
     // We have to have this for XPacket to do its thing.
     public PlayerInfoPacket() {}
@@ -33,6 +34,7 @@ public class PlayerInfoPacket implements XPacket {
                 int totalLives = Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + Foxtrot.getInstance().getFriendLivesMap().getLives(player);
                 long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(player);
                 String livesLocked = null;
+                boolean eotwJoinAllowed = true;
 
                 if (Foxtrot.getInstance().getServerHandler().getBetrayer(player) != null) {
                     livesLocked = "Betrayer";
@@ -42,7 +44,11 @@ public class PlayerInfoPacket implements XPacket {
                     livesLocked = "EOTW";
                 }
 
-                PlayerInfoPacket packet = new PlayerInfoPacket(qQueue.getInstance().getQueueHandler().getQueueId(), player, totalLives, deathbannedUntil, livesLocked);
+                if (Foxtrot.getInstance().getServerHandler().isPreEOTW() && !Foxtrot.getInstance().getPlaytimeMap().hasPlayed(player)) {
+                    eotwJoinAllowed = false;
+                }
+
+                PlayerInfoPacket packet = new PlayerInfoPacket(qQueue.getInstance().getQueueHandler().getQueueId(), player, totalLives, deathbannedUntil, livesLocked, eotwJoinAllowed);
                 FrozenXPacketHandler.sendToAll(packet);
             }
 
