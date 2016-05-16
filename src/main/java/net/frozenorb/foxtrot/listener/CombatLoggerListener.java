@@ -109,6 +109,10 @@ public class CombatLoggerListener implements Listener {
                 // and give them the kill
                 int kills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
                 Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), kills + 1);
+
+                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                    Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
+                }
             } else {
                 String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
 
@@ -126,6 +130,10 @@ public class CombatLoggerListener implements Listener {
                         }
                     }
                 }
+            }
+
+            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats((Player) event.getEntity()).addDeath();
             }
 
             Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
