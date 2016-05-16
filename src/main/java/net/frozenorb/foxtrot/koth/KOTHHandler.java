@@ -4,6 +4,7 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
@@ -25,6 +26,8 @@ public class KOTHHandler {
     @Getter private Set<KOTH> KOTHs = new HashSet<>();
     @Getter private Map<KOTHScheduledTime, String> KOTHSchedule = new TreeMap<>();
     @Getter private Set<Location> KOTHSigns = new HashSet<>();
+
+    @Getter @Setter private boolean scheduleEnabled;
 
     public KOTHHandler() {
         loadKOTHs();
