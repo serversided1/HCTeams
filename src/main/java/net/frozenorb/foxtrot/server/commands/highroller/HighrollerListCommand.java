@@ -22,7 +22,7 @@ public class HighrollerListCommand {
             highRollers.setLength(highRollers.length() - 2);
         }
 
-        sender.sendMessage(ChatColor.GOLD + "HCTeams HighRollers: " + highRollers.toString());
+        sender.sendMessage(ChatColor.GOLD + "HighRollers: " + highRollers.toString());
     }
 
 }

@@ -13,7 +13,10 @@ public class SpawnCommand {
             sender.teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
         } else {
             // Make this pretty.
-            sender.sendMessage(ChatColor.RED + "HCTeams does not have a spawn command! You must walk there!");
+            String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
+                    "HCSquads" : "HCTeams";
+
+            sender.sendMessage(ChatColor.RED + serverName + " does not have a spawn command! You must walk there!");
         }
     }
 

@@ -69,10 +69,13 @@ public class FoxListener implements Listener {
     static {
         BookMeta bookMeta = (BookMeta) FIRST_SPAWN_BOOK.getItemMeta();
 
-        bookMeta.setTitle(GOLD + "Welcome to HCTeams");
+        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
+                "HCSquads" : "HCTeams";
+
+        bookMeta.setTitle(GOLD + "Welcome to " + serverName);
         bookMeta.setPages(
 
-                BLUE + "Welcome to HCTeams!"
+                BLUE + "Welcome to " + serverName + "!"
 
         );
         bookMeta.setAuthor("MineHQ");

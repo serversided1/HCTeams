@@ -139,7 +139,7 @@ public class ServerHandler {
 
                 if (messageBuilder.length() > 2) {
                     messageBuilder.setLength(messageBuilder.length() - 2);
-                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HCTeams HighRollers: " + messageBuilder.toString());
+                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HighRollers: " + messageBuilder.toString());
                 }
             }
 

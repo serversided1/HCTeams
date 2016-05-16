@@ -14,14 +14,17 @@ public class HelpCommand {
 
     @Command(names={ "Help" }, permission="")
     public static void help(Player sender) {
-         String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
-         String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
-         String bow = "Power " + Enchantment.ARROW_DAMAGE.getMaxLevel();
+        String sharp = "Sharpness " + Enchantment.DAMAGE_ALL.getMaxLevel();
+        String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
+        String bow = "Power " + Enchantment.ARROW_DAMAGE.getMaxLevel();
+
+        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
+                "HCSquads" : "HCTeams";
 
         sender.sendMessage(new String[] {
 
                 "§6§m-----------------------------------------------------",
-                "§9§lHCTeams Help §7- §eInformation on HCTeams",
+                "§9§l" + serverName + " Help §7- §eInformation on " + serverName,
                 "§7§m-----------------------------------------------------",
                 "§9Map Information:",
                 "§eCurrent Map: §7" + Foxtrot.getInstance().getMapHandler().getMapStartedString(),
