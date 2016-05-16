@@ -272,6 +272,11 @@ public class KOTHListener implements Listener {
     }
 
     private void activateKOTHs() {
+        // Don't start a KOTH during EOTW.
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+            return;
+        }
+
         // Don't start a KOTH if another one is active.
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (!koth.isHidden() && koth.isActive()) {
