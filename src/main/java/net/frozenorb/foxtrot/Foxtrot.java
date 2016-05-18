@@ -200,8 +200,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
-        getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
-//        getServer().getPluginManager().registerEvents(new IPListener(), this );
+        //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
+        //getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
 
     private void setupPersistence() {
