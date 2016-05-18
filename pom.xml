@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>qQueue</artifactId>
-			<version>LATEST</version>
+			<version>2.0</version>
 		</dependency>
 
 		<!-- Misc. Jars -->
