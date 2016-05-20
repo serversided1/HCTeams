@@ -153,23 +153,4 @@ public class BasicPreventionListener implements Listener {
         event.blockList().clear();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-
-        if (!event.isCancelled()) {
-            return;
-        }
-
-        if (player.getLocation().getBlock().getType().isSolid() && (event.getBlock().getX() != player.getLocation().getBlockX() || event.getBlock().getZ() != event.getPlayer().getLocation().getBlockZ())) {
-            Location teleportTo = player.getLocation().add(0.0D, 1.2D, 0.0D);
-            if (!teleportTo.getBlock().isEmpty()) {
-                return;
-            }
-
-            player.teleport(teleportTo);
-            player.sendMessage(ChatColor.RED + "Nope.");
-        }
-    }
-
 }

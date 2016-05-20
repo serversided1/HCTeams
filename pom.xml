@@ -1,50 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.frozenorb</groupId>
 	<artifactId>Foxtrot</artifactId>
 	<version>1.0</version>
 
-	<properties>
-		<access-level>high</access-level>
-	</properties>
+    <parent>
+        <groupId>net.frozenorb</groupId>
+        <artifactId>minehq-parent</artifactId>
+        <version>1.0</version>
+    </parent>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>minehq-repo</id>
-			<url>http://maven.minehq.com/artifactory/${access-level}</url>
-		</repository>
-		<snapshotRepository>
-			<id>minehq-repo</id>
-			<url>http://maven.minehq.com/artifactory/${access-level}</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <properties>
+        <minehq.mavenLevel>minehq-low</minehq.mavenLevel>
+    </properties>
 
 	<repositories>
 		<repository>
 			<id>minehq-repo</id>
-			<url>http://maven.minehq.com/artifactory/repo/</url>
+			<url>http://maven.minehq.com:8081/artifactory/minehq-all/</url>
 		</repository>
 	</repositories>
 
@@ -52,12 +25,7 @@
 		<!-- Spigot Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>mSpigot-API</artifactId>
-			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
-			<artifactId>mSpigot</artifactId>
+			<artifactId>mspigot-server</artifactId>
 			<version>LATEST</version>
 		</dependency>
 
@@ -75,7 +43,7 @@
 		<dependency>
 			<groupId>net.frozenorb</groupId>
 			<artifactId>qQueue</artifactId>
-			<version>LATEST</version>
+			<version>2.0</version>
 		</dependency>
 
 		<!-- Misc. Jars -->

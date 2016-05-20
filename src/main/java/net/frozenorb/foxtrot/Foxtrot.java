@@ -31,6 +31,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import org.bukkit.entity.Player;
@@ -113,6 +114,7 @@ public class Foxtrot extends JavaPlugin {
 
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
+        FrozenEconomyHandler.init();
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
@@ -200,8 +202,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
-        getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
-//        getServer().getPluginManager().registerEvents(new IPListener(), this );
+        //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
+        //getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
 
     private void setupPersistence() {
