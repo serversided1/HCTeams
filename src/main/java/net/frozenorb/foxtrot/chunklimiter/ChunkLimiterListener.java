@@ -20,7 +20,7 @@ public class ChunkLimiterListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        defaultView.put(event.getPlayer().getUniqueId(), ((CraftPlayer) event.getPlayer()).spigot().getViewDistance());
+        //defaultView.put(event.getPlayer().getUniqueId(), ((CraftPlayer) event.getPlayer()).spigot().getViewDistance());
     }
 
     @EventHandler
@@ -39,7 +39,7 @@ public class ChunkLimiterListener implements Listener {
             return;
         }
 
-        int view = ((CraftPlayer) event.getPlayer()).spigot().getViewDistance();
+        /*int view = ((CraftPlayer) event.getPlayer()).spigot().getViewDistance();
         int target = view;
 
         Team team = LandBoard.getInstance().getTeam(event.getTo());
@@ -60,6 +60,7 @@ public class ChunkLimiterListener implements Listener {
         if (target != view) {
             ((CraftPlayer) event.getPlayer()).spigot().setViewDistance(target);
         }
+        */
     }
 
 }

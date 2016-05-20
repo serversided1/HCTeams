@@ -48,7 +48,8 @@ public class PlayerInfoPacket implements XPacket {
                     eotwJoinAllowed = false;
                 }
 
-                PlayerInfoPacket packet = new PlayerInfoPacket(qQueue.getInstance().getQueueHandler().getQueueId(), player, totalLives, deathbannedUntil, livesLocked, eotwJoinAllowed);
+                String queueId = qQueue.getInstance().getQueueHandler().getQueueId();
+                PlayerInfoPacket packet = new PlayerInfoPacket(queueId, player, totalLives, deathbannedUntil, livesLocked, eotwJoinAllowed);
                 FrozenXPacketHandler.sendToAll(packet);
             }
 
