@@ -53,6 +53,16 @@ public enum Crate {
             )
     ),
             "§bDiamond Crate"
+    ),
+    FARMING(getEnchantedInventory(
+            ImmutableSet.of(
+                    new ItemStack(ENDER_PEARL, 16),
+                    new ItemStack(SULPHUR, 64),
+                    new ItemStack(NETHER_WARTS, 64),
+                    new ItemStack(GLASS_BOTTLE, 64)
+            )
+    ),
+            "§aFarming Crate"
     );
 
     @Getter private List<ItemStack> inventory;
