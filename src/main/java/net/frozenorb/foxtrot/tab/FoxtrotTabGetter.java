@@ -71,11 +71,16 @@ public class FoxtrotTabGetter implements TabInfoGetter {
 
             info.addEntry(new TabEntry(ChatColor.RED + "Team Info:", false, 0), 0, 2);
             info.addEntry(new TabEntry(ChatColor.RED + "Members Online", false, 0), 0, 3);
+            info.addEntry(new TabEntry(player.getName(), true, ((CraftPlayer) player).getHandle().ping), 1, 4);
 
             int x = 1;
-            int y = 4;
+            int y = 5;
             for (Player member : team.getOnlineMembers()) {
-                info.addEntry(new TabEntry(member.getName(), true, ((CraftPlayer) player).getHandle().ping), x, y);
+                if (member.equals(player)) {
+                    continue;
+                }
+
+                info.addEntry(new TabEntry(member.getName(), true, ((CraftPlayer) member).getHandle().ping), x, y);
 
                 y++;
 
