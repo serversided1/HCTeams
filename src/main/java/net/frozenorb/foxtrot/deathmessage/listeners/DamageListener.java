@@ -138,6 +138,7 @@ public class DamageListener implements Listener {
 
         //DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         DeathMessageHandler.clearDamage(event.getEntity());
+        Foxtrot.getInstance().getDeathsMap().setDeaths(event.getEntity().getUniqueId(), Foxtrot.getInstance().getDeathsMap().getDeaths(event.getEntity().getUniqueId()) + 1);
     }
 
     private boolean isNaked(Player player) {

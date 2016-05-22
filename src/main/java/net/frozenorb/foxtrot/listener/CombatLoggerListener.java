@@ -133,8 +133,10 @@ public class CombatLoggerListener implements Listener {
             }
 
             if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats((Player) event.getEntity()).addDeath();
+                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
             }
+
+            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
 
             Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
 
