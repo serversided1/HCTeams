@@ -9,6 +9,7 @@ import net.frozenorb.qlib.tab.TabInfo;
 import net.frozenorb.qlib.tab.TabInfoGetter;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -65,6 +66,22 @@ public class FoxtrotTabGetter implements TabInfoGetter {
 
                 if (koth.getCurrentCapper() != null) {
                     info.addEntry(new TabEntry(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(koth.getRemainingCapTime()), false, 0), 0, 15);
+                }
+            }
+
+            info.addEntry(new TabEntry(ChatColor.RED + "Team Info:", false, 0), 0, 2);
+            info.addEntry(new TabEntry(ChatColor.RED + "Members Online", false, 0), 0, 3);
+
+            int x = 1;
+            int y = 4;
+            for (Player member : team.getOnlineMembers()) {
+                info.addEntry(new TabEntry(member.getName(), true, ((CraftPlayer) player).getHandle().ping), x, y);
+
+                y++;
+
+                if (y > 20) {
+                    y = 0;
+                    x++;
                 }
             }
         }
