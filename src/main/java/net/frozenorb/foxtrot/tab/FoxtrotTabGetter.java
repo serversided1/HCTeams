@@ -40,9 +40,9 @@ public class FoxtrotTabGetter implements TabInfoGetter {
 
             info.addEntry(new TabEntry(ChatColor.RED + "Player Info:", false, 0), 0, 8);
             info.addEntry(new TabEntry(ChatColor.BLUE + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()), false, 0), 0, 9);
-            // TODO: Deaths
+            info.addEntry(new TabEntry(ChatColor.BLUE + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()), false, 0), 0, 10);
 
-            info.addEntry(new TabEntry(ChatColor.RED + "Events:", false, 0), 0, 11);
+            info.addEntry(new TabEntry(ChatColor.RED + "Events:", false, 0), 0, 12);
 
             KOTH koth = null;
             for (KOTH k : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
@@ -54,17 +54,17 @@ public class FoxtrotTabGetter implements TabInfoGetter {
             }
 
             if (koth == null) {
-                info.addEntry(new TabEntry(ChatColor.BLUE + "N/A", false, 0), 0, 12);
+                info.addEntry(new TabEntry(ChatColor.BLUE + "N/A", false, 0), 0, 13);
 
                 // TODO: Show next KOTH and in how long it'll go active
                 for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
                 }
             } else {
-                info.addEntry(new TabEntry(ChatColor.BLUE + koth.getName(), false, 0), 0, 12);
-                info.addEntry(new TabEntry(ChatColor.YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ(), false, 0), 0, 13);
+                info.addEntry(new TabEntry(ChatColor.BLUE + koth.getName(), false, 0), 0, 13);
+                info.addEntry(new TabEntry(ChatColor.YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ(), false, 0), 0, 14);
 
                 if (koth.getCurrentCapper() != null) {
-                    info.addEntry(new TabEntry(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(koth.getRemainingCapTime()), false, 0), 0, 14);
+                    info.addEntry(new TabEntry(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(koth.getRemainingCapTime()), false, 0), 0, 15);
                 }
             }
         }
