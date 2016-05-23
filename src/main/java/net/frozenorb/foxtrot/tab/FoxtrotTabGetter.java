@@ -71,9 +71,6 @@ public class FoxtrotTabGetter implements TabInfoProvider {
             }
         }
 
-
-        // verification testing
-
         info.addEntry(TabEntry.of(ChatColor.RED + "Team Info:", 0), 0, 2);
         info.addEntry(TabEntry.of(ChatColor.RED + "Members Online", 0), 0, 3);
 
