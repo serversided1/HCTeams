@@ -19,12 +19,6 @@ public enum Deathban {
         return (int) TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
     }
 
-    public String inHours() {
-        int hours = toHours();
-
-        return hours > 1 ? hours + " Hours" : hours + " Hour"; // 1 Hour, 2 Hours, 3 Hours, etc
-    }
-
     private int toHours() {
         return (int) TimeUnit.MINUTES.toHours(minutes);
     }
