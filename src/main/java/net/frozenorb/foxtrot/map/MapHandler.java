@@ -41,6 +41,8 @@ public class MapHandler {
     @Getter private boolean craftingGopple;
     @Getter private boolean craftingReducedMelon;
     @Getter private int goppleCooldown;
+    @Getter private int netherBuffer;
+    @Getter private int worldBuffer;
     @Getter private int minForceInviteMembers = 10;
 
     // Kit-Map only stuff:
@@ -82,6 +84,8 @@ public class MapHandler {
                 ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);
                 BorderListener.BORDER_SIZE = dbObject.getInt("border", 3000);
                 this.goppleCooldown = dbObject.getInt("goppleCooldown");
+                this.netherBuffer = dbObject.getInt("netherBuffer");
+                this.worldBuffer = dbObject.getInt("worldBuffer");
 
                 BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
 
@@ -180,6 +184,8 @@ public class MapHandler {
         dbObject.put("scoreboardTitle", "&6&lHCTeams &c[Map 1]");
         dbObject.put("mapStartedString", "Map 3 - Started January 31, 2015");
         dbObject.put("warzone", 1000);
+        dbObject.put("netherBuffer", 150);
+        dbObject.put("worldBuffer", 300);
         dbObject.put("border", 3000);
         dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
 
