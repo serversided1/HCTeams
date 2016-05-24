@@ -21,9 +21,9 @@ public class HelpCommand {
         String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
                 "HCSquads" : "HCTeams";
 
-        String proTime = TimeUtils.formatIntoDetailedString(PRO.seconds());
-        String vipTime = TimeUtils.formatIntoDetailedString(VIP.seconds());
-        String defaultTime = TimeUtils.formatIntoDetailedString(DEFAULT.seconds());
+        String proTime = TimeUtils.formatIntoDetailedString(PRO.inSeconds());
+        String vipTime = TimeUtils.formatIntoDetailedString(VIP.inSeconds());
+        String defaultTime = TimeUtils.formatIntoDetailedString(DEFAULT.inSeconds());
 
         sender.sendMessage(new String[] {
 

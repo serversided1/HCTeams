@@ -15,13 +15,8 @@ public enum Deathban {
     @Getter private final String permission;
     private int minutes;
 
-    public long inSeconds() {
-        return TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
-    }
-
-    public int seconds() {
-        int convertedTime = (int) inSeconds();
-        return convertedTime;
+    public int inSeconds() {
+        return (int) TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
     }
 
     public String inHours() {
