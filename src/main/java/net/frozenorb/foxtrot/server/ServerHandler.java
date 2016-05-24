@@ -346,7 +346,7 @@ public class ServerHandler {
         }
 
         // The default max.
-        long max = Deathban.DEFAULT.inSeconds();
+        int max = Deathban.DEFAULT.inSeconds();
 
         if (player != null) {
             for (Deathban deathban : Deathban.values()) {

@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,10 @@ public class HelpCommand {
         String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
                 "HCSquads" : "HCTeams";
 
+        String proTime = TimeUtils.formatIntoDetailedString(PRO.inSeconds());
+        String vipTime = TimeUtils.formatIntoDetailedString(VIP.inSeconds());
+        String defaultTime = TimeUtils.formatIntoDetailedString(DEFAULT.inSeconds());
+
         sender.sendMessage(new String[] {
 
                 "§6§m-----------------------------------------------------",
@@ -30,7 +35,7 @@ public class HelpCommand {
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnchant Limits: §7" + prot + ", " + sharp + ", " + bow,
-                "§eDeathban: §7" + "§6PRO§7: " + PRO.inHours() + ", §aVIP§7: " + VIP.inHours() + ", §fDefault§7: " + DEFAULT.inHours(),
+                "§eDeathban: §7" + "§6PRO§7: " + proTime + ", §aVIP§7: " + vipTime + ", §fDefault§7: " + defaultTime,
                 "§eWorld Map: §7" + "http://www.hcteams.com/map/",
 
                 "",

@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.server;
 import com.mongodb.BasicDBObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
@@ -16,14 +15,8 @@ public enum Deathban {
     @Getter private final String permission;
     private int minutes;
 
-    public long inSeconds() {
-        return TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
-    }
-
-    public String inHours() {
-        int hours = toHours();
-
-        return hours > 1 ? hours + " Hours" : hours + " Hour"; // 1 Hour, 2 Hours, 3 Hours, etc
+    public int inSeconds() {
+        return (int) TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
     }
 
     private int toHours() {
