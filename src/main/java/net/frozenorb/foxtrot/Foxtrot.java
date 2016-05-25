@@ -4,7 +4,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
 import lombok.Getter;
 import net.frozenorb.foxtrot.chat.ChatHandler;
-import net.frozenorb.foxtrot.chunklimiter.ChunkLimiterListener;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.crates.CrateListener;
@@ -25,6 +24,7 @@ import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.tab.FoxtrotTabLayoutProvider;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
@@ -34,6 +34,7 @@ import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
+import net.frozenorb.qlib.tab.FrozenTabHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -115,6 +116,8 @@ public class Foxtrot extends JavaPlugin {
         FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         FrozenEconomyHandler.init();
+
+        FrozenTabHandler.setLayoutProvider(new FoxtrotTabLayoutProvider());
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
