@@ -2,89 +2,81 @@ package net.frozenorb.foxtrot.tab;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabEntry;
-import net.frozenorb.qlib.tab.TabInfo;
-import net.frozenorb.qlib.tab.TabInfoProvider;
+import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
-
-public class FoxtrotTabGetter implements TabInfoProvider {
+public class FoxtrotTabGetter implements LayoutProvider {
 
     @Override
-    public TabInfo getTabInfo(Player player) {
-        TabInfo info = new TabInfo();
-
-        info.addEntry(TabEntry.of(ChatColor.GOLD + "HCTeams.com", 0), 1, 0);
-
+    public TabLayout provide(Player player) {
+        TabLayout layout = TabLayout.create(player);
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-        info.addEntry(TabEntry.of(ChatColor.RED + "Home:", 0), 0, 0);
+        layout.set(1, 0, TabEntry.of(ChatColor.GOLD.toString() + ChatColor.BOLD + "HCTeams.com"));
+
+        layout.set(0, 0, TabEntry.of(ChatColor.RED + "Home:"));
         if (team == null || team.getHQ() == null) {
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "None", 0), 0, 1);
+            layout.set(0, 1, TabEntry.of(ChatColor.BLUE + "None"));
         } else {
             String homeLocation = team.getHQ().getBlockX() + ", " + team.getHQ().getBlockY() + ", " + team.getHQ().getBlockZ();
-            info.addEntry(TabEntry.of(ChatColor.BLUE + homeLocation, 0), 0, 1);
+
+            layout.set(0, 1, TabEntry.of(homeLocation));
         }
 
-        info.addEntry(TabEntry.of(ChatColor.RED + "Team Info:", 0), 0, 3);
-        if (team != null) {
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "DTR: " + Team.DTR_FORMAT.format(team.getDTR()), 0), 0, 4);
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "Online: " + team.getOnlineMemberAmount(), 0), 0, 5);
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "Total: " + team.getMembers().size(), 0), 0, 6);
+        layout.set(0, 3, TabEntry.of(ChatColor.RED + "Team Info:"));
+        if (team == null) {
+            layout.set(0, 4, TabEntry.of(ChatColor.BLUE + "No Team"));
         } else {
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "No Team", 0), 0, 4);
+            layout.set(0, 4, TabEntry.of(ChatColor.BLUE + "DTR: " + Team.DTR_FORMAT.format(team.getDTR())));
+            layout.set(0, 5, TabEntry.of(ChatColor.BLUE + "Online: " + team.getOnlineMemberAmount()));
+            layout.set(0, 6, TabEntry.of(ChatColor.BLUE + "Total: " + team.getMembers().size()));
         }
 
-        info.addEntry(TabEntry.of(ChatColor.RED + "Player Info:", 0), 0, 8);
-        info.addEntry(TabEntry.of(ChatColor.BLUE + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()), 0), 0, 9);
-        info.addEntry(TabEntry.of(ChatColor.BLUE + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()), 0), 0, 10);
+        layout.set(0, 8, TabEntry.of(ChatColor.RED + "Player Info:"));
+        layout.set(0, 9, TabEntry.of(ChatColor.BLUE + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId())));
+        layout.set(0, 10, TabEntry.of(ChatColor.BLUE + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId())));
 
-        info.addEntry(TabEntry.of(ChatColor.RED + "Events:", 0), 0, 12);
+        layout.set(0, 12, TabEntry.of(ChatColor.RED + "Events:"));
 
-        KOTH koth = null;
-        for (KOTH k : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (k.isActive()) {
-
-                koth = k;
+        KOTH activeKOTH = null;
+        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+            if (koth.isActive()) {
+                activeKOTH = koth;
                 break;
             }
         }
 
-        if (koth == null) {
-            info.addEntry(TabEntry.of(ChatColor.BLUE + "N/A", 0), 0, 13);
+        if (activeKOTH == null) {
+            layout.set(0, 13, TabEntry.of(ChatColor.BLUE + "N/A"));
 
-            // TODO: Show next KOTH and in how long it'll go active
-            for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
-
-            }
+            // TODO: Show next KOTH (pull it from KOTH schedule) and in how long it's going active
         } else {
-            info.addEntry(TabEntry.of(ChatColor.BLUE + koth.getName(), 0), 0, 13);
-            info.addEntry(TabEntry.of(ChatColor.YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ(), 0), 0, 14);
-
-            if (koth.getCurrentCapper() != null) {
-                info.addEntry(TabEntry.of(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(koth.getRemainingCapTime()), 0), 0, 15);
+            layout.set(0, 13, TabEntry.of(ChatColor.BLUE + activeKOTH.getName()));
+            layout.set(0, 14, TabEntry.of(ChatColor.YELLOW.toString() + activeKOTH.getCapLocation().getBlockX() + ", " + activeKOTH.getCapLocation().getBlockY() + ", " + activeKOTH.getCapLocation().getBlockZ())); // location
+            if (activeKOTH.getCurrentCapper() != null) {
+                layout.set(0, 15, TabEntry.of(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime())));
             }
         }
 
-        info.addEntry(TabEntry.of(ChatColor.RED + "Team Info:", 0), 0, 2);
-        info.addEntry(TabEntry.of(ChatColor.RED + "Members Online", 0), 0, 3);
+        layout.set(1, 2, TabEntry.of(ChatColor.RED + "Team Members Online:"));
 
         if (team != null) {
-            info.addEntry(TabEntry.of(player), 1, 4);
+            layout.set(1, 3, TabEntry.of(player));
 
             int x = 1;
-            int y = 5;
+            int y = 4;
+
             for (Player member : team.getOnlineMembers()) {
                 if (member.equals(player)) {
                     continue;
                 }
 
-                info.addEntry(TabEntry.of(player), x, y);
+                layout.set(x, y, TabEntry.of(player));
 
                 y++;
 
@@ -95,7 +87,7 @@ public class FoxtrotTabGetter implements TabInfoProvider {
             }
         }
 
-        return info;
+        return layout;
     }
 
 }
