@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.map;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
@@ -41,8 +42,8 @@ public class MapHandler {
     @Getter private boolean craftingGopple;
     @Getter private boolean craftingReducedMelon;
     @Getter private int goppleCooldown;
-    @Getter private int netherBuffer;
-    @Getter private int worldBuffer;
+    @Getter @Setter private int netherBuffer;
+    @Getter @Setter private int worldBuffer;
     @Getter private int minForceInviteMembers = 10;
 
     // Kit-Map only stuff:
@@ -220,6 +221,36 @@ public class MapHandler {
                 dbObject.put("border", BorderListener.BORDER_SIZE); // update the border
 
                 FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString()))); // save it exactly like it was except for the border that was changed.
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void saveNetherBuffer() {
+        try {
+            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+            if (dbObject != null) {
+                dbObject.put("netherBuffer", Foxtrot.getInstance().getMapHandler().getNetherBuffer()); // update the nether buffer
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString()))); // save it exactly like it was except for the nether that was changed.
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void saveWorldBuffer() {
+        try {
+            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+            if (dbObject != null) {
+                dbObject.put("worldBuffer", Foxtrot.getInstance().getMapHandler().getWorldBuffer()); // update the world buffer
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString()))); // save it exactly like it was except for the nether that was changed.
             }
         } catch (IOException e) {
             e.printStackTrace();
