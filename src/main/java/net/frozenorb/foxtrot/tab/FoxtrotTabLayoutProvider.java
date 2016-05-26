@@ -223,13 +223,13 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         ++y; // blank line
 
         layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Border:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.RED + BorderListener.BORDER_SIZE));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + Integer.parseInt(BorderListener.BORDER_SIZE)));
 
         return layout;
     }
 
     public static String formatIntoDetailedString(int secs) {
-        if(secs == 0) {
+        if (secs == 0) {
             return "0 seconds";
         } else {
             int remainder = secs % 86400;
@@ -237,10 +237,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             int hours = remainder / 3600;
             int minutes = remainder / 60 - hours * 60;
             int seconds = remainder % 3600 - minutes * 60;
-            String fDays = days > 0 ? " " + days + " day" + (days > 1?"s":""):"";
-            String fHours = hours > 0 ? " " + hours + " hour" + (hours > 1?"s":""):"";
-            String fMinutes = minutes > 0 ? " " + minutes + " minute" + (minutes > 1?"s":""):"";
-            String fSeconds = (seconds > 0 && hours <= 0) ? " " + seconds + " second" + (seconds > 1?"s":""):"";
+            String fDays = days > 0 ? " " + days + " day" + (days > 1 ? "s" : "") : "";
+            String fHours = hours > 0 ? " " + hours + " hour" + (hours > 1 ? "s" : "") : "";
+            String fMinutes = minutes > 0 ? " " + minutes + " minute" + (minutes > 1 ? "s" : "") : "";
+            String fSeconds = (seconds > 0 && hours <= 0) ? " " + seconds + " second" + (seconds > 1 ? "s" : "") : "";
             return (fDays + fHours + fMinutes + fSeconds).trim();
         }
 
