@@ -46,7 +46,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             ++y; // blank
 
             layout.set(0, ++y, TabEntry.of(ChatColor.RED + team.getName()));
-            layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "DTR: " + Team.DTR_FORMAT.format(team.getDTR())));
+            layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "DTR: " + (team.isRaidable() ? ChatColor.RED : ChatColor.BLUE) + Team.DTR_FORMAT.format(team.getDTR())));
             layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "Online: " + team.getOnlineMemberAmount() + "/" + team.getMembers().size()));
 
             ++y; // blank
