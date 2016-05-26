@@ -188,6 +188,14 @@ public class ServerHandler {
         }
     }
 
+    public String getEnchants() {
+        if (Enchantment.DAMAGE_ALL.getMaxLevel() == 0 && Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel() == 0) {
+            return "No Enchants";
+        } else {
+            return "Prot " + Integer.toString(Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel()) + ", Sharp " + Integer.toString(Enchantment.DAMAGE_ALL.getMaxLevel());
+        }
+    }
+
     public boolean isWarzone(Location loc) {
         if (loc.getWorld().getEnvironment() != Environment.NORMAL) {
             return (false);

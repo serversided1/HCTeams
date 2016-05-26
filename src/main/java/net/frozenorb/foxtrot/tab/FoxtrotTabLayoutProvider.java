@@ -5,6 +5,8 @@ import javafx.util.Pair;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
+import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.tab.LayoutProvider;
@@ -14,6 +16,7 @@ import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -208,20 +211,19 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             y = 0;
         }
 
-        layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "All 2500, 2500"));
+        layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portals:"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation()));
+        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "each quadrant"));
 
         ++y; // blank line
-        
-        /* Hard code stuff until I modify this in my IDE */
 
         layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Kit:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "Prot 1, Sharp 1"));
-        
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + Foxtrot.getInstance().getServerHandler().getEnchants()));
+
         ++y; // blank line
 
         layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Border:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "3000"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + BorderListener.BORDER_SIZE));
 
         return layout;
     }

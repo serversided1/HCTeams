@@ -34,6 +34,7 @@ public class HelpCommand {
                 "§eCurrent Map: §7" + Foxtrot.getInstance().getMapHandler().getMapStartedString(),
                 "§eMap Border: §7" + BorderListener.BORDER_SIZE,
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
+                "§eEnd Portals: §7" +  Foxtrot.getInstance().getMapHandler().getEndPortalLocation() + " in each quadrant",
                 "§eEnchant Limits: §7" + prot + ", " + sharp + ", " + bow,
                 "§eDeathban: §7" + "§6PRO§7: " + proTime + ", §aVIP§7: " + vipTime + ", §fDefault§7: " + defaultTime,
                 "§eWorld Map: §7" + "http://www.hcteams.com/map/",

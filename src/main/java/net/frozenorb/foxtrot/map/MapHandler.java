@@ -42,9 +42,10 @@ public class MapHandler {
     @Getter private boolean craftingGopple;
     @Getter private boolean craftingReducedMelon;
     @Getter private int goppleCooldown;
+    @Getter private int minForceInviteMembers = 10;
+    @Getter private String endPortalLocation;
     @Getter @Setter private int netherBuffer;
     @Getter @Setter private int worldBuffer;
-    @Getter private int minForceInviteMembers = 10;
 
     // Kit-Map only stuff:
     @Getter private StatsHandler statsHandler;
@@ -87,6 +88,7 @@ public class MapHandler {
                 this.goppleCooldown = dbObject.getInt("goppleCooldown");
                 this.netherBuffer = dbObject.getInt("netherBuffer");
                 this.worldBuffer = dbObject.getInt("worldBuffer");
+                this.endPortalLocation = dbObject.getString("endPortalLocation");
 
                 BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
 
@@ -187,6 +189,7 @@ public class MapHandler {
         dbObject.put("warzone", 1000);
         dbObject.put("netherBuffer", 150);
         dbObject.put("worldBuffer", 300);
+        dbObject.put("endPortalLocation", "2500, 2500");
         dbObject.put("border", 3000);
         dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
 
