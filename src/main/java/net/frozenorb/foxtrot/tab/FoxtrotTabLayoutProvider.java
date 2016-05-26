@@ -194,6 +194,15 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                     x++;
                 }
             }
+
+            // basically, if we're not on the third column yet, set the y to 0, and go to the third column.
+            // if we're already there, just place whatever we got under the last player's name
+            if (x < 2) {
+                y = 0;
+            }
+
+            layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
+            layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "2500, 2500 each quadrant"));
         }
 
         return layout;
