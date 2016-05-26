@@ -123,9 +123,9 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(0, ++y, TabEntry.of(ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime())));
         }
 
-        layout.set(1, 2, TabEntry.of(ChatColor.RED + "Members Online"));
-
         if (team != null) {
+            layout.set(1, 2, TabEntry.of(ChatColor.GREEN + "Teammates Online"));
+
             String watcherName = ChatColor.DARK_GREEN + player.getName();
             if (team.isOwner(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "**";
