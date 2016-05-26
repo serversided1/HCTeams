@@ -223,7 +223,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         ++y; // blank line
 
         layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Border:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.RED + Integer.parseInt(BorderListener.BORDER_SIZE)));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + String.valueOf(BorderListener.BORDER_SIZE)));
 
         return layout;
     }
