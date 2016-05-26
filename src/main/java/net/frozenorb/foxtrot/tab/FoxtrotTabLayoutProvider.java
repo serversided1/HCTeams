@@ -202,15 +202,15 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             } else {
                 y++; // comment this out if you don't want a space in between the last player and the info below:
             }
-
-            layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
-            layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "2500, 2500 each quadrant"));
-
-            ++y; // blank line
-
-            layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Kit:"));
-            layout.set(2, ++y, TabEntry.of(ChatColor.RED + "Sharp 30912, FF 1"));
         }
+
+        layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "2500, 2500 each quadrant"));
+
+        ++y; // blank line
+
+        layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Kit:"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "Sharp 30912, FF 1"));
 
         return layout;
     }
