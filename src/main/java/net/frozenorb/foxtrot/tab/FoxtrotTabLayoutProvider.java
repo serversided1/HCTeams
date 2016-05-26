@@ -204,6 +204,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             }
         }
 
+        if (team == null) {
+            y = 0;
+        }
+
         layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
         layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "2500, 2500 each quadrant"));
 
