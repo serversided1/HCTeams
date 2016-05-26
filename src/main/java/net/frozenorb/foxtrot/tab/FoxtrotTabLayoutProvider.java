@@ -54,7 +54,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
         layout.set(0, ++y, TabEntry.of(ChatColor.RED + "Player Info:"));
         layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId())));
-        layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId())));
+//        layout.set(0, ++y, TabEntry.of(ChatColor.BLUE + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId())));
 
         ++y; // blank
 
