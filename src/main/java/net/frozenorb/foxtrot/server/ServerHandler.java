@@ -468,7 +468,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 300;
+        int radius = Foxtrot.getInstance().getMapHandler().getWorldBuffer();
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
@@ -480,7 +480,7 @@ public class ServerHandler {
             return (false);
         }
 
-        int radius = 100;
+        int radius = Foxtrot.getInstance().getMapHandler().getNetherBuffer();
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
 
