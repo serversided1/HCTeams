@@ -209,12 +209,19 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         layout.set(2, y, TabEntry.of(ChatColor.DARK_PURPLE + "End Portal:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "2500, 2500 each quadrant"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.YELLOW + "All 2500, 2500"));
 
         ++y; // blank line
+        
+        /* Hard code stuff until I modify this in my IDE */
 
         layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Kit:"));
-        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "Sharp 30912, FF 1"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "Prot 1, Sharp 1"));
+        
+        ++y; // blank line
+
+        layout.set(2, ++y, TabEntry.of(ChatColor.BLUE + "Border:"));
+        layout.set(2, ++y, TabEntry.of(ChatColor.RED + "3000"));
 
         return layout;
     }
