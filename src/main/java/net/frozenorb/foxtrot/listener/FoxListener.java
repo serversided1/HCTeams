@@ -531,7 +531,7 @@ public class FoxListener implements Listener {
 
                     event.getPlayer().sendMessage(ChatColor.RED + "Your PvP Protection has been removed for entering claimed land.");
                 } else if (ownerTo != null && ownerTo.getOwner() != null) {
-                    if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
+                    if (ownerTo.getOwner() != null && !ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
                         event.setCancelled(true);
 
                         for (Claim claim : ownerTo.getClaims()) {
