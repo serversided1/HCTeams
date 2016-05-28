@@ -117,8 +117,6 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                         .replace("seconds", "sec").replace("second", "sec");
 
                 layout.set(0, ++y, ChatColor.YELLOW + time);
-            } else {
-                layout.set(0, ++y, ChatColor.DARK_PURPLE + "N/A");
             }
         } else {
             layout.set(0, ++y, ChatColor.DARK_PURPLE + activeKOTH.getName());
@@ -211,9 +209,11 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             y = 0;
         }
 
-        layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
-        layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
-        layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
+        if (!Foxtrot.getInstance().getMapHandler().getEndPortalLocation().equals("N/A")) {
+            layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
+            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
+            layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
+        }
 
         ++y;
         layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
