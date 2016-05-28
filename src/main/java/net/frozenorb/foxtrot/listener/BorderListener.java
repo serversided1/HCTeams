@@ -98,6 +98,7 @@ public class BorderListener implements Listener {
 
                 if (tries >= 99) {
                     Foxtrot.getInstance().getLogger().severe("The server would have crashed while doing border checks! New X: " + newLocation.getX() + ", Old X: " + event.getTo().getBlockX());
+                    return;
                 }
 
                 tries = 0;
@@ -108,6 +109,7 @@ public class BorderListener implements Listener {
 
                 if (tries >= 99) {
                     Foxtrot.getInstance().getLogger().severe("The server would have crashed while doing border checks! New Z: " + newLocation.getZ() + ", Old Z: " + event.getTo().getBlockZ());
+                    return;
                 }
 
                 while (newLocation.getBlock().getType() != Material.AIR) {
