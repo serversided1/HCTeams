@@ -691,9 +691,9 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
         public CuboidIterator(World w, int x1, int y1, int z1, int x2, int y2, int z2) {
             this.w = w;
-            this.baseX = x1;
-            this.baseY = y1;
-            this.baseZ = z1;
+            this.baseX = Math.min(x1, x2);
+            this.baseY = Math.min(y1, y2);;
+            this.baseZ = Math.min(z1, z2);;
             this.sizeX = Math.abs(x2 - x1) + 1;
             this.sizeY = Math.abs(y2 - y1) + 1;
             this.sizeZ = Math.abs(z2 - z1) + 1;
