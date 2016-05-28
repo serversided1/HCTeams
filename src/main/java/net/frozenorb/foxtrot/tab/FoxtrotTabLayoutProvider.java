@@ -213,11 +213,14 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
             layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
             layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
-        }
 
-        ++y;
-        layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
-        layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+            ++y;
+            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
+            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+        } else {
+            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
+            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+        }
 
         ++y;
         layout.set(2, ++y, ChatColor.DARK_PURPLE + "Border:");
