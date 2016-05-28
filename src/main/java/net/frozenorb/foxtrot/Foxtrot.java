@@ -117,7 +117,7 @@ public class Foxtrot extends JavaPlugin {
         FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
         FrozenEconomyHandler.init();
 
-        //FrozenTabHandler.setLayoutProvider(new FoxtrotTabLayoutProvider());
+        FrozenTabHandler.setLayoutProvider(new FoxtrotTabLayoutProvider());
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new SignGUIPacketAdaper());
         ProtocolLibrary.getProtocolManager().addPacketListener(new ClientCommandPacketAdaper());
