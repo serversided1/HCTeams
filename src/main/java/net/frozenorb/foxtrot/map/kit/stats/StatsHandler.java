@@ -40,8 +40,8 @@ public class StatsHandler implements Listener {
 
     public StatsHandler() {
         qLib.getInstance().runRedisCommand(redis -> {
-            for (String key : redis.keys("stats.*")) {
-                UUID uuid = UUID.fromString(key.split(".")[1]);
+            for (String key : redis.keys("stats:*")) {
+                UUID uuid = UUID.fromString(key.split(":")[1]);
                 StatsEntry entry = qLib.PLAIN_GSON.fromJson(redis.get(key), StatsEntry.class);
 
                 stats.put(uuid, entry);
@@ -140,7 +140,7 @@ public class StatsHandler implements Listener {
 
             // stats
             for (StatsEntry entry : stats.values()) {
-                redis.set("stats." + entry.getOwner().toString(), qLib.PLAIN_GSON.toJson(entry));
+                redis.set("stats:" + entry.getOwner().toString(), qLib.PLAIN_GSON.toJson(entry));
             }
             return null;
         });

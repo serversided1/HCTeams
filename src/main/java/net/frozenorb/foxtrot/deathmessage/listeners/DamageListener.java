@@ -98,6 +98,7 @@ public class DamageListener implements Listener {
                             }
 
                             Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
+                            Foxtrot.getInstance().getDeathsMap().setDeaths(victim.getUniqueId(), victimStats.getDeaths());
                         }
                     } else {
                         Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
@@ -114,9 +115,12 @@ public class DamageListener implements Listener {
             event.getEntity().getKiller().sendMessage(deathMessage);
         }
 
+        event.getEntity().sendMessage(deathMessage);
+
+        Player killer = event.getEntity().getKiller();
         Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (event.getEntity().getKiller() != null && player.equals(event.getEntity().getKiller())) {
+                if (killer != null && player.equals(killer)) {
                     continue;
                 }
 
@@ -134,9 +138,7 @@ public class DamageListener implements Listener {
                     }
 
                     // send them the message if the killer was on their team
-                    if (event.getEntity().getKiller() != null) {
-                        Player killer = event.getEntity().getKiller();
-
+                    if (killer != null) {
                         if (Foxtrot.getInstance().getTeamHandler().getTeam(killer) != null
                                 && Foxtrot.getInstance().getTeamHandler().getTeam(player).equals(Foxtrot.getInstance().getTeamHandler().getTeam(killer))) {
                             player.sendMessage(deathMessage);
