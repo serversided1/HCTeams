@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
+import net.frozenorb.foxtrot.minerworld.MinerWorldHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
@@ -60,6 +61,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
     @Getter private GlowHandler glowHandler;
+    @Getter private MinerWorldHandler minerWorldHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -169,6 +171,7 @@ public class Foxtrot extends JavaPlugin {
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
+        minerWorldHandler = new MinerWorldHandler();
 
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.commands");
