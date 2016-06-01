@@ -180,6 +180,10 @@ public class Portal {
         Cuboid down = expanded.getFace(Cuboid.CuboidDirection.Down);
 
         for (Block block : expanded) {
+            if (!block.getChunk().isLoaded()) {
+                block.getChunk().load();
+            }
+
             if (!portal.contains(block) && block.getType() != Material.AIR & !down.contains(block)) {
                 block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
                 block.setTypeIdAndData(Material.AIR.getId(), (byte) 0, false);
@@ -187,9 +191,13 @@ public class Portal {
         }
 
         for (Block block : down) {
+            if (!block.getChunk().isLoaded()) {
+                block.getChunk().load();
+            }
             if (block.getType() == Material.OBSIDIAN) {
                 continue;
             }
+
             block.setTypeIdAndData(Material.OBSIDIAN.getId(), (byte) 0, false);
             block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, block.getTypeId());
         }
