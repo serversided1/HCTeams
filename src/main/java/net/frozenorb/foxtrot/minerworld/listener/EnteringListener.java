@@ -5,7 +5,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class EnteringListener implements Listener {
@@ -19,7 +21,7 @@ public class EnteringListener implements Listener {
 
         if (player.getWorld().equals(portalLocation.getWorld())) {
             if (player.getLocation().distance(portalLocation) <= radius) {
-                if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player)) {
+                if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You can't enter the Miner World at the moment. There are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.");
                     event.setCancelled(true);
                     player.teleport(player.getWorld().getSpawnLocation());
@@ -28,6 +30,16 @@ public class EnteringListener implements Listener {
                     player.sendMessage(ChatColor.YELLOW + "You have entered the " + ChatColor.GREEN + "Miner World" + ChatColor.YELLOW + ".");
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld()) && !Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "You're currently in the Miner World and there are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.\n" +
+                    "You're not allowed to login.");
         }
     }
 

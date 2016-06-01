@@ -5,3 +5,9 @@ Mongo:
     Host: '127.0.0.1'
     DBName: 'HCTeams'
 squads: false
+minerWorld:
+  regen:
+    COAL_ORE: 30
+    IRON_ORE: 60
+    GOLD_ORE: 90
+    DIAMOND_ORE: 120
