@@ -23,13 +23,15 @@ public class MinerWorldHandler {
 
     @Getter private final World world;
 
+    @Getter @Setter private boolean enabled;
+
     @Getter private final BlockRegenHandler blockRegenHandler;
 
     @Getter @Setter private Location portalLocation;
     @Getter @Setter private int portalRadius;
 
     @Getter @Setter private int maxFactionAmount;
-    private Set<UUID> players;
+    @Getter private Set<UUID> players;
 
     public MinerWorldHandler() {
         world = Bukkit.createWorld(new WorldCreator("world_miner"));

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.minerworld.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -37,10 +38,24 @@ public class EnteringListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld()) && !Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "You're currently in the Miner World and there are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.\n" +
-                    "You're not allowed to login.");
+        if (!player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
+            return;
         }
+
+        if (Foxtrot.getInstance().getMinerWorldHandler().isEnabled()) {
+            if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "You're currently in the Miner World and there are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.\n" +
+                        "You're not allowed to login.");
+            }
+        } else {
+            Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+
+                player.sendMessage(ChatColor.RED + "Miner World is disabled. You have been teleported to spawn.");
+            }, 5L);
+        }
+
+
     }
 
 }
