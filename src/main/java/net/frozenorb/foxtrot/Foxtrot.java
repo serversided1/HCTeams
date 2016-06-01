@@ -144,7 +144,6 @@ public class Foxtrot extends JavaPlugin {
 
         RedisSaveTask.save(null, false);
         Foxtrot.getInstance().getServerHandler().save();
-        Foxtrot.getInstance().getGlowHandler().save();
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().save();
