@@ -11,6 +11,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
@@ -226,8 +227,11 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         layout.set(2, ++y, ChatColor.DARK_PURPLE + "Border:");
         layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(BorderListener.BORDER_SIZE));
 
-        Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
+        ++y;
+        layout.set(2, ++y, ChatColor.DARK_PURPLE + "Players Online:");
+        layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
 
+        Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
         if (capper != null) {
             ++y;
             layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
