@@ -18,6 +18,7 @@ import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.block.Block;
@@ -524,6 +525,17 @@ public class FoxListener implements Listener {
         Team ownerTo = LandBoard.getInstance().getTeam(event.getTo());
 
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+
+            //prevent stack overflow
+            if (ownerTo.getName().equalsIgnoreCase("spawn")) {
+                return;
+            }
+
+            //prevent staff from being teleported during the claiming process
+            if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+
             if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getTo())) {
 
                 if (DTRBitmask.KOTH.appliesAt(event.getTo()) || DTRBitmask.CITADEL.appliesAt(event.getTo())) {
@@ -533,10 +545,6 @@ public class FoxListener implements Listener {
                 } else if (ownerTo != null && ownerTo.getOwner() != null) {
                         if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
                             event.setCancelled(true);
-
-                        if (ownerTo.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
-                            return;
-                        }
 
                         for (Claim claim : ownerTo.getClaims()) {
                             if (claim.contains(event.getFrom()) && !ownerTo.isMember(event.getPlayer().getUniqueId())) {
