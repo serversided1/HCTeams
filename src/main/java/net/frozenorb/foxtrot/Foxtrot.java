@@ -92,6 +92,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private WrappedBalanceMap wrappedBalanceMap;
     @Getter private ToggleFoundDiamondsMap toggleFoundDiamondsMap;
     @Getter private ToggleDeathMessageMap toggleDeathMessageMap;
+    @Getter private ToggleTabListInfoMap toggleTabListInfoMap;
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
 
@@ -182,6 +183,7 @@ public class Foxtrot extends JavaPlugin {
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.koth");
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.server");
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.team");
+        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.settings.commands");
 
         DeathMessageHandler.init();
         DTRHandler.loadDTR();
@@ -251,6 +253,7 @@ public class Foxtrot extends JavaPlugin {
         (wrappedBalanceMap = new WrappedBalanceMap()).loadFromRedis();
         (toggleFoundDiamondsMap = new ToggleFoundDiamondsMap()).loadFromRedis();
         (toggleDeathMessageMap = new ToggleDeathMessageMap()).loadFromRedis();
+        (toggleTabListInfoMap = new ToggleTabListInfoMap()).loadFromRedis();
         (ipMap = new IPMap()).loadFromRedis();
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
     }
