@@ -108,16 +108,18 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
                 KOTH koth = Foxtrot.getInstance().getKOTHHandler().getKOTH(nextKOTH.getKey());
 
-                layout.set(0, ++y, ChatColor.YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ()); // location
+                if (koth != null) {
+                    layout.set(0, ++y, ChatColor.YELLOW.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ()); // location
 
-                int seconds = (int) ((nextKOTH.getValue().getTime() - System.currentTimeMillis()) / 1000);
-                layout.set(0, ++y, ChatColor.DARK_PURPLE + "Goes active in:");
+                    int seconds = (int) ((nextKOTH.getValue().getTime() - System.currentTimeMillis()) / 1000);
+                    layout.set(0, ++y, ChatColor.DARK_PURPLE + "Goes active in:");
 
-                String time = formatIntoDetailedString(seconds)
-                        .replace("minutes", "min").replace("minute", "min")
-                        .replace("seconds", "sec").replace("second", "sec");
+                    String time = formatIntoDetailedString(seconds)
+                            .replace("minutes", "min").replace("minute", "min")
+                            .replace("seconds", "sec").replace("second", "sec");
 
-                layout.set(0, ++y, ChatColor.YELLOW + time);
+                    layout.set(0, ++y, ChatColor.YELLOW + time);
+                }
             }
         } else {
             layout.set(0, ++y, ChatColor.DARK_PURPLE + activeKOTH.getName());
