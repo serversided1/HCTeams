@@ -490,6 +490,7 @@ public class FoxListener implements Listener {
             }
 
             // Add player head to item drops
+            /* Temporarily (maybe permanently) remove player heads since the client blocks on texture downloads.
             if (killer.hasPermission("foxtrot.skulldrop")) {
                 ItemStack skull = new ItemStack(SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
@@ -500,6 +501,7 @@ public class FoxListener implements Listener {
                 skull.setItemMeta(meta);
                 event.getDrops().add(skull);
             }
+            */
 
 //            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
 //                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
