@@ -20,6 +20,10 @@ public class EnteringListener implements Listener {
         int radius = Foxtrot.getInstance().getMinerWorldHandler().getPortalRadius();
         Location portalLocation = Foxtrot.getInstance().getMinerWorldHandler().getPortalLocation();
 
+        if (portalLocation == null) {
+            return;
+        }
+
         if (player.getWorld().equals(portalLocation.getWorld())) {
             if (player.getLocation().distance(portalLocation) <= radius) {
                 if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
