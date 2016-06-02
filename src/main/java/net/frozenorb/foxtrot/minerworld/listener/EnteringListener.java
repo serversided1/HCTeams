@@ -26,10 +26,18 @@ public class EnteringListener implements Listener {
 
         if (player.getWorld().equals(portalLocation.getWorld())) {
             if (player.getLocation().distance(portalLocation) <= radius) {
+                if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You can't enter the Miner World with PvP Protection.");
+                    player.sendMessage(ChatColor.RED + "Type '" + ChatColor.YELLOW + "/pvp enable" + ChatColor.RED + "' to remove your timer.");
+                    event.setCancelled(true);
+                    player.teleport(player.getWorld().getSpawnLocation());
+                    return;
+                }
                 if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You can't enter the Miner World at the moment. There are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.");
                     event.setCancelled(true);
                     player.teleport(player.getWorld().getSpawnLocation());
+                    return;
                 } else {
                     Foxtrot.getInstance().getMinerWorldHandler().enter(player);
                     player.sendMessage(ChatColor.YELLOW + "You have entered the " + ChatColor.GREEN + "Miner World" + ChatColor.YELLOW + ".");
