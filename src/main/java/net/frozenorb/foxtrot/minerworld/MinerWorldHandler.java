@@ -39,13 +39,13 @@ public class MinerWorldHandler {
         blockRegenHandler = new BlockRegenHandler();
 
         qLib.getInstance().runRedisCommand((redis) -> {
-            enabled = Boolean.valueOf(redis.get("minerWorld:enabled"));
+            if (redis.exists("minerWorld:enabled")) enabled = Boolean.valueOf(redis.get("minerWorld:enabled"));
 
-            portalLocation = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:portalLocation"), Location.class);
-            portalRadius = Integer.valueOf(redis.get("minerWorld:portalRadius"));
+            if (redis.exists("minerWorld:portalLocation")) portalLocation = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:portalLocation"), Location.class);
+            if (redis.exists("minerWorld:portalRadius")) portalRadius = Integer.valueOf(redis.get("minerWorld:portalRadius"));
 
-            maxFactionAmount = Integer.valueOf(redis.get("minerWorld:maxFactionAmount"));
-            players = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:players"), new TypeToken<Set<UUID>>() {}.getType());
+            if (redis.exists("minerWorld:maxFactionAmount")) maxFactionAmount = Integer.valueOf(redis.get("minerWorld:maxFactionAmount"));
+            if (redis.exists("minerWorld:players")) players = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:players"), new TypeToken<Set<UUID>>() {}.getType());
             return null;
         });
 
