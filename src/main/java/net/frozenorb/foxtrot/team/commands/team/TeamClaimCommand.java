@@ -55,6 +55,11 @@ public class TeamClaimCommand implements Listener {
             return;
         }
 
+        if (sender.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
+            sender.sendMessage(ChatColor.RED + "You can't claim land in the Miner World.");
+            return;
+        }
+
         if (Foxtrot.getInstance().getServerHandler().isWarzone(sender.getLocation())) {
             sender.sendMessage(ChatColor.RED + "You are currently in the Warzone and can't claim land here. The Warzone ends at " + ServerHandler.WARZONE_RADIUS + ".");
             return;
