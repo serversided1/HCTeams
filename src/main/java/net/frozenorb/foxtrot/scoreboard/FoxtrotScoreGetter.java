@@ -35,9 +35,14 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String bardEnergyScore = getBardEnergyScore(player);
         String fstuckScore = getFStuckScore(player);
         String logoutScore = getLogoutScore(player);
+        String homeScore = getHomeScore(player);
 
         if (spawnTagScore != null) {
             scores.add("&c&lSpawn Tag&7: &c" + spawnTagScore);
+        }
+
+        if (homeScore != null) {
+            scores.add("&9&lHome: &9" + homeScore);
         }
 
         if (enderpearlScore != null) {
@@ -129,6 +134,18 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         return (scores.toArray(new String[scores.size()]));
+    }
+
+    public String getHomeScore(Player player) {
+        if (ServerHandler.getHomeTimer().containsKey(player.getName()) && ServerHandler.getHomeTimer().get(player.getName()) >= System.currentTimeMillis()) {
+            float diff = ServerHandler.getHomeTimer().get(player.getName()) - System.currentTimeMillis();
+
+            if (diff >= 0) {
+                return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+            }
+        }
+
+        return (null);
     }
 
     public String getFStuckScore(Player player) {

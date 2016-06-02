@@ -44,6 +44,7 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,8 @@ public class ServerHandler {
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
     @Getter private Set<UUID> highRollers = new HashSet<>();
+
+    @Getter private static Map<String, Long> homeTimer = new ConcurrentHashMap<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
@@ -408,6 +411,8 @@ public class ServerHandler {
             player.sendMessage(ChatColor.RED + "Your PvP Timer will be removed if the teleport is not cancelled.");
         }
 
+        homeTimer.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(warmup));
+
         new BukkitRunnable() {
 
             int time = warmup;
@@ -420,6 +425,7 @@ public class ServerHandler {
 
                 if (!player.getLocation().getWorld().equals(startLocation.getWorld()) || player.getLocation().distanceSquared(startLocation) >= 0.1 || player.getHealth() < startHealth) {
                     player.sendMessage(ChatColor.YELLOW + "Teleport cancelled.");
+                    homeTimer.remove(player.getName());
                     cancel();
                     return;
                 }
@@ -427,14 +433,29 @@ public class ServerHandler {
                 // Reset their previous health, so players can't start on 1/2 a heart, splash, and then be able to take damage before warping.
                 startHealth = player.getHealth();
 
+                // Prevent server lag from making the home time inaccurate.
+                if (homeTimer.get(player.getName()) <= System.currentTimeMillis()) {
+                    if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                        Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
+                    }
+
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ. (NS)");
+                    player.teleport(team.getHQ());
+                    homeTimer.remove(player.getName());
+                    cancel();
+                    return;
+                }
+
+                // We'll keep this here just in case. Changed the color on the message output if we ever need to debug since this could *should* never be run.
                 if (time == 0) {
                     // Remove their PvP timer.
                     if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 
-                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s HQ.");
                     player.teleport(team.getHQ());
+                    homeTimer.remove(player.getName());
                     cancel();
                 }
             }
