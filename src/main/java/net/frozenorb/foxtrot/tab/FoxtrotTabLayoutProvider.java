@@ -242,6 +242,19 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(2, ++y, ChatColor.YELLOW + capper.getName());
         }
 
+        /* This works, but it's probably not efficient...
+        if (player.hasPermission("basic.staff")) {
+            ++y;
+            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Online Staff:");
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (!onlinePlayer.hasPermission("basic.staff")) {
+                    continue;
+                }
+                layout.set(2, ++y, ChatColor.YELLOW + onlinePlayer.getName());
+            }
+        }
+        */
+
         return layout;
     }
 
