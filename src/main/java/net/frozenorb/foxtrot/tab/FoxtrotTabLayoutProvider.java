@@ -73,7 +73,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             location = ownerTeam.getName(player.getPlayer());
         } else if (!Foxtrot.getInstance().getServerHandler().isWarzone(loc)) {
             location = ChatColor.GRAY + "The Wilderness";
-        } else if (LandBoard.getInstance().getTeam(loc).getName().equalsIgnoreCase("citadel")) {
+        } else if (LandBoard.getInstance().getTeam(loc) != null && LandBoard.getInstance().getTeam(loc).getName().equalsIgnoreCase("citadel")) {
             location = ChatColor.DARK_PURPLE + "Citadel";
         } else {
             location = ChatColor.RED + "Warzone";
