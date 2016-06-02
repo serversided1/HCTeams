@@ -8,15 +8,18 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ClassUtils;
-import net.minecraft.util.com.google.common.reflect.TypeToken;
+import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,21 +38,30 @@ public class MinerWorldHandler {
     @Getter @Setter private int maxFactionAmount;
     @Getter private Set<UUID> players = new HashSet<>();
 
+    private File minerWorldInfoFile;
+    private JsonObject config;
+
     public MinerWorldHandler() {
         world = Bukkit.createWorld(new WorldCreator("world_miner"));
 
         blockRegenHandler = new BlockRegenHandler();
 
-        qLib.getInstance().runRedisCommand((redis) -> {
-            if (redis.exists("minerWorld:enabled")) enabled = Boolean.valueOf(redis.get("minerWorld:enabled"));
-
-            if (redis.exists("minerWorld:portalLocation")) portalLocation = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:portalLocation"), Location.class);
-            if (redis.exists("minerWorld:portalRadius")) portalRadius = Integer.valueOf(redis.get("minerWorld:portalRadius"));
-
-            if (redis.exists("minerWorld:maxFactionAmount")) maxFactionAmount = Integer.valueOf(redis.get("minerWorld:maxFactionAmount"));
-            if (redis.exists("minerWorld:players")) players = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:players"), new TypeToken<Set<UUID>>() {}.getType());
-            return null;
-        });
+        try {
+            minerWorldInfoFile = new File(qLib.getInstance().getDataFolder(), "minerWorldInfo.json");
+            if (!minerWorldInfoFile.exists()) {
+                minerWorldInfoFile.createNewFile();
+                config = getDefaults();
+                FileUtils.writeStringToFile(minerWorldInfoFile, config.toString());
+            } else {
+                config = qLib.PLAIN_GSON.fromJson(new FileReader(minerWorldInfoFile), JsonObject.class);
+                if (config.has("enabled")) enabled = config.get("enabled").getAsBoolean();
+                if (config.has("portalLocation")) portalLocation = qLib.PLAIN_GSON.fromJson(config.get("portalLocation"), Location.class);
+                if (config.has("portalRadius")) portalRadius = config.get("portalRadius").getAsInt();
+                if (config.has("maxFactionAmount")) maxFactionAmount = config.get("maxFactionAmount").getAsInt();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         FrozenCommandHandler.registerPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.minerworld.commands");
 
@@ -64,16 +76,23 @@ public class MinerWorldHandler {
     }
 
     public void save() {
-        qLib.getInstance().runRedisCommand((redis) -> {
-            redis.set("minerWorld:enabled", String.valueOf(enabled));
+        config.addProperty("enabled", enabled);
+        config.add("portalLocation", qLib.PLAIN_GSON.toJsonTree(portalLocation));
+        config.addProperty("portalRadius", portalRadius);
+        config.addProperty("maxFactionAmount", maxFactionAmount);
 
-            redis.set("minerWorld:portalLocation", qLib.PLAIN_GSON.toJson(portalLocation));
-            redis.set("minerWorld:portalRadius", String.valueOf(portalRadius));
+        try {
+            FileUtils.writeStringToFile(minerWorldInfoFile, config.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            redis.set("minerWorld:maxFactionAmount", String.valueOf(maxFactionAmount));
-            redis.set("minerWorld:players", qLib.PLAIN_GSON.toJson(players));
-            return null;
-        });
+    private JsonObject getDefaults() {
+        JsonObject object = new JsonObject();
+        object.addProperty("enabled", false);
+        object.addProperty("maxFactionAmount", 2);
+        return object;
     }
 
     public boolean canEnter(UUID player) {
@@ -90,7 +109,7 @@ public class MinerWorldHandler {
             }
         }
 
-        return factionAmount < 2;
+        return factionAmount < maxFactionAmount;
     }
 
     public void enter(Player player) {
