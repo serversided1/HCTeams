@@ -535,7 +535,7 @@ public class FoxListener implements Listener {
                         event.setCancelled(true);
 
                         for (Claim claim : ownerTo.getClaims()) {
-                            if (claim.contains(event.getFrom())) {
+                            if (claim.contains(event.getFrom()) && !ownerTo.isMember(event.getPlayer().getUniqueId())) {
                                 event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
                                 event.getPlayer().sendMessage(ChatColor.RED + "Moved you to spawn because you were in land that was claimed.");
                                 return;
