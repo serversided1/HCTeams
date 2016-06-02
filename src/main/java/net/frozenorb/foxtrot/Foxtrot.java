@@ -159,7 +159,10 @@ public class Foxtrot extends JavaPlugin {
 
     private void setupHandlers() {
         mapHandler = new MapHandler();
-        
+
+        // Load this before so the LandBoard
+        minerWorldHandler = new MinerWorldHandler();
+
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
 
@@ -170,7 +173,6 @@ public class Foxtrot extends JavaPlugin {
         KOTHHandler = new KOTHHandler();
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
-        minerWorldHandler = new MinerWorldHandler();
 
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.citadel");
         FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.commands");

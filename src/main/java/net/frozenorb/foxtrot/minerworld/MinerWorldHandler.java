@@ -13,9 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +33,7 @@ public class MinerWorldHandler {
     @Getter @Setter private int portalRadius;
 
     @Getter @Setter private int maxFactionAmount;
-    @Getter private Set<UUID> players;
+    @Getter private Set<UUID> players = new HashSet<>();
 
     public MinerWorldHandler() {
         world = Bukkit.createWorld(new WorldCreator("world_miner"));
