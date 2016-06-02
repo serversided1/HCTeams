@@ -125,7 +125,8 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             }
         } else {
             layout.set(0, ++y, ChatColor.DARK_PURPLE + activeKOTH.getName());
-            layout.set(0, ++y, ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime()));
+            // remove timer because it is on the scoreboard already and flickers on tab.
+            // layout.set(0, ++y, ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime()));
             layout.set(0, ++y, ChatColor.YELLOW.toString() + activeKOTH.getCapLocation().getBlockX() + ", " + activeKOTH.getCapLocation().getBlockY() + ", " + activeKOTH.getCapLocation().getBlockZ()); // location
         }
 
@@ -259,8 +260,8 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
     }
 
     public static String formatIntoDetailedString(int secs) {
-        if (secs == 0) {
-            return "0 seconds";
+        if (secs <= 60) {
+            return "1 minute";
         } else {
             int remainder = secs % 86400;
             int days = secs / 86400;
@@ -271,7 +272,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             String fHours = hours > 0 ? " " + hours + " hour" + (hours > 1 ? "s" : "") : "";
             String fMinutes = minutes > 0 ? " " + minutes + " minute" + (minutes > 1 ? "s" : "") : "";
             String fSeconds = (seconds > 0 && hours <= 0) ? " " + seconds + " second" + (seconds > 1 ? "s" : "") : "";
-            return (fDays + fHours + fMinutes + fSeconds).trim();
+            return (fDays + fHours + fMinutes).trim();
         }
 
     }
