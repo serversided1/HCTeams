@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.persist.maps;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -22,7 +23,13 @@ public class PvPTimerMap extends PersistMap<Integer> {
                             continue;
                         }
 
-                        updateValueAsync(player.getUniqueId(), getValue(player.getUniqueId()) - 1);
+                        int newValue = getValue(player.getUniqueId()) - 1;
+
+                        if (newValue % 60 == 0) {
+                            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + (newValue / 60) + ChatColor.RED + " minutes of PvP Protection remaining.");
+                        }
+
+                        updateValueAsync(player.getUniqueId(), newValue);
                     }
                  }
             }
