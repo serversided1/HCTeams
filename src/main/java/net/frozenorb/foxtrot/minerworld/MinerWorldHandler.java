@@ -39,6 +39,8 @@ public class MinerWorldHandler {
         blockRegenHandler = new BlockRegenHandler();
 
         qLib.getInstance().runRedisCommand((redis) -> {
+            enabled = Boolean.valueOf(redis.get("minerWorld:enabled"));
+
             portalLocation = qLib.PLAIN_GSON.fromJson(redis.get("minerWorld:portalLocation"), Location.class);
             portalRadius = Integer.valueOf(redis.get("minerWorld:portalRadius"));
 
@@ -61,6 +63,11 @@ public class MinerWorldHandler {
 
     public void save() {
         qLib.getInstance().runRedisCommand((redis) -> {
+            redis.set("minerWorld:enabled", String.valueOf(enabled));
+
+            redis.set("minerWorld:portalLocation", qLib.PLAIN_GSON.toJson(portalLocation));
+            redis.set("minerWorld:portalRadius", String.valueOf(portalRadius));
+
             redis.set("minerWorld:maxFactionAmount", String.valueOf(maxFactionAmount));
             redis.set("minerWorld:players", qLib.PLAIN_GSON.toJson(players));
             return null;

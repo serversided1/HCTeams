@@ -13,6 +13,7 @@ public class DisableMinerWorldCommand {
     @Command(names = {"disableminerworld"}, permission = "op")
     public static void disableMinerWorld(Player sender) {
         Foxtrot.getInstance().getMinerWorldHandler().setEnabled(false);
+        Foxtrot.getInstance().getMinerWorldHandler().save();
 
         for (UUID uuid : Foxtrot.getInstance().getMinerWorldHandler().getPlayers()) {
             Player player = Bukkit.getPlayer(uuid);

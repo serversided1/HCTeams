@@ -10,6 +10,8 @@ public class SetMinerPortalCommand {
     @Command(names = {"setminerportal"}, permission = "op")
     public static void setMinerPortal(Player sender) {
         Foxtrot.getInstance().getMinerWorldHandler().setPortalLocation(sender.getLocation());
+        Foxtrot.getInstance().getMinerWorldHandler().save();
+
         sender.sendMessage(ChatColor.GREEN + "Miner World portal set to your location.");
     }
 

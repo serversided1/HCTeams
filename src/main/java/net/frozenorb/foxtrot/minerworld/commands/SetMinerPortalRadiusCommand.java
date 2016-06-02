@@ -11,6 +11,8 @@ public class SetMinerPortalRadiusCommand {
     @Command(names = {"setminerportalradius"}, permission = "op")
     public static void setMinerPortalRadius(Player sender, @Param(name = "radius") int radius) {
         Foxtrot.getInstance().getMinerWorldHandler().setPortalRadius(radius);
+        Foxtrot.getInstance().getMinerWorldHandler().save();
+
         sender.sendMessage(ChatColor.GREEN + "Miner World portal radius set to " + radius + ".");
     }
 

@@ -10,6 +10,8 @@ public class EnableMinerWorldCommand {
     @Command(names = {"enableminerworld"}, permission = "op")
     public static void enableMinerWorld(Player sender) {
         Foxtrot.getInstance().getMinerWorldHandler().setEnabled(true);
+        Foxtrot.getInstance().getMinerWorldHandler().save();
+
         sender.sendMessage(ChatColor.YELLOW + "Miner World has been enabled.");
     }
 
