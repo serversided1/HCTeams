@@ -527,7 +527,7 @@ public class FoxListener implements Listener {
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
 
             //prevent stack overflow
-            if (ownerTo.getName().equalsIgnoreCase("spawn")) {
+            if (ownerTo != null && ownerTo.getName().equalsIgnoreCase("spawn")) {
                 return;
             }
 
