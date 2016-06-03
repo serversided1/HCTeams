@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.settings.Setting;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.util.PlayerDirection;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
@@ -85,7 +86,11 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         layout.set(0, ++y, location);
-        layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " +loc.getBlockZ() + ")");
+
+        /* Getting the direction 4 times a second for each player on the server may be intensive.
+        We may want to cache the entire location so it is accessed no more than 1 time per second.
+        FIXME, WIP */
+        layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " +loc.getBlockZ() + ") [" + PlayerDirection.getCardinalDirection(player) + "]");
 
         ++y; // blank
 
