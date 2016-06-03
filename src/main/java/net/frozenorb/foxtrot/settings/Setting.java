@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.settings.menu.SettingButton;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ public enum  Setting {
                     ChatColor.BLUE + "Do you want to see",
                     ChatColor.BLUE + "public chat messages?"
             ),
-            Material.ITEM_FRAME,
+            Material.SIGN,
             ChatColor.YELLOW + "Show public chat",
             ChatColor.YELLOW + "Hide public chat",
             true
@@ -91,6 +92,30 @@ public enum  Setting {
             return Foxtrot.getInstance().getToggleTabListInfoMap().isTabListInfoToggled(player.getUniqueId());
         }
 
+    },
+    DEATH_MESSAGES(
+            ChatColor.LIGHT_PURPLE + "Death Messages",
+            ImmutableList.of(
+                    ChatColor.BLUE + "Do you want to see",
+                    ChatColor.BLUE + "death messages?"
+            ),
+            Material.SKULL_ITEM,
+            ChatColor.YELLOW + "Show messages",
+            ChatColor.YELLOW + "Hide messages",
+            true
+    ) {
+        @Override
+        public void toggle(Player player) {
+            boolean value = !Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId());
+
+            Foxtrot.getInstance().getToggleDeathMessageMap().setDeathMessagesEnabled(player.getUniqueId(), value);
+            player.sendMessage(ChatColor.YELLOW + "You are now " + (value ? ChatColor.GREEN + "able" : ChatColor.RED + "unable") + ChatColor.YELLOW + " to see death messages.");
+        }
+
+        @Override
+        public boolean isEnabled(Player player) {
+            return Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId());
+        }
     };
 
     @Getter private String name;
@@ -104,6 +129,10 @@ public enum  Setting {
     // which doesn't correctly represent this variable.
     public boolean getDefaultValue() {
         return (defaultValue);
+    }
+
+    public SettingButton toButton() {
+        return new SettingButton(this);
     }
 
     public abstract void toggle(Player player);
