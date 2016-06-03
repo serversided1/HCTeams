@@ -90,8 +90,12 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         /* Getting the direction 4 times a second for each player on the server may be intensive.
         We may want to cache the entire location so it is accessed no more than 1 time per second.
         FIXME, WIP */
-        layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " +loc.getBlockZ() + ") [" + PlayerDirection.getCardinalDirection(player) + "]");
-
+        String direction = PlayerDirection.getCardinalDirection(player);
+        if (direction != null) {
+            layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " + loc.getBlockZ() + ") [" + direction + "]");
+        } else {
+            layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " + loc.getBlockZ() + ")");
+        }
         ++y; // blank
 
         KOTH activeKOTH = null;
@@ -136,8 +140,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             }
         } else {
             layout.set(0, ++y, ChatColor.DARK_PURPLE + activeKOTH.getName());
-            // remove timer because it is on the scoreboard already and flickers on tab.
-            // layout.set(0, ++y, ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime()));
+            layout.set(0, ++y, ChatColor.YELLOW + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime()));
             layout.set(0, ++y, ChatColor.YELLOW.toString() + activeKOTH.getCapLocation().getBlockX() + ", " + activeKOTH.getCapLocation().getBlockY() + ", " + activeKOTH.getCapLocation().getBlockZ()); // location
         }
 
