@@ -11,7 +11,7 @@ public class SettingsMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return null;
+        return "Options";
     }
 
     @Override
