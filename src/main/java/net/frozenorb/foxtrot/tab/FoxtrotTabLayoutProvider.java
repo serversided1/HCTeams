@@ -53,7 +53,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             ++y; // blank
 
             int balance = (int) team.getBalance();
-            layout.set(0, ++y, ChatColor.DARK_PURPLE + team.getName());
+            layout.set(0, ++y, ChatColor.DARK_PURPLE + "Faction Info:");
             layout.set(0, ++y, ChatColor.YELLOW + "DTR: " + (team.isRaidable() ? ChatColor.DARK_RED : ChatColor.YELLOW) + Team.DTR_FORMAT.format(team.getDTR()));
             layout.set(0, ++y, ChatColor.YELLOW + "Online: " + team.getOnlineMemberAmount() + "/" + team.getMembers().size());
             layout.set(0, ++y, ChatColor.YELLOW + "Balance: $" + balance);
@@ -145,7 +145,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         if (team != null) {
-            layout.set(1, 2, ChatColor.DARK_PURPLE + "Teammates Online");
+            layout.set(1, 2, ChatColor.DARK_PURPLE + team.getName());
 
             String watcherName = ChatColor.DARK_GREEN + player.getName();
             if (team.isOwner(player.getUniqueId())) {
