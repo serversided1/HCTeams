@@ -85,6 +85,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         layout.set(0, ++y, location);
+        layout.set(0, ++y, ChatColor.GRAY + "(" + loc.getBlockX() + ", " +loc.getBlockZ() + ")");
 
         ++y; // blank
 
