@@ -6,6 +6,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.settings.Setting;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.tab.LayoutProvider;
@@ -25,6 +26,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
     @Override
     public TabLayout provide(Player player) {
+        if (!Setting.TAB_LIST.isEnabled(player)) {
+            return null;
+        }
+
         TabLayout layout = TabLayout.create(player);
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
