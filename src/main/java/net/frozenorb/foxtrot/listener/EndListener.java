@@ -12,6 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -153,7 +154,7 @@ public class EndListener implements Listener {
     }
 
     // Whenever a player enters/leaves the end
-    @EventHandler
+    @EventHandler(priority= EventPriority.LOWEST) // Lowest gets called first, so we can not have other plugins deal w/ null event.getTo()s
     public void onPortal(PlayerPortalEvent event) {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.END_PORTAL) {
             return;
