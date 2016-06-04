@@ -124,6 +124,10 @@ public class KOTHHandler {
                     Collections.shuffle(allKOTHs);
 
                     for (int kothTimeIndex = 0; kothTimeIndex < times.length; kothTimeIndex++) {
+                        if (kothTimeIndex > allKOTHs.size()) {
+                            break;
+                        }
+
                         KOTHScheduledTime kothTime = times[kothTimeIndex];
                         String kothName = allKOTHs.get(kothTimeIndex);
 
