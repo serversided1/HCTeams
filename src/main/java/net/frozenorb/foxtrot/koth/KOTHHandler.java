@@ -124,7 +124,7 @@ public class KOTHHandler {
                     Collections.shuffle(allKOTHs);
 
                     for (int kothTimeIndex = 0; kothTimeIndex < times.length; kothTimeIndex++) {
-                        if (kothTimeIndex > allKOTHs.size()) {
+                        if (kothTimeIndex >= allKOTHs.size()) {
                             break;
                         }
 
