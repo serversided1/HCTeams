@@ -15,7 +15,7 @@ public class MinerWorldSetRegenCommand {
     @Command(names = {"minerworldsetregen"}, permission = "op")
     public static void minerWorldSetRegen(Player sender, @Param(name="material") String material,  @Param(name="seconds") int seconds) {
         BlockRegenHandler.getRegenerationTime().put(Material.valueOf(material.toUpperCase()), seconds);
-        
+
         new BukkitRunnable() {
 
             @Override

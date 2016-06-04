@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.minerworld.blockregen.BlockRegenHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +32,10 @@ public class BuildListener implements Listener {
 
         if (BlockRegenHandler.shouldRegen(block.getType()) && !DTRBitmask.SAFE_ZONE.appliesAt(block.getLocation())) {
             event.setCancelled(false); // we do this because it might be cancelled somewhere else
-            Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block);
+            Material currentType = block.getType();
+            byte currentData = block.getData();
+
+            Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block, currentType, currentData));
         } else {
             event.setCancelled(true);
         }

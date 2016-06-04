@@ -36,7 +36,7 @@ public class BlockRegenHandler {
 
         if (config.has("blocks")) {
             JsonObject blocksConfig = config.getAsJsonObject("blocks");
-            
+
             for (Map.Entry<String, JsonElement> entry : blocksConfig.entrySet()) {
                 regenerationTime.put(Material.valueOf(entry.getKey().toUpperCase()), entry.getValue().getAsInt());
             }
@@ -53,11 +53,11 @@ public class BlockRegenHandler {
         return obj;
     }
 
-    public void regen(Block block) {
-        int seconds = regenerationTime.get(block.getType());
+    public void regen(Block block, Material oldType, byte oldData) {
+        int seconds = regenerationTime.get(oldType);
 
         BlockVector vector = block.getLocation().toVector().toBlockVector();
-        BlockData data = new BlockData(block.getType(), block.getData());
+        BlockData data = new BlockData(oldType, oldData);
 
         block.setTypeIdAndData(Material.COBBLESTONE.getId(), (byte) 0, false);
 
