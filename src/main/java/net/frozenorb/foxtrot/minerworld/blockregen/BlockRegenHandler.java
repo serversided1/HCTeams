@@ -6,7 +6,8 @@ import net.frozenorb.qlib.qLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonElement;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonObject;
 import org.bukkit.util.BlockVector;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ public class BlockRegenHandler {
 
     private static Map<Material, Integer> regenerationTime = Maps.newHashMap();
 
-    public BlockRegenHandler() {
+    public BlockRegenHandler(JsonObject config) {
         // reset all of the blocks that hadn't been regenerated: this should only do anything
         // if the server crashed or was somehow forcefully stopped.
         qLib.getInstance().runRedisCommand((redis) -> {
@@ -32,10 +33,11 @@ public class BlockRegenHandler {
             return null;
         });
 
-        ConfigurationSection configuration = Foxtrot.getInstance().getConfig().getConfigurationSection("minerWorld.regen");
 
-        for (String key : configuration.getKeys(false)) {
-            regenerationTime.put(Material.valueOf(key.toUpperCase()), configuration.getInt("minerWorld.regen." + key));
+        JsonObject blocksConfig = config.getAsJsonObject("blocks");
+
+        for (Map.Entry<String, JsonElement> entry : blocksConfig.entrySet()) {
+            regenerationTime.put(Material.valueOf(entry.getKey().toUpperCase()), entry.getValue().getAsInt());
         }
     }
 

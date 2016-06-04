@@ -44,10 +44,8 @@ public class MinerWorldHandler {
     public MinerWorldHandler() {
         world = Bukkit.createWorld(new WorldCreator("world_miner"));
 
-        blockRegenHandler = new BlockRegenHandler();
-
         try {
-            minerWorldInfoFile = new File(qLib.getInstance().getDataFolder(), "minerWorldInfo.json");
+            minerWorldInfoFile = new File(Foxtrot.getInstance().getDataFolder(), "minerWorldInfo.json");
             if (!minerWorldInfoFile.exists()) {
                 minerWorldInfoFile.createNewFile();
                 config = getDefaults();
@@ -63,6 +61,7 @@ public class MinerWorldHandler {
             e.printStackTrace();
         }
 
+        blockRegenHandler = new BlockRegenHandler(config);
         FrozenCommandHandler.registerPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.minerworld.commands");
 
         // register listeners
