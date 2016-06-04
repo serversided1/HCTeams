@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
+import java.util.concurrent.TimeUnit;
+
 public class EnteringListener implements Listener {
 
     @EventHandler
@@ -33,6 +35,14 @@ public class EnteringListener implements Listener {
                     player.teleport(player.getWorld().getSpawnLocation());
                     return;
                 }
+
+                if (Foxtrot.getInstance().getPlaytimeMap().getPlaytime(event.getPlayer().getUniqueId()) < TimeUnit.HOURS.toSeconds(1)) {
+                    player.sendMessage(ChatColor.RED + "You must have at least one hour of playtime before you can enter the Miner World.");
+                    event.setCancelled(true);
+                    player.teleport(player.getWorld().getSpawnLocation());
+                    return;
+                }
+
                 if (!Foxtrot.getInstance().getMinerWorldHandler().canEnter(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "You can't enter the Miner World at the moment. There are already " + Foxtrot.getInstance().getMinerWorldHandler().getMaxFactionAmount() + " of your faction members there.");
                     event.setCancelled(true);
