@@ -59,7 +59,7 @@ public class BlockRegenHandler {
         BlockVector vector = block.getLocation().toVector().toBlockVector();
         BlockData data = new BlockData(oldType, oldData);
 
-        block.setTypeIdAndData(Material.COBBLESTONE.getId(), (byte) 0, false);
+        block.getLocation().getBlock().setTypeIdAndData(Material.COBBLESTONE.getId(), (byte) 0, false);
 
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> regen0(vector, data), seconds * 20L);
 

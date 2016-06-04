@@ -35,7 +35,7 @@ public class BuildListener implements Listener {
             Material currentType = block.getType();
             byte currentData = block.getData();
 
-            Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block, currentType, currentData));
+            Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block, currentType, currentData), 1L);
         } else {
             event.setCancelled(true);
         }
