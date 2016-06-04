@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.minerworld.blockregen;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
 import org.bukkit.Bukkit;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public class BlockRegenHandler {
 
-    private static Map<Material, Integer> regenerationTime = Maps.newHashMap();
+    @Getter private static Map<Material, Integer> regenerationTime = Maps.newHashMap();
 
     public BlockRegenHandler(JsonObject config) {
         // reset all of the blocks that hadn't been regenerated: this should only do anything
@@ -39,6 +40,16 @@ public class BlockRegenHandler {
         for (Map.Entry<String, JsonElement> entry : blocksConfig.entrySet()) {
             regenerationTime.put(Material.valueOf(entry.getKey().toUpperCase()), entry.getValue().getAsInt());
         }
+    }
+
+    public JsonObject getConfigSection() {
+        JsonObject obj = new JsonObject();
+
+        regenerationTime.forEach((type, time) -> {
+            obj.addProperty(type.name(), time);
+        });
+
+        return obj;
     }
 
     public void regen(Block block) {

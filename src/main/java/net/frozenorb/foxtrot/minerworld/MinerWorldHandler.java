@@ -79,6 +79,7 @@ public class MinerWorldHandler {
         config.add("portalLocation", qLib.PLAIN_GSON.toJsonTree(portalLocation));
         config.addProperty("portalRadius", portalRadius);
         config.addProperty("maxFactionAmount", maxFactionAmount);
+        config.add("blocks", blockRegenHandler.getConfigSection());
 
         try {
             FileUtils.writeStringToFile(minerWorldInfoFile, config.toString());
