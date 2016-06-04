@@ -35,7 +35,9 @@ public class EnteringListener implements Listener {
                     return;
                 }
 
-                if (Foxtrot.getInstance().getPlaytimeMap().getPlaytime(event.getPlayer().getUniqueId()) < TimeUnit.HOURS.toSeconds(1)) {
+                long playTime = Foxtrot.getInstance().getPlaytimeMap().getPlaytime(player.getUniqueId()) + Foxtrot.getInstance().getPlaytimeMap().getCurrentSession(player.getUniqueId());
+
+                if (playTime < TimeUnit.HOURS.toSeconds(1)) {
                     player.sendMessage(ChatColor.RED + "You must have at least one hour of playtime before you can enter the Miner World.");
                     player.teleport(player.getWorld().getSpawnLocation());
                     return;
