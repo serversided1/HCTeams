@@ -78,7 +78,6 @@ public abstract class PersistMap<T> {
 
                 if (useMongo) {
                     DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
-                    playersCollection.save()
                     BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
 
                     playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
