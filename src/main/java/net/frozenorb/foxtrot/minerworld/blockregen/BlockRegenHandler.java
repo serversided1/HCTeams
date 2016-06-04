@@ -34,11 +34,12 @@ public class BlockRegenHandler {
             return null;
         });
 
-
-        JsonObject blocksConfig = config.getAsJsonObject("blocks");
-
-        for (Map.Entry<String, JsonElement> entry : blocksConfig.entrySet()) {
-            regenerationTime.put(Material.valueOf(entry.getKey().toUpperCase()), entry.getValue().getAsInt());
+        if (config.has("blocks")) {
+            JsonObject blocksConfig = config.getAsJsonObject("blocks");
+            
+            for (Map.Entry<String, JsonElement> entry : blocksConfig.entrySet()) {
+                regenerationTime.put(Material.valueOf(entry.getKey().toUpperCase()), entry.getValue().getAsInt());
+            }
         }
     }
 
