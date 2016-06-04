@@ -161,6 +161,11 @@ public class EndListener implements Listener {
 
         Player player = event.getPlayer();
 
+        // Special case leaving the miner world, as the event.getTo will be/contain nulls.
+        if ((event.getTo() == null || event.getTo().getWorld() == null) && event.getFrom().getWorld().getName().equalsIgnoreCase("world_miner")) {
+            event.setTo(Foxtrot.getInstance().getServer().getWorlds().get(0).getSpawnLocation());
+        }
+
         if (event.getTo().getWorld().getEnvironment() == World.Environment.NORMAL) { // Leaving the End
             // Don't let players leave the end while the dragon is still alive.
             if (event.getFrom().getWorld().getEntitiesByClass(EnderDragon.class).size() != 0) {
