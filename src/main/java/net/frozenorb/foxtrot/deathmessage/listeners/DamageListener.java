@@ -111,19 +111,10 @@ public class DamageListener implements Listener {
             deathMessage = new UnknownDamage(event.getEntity().getName(), 1).getDeathMessage();
         }
 
-        if (event.getEntity().getKiller() != null) {
-            event.getEntity().getKiller().sendMessage(deathMessage);
-        }
-
-        event.getEntity().sendMessage(deathMessage);
-
         Player killer = event.getEntity().getKiller();
+        
         Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (killer != null && player.equals(killer)) {
-                    continue;
-                }
-
                 if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                     player.sendMessage(deathMessage);
                 } else {
