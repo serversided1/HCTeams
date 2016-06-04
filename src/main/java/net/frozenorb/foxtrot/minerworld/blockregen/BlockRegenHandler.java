@@ -22,7 +22,7 @@ public class BlockRegenHandler {
         // if the server crashed or was somehow forcefully stopped.
         qLib.getInstance().runRedisCommand((redis) -> {
             for (String key : redis.keys("minerWorld:toRegen:*")) {
-                BlockVector vector = qLib.PLAIN_GSON.fromJson(key.split(":")[2], BlockVector.class);
+                BlockVector vector = deserialize(key.split(":")[2]);
                 BlockData data = qLib.PLAIN_GSON.fromJson(redis.get(key), BlockData.class);
 
                 vector.toLocation(Foxtrot.getInstance().getMinerWorldHandler().getWorld()).getBlock()
@@ -64,7 +64,7 @@ public class BlockRegenHandler {
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> regen0(vector, data), seconds * 20L);
 
         Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> qLib.getInstance().runRedisCommand((redis) -> {
-            redis.set("minerWorld:toRegen:" + qLib.PLAIN_GSON.toJson(vector), qLib.PLAIN_GSON.toJson(data));
+            redis.set("minerWorld:toRegen:" + serialize(vector), qLib.PLAIN_GSON.toJson(data));
             return null;
         }));
     }
@@ -74,7 +74,7 @@ public class BlockRegenHandler {
                 .setTypeIdAndData(data.getType().getId(), data.getData(), false);
 
         Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> qLib.getInstance().runRedisCommand((redis) -> {
-            redis.del("minerWorld:toRegen:" + qLib.PLAIN_GSON.toJson(vector));
+            redis.del("minerWorld:toRegen:" + serialize(vector));
             return null;
         }));
     }
@@ -82,6 +82,18 @@ public class BlockRegenHandler {
     public static boolean shouldRegen(Material material) {
         return regenerationTime.containsKey(material);
 //        return material == Material.COAL_ORE || material == Material.IRON_ORE || material == Material.DIAMOND_ORE;
+    }
+
+    public BlockVector deserialize(String string) {
+        string = string.replace("[", "").replace("]", "");
+
+        String[] parts = string.split(",");
+
+        return new BlockVector(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+    }
+
+    private String serialize(BlockVector vector) {
+        return "[" + vector.getBlockX() + "," + vector.getBlockY() + "," + vector.getBlockZ() + "]";
     }
 
 }
