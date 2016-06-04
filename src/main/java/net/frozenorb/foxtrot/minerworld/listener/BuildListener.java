@@ -31,8 +31,7 @@ public class BuildListener implements Listener {
 
         if (BlockRegenHandler.shouldRegen(block.getType()) && !DTRBitmask.SAFE_ZONE.appliesAt(block.getLocation())) {
             event.setCancelled(false); // we do this because it might be cancelled somewhere else
-
-            Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block));
+            Foxtrot.getInstance().getMinerWorldHandler().getBlockRegenHandler().regen(block);
         } else {
             event.setCancelled(true);
         }
