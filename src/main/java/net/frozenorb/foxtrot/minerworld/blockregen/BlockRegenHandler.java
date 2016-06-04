@@ -28,7 +28,7 @@ public class BlockRegenHandler {
                 vector.toLocation(Foxtrot.getInstance().getMinerWorldHandler().getWorld()).getBlock()
                         .setTypeIdAndData(data.getType().getId(), data.getData(), false);
 
-                redis.set(key, null);
+                redis.del(key);
             }
 
             return null;
@@ -74,7 +74,7 @@ public class BlockRegenHandler {
                 .setTypeIdAndData(data.getType().getId(), data.getData(), false);
 
         Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> qLib.getInstance().runRedisCommand((redis) -> {
-            redis.set("minerWorld:toRegen:" + qLib.PLAIN_GSON.toJson(vector), null);
+            redis.del("minerWorld:toRegen:" + qLib.PLAIN_GSON.toJson(vector));
             return null;
         }));
     }
