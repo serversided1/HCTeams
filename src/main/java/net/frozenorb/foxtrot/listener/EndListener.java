@@ -144,14 +144,6 @@ public class EndListener implements Listener {
         }
     }
 
-    // Fix end spawning (for some reason it doesn't use the world's spawn location)
-    @EventHandler
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-        if (event.getPlayer().getWorld().getEnvironment() == World.Environment.THE_END && event.getPlayer().getLocation().distanceSquared(new Location(event.getPlayer().getWorld(), 100, 49, 0)) < 4) {
-            event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
-        }
-    }
-
     // Cancel the exit portal being spawned when the dragon is killed.
     @EventHandler
     public void onCreatePortal(EntityCreatePortalEvent event) {
