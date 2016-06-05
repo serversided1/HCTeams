@@ -13,6 +13,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 
 public class BuildListener implements Listener {
 
@@ -43,6 +45,36 @@ public class BuildListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+
+        if (!player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
+            return;
+        }
+
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        Player player = event.getPlayer();
+
+        if (!player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
+            return;
+        }
+
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBucketFill(PlayerBucketFillEvent event) {
         Player player = event.getPlayer();
 
         if (!player.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
