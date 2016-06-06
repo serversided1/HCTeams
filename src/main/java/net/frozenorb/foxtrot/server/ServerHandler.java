@@ -391,8 +391,12 @@ public class ServerHandler {
             }
 
             if (inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
-                player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
-                player.teleport(team.getHQ());
+                if (player.getWorld().getEnvironment() != Environment.THE_END) {
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
+                    player.teleport(team.getHQ());
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot teleport to your end headquarters while you're in end spawn!");
+                }
                 return;
             }
         }
