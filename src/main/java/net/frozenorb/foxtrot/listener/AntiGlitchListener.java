@@ -2,17 +2,22 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Iterator;
 
 public class AntiGlitchListener implements Listener {
 
@@ -65,6 +70,39 @@ public class AntiGlitchListener implements Listener {
             }
 
         }.runTaskLater(Foxtrot.getInstance(), 1L);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityDeath(EntityDeathEvent event) {
+        if (event.getEntity().getWorld().getEnvironment() != World.Environment.NETHER) {
+            return;
+        }
+
+        if (event.getEntity() instanceof Skeleton) {
+            Iterator<ItemStack> iterator = event.getDrops().iterator();
+
+            while (iterator.hasNext()) {
+                ItemStack item = iterator.next();
+
+                if (item.getType() == Material.NETHER_STAR) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getGameMode() == GameMode.CREATIVE || player.getWorld().getEnvironment() != World.Environment.NETHER) {
+            return;
+        }
+
+        if (event.getBlock().getType() == Material.MOB_SPAWNER) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You aren't allowed to place mob spawners in the nether.");
+        }
     }
 
 }
