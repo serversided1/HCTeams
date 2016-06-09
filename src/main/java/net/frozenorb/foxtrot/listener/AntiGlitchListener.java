@@ -72,7 +72,7 @@ public class AntiGlitchListener implements Listener {
         }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().getWorld().getEnvironment() != World.Environment.NETHER) {
             return;
@@ -84,7 +84,7 @@ public class AntiGlitchListener implements Listener {
             while (iterator.hasNext()) {
                 ItemStack item = iterator.next();
 
-                if (item.getType() == Material.NETHER_STAR) {
+                if (item.getType() == Material.SKULL_ITEM) {
                     iterator.remove();
                 }
             }
