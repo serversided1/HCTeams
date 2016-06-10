@@ -20,7 +20,7 @@ import java.util.Date;
 
 public class WebsiteListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         final BasicDBObject playerDeath = new BasicDBObject();
 

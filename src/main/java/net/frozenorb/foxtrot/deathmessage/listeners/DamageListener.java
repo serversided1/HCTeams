@@ -40,7 +40,7 @@ public class DamageListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGHEST)
+    @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerDeath(PlayerDeathEvent event) {
         List<Damage> record = DeathMessageHandler.getDamage(event.getEntity());
 
