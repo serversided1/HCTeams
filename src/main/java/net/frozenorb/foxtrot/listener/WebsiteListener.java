@@ -72,10 +72,10 @@ public class WebsiteListener implements Listener {
             BasicDBObject killerInventory = new BasicDBObject();
             BasicDBObject killerArmor = new BasicDBObject();
 
-            armor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getHelmet()));
-            armor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getChestplate()));
-            armor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getLeggings()));
-            armor.put("boots", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getBoots()));
+            killerArmor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getHelmet()));
+            killerArmor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getChestplate()));
+            killerArmor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getLeggings()));
+            killerArmor.put("boots", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getBoots()));
 
             BasicDBList killerContents = new BasicDBList();
 
