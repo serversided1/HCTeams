@@ -6,7 +6,6 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.settings.Setting;
 import net.frozenorb.foxtrot.tab.TabListMode;
 import net.frozenorb.qlib.menu.Button;
-import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,7 +40,15 @@ public class SettingButton extends Button {
                 description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getDisabledText());
             }
         } else {
-            description.add("    " + getNextTabListText(player));
+            TabListMode current = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
+
+            for (TabListMode mode : TabListMode.values()) {
+                if (mode != current) {
+                    description.add("    " + ChatColor.GRAY + mode.getName());
+                } else {
+                    description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + ChatColor.GREEN + mode.getName());
+                }
+            }
         }
 
         return description;
@@ -60,13 +67,6 @@ public class SettingButton extends Button {
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
         setting.toggle(player);
-    }
-
-    public String getNextTabListText(Player player) {
-        TabListMode current = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
-        TabListMode next = next(current);
-
-        return ChatColor.GREEN.toString() + current.getName() + ChatColor.GRAY + " -> " + next.getName();
     }
 
     public static TabListMode next(TabListMode current) {

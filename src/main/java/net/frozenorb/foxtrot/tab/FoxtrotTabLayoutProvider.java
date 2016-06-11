@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.tab;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import javafx.util.Pair;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
@@ -22,6 +23,9 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 public class FoxtrotTabLayoutProvider implements LayoutProvider {
+
+    private LinkedHashMap<Team, Integer> cachedTeamList = Maps.newLinkedHashMap();
+    long cacheLastUpdated;
 
     @Override
     public TabLayout provide(Player player) {
@@ -53,7 +57,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             ++y; // blank
 
             int balance = (int) team.getBalance();
-            layout.set(0, ++y, ChatColor.DARK_PURPLE + "Faction Info:");
+            layout.set(0, ++y, ChatColor.DARK_PURPLE + "Team Info:");
             layout.set(0, ++y, ChatColor.YELLOW + "DTR: " + (team.isRaidable() ? ChatColor.DARK_RED : ChatColor.YELLOW) + Team.DTR_FORMAT.format(team.getDTR()));
             layout.set(0, ++y, ChatColor.YELLOW + "Online: " + team.getOnlineMemberAmount() + "/" + team.getMembers().size());
             layout.set(0, ++y, ChatColor.YELLOW + "Balance: $" + balance);
@@ -310,7 +314,12 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                     layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List");
                 }
 
-                layout.set(2, y++, ChatColor.YELLOW + teamEntry.getKey().getName(player) + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getMembers().size() + ")");
+                String teamName = teamEntry.getKey().getName();
+                ChatColor teamColor = teamEntry.getKey().isMember(player.getUniqueId()) ? ChatColor.GREEN : ChatColor.YELLOW;
+
+                if (teamName.length() > 12) teamName = teamName.substring(0, 12);
+
+                layout.set(2, y++, teamColor + teamName + " " + ChatColor.GRAY +  teamEntry.getValue());
             }
         }
 

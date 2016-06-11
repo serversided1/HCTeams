@@ -1,13 +1,18 @@
 package net.frozenorb.foxtrot.tab;
 
-import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public enum TabListMode {
 
-    VANILLA, DETAILED, DETAILED_WITH_FACTION_INFO;
+    DETAILED("Detailed"),
+    DETAILED_WITH_FACTION_INFO("Detailed w/ Faction Info"),
+    VANILLA("Vanilla");
+
+    private final String name;
 
     public String getName() {
-        return WordUtils.capitalizeFully(name().toLowerCase().replace("_", " "));
+        return name;
     }
 
 }
