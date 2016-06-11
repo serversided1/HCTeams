@@ -53,7 +53,7 @@ public class EnderpearlListener implements Listener {
             long millisLeft = enderpearlCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
 
             double value = (millisLeft / 1000D);
-            double sec = Math.round(10.0 * value) / 10.0;
+            double sec = value > 0.1 ? Math.round(10.0 * value) / 10.0 : 0.1; // don't tell user 0.0
 
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
