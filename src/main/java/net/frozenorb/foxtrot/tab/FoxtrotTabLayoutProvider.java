@@ -291,10 +291,6 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 }
             }
 
-            int page = 1;
-            int maxPages = (teamPlayerCount.size() / 10) + 1;
-            int currentPage = Math.min(page, maxPages);
-
             LinkedHashMap<Team, Integer> sortedTeamPlayerCount;
 
             if (shouldReloadCache) {
@@ -305,7 +301,6 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 sortedTeamPlayerCount = cachedTeamList;
             }
 
-            int start = (currentPage - 1) * 10;
             int index = 0;
 
             boolean title = false;
@@ -313,11 +308,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
                 index++;
 
-                if (index < start) {
-                    continue;
-                }
-
-                if (index > start + 10) {
+                if (index > 19) {
                     break;
                 }
 
