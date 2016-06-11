@@ -82,22 +82,14 @@ public class TeamListCommand {
         }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
-    private static LinkedHashMap<Team, Integer> sortByValues(Map<Team, Integer> map) {
+    public static LinkedHashMap<Team, Integer> sortByValues(Map<Team, Integer> map) {
         LinkedList<java.util.Map.Entry<Team, Integer>> list = new LinkedList<>(map.entrySet());
 
-        Collections.sort(list, new Comparator<Map.Entry<Team, Integer>>() {
-
-            public int compare(java.util.Map.Entry<Team, Integer> o1, java.util.Map.Entry<Team, Integer> o2) {
-                return (o2.getValue().compareTo(o1.getValue()));
-            }
-
-        });
+        Collections.sort(list, (o1, o2) -> (o2.getValue().compareTo(o1.getValue())));
 
         LinkedHashMap<Team, Integer> sortedHashMap = new LinkedHashMap<>();
-        Iterator<Map.Entry<Team, Integer>> iterator = list.iterator();
 
-        while (iterator.hasNext()) {
-            java.util.Map.Entry<Team, Integer> entry = iterator.next();
+        for (Map.Entry<Team, Integer> entry : list) {
             sortedHashMap.put(entry.getKey(), entry.getValue());
         }
 
