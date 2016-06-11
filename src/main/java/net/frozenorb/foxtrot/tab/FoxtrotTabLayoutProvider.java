@@ -310,7 +310,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                     layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List");
                 }
 
-                layout.set(2, y, ChatColor.YELLOW + teamEntry.getKey().getName(player) + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getMembers().size() + ")");
+                layout.set(2, y++, ChatColor.YELLOW + teamEntry.getKey().getName(player) + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getMembers().size() + ")");
             }
         }
 
