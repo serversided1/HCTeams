@@ -77,11 +77,36 @@ public class CombatLoggerListener implements Listener {
                 event.getDrops().add(item);
             }
 
+            // give them a death
+            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
+            }
+            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
+
+            // store the death amount -- we'll use this later on.
+            int victimKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getUniqueId());
+
+            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                victimKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getUniqueId()).getKills();
+            }
+
             if (event.getEntity().getKiller() != null) {
-                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".";
+                // give them a kill
+                Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
+
+                // store the kill amount -- we'll use this later on.
+                int killerKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
+
+                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                    Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
+
+                    killerKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).getKills();
+                }
+
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + "[" + killerKills + "]" + ChatColor.YELLOW + ".";
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                         player.sendMessage(deathMessage);
                     } else {
                         if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
@@ -102,19 +127,11 @@ public class CombatLoggerListener implements Listener {
 
                 // Add the death sign.
 
-//                if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-//                    event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
-//                }
-
-                // and give them the kill
-                int kills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
-                Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), kills + 1);
-
-                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-                    Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
-                }
+//              if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+//                  event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
+//              }
             } else {
-                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
@@ -131,12 +148,6 @@ public class CombatLoggerListener implements Listener {
                     }
                 }
             }
-
-            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
-            }
-
-            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
 
             Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
 
