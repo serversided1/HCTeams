@@ -2,8 +2,11 @@ package net.frozenorb.foxtrot.settings.menu;
 
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.settings.Setting;
+import net.frozenorb.foxtrot.tab.TabListMode;
 import net.frozenorb.qlib.menu.Button;
+import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,12 +32,16 @@ public class SettingButton extends Button {
         description.addAll(setting.getDescription());
         description.add("");
 
-        if (setting.isEnabled(player)) {
-            description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getEnabledText());
-            description.add("    " + setting.getDisabledText());
+        if (setting != Setting.TAB_LIST) {
+            if (setting.isEnabled(player)) {
+                description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getEnabledText());
+                description.add("    " + setting.getDisabledText());
+            } else {
+                description.add("    " + setting.getEnabledText());
+                description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getDisabledText());
+            }
         } else {
-            description.add("    " + setting.getEnabledText());
-            description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getDisabledText());
+            description.add("    " + getNextTabListText(player));
         }
 
         return description;
@@ -53,6 +60,26 @@ public class SettingButton extends Button {
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
         setting.toggle(player);
+    }
+
+    public String getNextTabListText(Player player) {
+        TabListMode current = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
+        TabListMode next = next(current);
+
+        return ChatColor.GREEN.toString() + current.getName() + ChatColor.GRAY + " -> " + next.getName();
+    }
+
+    public static TabListMode next(TabListMode current) {
+        switch (current) {
+            case VANILLA:
+                return TabListMode.DETAILED;
+            case DETAILED:
+                return TabListMode.DETAILED_WITH_FACTION_INFO;
+            case DETAILED_WITH_FACTION_INFO:
+                return TabListMode.VANILLA;
+            default:
+                return TabListMode.VANILLA;
+        }
     }
 
 }

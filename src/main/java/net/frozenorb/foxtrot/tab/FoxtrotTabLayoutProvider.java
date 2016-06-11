@@ -6,9 +6,9 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.listener.BorderListener;
-import net.frozenorb.foxtrot.settings.Setting;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.commands.team.TeamListCommand;
 import net.frozenorb.foxtrot.util.PlayerDirection;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
@@ -19,15 +19,15 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
     @Override
     public TabLayout provide(Player player) {
-        if (!Setting.TAB_LIST.isEnabled(player)) {
+        TabListMode mode = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
+
+        if (mode == TabListMode.VANILLA) {
             return null;
         }
 
@@ -145,7 +145,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         if (team != null) {
-            layout.set(1, 2, ChatColor.DARK_PURPLE + team.getName());
+            layout.set(1, mode == TabListMode.DETAILED_WITH_FACTION_INFO ? 5 : 2, ChatColor.DARK_PURPLE + team.getName());
 
             String watcherName = ChatColor.DARK_GREEN + player.getName();
             if (team.isOwner(player.getUniqueId())) {
@@ -154,7 +154,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 watcherName += ChatColor.GRAY + "*";
             }
 
-            layout.set(1, 3, watcherName, ((CraftPlayer) player).getHandle().ping); // the viewer is always first on the list
+            layout.set(1, mode == TabListMode.DETAILED_WITH_FACTION_INFO ? 6 : 3, watcherName, ((CraftPlayer) player).getHandle().ping); // the viewer is always first on the list
 
             Player owner = null;
             List<Player> captains = Lists.newArrayList();
@@ -170,7 +170,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             }
 
             int x = 1;
-            y = 4;
+            y = mode == TabListMode.DETAILED ? 4 : 7;
 
             // then the owner
             if (owner != null && !owner.equals(player)) {
@@ -229,32 +229,89 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             y = 0;
         }
 
-        if (!Foxtrot.getInstance().getMapHandler().getEndPortalLocation().equals("N/A")) {
-            layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
-            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
-            layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
+        if (mode == TabListMode.DETAILED) {
+            if (!Foxtrot.getInstance().getMapHandler().getEndPortalLocation().equals("N/A")) {
+                layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
+                layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
+                layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
+
+                ++y;
+                layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
+                layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+            } else {
+                layout.set(2, y, ChatColor.DARK_PURPLE + "Kit:");
+                layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+            }
 
             ++y;
-            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Kit:");
-            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
+            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Border:");
+            layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(BorderListener.BORDER_SIZE));
+
+            ++y;
+            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Players Online:");
+            layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
+
+            Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
+            if (capper != null) {
+                ++y;
+                layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
+                layout.set(2, ++y, ChatColor.YELLOW + capper.getName());
+            }
         } else {
-            layout.set(2, y, ChatColor.DARK_PURPLE + "Kit:");
-            layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getServerHandler().getEnchants());
-        }
+            layout.set(1, 2, ChatColor.DARK_PURPLE + "Players Online:");
+            layout.set(1, 3, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
 
-        ++y;
-        layout.set(2, ++y, ChatColor.DARK_PURPLE + "Border:");
-        layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(BorderListener.BORDER_SIZE));
+            // faction list (10 entries)
+            y = 1;
 
-        ++y;
-        layout.set(2, ++y, ChatColor.DARK_PURPLE + "Players Online:");
-        layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
+            Map<Team, Integer> teamPlayerCount = new HashMap<>();
 
-        Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-        if (capper != null) {
-            ++y;
-            layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
-            layout.set(2, ++y, ChatColor.YELLOW + capper.getName());
+            // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
+            for (Player other : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                if (other.hasMetadata("invisible")) {
+                    continue;
+                }
+
+                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(other);
+
+                if (playerTeam != null) {
+                    if (teamPlayerCount.containsKey(playerTeam)) {
+                        teamPlayerCount.put(playerTeam, teamPlayerCount.get(playerTeam) + 1);
+                    } else {
+                        teamPlayerCount.put(playerTeam, 1);
+                    }
+                }
+            }
+
+            int page = 1;
+            int maxPages = (teamPlayerCount.size() / 10) + 1;
+            int currentPage = Math.min(page, maxPages);
+
+            LinkedHashMap<Team, Integer> sortedTeamPlayerCount = TeamListCommand.sortByValues(teamPlayerCount);
+
+            int start = (currentPage - 1) * 10;
+            int index = 0;
+
+            boolean title = false;
+
+            for (Map.Entry<Team, Integer> teamEntry : sortedTeamPlayerCount.entrySet()) {
+                index++;
+
+                if (index < start) {
+                    continue;
+                }
+
+                if (index > start + 10) {
+                    break;
+                }
+
+                if (!title) {
+                    title = true;
+                    layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List");
+                }
+
+                layout.set(2, y, ChatColor.YELLOW + teamEntry.getKey().getName(player) + ChatColor.GREEN + " (" + teamEntry.getValue() + "/" + teamEntry.getKey().getMembers().size() + ")");
+            }
         }
 
         /* This works, but it's probably not efficient...
