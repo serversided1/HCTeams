@@ -266,23 +266,27 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(1, 3, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
 
             // faction list (10 entries)
+            boolean shouldReloadCache = cachedTeamList == null || (System.currentTimeMillis() - cacheLastUpdated > 2000);
+
             y = 1;
 
             Map<Team, Integer> teamPlayerCount = new HashMap<>();
 
-            // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
-            for (Player other : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (other.hasMetadata("invisible")) {
-                    continue;
-                }
+            if (shouldReloadCache) {
+                // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
+                for (Player other : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    if (other.hasMetadata("invisible")) {
+                        continue;
+                    }
 
-                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(other);
+                    Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(other);
 
-                if (playerTeam != null) {
-                    if (teamPlayerCount.containsKey(playerTeam)) {
-                        teamPlayerCount.put(playerTeam, teamPlayerCount.get(playerTeam) + 1);
-                    } else {
-                        teamPlayerCount.put(playerTeam, 1);
+                    if (playerTeam != null) {
+                        if (teamPlayerCount.containsKey(playerTeam)) {
+                            teamPlayerCount.put(playerTeam, teamPlayerCount.get(playerTeam) + 1);
+                        } else {
+                            teamPlayerCount.put(playerTeam, 1);
+                        }
                     }
                 }
             }
@@ -291,7 +295,15 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             int maxPages = (teamPlayerCount.size() / 10) + 1;
             int currentPage = Math.min(page, maxPages);
 
-            LinkedHashMap<Team, Integer> sortedTeamPlayerCount = TeamListCommand.sortByValues(teamPlayerCount);
+            LinkedHashMap<Team, Integer> sortedTeamPlayerCount;
+
+            if (shouldReloadCache) {
+                sortedTeamPlayerCount = TeamListCommand.sortByValues(teamPlayerCount);
+                cachedTeamList = sortedTeamPlayerCount;
+                cacheLastUpdated = System.currentTimeMillis();
+            } else {
+                sortedTeamPlayerCount = cachedTeamList;
+            }
 
             int start = (currentPage - 1) * 10;
             int index = 0;
@@ -317,9 +329,9 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 String teamName = teamEntry.getKey().getName();
                 ChatColor teamColor = teamEntry.getKey().isMember(player.getUniqueId()) ? ChatColor.GREEN : ChatColor.YELLOW;
 
-                if (teamName.length() > 12) teamName = teamName.substring(0, 12);
+                if (teamName.length() > 10) teamName = teamName.substring(0, 10);
 
-                layout.set(2, y++, teamColor + teamName + " " + ChatColor.GRAY +  teamEntry.getValue());
+                layout.set(2, y++, teamColor + teamName + ChatColor.GRAY + " (" + teamEntry.getValue() + ")");
             }
         }
 
