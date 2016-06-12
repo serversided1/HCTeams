@@ -2,7 +2,9 @@ package net.frozenorb.foxtrot.settings.menu;
 
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.settings.Setting;
+import net.frozenorb.foxtrot.tab.TabListMode;
 import net.frozenorb.qlib.menu.Button;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -29,12 +31,24 @@ public class SettingButton extends Button {
         description.addAll(setting.getDescription());
         description.add("");
 
-        if (setting.isEnabled(player)) {
-            description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getEnabledText());
-            description.add("    " + setting.getDisabledText());
+        if (setting != Setting.TAB_LIST) {
+            if (setting.isEnabled(player)) {
+                description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getEnabledText());
+                description.add("    " + setting.getDisabledText());
+            } else {
+                description.add("    " + setting.getEnabledText());
+                description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getDisabledText());
+            }
         } else {
-            description.add("    " + setting.getEnabledText());
-            description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + setting.getDisabledText());
+            TabListMode current = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
+
+            for (TabListMode mode : TabListMode.values()) {
+                if (mode != current) {
+                    description.add("    " + ChatColor.GRAY + mode.getName());
+                } else {
+                    description.add(ChatColor.BLUE.toString() + ChatColor.BOLD + "  ► " + ChatColor.GREEN + mode.getName());
+                }
+            }
         }
 
         return description;
@@ -53,6 +67,19 @@ public class SettingButton extends Button {
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
         setting.toggle(player);
+    }
+
+    public static TabListMode next(TabListMode current) {
+        switch (current) {
+            case VANILLA:
+                return TabListMode.DETAILED;
+            case DETAILED:
+                return TabListMode.DETAILED_WITH_FACTION_INFO;
+            case DETAILED_WITH_FACTION_INFO:
+                return TabListMode.VANILLA;
+            default:
+                return TabListMode.VANILLA;
+        }
     }
 
 }

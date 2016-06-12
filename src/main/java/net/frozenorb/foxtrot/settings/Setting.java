@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.settings.menu.SettingButton;
+import net.frozenorb.foxtrot.tab.TabListMode;
+import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -81,15 +83,15 @@ public enum  Setting {
 
         @Override
         public void toggle(Player player) {
-            boolean value = !Foxtrot.getInstance().getToggleTabListInfoMap().isTabListInfoToggled(player.getUniqueId());
+            TabListMode mode = SettingButton.next(Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId()));
 
-            Foxtrot.getInstance().getToggleTabListInfoMap().setTabListInfoToggled(player.getUniqueId(), value);
-            player.sendMessage(ChatColor.YELLOW + "You are now " + (value ? ChatColor.GREEN + "able" : ChatColor.RED + "unable") + ChatColor.YELLOW + " to see tab list info.");
+            Foxtrot.getInstance().getTabListModeMap().setTabListMode(player.getUniqueId(), mode);
+            player.sendMessage(ChatColor.YELLOW + "You've set your tab list mode to " + ChatColor.LIGHT_PURPLE + mode.getName() + ChatColor.YELLOW + ".");
         }
 
         @Override
         public boolean isEnabled(Player player) {
-            return Foxtrot.getInstance().getToggleTabListInfoMap().isTabListInfoToggled(player.getUniqueId());
+            return true;
         }
 
     },
