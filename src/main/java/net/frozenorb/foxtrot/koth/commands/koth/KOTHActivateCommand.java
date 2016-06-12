@@ -12,8 +12,8 @@ public class KOTHActivateCommand {
     @Command(names={ "KOTH Activate", "KOTH Active" }, permission="foxtrot.koth")
     public static void kothActivate(Player sender, @Param(name="koth") KOTH koth) {
         // Don't start a KOTH if another one is active.
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (koth.isActive()) {
+        for (KOTH otherKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+            if (otherKoth.isActive()) {
                 return;
             }
         }
