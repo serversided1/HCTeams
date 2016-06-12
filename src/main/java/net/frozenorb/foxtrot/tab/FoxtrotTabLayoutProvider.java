@@ -104,7 +104,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
         KOTH activeKOTH = null;
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (koth.isActive()) {
+            if (koth.isActive() && !koth.isHidden()) {
                 activeKOTH = koth;
                 break;
             }
