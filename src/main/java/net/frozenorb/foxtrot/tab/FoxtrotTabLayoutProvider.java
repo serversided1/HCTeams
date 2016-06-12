@@ -314,7 +314,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
                 if (!title) {
                     title = true;
-                    layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List");
+                    layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List:");
                 }
 
                 String teamName = teamEntry.getKey().getName();
