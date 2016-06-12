@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class VoidTracker implements Listener {
 
@@ -36,7 +37,7 @@ public class VoidTracker implements Listener {
             }
         }
 
-        if (knocker != null) {
+        if (knocker != null && knockerTime + TimeUnit.MINUTES.toMillis(1) > System.currentTimeMillis() ) {
             event.setTrackerDamage(new VoidDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager()));
         } else {
             event.setTrackerDamage(new VoidDamage(event.getPlayer().getName(), event.getDamage()));
