@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.listener.GoldenAppleListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -36,6 +37,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String fstuckScore = getFStuckScore(player);
         String logoutScore = getLogoutScore(player);
         String homeScore = getHomeScore(player);
+        String appleScore = getAppleScore(player);
 
         if( Foxtrot.getInstance().getMapHandler().isKitMap() ) {
             scores.add("&4&lKills&7: &c" + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
@@ -47,7 +49,11 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         if (homeScore != null) {
-            scores.add("&9&lHome: &9" + homeScore);
+            scores.add("&9&lHome§7: &9" + homeScore);
+        }
+
+        if (appleScore != null) {
+            scores.add("&6&lApple&7: &6" + appleScore);
         }
 
         if (enderpearlScore != null) {
@@ -139,6 +145,18 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         return (scores.toArray(new String[scores.size()]));
+    }
+
+    public String getAppleScore(Player player) {
+        if (GoldenAppleListener.getCrappleCooldown().containsKey(player.getUniqueId()) && GoldenAppleListener.getCrappleCooldown().get(player.getUniqueId()) > System.currentTimeMillis()) {
+            float diff = GoldenAppleListener.getCrappleCooldown().get(player.getUniqueId()) - System.currentTimeMillis();
+
+            if (diff >= 0) {
+                return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));
+            }
+        }
+
+        return (null);
     }
 
     public String getHomeScore(Player player) {
