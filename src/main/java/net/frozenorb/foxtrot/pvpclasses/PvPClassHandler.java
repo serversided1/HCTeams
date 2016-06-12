@@ -46,7 +46,6 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     @Override
     public void run() {
-        checkSavedPotions();
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             // Remove kit if player took off armor, otherwise .tick();
             if (equippedKits.containsKey(player.getName())) {
@@ -73,21 +72,19 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 }
             }
         }
+        checkSavedPotions();
     }
 
     public void checkSavedPotions() {
-        Iterator<UUID> idIterator = savedPotions.keySet().iterator();
+        Iterator<Map.Entry<UUID, PvPClass.SavedPotion>> idIterator = savedPotions.entrySet().iterator();
         while( idIterator.hasNext() ) {
-            UUID id = idIterator.next();
-            Player player = Bukkit.getPlayer(id);
+            Map.Entry<UUID, PvPClass.SavedPotion> id = idIterator.next();
+            Player player = Bukkit.getPlayer(id.getKey());
             if( player != null && player.isOnline() ) {
-                PvPClass.SavedPotion potion = savedPotions.get(id);
-                if( potion.getTime() < System.currentTimeMillis() ) {
-                    player.addPotionEffect(potion.getPotionEffect());
-                    //System.out.println("ADDED POTION EFFECT FOR PLAYER: " + player.getName() + " Potion: " + potion.getPotionEffect().toString() );
-                    idIterator.remove();
-                } else {
-                    //System.out.println("Pending potion effect, will arrive in: " + ( potion.getTime() - System.currentTimeMillis() ) / 1000 + "s");
+                if( id.getValue().getTime() < System.currentTimeMillis() ) {
+                    if(player.addPotionEffect(id.getValue().getPotionEffect())) {
+                        idIterator.remove();
+                    }
                 }
             } else {
                 idIterator.remove();
