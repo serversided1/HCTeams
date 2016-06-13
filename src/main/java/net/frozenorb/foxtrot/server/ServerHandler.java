@@ -414,14 +414,14 @@ public class ServerHandler {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 
-                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ. (NS)");
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
                     player.teleport(team.getHQ());
                     homeTimer.remove(player.getName());
                     cancel();
                     return;
                 }
 
-                // We'll keep this here just in case. Changed the color on the message output if we ever need to debug since this could *should* never be run.
+                // After testing, this code is actually run sometimes. I'm going to leave it. FIXME
                 if (time == 0) {
                     // Remove their PvP timer.
                     if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
