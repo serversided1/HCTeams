@@ -49,11 +49,11 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         if (homeScore != null) {
-            scores.add("&9&lHome§7: &9" + homeScore);
+            scores.add("&9&lHome§7: **&9" + homeScore);
         }
 
         if (appleScore != null) {
-            scores.add("&6&lApple&7: &6" + appleScore);
+            scores.add("&6&lApple&7: **&6" + appleScore);
         }
 
         if (enderpearlScore != null) {
@@ -148,7 +148,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
     }
 
     public String getAppleScore(Player player) {
-        if (GoldenAppleListener.getCrappleCooldown().containsKey(player.getUniqueId()) && GoldenAppleListener.getCrappleCooldown().get(player.getUniqueId()) > System.currentTimeMillis()) {
+        if (GoldenAppleListener.getCrappleCooldown().containsKey(player.getUniqueId()) && GoldenAppleListener.getCrappleCooldown().get(player.getUniqueId()) >= System.currentTimeMillis()) {
             float diff = GoldenAppleListener.getCrappleCooldown().get(player.getUniqueId()) - System.currentTimeMillis();
 
             if (diff >= 0) {
