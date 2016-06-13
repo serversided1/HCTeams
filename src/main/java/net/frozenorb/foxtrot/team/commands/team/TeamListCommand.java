@@ -68,7 +68,9 @@ public class TeamListCommand {
                     FancyMessage teamMessage = new FancyMessage();
 
                     teamMessage.text(index + ". ").color(ChatColor.GRAY).then();
-                    teamMessage.text(teamEntry.getKey().getName()).color(ChatColor.YELLOW).tooltip(ChatColor.GREEN + "Click to view team info").command("/t who " + teamEntry.getKey().getName()).then();
+                    teamMessage.text(teamEntry.getKey().getName()).color(ChatColor.YELLOW).tooltip(
+                            ChatColor.YELLOW + "DTR: " + teamEntry.getKey().getDTRColor() + teamEntry.getKey().getDTR() + ChatColor.YELLOW + " / " + teamEntry.getKey().getMaxDTR() + "\n" +
+                            ChatColor.GREEN + "Click to view team info").command("/t who " + teamEntry.getKey().getName()).then();
                     teamMessage.text(" (" + teamEntry.getValue() + "/" + teamEntry.getKey().getSize() + ")").color(ChatColor.GREEN);
 
                     teamMessage.send(sender);
