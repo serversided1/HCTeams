@@ -103,7 +103,7 @@ public class CombatLoggerListener implements Listener {
                     killerKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).getKills();
                 }
 
-                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + "[" + killerKills + "]" + ChatColor.YELLOW + ".";
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.DARK_RED + "[" + killerKills + "]" + ChatColor.YELLOW + ".";
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
