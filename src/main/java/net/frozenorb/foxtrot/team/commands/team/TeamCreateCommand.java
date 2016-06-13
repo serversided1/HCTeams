@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import com.google.common.collect.ImmutableSet;
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
@@ -64,7 +65,10 @@ public class TeamCreateCommand {
         createdTeam.setDTR(1);
 
         Foxtrot.getInstance().getTeamHandler().setupTeam(createdTeam);
-        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+
+        if (!Basic.getInstance().getServerManager().isFrozen()) {
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+        }
     }
 
 }
