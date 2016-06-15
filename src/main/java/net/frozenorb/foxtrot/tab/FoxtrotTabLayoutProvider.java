@@ -104,7 +104,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
         KOTH activeKOTH = null;
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (koth.isActive()) {
+            if (koth.isActive() && !koth.isHidden()) {
                 activeKOTH = koth;
                 break;
             }
@@ -314,7 +314,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
                 if (!title) {
                     title = true;
-                    layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List");
+                    layout.set(2, 0, ChatColor.DARK_PURPLE + "Team List:");
                 }
 
                 String teamName = teamEntry.getKey().getName();

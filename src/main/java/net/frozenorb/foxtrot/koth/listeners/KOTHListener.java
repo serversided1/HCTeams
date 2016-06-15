@@ -279,7 +279,7 @@ public class KOTHListener implements Listener {
 
         // Don't start a KOTH if another one is active.
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (!koth.isHidden() && koth.isActive()) {
+            if (koth.isActive()) {
                 return;
             }
         }
