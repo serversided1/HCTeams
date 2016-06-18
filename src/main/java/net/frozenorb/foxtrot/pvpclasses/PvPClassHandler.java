@@ -84,10 +84,10 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 PvPClass.SavedPotion potion = savedPotions.get(id);
                 if( potion.getTime() < System.currentTimeMillis() ) {
                     player.addPotionEffect(potion.getPotionEffect());
-                    System.out.println("ADDED POTION EFFECT FOR PLAYER: " + player.getName() + " Potion: " + potion.getPotionEffect().toString() );
+                    //System.out.println("ADDED POTION EFFECT FOR PLAYER: " + player.getName() + " Potion: " + potion.getPotionEffect().toString() );
                     savedPotions.remove(id);
                 } else {
-                    System.out.println("Pending potion effect, will arrive in: " + ( potion.getTime() - System.currentTimeMillis() ) / 1000 + "s");
+                    //System.out.println("Pending potion effect, will arrive in: " + ( potion.getTime() - System.currentTimeMillis() ) / 1000 + "s");
                 }
             } else {
                 savedPotions.remove(id);
