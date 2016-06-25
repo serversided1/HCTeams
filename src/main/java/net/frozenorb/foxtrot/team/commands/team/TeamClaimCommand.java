@@ -48,6 +48,10 @@ public class TeamClaimCommand implements Listener {
 
     @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permission="")
     public static void teamClaim(final Player sender) {
+        if( Foxtrot.getInstance().getMapHandler().isKitMap() ) {
+            sender.sendMessage(ChatColor.RED + "You cannot use this command on a Kit map.");
+            return;
+        }
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
