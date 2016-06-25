@@ -19,14 +19,14 @@ public class TeamUnIgnoreCommand {
         if (senderTeam != null) {
             if (targetTeam != null) {
                 if (senderTeam.isCaptain(sender.getUniqueId())) {
-                    sender.sendMessage(ChatColor.RED + "You must be a captain to un-ignore another faction!");
+                    sender.sendMessage(ChatColor.RED + "You must be a captain to unignore another faction!");
                     return;
                 }
 
                 if (senderTeam.getIgnoring().contains(targetTeam.getUniqueId())) {
                     senderTeam.getIgnoring().remove(targetTeam.getUniqueId());
 
-                    senderTeam.sendMessage(GREEN + "Your team has un-ignoring " + GOLD + targetTeam.getName() + GREEN + ".");
+                    senderTeam.sendMessage(GREEN + "Your team is no longer ignoring " + GOLD + targetTeam.getName() + GREEN + ".");
                 } else {
                     sender.sendMessage(RED + "Your team does not ignore " + YELLOW + targetTeam.getName() + RED + "!");
                 }
