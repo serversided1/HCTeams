@@ -18,7 +18,7 @@ public class TeamIgnoreCommand {
 
         if (senderTeam != null) {
             if (targetTeam != null) {
-                if (senderTeam.isCaptain(sender.getUniqueId())) {
+                if (!senderTeam.isCaptain(sender.getUniqueId())) {
                     sender.sendMessage(ChatColor.RED + "You must be a captain to ignore another faction!");
                     return;
                 }
