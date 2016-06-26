@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -821,10 +823,20 @@ public class Team {
                 player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
             }
 
-            if( this.getName().equalsIgnoreCase("Citadel")) {
-                Team t = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-                if( t != null ) {
-                    player.sendMessage(ChatColor.YELLOW + "Currently Owned By: " + ChatColor.RED + t.getName() );
+            if (getName().equalsIgnoreCase("Citadel")) {
+                Set<ObjectId> cappers = Foxtrot.getInstance().getCitadelHandler().getCappers();
+                Set<String> capperNames = new HashSet<>();
+
+                for (ObjectId capper : cappers) {
+                    Team capperTeam = Foxtrot.getInstance().getTeamHandler().getTeam(capper);
+
+                    if (capperTeam != null) {
+                        capperNames.add(capperTeam.getName());
+                    }
+                }
+
+                if (!cappers.isEmpty()) {
+                    player.sendMessage(ChatColor.YELLOW + "Currently captured by: " + ChatColor.RED + Joiner.on(", ").join(capperNames));
                 }
             }
 

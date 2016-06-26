@@ -18,7 +18,7 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (team == Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper())) {
+        if (Foxtrot.getInstance().getCitadelHandler().getCappers().contains(team.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Citadel cappers cannot change their name. Please contact an admin to rename your team.");
             return;
         }

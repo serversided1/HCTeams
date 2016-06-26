@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.util.PlayerDirection;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -255,11 +256,27 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(2, ++y, ChatColor.DARK_PURPLE + "Players Online:");
             layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
 
-            Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-            if (capper != null) {
-                ++y;
-                layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
-                layout.set(2, ++y, ChatColor.YELLOW + capper.getName());
+            Set<ObjectId> cappers = Foxtrot.getInstance().getCitadelHandler().getCappers();
+
+            if (!cappers.isEmpty()) {
+                Set<String> capperNames = new HashSet<>();
+
+                for (ObjectId capper : cappers) {
+                    Team capperTeam = Foxtrot.getInstance().getTeamHandler().getTeam(capper);
+
+                    if (capperTeam != null) {
+                        capperNames.add(capperTeam.getName());
+                    }
+                }
+
+                if (!capperNames.isEmpty()) {
+                    ++y;
+                    layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
+
+                    for (String capper : capperNames) {
+                        layout.set(2, ++y, ChatColor.YELLOW + capper);
+                    }
+                }
             }
         } else {
             layout.set(1, 2, ChatColor.DARK_PURPLE + "Players Online:");

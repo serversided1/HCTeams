@@ -31,14 +31,14 @@ public class CitadelListener implements Listener {
             Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
             if (playerTeam != null) {
-                Foxtrot.getInstance().getCitadelHandler().setCapper(playerTeam.getUniqueId());
+                Foxtrot.getInstance().getCitadelHandler().addCapper(playerTeam.getUniqueId());
             }
         }
     }
 
     @EventHandler
     public void onCitadelActivated(CitadelActivatedEvent event) {
-        Foxtrot.getInstance().getCitadelHandler().setCapper(null);
+        Foxtrot.getInstance().getCitadelHandler().resetCappers();
     }
 
     @EventHandler
@@ -49,9 +49,8 @@ public class CitadelListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR) // The monitor is here so we get called 'after' most join events.
     public void onPlayerJoin(PlayerJoinEvent event) {
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        Object capper = Foxtrot.getInstance().getCitadelHandler().getCapper();
 
-        if (playerTeam != null && capper == playerTeam.getUniqueId()) {
+        if (playerTeam != null && Foxtrot.getInstance().getCitadelHandler().getCappers().contains(playerTeam.getUniqueId())) {
             event.getPlayer().sendMessage(CitadelHandler.PREFIX + " " + ChatColor.DARK_GREEN + "Your team currently controls Citadel.");
         }
     }
