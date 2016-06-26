@@ -34,6 +34,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import net.frozenorb.qlib.tab.FrozenTabHandler;
 import org.bukkit.Bukkit;
@@ -151,6 +152,11 @@ public class Foxtrot extends JavaPlugin {
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().save();
         }
+
+        qLib.getInstance().runRedisCommand((jedis) -> {
+            jedis.save();
+            return null;
+        });
     }
 
     private void setupConfigurations() {
