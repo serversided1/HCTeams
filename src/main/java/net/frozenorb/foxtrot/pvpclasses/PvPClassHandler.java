@@ -104,7 +104,8 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                     if (event.getPlayer().getItemInHand().getAmount() > 1) {
                         event.getPlayer().getItemInHand().setAmount(event.getPlayer().getItemInHand().getAmount() - 1);
                     } else {
-                        event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                        event.getPlayer().getInventory().remove(event.getPlayer().getItemInHand());
+                        //event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
                     }
                 }
             }
