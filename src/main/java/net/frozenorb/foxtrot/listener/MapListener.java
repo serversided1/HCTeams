@@ -1,17 +1,24 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.minecraft.server.v1_7_R4.AttributeInstance;
+import net.minecraft.server.v1_7_R4.GenericAttributes;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHorse;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MapListener implements Listener {
+
+    public static final double MAX_HORSE_SPEED = 0.24;
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
@@ -61,6 +68,17 @@ public class MapListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().giveExp(4);
             event.getBlock().setType(Material.AIR);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Horse) {
+            AttributeInstance speedAttribute = ((CraftHorse) event.getRightClicked()).getHandle().getAttributeInstance(GenericAttributes.d);
+
+            if (speedAttribute.getValue() > MAX_HORSE_SPEED) {
+                speedAttribute.setValue(MAX_HORSE_SPEED);
+            }
         }
     }
 
