@@ -14,6 +14,7 @@ public class KOTHActivateCommand {
         // Don't start a KOTH if another one is active.
         for (KOTH otherKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (otherKoth.isActive()) {
+                sender.sendMessage(ChatColor.RED + otherKoth.getName() + " is currently active.");
                 return;
             }
         }
