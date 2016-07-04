@@ -43,7 +43,8 @@ public class AntiGlitchListener implements Listener {
             }
         }
     }
-
+    
+    /*
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onVehicleExit(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) {
@@ -71,6 +72,7 @@ public class AntiGlitchListener implements Listener {
 
         }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
+    */
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
