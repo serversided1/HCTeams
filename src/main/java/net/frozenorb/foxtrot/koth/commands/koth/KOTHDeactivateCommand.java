@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 
 public class KOTHDeactivateCommand {
 
-    @Command(names={ "KOTH Deactivate", "KOTH Inactive" }, permission="foxtrot.koth")
+    @Command(names={ "KOTH Deactivate", "KOTH Inactive" }, permission="foxtrot.koth.admin")
     public static void kothDectivate(CommandSender sender, @Param(name="koth") KOTH koth) {
         koth.deactivate();
         sender.sendMessage(ChatColor.GRAY + "Deactivated " + koth.getName() + " KOTH.");
