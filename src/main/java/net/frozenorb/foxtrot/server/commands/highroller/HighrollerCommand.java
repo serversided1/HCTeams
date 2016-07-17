@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.server.commands.highroller;
 
+import com.google.common.collect.ImmutableSet;
 import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -14,7 +15,11 @@ public class HighrollerCommand {
     public static void highroller(Player sender) {
         StringBuilder highRollers = new StringBuilder();
 
-        for (UUID highRoller : Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller")) {
+        for (UUID highRoller : ImmutableSet.copyOf(Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller"))) {
+            if (UUIDUtils.name(highRoller) == null) {
+                continue;
+            }
+
             highRollers.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
         }
 

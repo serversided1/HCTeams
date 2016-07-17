@@ -111,7 +111,7 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (UUID highRoller : Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller")) {
+                for (UUID highRoller : ImmutableSet.copyOf(Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller"))) {
                     if (UUIDUtils.name(highRoller) == null) {
                         continue;
                     }
