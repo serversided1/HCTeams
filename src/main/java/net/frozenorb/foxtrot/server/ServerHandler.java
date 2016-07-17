@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
+import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ItemUtils;
@@ -72,32 +73,12 @@ public class ServerHandler {
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
-    @Getter private Set<UUID> highRollers = new HashSet<>();
-
     @Getter private static Map<String, Long> homeTimer = new ConcurrentHashMap<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
 
     public ServerHandler() {
-        try {
-            File f = new File(Foxtrot.getInstance().getDataFolder(), "highRollers.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
-
-            if (dbo != null) {
-                highRollers.addAll(((BasicDBList) dbo.get("uuids")).stream().map(o -> UUID.fromString((String) o)).collect(Collectors.toList()));
-            }
-
-            highRollers.forEach(FrozenUUIDCache::ensure);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try {
             File f = new File(Foxtrot.getInstance().getDataFolder(), "betrayers.json");
 
@@ -132,7 +113,7 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (UUID highRoller : highRollers) {
+                for (UUID highRoller : Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller")) {
                     if (UUIDUtils.name(highRoller) == null) {
                         continue;
                     }
@@ -152,22 +133,6 @@ public class ServerHandler {
     }
 
     public void save() {
-        try {
-            File f = new File(Foxtrot.getInstance().getDataFolder(), "highRollers.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = highRollers.stream().map(UUID::toString).collect(Collectors.toCollection(BasicDBList::new));
-
-            dbo.put("uuids", list);
-            FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try {
             File f = new File(Foxtrot.getInstance().getDataFolder(), "betrayers.json");
 
