@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.server;
 import com.mongodb.BasicDBObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import java.util.concurrent.TimeUnit;
 
 @AllArgsConstructor
