@@ -19,7 +19,6 @@ import java.util.UUID;
 
 public class ChatHandler {
 
-    public static final String HIGHROLLER_PREFIX = ChatColor.DARK_PURPLE + "[HighRoller]";
     private static File customPrefixesFile;
 
     private Map<UUID, String> customPrefixes = new HashMap<>();
