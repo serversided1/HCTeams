@@ -22,16 +22,18 @@ public final class FoxConstants {
         return (ChatColor.GOLD + "[" + Team.ALLY_COLOR + "AC: " + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + Team.ALLY_COLOR + player.getName() + ": " + message);
     }
 
-    public static String highRollerPrefix() {
-        return (ChatColor.DARK_PURPLE + "[HighRoller]");
-    }
+    public static String publicChatFormat(Team team, String rankPrefix, String customPrefixString) {
+        String starting = "";
 
-    public static String publicChatFormat(Team team, String highRollerString, String customPrefixString) {
-        if (team == null) {
-            return ((customPrefixString == null ? ChatColor.GOLD + "[" + ChatColor.YELLOW + "-" + ChatColor.GOLD + "]" : ChatColor.GOLD.toString()) + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
-        } else {
-            return (ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]" + highRollerString + customPrefixString + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s");
+        if (team != null) {
+            if (rankPrefix.toLowerCase().contains("famous") || rankPrefix.toLowerCase().contains("youtube")) {
+                rankPrefix = "";
+            }
+
+            starting = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
         }
+
+        return starting + customPrefixString + rankPrefix + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s";
     }
 
 }

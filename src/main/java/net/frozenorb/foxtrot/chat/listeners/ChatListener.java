@@ -22,7 +22,7 @@ public class ChatListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        String highRollerPrefix = Foxtrot.getInstance().getServerHandler().getHighRollers().contains(event.getPlayer().getUniqueId()) ? ChatHandler.HIGHROLLER_PREFIX : "";
+        String rankPrefix = event.getPlayer().hasMetadata("HydrogenPrefix") ? event.getPlayer().getMetadata("HydrogenPrefix").get(0).asString() : "";
         String customPrefix = Foxtrot.getInstance().getChatHandler().getCustomPrefix(event.getPlayer().getUniqueId());
         ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
         ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
@@ -64,7 +64,7 @@ public class ChatListener implements Listener {
                     return;
                 }
 
-                String publicChatFormat = FoxConstants.publicChatFormat(playerTeam, highRollerPrefix, customPrefix);
+                String publicChatFormat = FoxConstants.publicChatFormat(playerTeam, rankPrefix, customPrefix);
                 String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),
