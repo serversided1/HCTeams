@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.team;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
