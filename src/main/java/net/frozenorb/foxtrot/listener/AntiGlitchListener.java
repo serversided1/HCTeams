@@ -56,10 +56,16 @@ public class AntiGlitchListener implements Listener {
 
         while (location.getBlock().getType().isSolid()) {
             location.add(0, 1, 0);
+            if(location.getBlockY() == 255) {
+                break;
+            }
         }
 
         while (location.getBlock().getType().isSolid()) {
             location.subtract(0, 1, 0);
+            if(location.getBlockY() == 1) {
+                break;
+            }
         }
 
         final Location locationFinal = location;
