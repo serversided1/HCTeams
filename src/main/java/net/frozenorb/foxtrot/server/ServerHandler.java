@@ -11,9 +11,9 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
+import net.frozenorb.foxtrot.util.HydrogenUtil;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
-import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ItemUtils;
@@ -111,7 +111,7 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (UUID highRoller : ImmutableSet.copyOf(Hydrogen.getInstance().getRankHandler().getUsersWithRank("highroller"))) {
+                for (UUID highRoller : getHighRollers()) {
                     if (UUIDUtils.name(highRoller) == null) {
                         continue;
                     }
@@ -151,6 +151,14 @@ public class ServerHandler {
             FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public Set<UUID> getHighRollers() {
+        if (Foxtrot.getInstance().getServer().getPluginManager().getPlugin("Hydrogen") != null) {
+            return ImmutableSet.copyOf(HydrogenUtil.getHighRollers());
+        } else {
+            return ImmutableSet.of();
         }
     }
 
