@@ -5,10 +5,7 @@ import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,10 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -162,6 +156,13 @@ public class BasicPreventionListener implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.blockList().clear();
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
+        if(event.getEntityType().equals(EntityType.HORSE)) {
+            event.setCancelled(true);
+        }
     }
 
 }
