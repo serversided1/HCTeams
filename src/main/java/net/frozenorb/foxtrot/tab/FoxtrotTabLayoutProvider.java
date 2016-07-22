@@ -39,7 +39,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         TabLayout layout = TabLayout.create(player);
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ? "HCSquads.com" : "HCTeams.com";
+        String serverName = Foxtrot.getInstance().getMapHandler().isKitMap() ? "Kit Map" :  Foxtrot.getInstance().getServerHandler().isSquads() ? "HCSquads.com" : "HCTeams.com";
 
         layout.set(1, 0, ChatColor.GOLD.toString() + ChatColor.BOLD + serverName);
 
