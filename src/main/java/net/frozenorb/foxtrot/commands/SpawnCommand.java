@@ -17,6 +17,7 @@ public class SpawnCommand {
                     "HCSquads" : "HCTeams";
 
             sender.sendMessage(ChatColor.RED + serverName + " does not have a spawn command! You must walk there!");
+            sender.sendMessage(ChatColor.RED + "Spawn is located at 0,0.");
         }
     }
 
