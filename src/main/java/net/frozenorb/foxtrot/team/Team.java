@@ -70,6 +70,7 @@ public class Team {
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
     @Getter private boolean powerFaction = false;
+    @Getter private int lives = 0;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -221,6 +222,29 @@ public class Team {
            TeamHandler.addPowerFaction(this);
         }
         flagForSave();
+    }
+
+    public void setLives( int lives ) {
+        this.lives = lives;
+        flagForSave();
+    }
+
+    public boolean addLives( int lives ) {
+        if( lives < 0 ) {
+            return false;
+        }
+        this.lives += lives;
+        flagForSave();
+        return true;
+    }
+
+    public boolean removeLives( int lives ) {
+        if( this.lives < lives || lives < 0) {
+            return false; //You twat.
+        }
+        this.lives -= lives;
+        flagForSave();
+        return true;
     }
 
     public void disband() {
@@ -679,6 +703,8 @@ public class Team {
                 setAnnouncement(lineParts[0]);
             } else if(identifier.equalsIgnoreCase("PowerFaction")) {
                 setPowerFaction(Boolean.valueOf(lineParts[0]));
+            } else if(identifier.equalsIgnoreCase("Lives")) {
+                setLives(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -767,6 +793,7 @@ public class Team {
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
         teamString.append("PowerFaction:").append(String.valueOf(isPowerFaction())).append("\n");
+        teamString.append("Lives:").append(String.valueOf(getLives())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -795,6 +822,7 @@ public class Team {
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
         dbObject.put("Announcement", getAnnouncement());
         dbObject.put("PowerFaction", isPowerFaction());
+        dbObject.put("Lives", getLives());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
@@ -1042,7 +1070,9 @@ public class Team {
 
         if (isMember(player.getUniqueId()) || player.hasPermission("basic.staff")) {
             player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
+            player.sendMessage(ChatColor.YELLOW + "Lives: " + ChatColor.RED + getLives());
         }
+
 
         if (DTRHandler.isOnCooldown(this)) {
             if (!player.isOp()) {
