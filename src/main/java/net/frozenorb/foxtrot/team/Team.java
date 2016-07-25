@@ -63,6 +63,7 @@ public class Team {
     @Getter private UUID owner = null;
     @Getter private Set<UUID> members = new HashSet<>();
     @Getter private Set<UUID> captains = new HashSet<>();
+    @Getter private Set<UUID> coleaders = new HashSet<>();
     @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
@@ -150,6 +151,13 @@ public class Team {
         flagForSave();
     }
 
+    public void addCoLeader(UUID co) {
+        coleaders.add(co);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Co-Leader added: " + UUIDUtils.formatPretty(co));
+        pushToMongoLog(new BasicDBObject("Type", "CoLeaderAdded").append("CoLeader", co.toString()));
+        flagForSave();
+    }
+
     public void setBalance(double balance) {
         this.balance = balance;
         flagForSave();
@@ -164,6 +172,13 @@ public class Team {
         captains.remove(captain);
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + UUIDUtils.formatPretty(captain));
         pushToMongoLog(new BasicDBObject("Type", "CaptainRemoved").append("Captain", captain.toString()));
+        flagForSave();
+    }
+
+    public void removeCoLeader(UUID co) {
+        coleaders.remove(co);
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Co-Leader Removed: " + UUIDUtils.formatPretty(co));
+        pushToMongoLog(new BasicDBObject("Type", "CoLeaderRemoved").append("CoLeader", co.toString()));
         flagForSave();
     }
 
@@ -304,9 +319,29 @@ public class Team {
     }
 
     public boolean isCaptain(UUID check) {
+        return isCaptain(check, true);
+    }
+
+    /**
+     * used to check if is a captain.
+     * @param check The player to check
+     * @param checkCoLeader Whether or not to count co-leaders as an officer in this case.
+     * @return Whether or not they are a captain.
+     */
+    public boolean isCaptain(UUID check, boolean checkCoLeader) {
         for (UUID captain : captains) {
             if (check.equals(captain)) {
                 return (true);
+            }
+        }
+
+        return checkCoLeader && isCoLeader(check);
+    }
+
+    public boolean isCoLeader(UUID check) {
+        for( UUID co : coleaders ) {
+            if( co.equals(check)) {
+                return true;
             }
         }
 
@@ -346,6 +381,7 @@ public class Team {
     public boolean removeMember(UUID member) {
         members.remove(member);
         captains.remove(member);
+        coleaders.remove(member);
 
         // If the owner leaves (somehow)
         if (isOwner(member)) {
@@ -515,6 +551,12 @@ public class Team {
                         addMember(UUID.fromString(name.trim()));
                     }
                 }
+            } else if(identifier.equalsIgnoreCase("CoLeaders")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2) {
+                        addCoLeader(UUID.fromString(name.trim()));
+                    }
+                }
             } else if (identifier.equalsIgnoreCase("Captains")) {
                 for (String name : lineParts) {
                     if (name.length() >= 2) {
@@ -666,6 +708,7 @@ public class Team {
 
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
+        StringBuilder coleaders = new StringBuilder();
         StringBuilder invites = new StringBuilder();
         StringBuilder historicalMembers = new StringBuilder();
 
@@ -675,6 +718,10 @@ public class Team {
 
         for (UUID captain : getCaptains()) {
             captains.append(captain.toString()).append(", ");
+        }
+
+        for (UUID co : getColeaders()) {
+            coleaders.append(co.toString()).append(", ");
         }
 
         for (UUID invite : getInvitations()) {
@@ -703,6 +750,7 @@ public class Team {
 
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
+        teamString.append("CoLeaders:").append(coleaders.toString()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
         teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString().replace("\n", "")).append('\n');
@@ -733,6 +781,7 @@ public class Team {
 
         dbObject.put("_id", getUniqueId());
         dbObject.put("Owner", getOwner() == null ? null : getOwner().toString());
+        dbObject.put("CoLeaders", UUIDUtils.uuidsToStrings(getColeaders()));
         dbObject.put("Captains", UUIDUtils.uuidsToStrings(getCaptains()));
         dbObject.put("Members", UUIDUtils.uuidsToStrings(getMembers()));
         dbObject.put("Invitations", UUIDUtils.uuidsToStrings(getInvitations()));
@@ -852,6 +901,8 @@ public class Team {
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
 
+        FancyMessage coleadersJson = new FancyMessage("Co-Leaders: ").color(ChatColor.YELLOW);
+
         FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
 
         if (player.hasPermission("basic.staff")) {
@@ -884,9 +935,12 @@ public class Team {
                 continue;
             }
 
-            boolean captain = isCaptain(onlineMember.getUniqueId());
-
-            FancyMessage appendTo = captain ? captainsJson : membersJson;
+            FancyMessage appendTo = membersJson;
+            if(isCoLeader(onlineMember.getUniqueId())) {
+                appendTo = coleadersJson;
+            } else if(isCaptain(onlineMember.getUniqueId(), false)) {
+                appendTo = captainsJson;
+            }
 
             if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
                 appendTo.then(", ").color(ChatColor.GRAY);
@@ -903,9 +957,12 @@ public class Team {
                 continue;
             }
 
-            boolean captain = isCaptain(offlineMember);
-
-            FancyMessage appendTo = captain ? captainsJson : membersJson;
+            FancyMessage appendTo = membersJson;
+            if(isCoLeader(offlineMember)) {
+                appendTo = coleadersJson;
+            } else if(isCaptain(offlineMember, false)) {
+                appendTo = captainsJson;
+            }
 
             if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
                 appendTo.then(", ").color(ChatColor.GRAY);
@@ -950,6 +1007,10 @@ public class Team {
         }
 
         leader.send(player);
+
+        if (!ChatColor.stripColor(coleadersJson.toOldMessageFormat()).endsWith("s: ")) {
+            coleadersJson.send(player);
+        }
 
         if (!ChatColor.stripColor(captainsJson.toOldMessageFormat()).endsWith("s: ")) {
             captainsJson.send(player);

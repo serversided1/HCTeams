@@ -41,8 +41,13 @@ public class TeamForceKickCommand {
             return;
         }
 
-        if (team.isCaptain(player) && !team.isOwner(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
+        if(team.isCoLeader(sender.getUniqueId()) && (team.isCoLeader(player))) {
+            sender.sendMessage(ChatColor.RED + "Only the owner can kick other co-leaders!");
+            return;
+        }
+
+        if (team.isCaptain(player, false) && (!team.isOwner(sender.getUniqueId()) || !team.isCoLeader(sender.getUniqueId()))) {
+            sender.sendMessage(ChatColor.RED + "Only an owner or co-leader can kick other captains!");
             return;
         }
 

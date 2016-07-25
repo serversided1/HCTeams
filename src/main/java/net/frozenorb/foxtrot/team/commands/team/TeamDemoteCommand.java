@@ -21,7 +21,7 @@ public class TeamDemoteCommand {
             return;
         }
 
-        if (!team.isOwner(sender.getUniqueId())) {
+        if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team owners can do this.");
             return;
         }
