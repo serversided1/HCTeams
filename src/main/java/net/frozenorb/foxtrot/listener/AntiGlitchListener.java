@@ -1,10 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
@@ -15,7 +13,9 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 
@@ -44,7 +44,6 @@ public class AntiGlitchListener implements Listener {
         }
     }
     
-    /*
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onVehicleExit(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) {
@@ -78,7 +77,6 @@ public class AntiGlitchListener implements Listener {
 
         }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
-    */
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
