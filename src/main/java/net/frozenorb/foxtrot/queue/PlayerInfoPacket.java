@@ -16,7 +16,7 @@ public class PlayerInfoPacket implements XPacket {
     @Getter private String queue;
     @Getter private UUID player;
     @Getter private int totalLives;
-    @Getter private long deathbannedUntil;
+    @Getter private long deathbanRemaining;
     @Getter private String livesLocked;
     @Getter private boolean eotwJoinAllowed;
 
@@ -49,7 +49,8 @@ public class PlayerInfoPacket implements XPacket {
                 }
 
                 String queueId = qQueue.getInstance().getQueueHandler().getQueueId();
-                PlayerInfoPacket packet = new PlayerInfoPacket(queueId, player, totalLives, deathbannedUntil, livesLocked, eotwJoinAllowed);
+                long deathbanRemaining = deathbannedUntil - System.currentTimeMillis();
+                PlayerInfoPacket packet = new PlayerInfoPacket(queueId, player, totalLives, deathbanRemaining, livesLocked, eotwJoinAllowed);
                 FrozenXPacketHandler.sendToAll(packet);
             }
 
