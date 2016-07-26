@@ -20,7 +20,7 @@ public class KOTHActivateCommand {
         }
 
         if( (koth.getName().equalsIgnoreCase("citadel") || koth.getName().toLowerCase().contains("conquest")) && !sender.isOp()) {
-            sender.sendMessage(ChatColor.RED + "Only ops can use the activate command for citadel.");
+            sender.sendMessage(ChatColor.RED + "Only ops can use the activate command for weekend events.");
             return;
         }
         koth.activate();
