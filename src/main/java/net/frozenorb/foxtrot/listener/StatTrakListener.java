@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.listener;
 
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.util.org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import net.frozenorb.basic.Basic;
@@ -9,7 +8,6 @@ import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.serialization.ItemStackSerializer;
 import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;

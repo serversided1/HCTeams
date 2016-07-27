@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.team.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.TeamHandler;
 import net.frozenorb.qlib.command.Command;
