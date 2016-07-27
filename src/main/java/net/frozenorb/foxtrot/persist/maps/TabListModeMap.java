@@ -8,7 +8,7 @@ import java.util.UUID;
 public class TabListModeMap extends PersistMap<TabListMode> {
 
     public TabListModeMap() {
-        super(null, "TabListInfo", false);
+        super("TabListInfo", "TabListInfo", false);
     }
 
     @Override
