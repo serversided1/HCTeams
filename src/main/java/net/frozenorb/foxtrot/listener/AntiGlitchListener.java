@@ -44,7 +44,6 @@ public class AntiGlitchListener implements Listener {
         }
     }
     
-    /*
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onVehicleExit(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) {
@@ -56,10 +55,16 @@ public class AntiGlitchListener implements Listener {
 
         while (location.getBlock().getType().isSolid()) {
             location.add(0, 1, 0);
+            if(location.getBlockY() == 255) {
+                break;
+            }
         }
 
         while (location.getBlock().getType().isSolid()) {
             location.subtract(0, 1, 0);
+            if(location.getBlockY() == 1) {
+                break;
+            }
         }
 
         final Location locationFinal = location;
@@ -72,7 +77,6 @@ public class AntiGlitchListener implements Listener {
 
         }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
-    */
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {

@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import lombok.Getter;
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
@@ -41,7 +42,7 @@ import java.util.*;
 public class CombatLoggerListener implements Listener {
 
     public static final String COMBAT_LOGGER_METADATA = "CombatLogger";
-    private Set<Entity> combatLoggers = new HashSet<>();
+    @Getter private Set<Entity> combatLoggers = new HashSet<>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {

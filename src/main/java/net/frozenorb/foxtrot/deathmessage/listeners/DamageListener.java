@@ -22,6 +22,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class DamageListener implements Listener {
 
@@ -52,7 +53,9 @@ public class DamageListener implements Listener {
             Damage deathCause = record.get(record.size() - 1);
 
             // Hacky NMS to change the player's killer
-            if (deathCause instanceof PlayerDamage) {
+            System.out.println("The milliseconds since death is: " + deathCause.getTimeDifference() + " this should be less than " + TimeUnit.MINUTES.toMillis(1) );
+            if (deathCause instanceof PlayerDamage && deathCause.getTimeDifference() < TimeUnit.MINUTES.toMillis(1)) {
+                System.out.println("Its a playerdamage thing");
                 String killerName = ((PlayerDamage) deathCause).getDamager();
                 Player killer = Foxtrot.getInstance().getServer().getPlayerExact(killerName);
 

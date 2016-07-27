@@ -117,22 +117,15 @@ public class MinerClass extends PvPClass implements Listener {
         }
 
         if( diamonds > 600 ) {
-            if (shouldApplyPotion(player, PotionEffectType.REGENERATION, 1)) {
+            if (shouldApplyPotion(player, PotionEffectType.REGENERATION, 0)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0), true);
             }
         }
 
-        level = -1;
-
-        if( diamonds >= 1000 ) {
-            level = 1;
-        } else if( diamonds >= 750 ) {
-            level = 0;
+        if( diamonds >= 1000 && shouldApplyPotion(player,PotionEffectType.SATURATION, 0)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 0), true);
         }
 
-        if( level >= 0 && shouldApplyPotion(player,PotionEffectType.DAMAGE_RESISTANCE, level)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, level), true);
-        }
         super.tick(player);
     }
 

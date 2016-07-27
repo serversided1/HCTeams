@@ -69,6 +69,7 @@ public class Team {
     @Getter private Set<ObjectId> ignoring = new HashSet<>();
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
+    @Getter private boolean powerFaction = false;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -195,6 +196,16 @@ public class Team {
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         this.HQ = hq;
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
+        flagForSave();
+    }
+
+    public void setPowerFaction( boolean bool ) {
+        this.powerFaction = bool;
+        if( bool ) {
+            TeamHandler.removePowerFaction(this);
+        } else {
+           TeamHandler.addPowerFaction(this);
+        }
         flagForSave();
     }
 
@@ -633,6 +644,8 @@ public class Team {
                 }
             } else if (identifier.equalsIgnoreCase("Announcement")) {
                 setAnnouncement(lineParts[0]);
+            } else if(identifier.equalsIgnoreCase("PowerFaction")) {
+                setPowerFaction(Boolean.valueOf(lineParts[0]));
             }
         }
 
@@ -715,6 +728,7 @@ public class Team {
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
+        teamString.append("PowerFaction:").append(String.valueOf(isPowerFaction())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -742,6 +756,7 @@ public class Team {
         dbObject.put("Name", getName());
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
         dbObject.put("Announcement", getAnnouncement());
+        dbObject.put("PowerFaction", isPowerFaction());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
@@ -925,7 +940,6 @@ public class Team {
         if (HQ != null && player.hasPermission("basic.staff")) {
             teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
             teamLine.tooltip("§aClick to warp to HQ");
-
         }
 
         if (player.hasPermission("basic.staff")) {
@@ -992,6 +1006,21 @@ public class Team {
 
                 message.send(player);
             }
+        }
+
+        if(player.hasPermission("foxtrot.powerfactions")) {
+            FancyMessage powerFactionLine = new FancyMessage();
+            powerFactionLine.text(ChatColor.YELLOW + "Power Faction: ");
+            if( isPowerFaction() ) {
+                powerFactionLine.then().text(ChatColor.GREEN + "True");
+                powerFactionLine.command("/powerfaction remove " + getName());
+                powerFactionLine.tooltip("§bClick change faction to a non power faction.");
+            } else {
+                powerFactionLine.then().text(ChatColor.RED + "False");
+                powerFactionLine.command("/powerfaction add " + getName());
+                powerFactionLine.tooltip("§bClick change faction to a power faction.");
+            }
+            powerFactionLine.send(player);
         }
 
         // Only show this if they're a member.

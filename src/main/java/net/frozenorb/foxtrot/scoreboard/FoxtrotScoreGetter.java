@@ -37,6 +37,11 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String logoutScore = getLogoutScore(player);
         String homeScore = getHomeScore(player);
 
+        if( Foxtrot.getInstance().getMapHandler().isKitMap() ) {
+            scores.add("&4&lKills&7: &c" + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
+            scores.add("&4&lDeaths&7: &c" + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
+        }
+
         if (spawnTagScore != null) {
             scores.add("&c&lSpawn Tag&7: &c" + spawnTagScore);
         }

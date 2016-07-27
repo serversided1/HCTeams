@@ -30,7 +30,11 @@ public class CrateListener implements Listener {
 
                         // Ensure player has enough free slots in their inventory to unzip the crate
                         if(getFreeSlots(player.getInventory()) >= (crate.getSize() - 1)) {
-                            player.getInventory().remove(inHand); // use create
+                            if( inHand.getAmount() > 1 ) {
+                                inHand.setAmount( inHand.getAmount() - 1 );
+                            } else {
+                                player.getInventory().remove(inHand); // use create
+                            }
 
                             // unzip fully enchanted set into players inventory
                             for(ItemStack is : crate.getInventory()) {

@@ -39,6 +39,7 @@ import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import net.frozenorb.qlib.tab.FrozenTabHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -97,6 +98,8 @@ public class Foxtrot extends JavaPlugin {
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
 
+    @Getter private CombatLoggerListener combatLoggerListener;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -144,6 +147,12 @@ public class Foxtrot extends JavaPlugin {
 
         for (String playerName : PvPClassHandler.getEquippedKits().keySet()) {
             PvPClassHandler.getEquippedKits().get(playerName).remove(getServer().getPlayerExact(playerName));
+        }
+
+        for( Entity e : this.combatLoggerListener.getCombatLoggers() ) {
+            if( e != null ) {
+                e.remove();
+            }
         }
 
         RedisSaveTask.save(null, false);
@@ -200,7 +209,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
+        combatLoggerListener = new CombatLoggerListener();
+        getServer().getPluginManager().registerEvents(combatLoggerListener, this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
         getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
@@ -225,6 +235,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
+        getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
     }

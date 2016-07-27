@@ -46,10 +46,8 @@ public class DiamondMinedMap extends PersistMap<Integer> {
             update.sendMessage(getMessage("Speed II", 400));
         } else if( mined == 600 ) {
             update.sendMessage(getMessage("Regeneration I", 600));
-        } else if( mined == 750 ) {
-            update.sendMessage(getMessage("Resistance I", 750));
         } else if( mined == 1000 ) {
-            update.sendMessage(getMessage("Resistance II", 1000));
+            update.sendMessage(getMessage("Saturation I", 1000));
         }
     }
 

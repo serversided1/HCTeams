@@ -16,10 +16,7 @@ import org.bson.types.ObjectId;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamHandler {
@@ -28,8 +25,10 @@ public class TeamHandler {
     private Map<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<>(); // Team UUID -> Team
     private Map<UUID, Team> playerTeamMap = new ConcurrentHashMap<>(); // Player UUID -> Team
     @Getter @Setter private boolean rostersLocked = false;
+    @Getter private static HashSet<Team> powerFactions = new HashSet<>();
 
     public TeamHandler() {
+        powerFactions = new HashSet<>();
         FrozenCommandHandler.registerParameterType(Team.class, new TeamType());
         FrozenCommandHandler.registerParameterType(DTRBitmask.class, new DTRBitmaskType());
         FrozenCommandHandler.registerParameterType(Subclaim.class, new SubclaimType());
@@ -59,6 +58,16 @@ public class TeamHandler {
 
         });
     }
+
+    public static void addPowerFaction(Team t) {
+        powerFactions.add(t);
+    }
+
+    public static void removePowerFaction(Team t) {
+        powerFactions.remove(t);
+    }
+
+    public static boolean isPowerFaction(Team t) { return powerFactions.contains(t); }
 
     public List<Team> getTeams() {
         return (new ArrayList<>(teamNameMap.values()));
