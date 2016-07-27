@@ -17,10 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class BasicPreventionListener implements Listener {
@@ -66,6 +63,14 @@ public class BasicPreventionListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
             }
+        }
+    }
+
+    @EventHandler
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.HORSE) {
+            event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "It appears that this horse doesn't like you.");
+            event.setCancelled(true);
         }
     }
 
