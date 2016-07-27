@@ -26,7 +26,13 @@ public class PvPTimerMap extends PersistMap<Integer> {
                         int newValue = getValue(player.getUniqueId()) - 1;
 
                         if (newValue % 60 == 0) {
-                            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + (newValue / 60) + ChatColor.RED + " minutes of PvP Protection remaining.");
+                            int minutes = newValue / 60;
+
+                            if (minutes <= 0) {
+                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your PvP Protection has expired!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + minutes + ChatColor.RED + " minutes of PvP Protection remaining.");
+                            }
                         }
 
                         updateValueAsync(player.getUniqueId(), newValue);
