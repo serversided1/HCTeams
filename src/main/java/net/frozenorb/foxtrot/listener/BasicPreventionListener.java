@@ -69,7 +69,7 @@ public class BasicPreventionListener implements Listener {
     @EventHandler
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         if (event.getRightClicked().getType() == EntityType.HORSE) {
-            event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "It appears that this horse doesn't like you.");
+            event.getPlayer().sendMessage(ChatColor.RED.toString() + "It appears that this horse doesn't like you.");
             event.setCancelled(true);
         }
     }
