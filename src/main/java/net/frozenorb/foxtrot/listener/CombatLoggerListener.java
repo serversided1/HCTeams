@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.serialization.ItemStackSerializer;
+import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.*;
@@ -484,76 +485,18 @@ public class CombatLoggerListener implements Listener {
         final BasicDBObject playerDeath = new BasicDBObject();
 
         if (killer != null) {
-            playerDeath.append("soups", -1);
             playerDeath.append("healthLeft", (int) killer.getHealth());
             playerDeath.append("killerUUID", killer.getUniqueId().toString().replace("-", ""));
-            playerDeath.append("killerHunger", killer.getFoodLevel());
-
-            if (killer.getItemInHand() != null) {
-                playerDeath.append("item", ItemStackSerializer.serialize(killer.getItemInHand()));
-            } else {
-                playerDeath.append("item", "NONE");
-            }
+            playerDeath.append("killerInventory", PlayerInventorySerializer.getInsertableObject(killer));
         } else {
             try{
                 playerDeath.append("reason", "combat-logger");
-            } catch (NullPointerException ignored) {
-
-            }
+            } catch (NullPointerException ignored) {}
         }
 
-        playerDeath.append("playerHunger", killed.getFoodLevel());
-
-        BasicDBObject playerInv = new BasicDBObject();
-        BasicDBObject armor = new BasicDBObject();
-
-        armor.put("helmet", ItemStackSerializer.serialize(killed.getInventory().getHelmet()));
-        armor.put("chestplate", ItemStackSerializer.serialize(killed.getInventory().getChestplate()));
-        armor.put("leggings", ItemStackSerializer.serialize(killed.getInventory().getLeggings()));
-        armor.put("boots", ItemStackSerializer.serialize(killed.getInventory().getBoots()));
-
-        BasicDBList contents = new BasicDBList();
-
-        for (int i = 0; i < 9; i++) {
-            if (killed.getInventory().getItem(i) != null) {
-                contents.add(ItemStackSerializer.serialize(killed.getInventory().getItem(i)));
-            } else {
-                contents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-            }
-        }
-
-        playerInv.append("armor", armor);
-        playerInv.append("items", contents);
-
-        playerDeath.append("playerInventory", playerInv);
-
-        if (killer != null) {
-            BasicDBObject killerInventory = new BasicDBObject();
-            BasicDBObject killerArmor = new BasicDBObject();
-
-            armor.put("helmet", ItemStackSerializer.serialize(killer.getInventory().getHelmet()));
-            armor.put("chestplate", ItemStackSerializer.serialize(killer.getInventory().getChestplate()));
-            armor.put("leggings", ItemStackSerializer.serialize(killer.getInventory().getLeggings()));
-            armor.put("boots", ItemStackSerializer.serialize(killer.getInventory().getBoots()));
-
-            BasicDBList killerContents = new BasicDBList();
-
-            for (int i = 0; i < 9; i++) {
-                if (killer.getInventory().getItem(i) != null) {
-                    killerContents.add(ItemStackSerializer.serialize(killer.getInventory().getItem(i)));
-                } else {
-                    killerContents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-                }
-            }
-
-            killerInventory.append("armor", killerArmor);
-            killerInventory.append("items", killerContents);
-            playerDeath.append("killerInventory", killerInventory);
-        }
-
+        playerDeath.append("playerInventory", PlayerInventorySerializer.getInsertableObject(killed));
         playerDeath.append("uuid", killed.getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", killed.getName());
-        playerDeath.append("type", "death");
         playerDeath.append("when", new Date());
 
         new BukkitRunnable() {

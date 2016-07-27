@@ -1,10 +1,8 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.serialization.ItemStackSerializer;
-import org.bukkit.Material;
+import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -25,76 +22,18 @@ public class WebsiteListener implements Listener {
         final BasicDBObject playerDeath = new BasicDBObject();
 
         if (event.getEntity().getKiller() != null) {
-            playerDeath.append("soups", -1);
             playerDeath.append("healthLeft", (int) event.getEntity().getKiller().getHealth());
             playerDeath.append("killerUUID", event.getEntity().getKiller().getUniqueId().toString().replace("-", ""));
-            playerDeath.append("killerHunger", event.getEntity().getKiller().getFoodLevel());
-
-            if (event.getEntity().getKiller().getItemInHand() != null) {
-                playerDeath.append("item", ItemStackSerializer.serialize(event.getEntity().getKiller().getItemInHand()));
-            } else {
-                playerDeath.append("item", "NONE");
-            }
+            playerDeath.append("killerInventory", PlayerInventorySerializer.getInsertableObject(event.getEntity().getKiller()));
         } else {
             try{
                 playerDeath.append("reason", event.getEntity().getLastDamageCause().getCause().toString());
-            } catch (NullPointerException ignored) {
-
-            }
+            } catch (NullPointerException ignored) {}
         }
 
-        playerDeath.append("playerHunger", event.getEntity().getFoodLevel());
-
-        BasicDBObject playerInv = new BasicDBObject();
-        BasicDBObject armor = new BasicDBObject();
-
-        armor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getInventory().getHelmet()));
-        armor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getInventory().getChestplate()));
-        armor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getInventory().getLeggings()));
-        armor.put("boots", ItemStackSerializer.serialize(event.getEntity().getInventory().getBoots()));
-
-        BasicDBList contents = new BasicDBList();
-
-        for (int i = 0; i < 9; i++) {
-            if (event.getEntity().getInventory().getItem(i) != null) {
-                contents.add(ItemStackSerializer.serialize(event.getEntity().getInventory().getItem(i)));
-            } else {
-                contents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-            }
-        }
-
-        playerInv.append("armor", armor);
-        playerInv.append("items", contents);
-
-        playerDeath.append("playerInventory", playerInv);
-
-        if (event.getEntity().getKiller() != null) {
-            BasicDBObject killerInventory = new BasicDBObject();
-            BasicDBObject killerArmor = new BasicDBObject();
-
-            killerArmor.put("helmet", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getHelmet()));
-            killerArmor.put("chestplate", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getChestplate()));
-            killerArmor.put("leggings", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getLeggings()));
-            killerArmor.put("boots", ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getBoots()));
-
-            BasicDBList killerContents = new BasicDBList();
-
-            for (int i = 0; i < 9; i++) {
-                if (event.getEntity().getKiller().getInventory().getItem(i) != null) {
-                    killerContents.add(ItemStackSerializer.serialize(event.getEntity().getKiller().getInventory().getItem(i)));
-                } else {
-                    killerContents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-                }
-            }
-
-            killerInventory.append("armor", killerArmor);
-            killerInventory.append("items", killerContents);
-            playerDeath.append("killerInventory", killerInventory);
-        }
-
+        playerDeath.append("playerInventory", PlayerInventorySerializer.getInsertableObject(event.getEntity()));
         playerDeath.append("ip", event.getEntity().getAddress().toString().split(":")[0].replace("/", ""));
         playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
-        playerDeath.append("type", "death");
         playerDeath.append("when", new Date());
 
         new BukkitRunnable() {
