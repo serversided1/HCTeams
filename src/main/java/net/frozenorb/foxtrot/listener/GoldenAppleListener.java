@@ -3,7 +3,6 @@ package net.frozenorb.foxtrot.listener;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.util.TimeUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,12 +37,6 @@ public class GoldenAppleListener implements Listener {
             long millisRemaining = crappleCooldown.get(player.getUniqueId()) - System.currentTimeMillis();
             double value = (millisRemaining / 1000D);
             double sec = value > 0.1 ? Math.round(10.0 * value) / 10.0 : 0.1;
-
-            if (event.isCancelled()) {
-                event.setCancelled(false); // try to uncancel because Bukkit is .
-                Bukkit.broadcastMessage("Uncancelled event");
-                return;
-            }
 
             if (crappleCooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
                 player.sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
