@@ -82,14 +82,6 @@ public class ChatListener implements Listener {
                             player.sendMessage(finalMessage);
                         }
                     } else {
-                        if (!player.hasPermission("basic.staff")) {
-                            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
-
-                            if (team != null && team.getIgnoring().contains(playerTeam.getUniqueId())) {
-                                continue; // recipient ignores this message sender
-                            }
-                        }
-
                         if (playerTeam.isMember(player.getUniqueId())) {
                             // Gypsie way to get a custom color if they're allies/teammates
                             player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.YELLOW, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
