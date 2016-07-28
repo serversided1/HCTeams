@@ -45,6 +45,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import redis.clients.jedis.JedisPool;
 
+// GPG test
 public class Foxtrot extends JavaPlugin {
 
     public static String MONGO_DB_NAME = "HCTeams";
