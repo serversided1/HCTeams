@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 public class TeamCommand {
 
     @Command(names={ "team", "t", "f", "faction", "fac" }, permission="")
-    public static void team(Player sender) {
+    public static void  team(Player sender) {
 
         String[] msg = {
 
@@ -46,8 +46,8 @@ public class TeamCommand {
                 "",
                 "§9Leader Commands:",
 
-                "§e/t promote <player> §7- Promote a member to Captain",
-                "§e/t demote <player> §7- Demotes a Captain to member",
+                "§e/t coleader <add|remove> <player> §7- Add or remove a coleader",
+                "§e/t captain <add|remove> <player> §7- Add or remove a captain",
                 "§e/t unclaim [all] §7- Unclaim land",
                 "§e/t rename <newName> §7- Rename your team",
                 "§e/t disband §7- Disband your team",

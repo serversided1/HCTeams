@@ -29,7 +29,7 @@ public class PromoteMembersMenu extends Menu {
         int index = 0;
 
         for (UUID uuid : team.getMembers()) {
-            if (!team.isOwner(uuid)) {
+            if (!team.isOwner(uuid) && !team.isCoLeader(uuid)) {
                 buttons.put(index, new ChangePromotionStatusButton(uuid, team, true));
                 index++;
             }

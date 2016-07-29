@@ -31,8 +31,8 @@ public class KickPlayerButton extends Button {
 
         if (team.isOwner(uuid)) {
             lore.add("§e§lLeader");
-        } else if(team.isCoLeader(uuid)) {
-            lore.add("§e§lCo-Leader");
+        } else if (team.isCoLeader(uuid)) {
+            lore.add("§e§lColeader");
         } else if (team.isCaptain(uuid)) {
             lore.add("§aCaptain");
         } else {

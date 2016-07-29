@@ -154,8 +154,8 @@ public class Team {
 
     public void addCoLeader(UUID co) {
         coleaders.add(co);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Co-Leader added: " + UUIDUtils.formatPretty(co));
-        pushToMongoLog(new BasicDBObject("Type", "CoLeaderAdded").append("CoLeader", co.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Coleader added: " + UUIDUtils.formatPretty(co));
+        pushToMongoLog(new BasicDBObject("Type", "ColeaderAdded").append("Coleader", co.toString()));
         flagForSave();
     }
 
@@ -178,8 +178,8 @@ public class Team {
 
     public void removeCoLeader(UUID co) {
         coleaders.remove(co);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Co-Leader Removed: " + UUIDUtils.formatPretty(co));
-        pushToMongoLog(new BasicDBObject("Type", "CoLeaderRemoved").append("CoLeader", co.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Coleader Removed: " + UUIDUtils.formatPretty(co));
+        pushToMongoLog(new BasicDBObject("Type", "ColeaderRemoved").append("Coleader", co.toString()));
         flagForSave();
     }
 
@@ -363,13 +363,13 @@ public class Team {
     }
 
     public boolean isCoLeader(UUID check) {
-        for( UUID co : coleaders ) {
-            if( co.equals(check)) {
+        for(UUID co : coleaders) {
+            if (co.equals(check)) {
                 return true;
             }
         }
 
-        return (false);
+        return false;
     }
 
     public void validateAllies() {
@@ -929,7 +929,7 @@ public class Team {
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
 
-        FancyMessage coleadersJson = new FancyMessage("Co-Leaders: ").color(ChatColor.YELLOW);
+        FancyMessage coleadersJson = new FancyMessage("Coleaders: ").color(ChatColor.YELLOW);
 
         FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
 
@@ -942,7 +942,6 @@ public class Team {
         if (player.hasPermission("basic.staff")) {
             membersJson.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
         }
-
 
         int onlineMembers = 0;
 
@@ -977,7 +976,6 @@ public class Team {
             appendTo.then(onlineMember.getName()).color(ChatColor.GREEN).then("[").color(ChatColor.YELLOW);
             appendTo.then(killsMap.getKills(onlineMember.getUniqueId()) + "").color(ChatColor.GREEN);
             appendTo.then("]").color(ChatColor.YELLOW);
-
         }
 
         for (UUID offlineMember : getOfflineMembers()) {

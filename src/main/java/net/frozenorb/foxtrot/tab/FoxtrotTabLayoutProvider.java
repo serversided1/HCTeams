@@ -155,7 +155,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             String watcherName = ChatColor.DARK_GREEN + player.getName();
             if (team.isOwner(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "**";
-            } else if(team.isCoLeader(player.getUniqueId())) {
+            } else if (team.isCoLeader(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "**";
             } else if (team.isCaptain(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "*";
@@ -170,7 +170,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             for (Player member : team.getOnlineMembers()) {
                 if (team.isOwner(member.getUniqueId())) {
                     owner = member;
-                } else if(team.isCoLeader(member.getUniqueId())) {
+                } else if (team.isCoLeader(member.getUniqueId())) {
                     coleaders.add(member);
                 } else if (team.isCaptain(member.getUniqueId())) {
                     captains.add(member);
@@ -193,6 +193,21 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                     x++;
                 }
             }
+
+            // then the coleaders
+            for (Player coleader : coleaders) {
+                if (coleader.equals(player)) continue;
+
+                layout.set(x, y, ChatColor.DARK_GREEN + coleader.getName() + ChatColor.GRAY + "**", ((CraftPlayer) coleader).getHandle().ping);
+
+                y++;
+
+                if (y >= 20) {
+                    y = 0;
+                    x++;
+                }
+            }
+
 
             // then the captains
             for (Player captain : captains) {

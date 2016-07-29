@@ -20,28 +20,23 @@ public class DemoteMembersMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "Captains & Co-Owners of " + team.getName();
+        return "Captains & Coleaders of " + team.getName();
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-
-        HashMap<Integer, Button> buttons = new HashMap<>();
-
+        Map<Integer, Button> buttons = new HashMap<>();
         int index = 0;
 
-        if(team.isOwner(player.getUniqueId())) {
-            for (UUID uuid : team.getColeaders()) {
-                buttons.put(index, new ChangePromotionStatusButton(uuid, team, false));
-                index++;
-            }
+        for (UUID uuid : team.getColeaders()) {
+            buttons.put(index, new ChangePromotionStatusButton(uuid, team, false));
+            index++;
         }
 
         for (UUID uuid : team.getCaptains()) {
             buttons.put(index, new ChangePromotionStatusButton(uuid, team, false));
             index++;
         }
-
 
         return buttons;
     }
