@@ -28,13 +28,13 @@ public class TeamLivesCommand {
         int currLives = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
 
         if( currLives < lives ) {
-            sender.sendMessage(ChatColor.RED + "You only have " + ChatColor.YELLOW + currLives + ChatColor.RED + " lives, you cannot deposit " + ChatColor.YELLOW + lives);
+            sender.sendMessage(ChatColor.RED + "You only have " + ChatColor.YELLOW + currLives + ChatColor.RED + " friend lives, you cannot deposit " + ChatColor.YELLOW + lives);
             return;
         }
 
         Foxtrot.getInstance().getFriendLivesMap().setLives(sender.getUniqueId(), currLives - lives);
         team.addLives(lives);
-        sender.sendMessage(ChatColor.GREEN + "You have deposited " + ChatColor.RED + lives + ChatColor.GREEN + " lives to " + ChatColor.YELLOW + team.getName() + ChatColor.GREEN + ". You now have " + ChatColor.RED + (currLives - lives) + ChatColor.GREEN + " lives and your team now has " + ChatColor.RED + team.getLives() + ChatColor.GREEN + " lives." );
+        sender.sendMessage(ChatColor.GREEN + "You have deposited " + ChatColor.RED + lives + ChatColor.GREEN + "  friendlives to " + ChatColor.YELLOW + team.getName() + ChatColor.GREEN + ". You now have " + ChatColor.RED + (currLives - lives) + ChatColor.GREEN + " lives and your team now has " + ChatColor.RED + team.getLives() + ChatColor.GREEN + " lives." );
     }
 
     @Command(names={ "team revive", "t revive", "f revive", "fac revive", "faction revive" }, permission="")
@@ -79,6 +79,8 @@ public class TeamLivesCommand {
         }
 
         sender.sendMessage(ChatColor.YELLOW + "Your team has " + ChatColor.RED + team.getLives() + ChatColor.YELLOW + " lives.");
-        sender.sendMessage(ChatColor.YELLOW + "A co-leader or owner can revive a team member using " + ChatColor.WHITE + "/t revive <name>");
+        sender.sendMessage(ChatColor.YELLOW + "To deposit lives, use /t lives add <amount>");
+        sender.sendMessage(ChatColor.YELLOW + "Life deposits are FINAL!");
+        sender.sendMessage(ChatColor.YELLOW + "Leaders can revive members using " + ChatColor.WHITE + "/t revive <name>");
     }
 }
