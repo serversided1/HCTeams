@@ -43,7 +43,7 @@ public class TeamDemoteCommand {
             team.removeCaptain(player);
             team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to member!");
         } else {
-            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " is currently a member. To kick them, use /t kick");
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is currently a member. To kick them, use /t kick");
         }
     }
 

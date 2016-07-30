@@ -41,6 +41,7 @@ public class TeamPromoteCommand {
             if (team.isOwner(sender.getUniqueId())) {
                 team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to coleader!");
                 team.addCoLeader(player);
+                team.removeCaptain(player);
             } else {
                 sender.sendMessage(ChatColor.RED + "Only the team leader can promote new coleaders.");
             }
