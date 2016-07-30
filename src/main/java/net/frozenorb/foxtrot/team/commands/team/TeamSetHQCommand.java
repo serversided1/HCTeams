@@ -19,7 +19,7 @@ public class TeamSetHQCommand {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             if (LandBoard.getInstance().getTeam(sender.getLocation()) != team) {
                 if (!sender.isOp()) {
                     sender.sendMessage(ChatColor.RED + "You can only set HQ in your team's territory.");

@@ -22,7 +22,7 @@ public class TeamSubclaimListCommand {
         StringBuilder other = new StringBuilder();
 
         for (Subclaim subclaim : team.getSubclaims()) {
-            if (subclaim.isMember(sender.getUniqueId()) || team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+            if (subclaim.isMember(sender.getUniqueId()) || team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
                 access.append(subclaim.getName()).append(", ");
                 continue;
             }

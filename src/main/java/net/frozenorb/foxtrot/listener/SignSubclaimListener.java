@@ -20,6 +20,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class SignSubclaimListener implements Listener {
 
@@ -103,9 +104,10 @@ public class SignSubclaimListener implements Listener {
         }
 
         Team owningTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
+        UUID uuid = event.getPlayer().getUniqueId();
 
         for (Sign sign : subclaimSigns(event.getBlock())) {
-            if (!(owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId()))) {
+            if (!(owningTeam.isOwner(uuid) || owningTeam.isCoLeader(uuid) || owningTeam.isCaptain(uuid))) {
                 event.getPlayer().sendMessage(NO_ACCESS);
                 event.setCancelled(true);
             }
@@ -120,9 +122,10 @@ public class SignSubclaimListener implements Listener {
 
         Team owningTeam = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
         Sign sign = (Sign) event.getBlock().getState();
+        UUID uuid = event.getPlayer().getUniqueId();
 
         if (sign.getLine(0).equals(SUBCLAIM_IDENTIFIER)) {
-            boolean canAccess = owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId());
+            boolean canAccess = owningTeam.isOwner(uuid) || owningTeam.isCoLeader(uuid) || owningTeam.isCaptain(uuid);
 
             for (int i = 0; i <= 3; i++) {
                 if (sign.getLine(i) != null && sign.getLine(i).equalsIgnoreCase(event.getPlayer().getName())) {
@@ -146,9 +149,10 @@ public class SignSubclaimListener implements Listener {
 
         // Will never be null, we check isUnclaimedOrRaidable above.
         Team owningTeam = LandBoard.getInstance().getTeam(event.getClickedBlock().getLocation());
+        UUID uuid = event.getPlayer().getUniqueId();
 
         for (Sign sign : subclaimSigns(event.getClickedBlock())) {
-            boolean canAccess = owningTeam.isOwner(event.getPlayer().getUniqueId()) || owningTeam.isCaptain(event.getPlayer().getUniqueId());
+            boolean canAccess = owningTeam.isOwner(uuid) || owningTeam.isCoLeader(uuid) || owningTeam.isCaptain(uuid);
 
             for (int i = 0; i <= 3; i++) {
                 if (sign.getLine(i) != null && sign.getLine(i).equalsIgnoreCase(event.getPlayer().getName())) {

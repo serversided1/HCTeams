@@ -37,7 +37,8 @@ public class TeamCoLeaderCommand {
         }
 
         team.addCoLeader(promote);
-        sender.sendMessage(ChatColor.GREEN + "You have successfully added " + ChatColor.RED + UUIDUtils.name(promote) + ChatColor.GREEN + " as a co-leader.");
+        team.removeCaptain(promote);
+        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(promote) + " has been promoted to coleader!");
     }
 
     @Command(names={ "team coleader remove", "t coleader remove", "t co-leader remove", "team co-leader remove", "f co-leader remove", "fac co-leader remove", "faction co-leader remove", "f coleader remove", "fac coleader remove", "faction coleader remove" }, permission="")
@@ -64,6 +65,7 @@ public class TeamCoLeaderCommand {
         }
 
         team.removeCoLeader(demote);
-        sender.sendMessage(ChatColor.GREEN + "You have successfully removed " + ChatColor.RED + UUIDUtils.name(demote) + ChatColor.GREEN + " from co-leader.");
+        team.removeCaptain(demote);
+        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(demote) + " has been demoted to member!");
     }
 }

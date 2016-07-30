@@ -15,7 +15,7 @@ public class TeamSubclaimUnclaimCommand {
     public static void teamSubclaimUnclaim(Player sender, @Param(name="subclaim", defaultValue="location") Subclaim subclaim) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             team.getSubclaims().remove(subclaim);
             LandBoard.getInstance().updateSubclaim(subclaim);
             team.flagForSave();

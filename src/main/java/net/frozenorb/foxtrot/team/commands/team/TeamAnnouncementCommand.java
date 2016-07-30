@@ -19,7 +19,7 @@ public class TeamAnnouncementCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }

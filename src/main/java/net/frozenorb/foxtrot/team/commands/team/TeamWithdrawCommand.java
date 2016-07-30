@@ -26,7 +26,7 @@ public class TeamWithdrawCommand {
             return;
         }
 
-        if (team.isCaptain(sender.getUniqueId()) || team.isOwner(sender.getUniqueId())) {
+        if (team.isCaptain(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isOwner(sender.getUniqueId())) {
             if (team.getBalance() < amount) {
                 sender.sendMessage(ChatColor.RED + "The team doesn't have enough money to do this!");
                 return;

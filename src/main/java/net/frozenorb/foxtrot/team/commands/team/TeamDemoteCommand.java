@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class TeamDemoteCommand {
 
-    @Command(names={ "team demote", "t demote", "f demote", "faction demote", "fac demote", "team delcaptain", "t delcaptain", "f delcaptain", "faction delcaptain", "fac delcaptain" }, permission="")
+    @Command(names={ "team demote", "t demote", "f demote", "faction demote", "fac demote" }, permission="")
     public static void teamDemote(Player sender, @Param(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
@@ -22,7 +22,7 @@ public class TeamDemoteCommand {
         }
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team owners can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team coleaders (and above) can do this.");
             return;
         }
 
@@ -31,13 +31,20 @@ public class TeamDemoteCommand {
             return;
         }
 
-        if (!team.isCaptain(player)) {
-            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " isn't a captain!");
-            return;
+        if (team.isCoLeader(player)) {
+            if (team.isOwner(sender.getUniqueId())) {
+                team.removeCoLeader(player);
+                team.addCaptain(player);
+                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to captain!");
+            } else {
+                sender.sendMessage(ChatColor.RED + "Only the team leader can demote coleaders.");
+            }
+        } else if (team.isCaptain(player)) {
+            team.removeCaptain(player);
+            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to member!");
+        } else {
+            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " is currently a member. To kick them, use /t kick");
         }
-
-        team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted from Captain!");
-        team.removeCaptain(player);
     }
 
 }

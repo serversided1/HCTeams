@@ -49,14 +49,14 @@ public class ChangePromotionStatusButton extends Button {
     public void clicked(Player player, int i, ClickType clickType) {
         if (promote) {
             String newRank;
-            if(team.isCaptain(uuid,false)) {
+            if(team.isCaptain(uuid)) {
                 newRank = "co-leader";
             } else {
                 newRank = "captain";
             }
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " " + newRank + "?", (b) -> {
                 if (b) {
-                    if(team.isCaptain(uuid,false)) {
+                    if(team.isCaptain(uuid)) {
                         team.removeCaptain(uuid);
                         team.addCoLeader(uuid);
                     } else {

@@ -188,6 +188,8 @@ public class Team {
 
         if (owner != null) {
             members.add(owner);
+            coleaders.remove(owner);
+            captains.remove(owner);
         }
 
         TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
@@ -343,23 +345,13 @@ public class Team {
     }
 
     public boolean isCaptain(UUID check) {
-        return isCaptain(check, true);
-    }
-
-    /**
-     * used to check if is a captain.
-     * @param check The player to check
-     * @param checkCoLeader Whether or not to count co-leaders as an officer in this case.
-     * @return Whether or not they are a captain.
-     */
-    public boolean isCaptain(UUID check, boolean checkCoLeader) {
-        for (UUID captain : captains) {
-            if (check.equals(captain)) {
-                return (true);
+        for(UUID co : coleaders) {
+            if (co.equals(check)) {
+                return true;
             }
         }
 
-        return checkCoLeader && isCoLeader(check);
+        return false;
     }
 
     public boolean isCoLeader(UUID check) {
@@ -965,7 +957,7 @@ public class Team {
             FancyMessage appendTo = membersJson;
             if(isCoLeader(onlineMember.getUniqueId())) {
                 appendTo = coleadersJson;
-            } else if(isCaptain(onlineMember.getUniqueId(), false)) {
+            } else if(isCaptain(onlineMember.getUniqueId())) {
                 appendTo = captainsJson;
             }
 
@@ -986,7 +978,7 @@ public class Team {
             FancyMessage appendTo = membersJson;
             if(isCoLeader(offlineMember)) {
                 appendTo = coleadersJson;
-            } else if(isCaptain(offlineMember, false)) {
+            } else if(isCaptain(offlineMember)) {
                 appendTo = captainsJson;
             }
 
