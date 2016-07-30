@@ -18,6 +18,7 @@ public class TeamCommand {
                 "§9General Commands:",
                 "§e/t create <teamName> §7- Create a new team",
                 "§e/t accept <teamName> §7- Accept a pending invitation",
+                "§e/t lives add <amount> §7- Irreversibly add lives to your faction",
                 "§e/t leave §7- Leave your current team",
                 "§e/t home §7- Teleport to your team home",
                 "§e/t stuck §7- Teleport out of enemy territory",
@@ -48,6 +49,7 @@ public class TeamCommand {
 
                 "§e/t coleader <add|remove> <player> §7- Add or remove a coleader",
                 "§e/t captain <add|remove> <player> §7- Add or remove a captain",
+                "§e/t revive <player> §7- Revive a teammate using team lives",
                 "§e/t unclaim [all] §7- Unclaim land",
                 "§e/t rename <newName> §7- Rename your team",
                 "§e/t disband §7- Disband your team",
