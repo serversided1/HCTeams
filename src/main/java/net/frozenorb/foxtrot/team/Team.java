@@ -345,7 +345,7 @@ public class Team {
     }
 
     public boolean isCaptain(UUID check) {
-        for(UUID co : coleaders) {
+        for(UUID co : captains) {
             if (co.equals(check)) {
                 return true;
             }
