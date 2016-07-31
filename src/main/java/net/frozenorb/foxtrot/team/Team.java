@@ -252,8 +252,14 @@ public class Team {
     public void disband() {
         try {
             if (owner != null) {
-                FrozenEconomyHandler.deposit(owner, balance);
-                Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + balance + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
+                double refund = balance;
+
+                for (Claim claim : claims) {
+                    refund += Claim.getPrice(claim, this, false);
+                }
+
+                FrozenEconomyHandler.deposit(owner, refund);
+                Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + refund + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
             }
         } catch (Exception e) {
             e.printStackTrace();
