@@ -135,6 +135,8 @@ public class Foxtrot extends JavaPlugin {
             world.setThundering(false);
             world.setStorm(false);
             world.setWeatherDuration(Integer.MAX_VALUE);
+            world.setGameRuleValue("doFireTick", "false");
+            world.setGameRuleValue("mobGriefing", "false");
         }
     }
 

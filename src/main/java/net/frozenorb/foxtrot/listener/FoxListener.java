@@ -330,7 +330,9 @@ public class FoxListener implements Listener {
                 event.getPlayer().sendMessage(RED + "You can only do this in your own claims!");
             }
         } else {
-            if (team != null && !team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
+            UUID uuid = player.getUniqueId();
+
+            if (team != null && !team.isCaptain(uuid) && !team.isCoLeader(uuid) && !team.isOwner(uuid)) {
                 Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
                 if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {

@@ -24,7 +24,7 @@ public class TeamUninviteCommand {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             if (allPlayer.equalsIgnoreCase("all")) {
                 team.getInvitations().clear();
                 sender.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");

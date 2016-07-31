@@ -32,8 +32,8 @@ public class KickPlayersMenu extends Menu {
 
         Collections.sort(uuids, (u1, u2) -> UUIDUtils.name(u1).toLowerCase().compareTo(UUIDUtils.name(u2).toLowerCase()));
 
-        for (UUID u : uuids) {
-            buttons.put(index, new KickPlayerButton(u, team));
+        for (UUID uuid : uuids) {
+            buttons.put(index, new KickPlayerButton(uuid, team));
             index++;
         }
 

@@ -30,7 +30,9 @@ public class KickPlayerButton extends Button {
         ArrayList<String> lore = new ArrayList<>();
 
         if (team.isOwner(uuid)) {
-            lore.add("§e§lOwner");
+            lore.add("§e§lLeader");
+        } else if (team.isCoLeader(uuid)) {
+            lore.add("§e§lCo-Leader");
         } else if (team.isCaptain(uuid)) {
             lore.add("§aCaptain");
         } else {

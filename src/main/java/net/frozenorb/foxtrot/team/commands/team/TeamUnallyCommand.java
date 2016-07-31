@@ -19,7 +19,7 @@ public class TeamUnallyCommand {
             return;
         }
 
-        if (!(senderTeam.isOwner(sender.getUniqueId()) || senderTeam.isCaptain(sender.getUniqueId()))) {
+        if (!(senderTeam.isOwner(sender.getUniqueId()) || senderTeam.isCoLeader(sender.getUniqueId()) || senderTeam.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }

@@ -485,7 +485,7 @@ public class VisualClaim implements Listener {
                     return;
                 }
 
-                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
+                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isCoLeader(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "Only team captains can claim land.");
                     return;
                 }
@@ -561,7 +561,7 @@ public class VisualClaim implements Listener {
             int cost = newPrice - oldPrice;
 
             if (!bypass) {
-                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
+                if (!playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isCoLeader(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "Only team captains can resize land.");
                     return;
                 }

@@ -25,8 +25,8 @@ public class TeamUnclaimCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()))) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team co-leaders can do this.");
             return;
         }
 
@@ -36,11 +36,6 @@ public class TeamUnclaimCommand {
         }
 
         if (all.equalsIgnoreCase("all")) {
-            if (!team.isOwner(sender.getUniqueId())) {
-                sender.sendMessage(ChatColor.RED + "Only team owners may unclaim all land.");
-                return;
-            }
-
             int claims = team.getClaims().size();
             int refund = 0;
 

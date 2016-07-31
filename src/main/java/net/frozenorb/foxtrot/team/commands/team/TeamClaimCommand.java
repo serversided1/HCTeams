@@ -69,7 +69,7 @@ public class TeamClaimCommand implements Listener {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId())) {
             sender.getInventory().remove(SELECTION_WAND);
 
             if (team.isRaidable()) {

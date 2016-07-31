@@ -17,7 +17,7 @@ public class TeamSubclaimRemovePlayerCommand {
     public static void teamSubclaimRemovePlayer(Player sender, @Param(name="subclaim") Subclaim subclaim, @Param(name="player") UUID player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
-        if (!team.isOwner(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
+        if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Only the team captains can do this.");
             return;
         }

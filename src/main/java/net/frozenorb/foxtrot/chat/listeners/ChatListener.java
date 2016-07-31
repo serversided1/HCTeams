@@ -55,6 +55,16 @@ public class ChatListener implements Listener {
             return;
         }
 
+        if (finalChatMode != ChatMode.PUBLIC) {
+            if (playerTeam == null) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You can't speak in non-public chat if you're not in a team!");
+                return;
+            } else if (finalChatMode == ChatMode.OFFICER && !playerTeam.isCaptain(event.getPlayer().getUniqueId()) && !playerTeam.isCoLeader(event.getPlayer().getUniqueId()) && !playerTeam.isOwner(event.getPlayer().getUniqueId())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You can't speak in officer chat if you're not an officer!");
+                return;
+            }
+        }
+
         // and here starts the big logic switch
         switch (finalChatMode) {
             case PUBLIC:
@@ -230,6 +240,21 @@ public class ChatListener implements Listener {
                 // Log to our teamchat log.
                 TeamActionTracker.logAction(playerTeam, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
                 Foxtrot.getInstance().getServer().getLogger().info("[Team Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                break;
+            case OFFICER:
+                String officerChatFormat = FoxConstants.officerChatFormat(event.getPlayer(), event.getMessage());
+
+                // Loop online players and not recipients just in case you're weird and
+                // /ignore your teammates
+                for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
+                    if (playerTeam.isCaptain(player.getUniqueId()) || playerTeam.isCoLeader(player.getUniqueId()) || playerTeam.isOwner(player.getUniqueId())) {
+                        player.sendMessage(officerChatFormat);
+                    }
+                }
+
+                // Log to our teamchat log.
+                TeamActionTracker.logAction(playerTeam, TeamActionType.OFFICER_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
+                Foxtrot.getInstance().getServer().getLogger().info("[Officer Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
         }
     }

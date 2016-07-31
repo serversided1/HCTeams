@@ -140,7 +140,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        if (!team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
+        if (!team.isCoLeader(event.getPlayer().getUniqueId()) && !team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
             Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
 
             if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {
@@ -181,7 +181,7 @@ public class TeamListener implements Listener {
             return;
         }
 
-        if (!team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
+        if (!team.isCoLeader(event.getPlayer().getUniqueId()) && !team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
             Subclaim subclaim = team.getSubclaim(event.getBlock().getLocation());
 
             if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {

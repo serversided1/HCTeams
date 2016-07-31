@@ -10,7 +10,8 @@ public enum ChatMode {
 
     PUBLIC(ImmutableSet.of('!')),
     ALLIANCE(ImmutableSet.of('#')),
-    TEAM(ImmutableSet.of('@'));
+    TEAM(ImmutableSet.of('@')),
+    OFFICER(ImmutableSet.of('^'));
 
     Set<Character> forcedPrefixes;
 

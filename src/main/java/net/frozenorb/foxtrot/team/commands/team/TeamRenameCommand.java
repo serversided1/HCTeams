@@ -23,8 +23,8 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (!team.isOwner(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only team owners can use this command!");
+        if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "Only team owners and co-leaders can use this command!");
             return;
         }
 
