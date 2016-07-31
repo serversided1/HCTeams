@@ -30,7 +30,7 @@ public class TeamCaptainCommand {
             return;
         }
 
-        if(team.isCaptain(promote) || team.isCoLeader(promote)) {
+        if(team.isOwner(promote) || team.isCaptain(promote) || team.isCoLeader(promote)) {
             sender.sendMessage(ChatColor.RED + "This player is already a captain (or above) of your team.");
             return;
         }

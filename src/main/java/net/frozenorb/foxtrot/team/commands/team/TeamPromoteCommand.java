@@ -31,7 +31,9 @@ public class TeamPromoteCommand {
             return;
         }
 
-        if (team.isCoLeader(player)) {
+        if (team.isOwner(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a leader.");
+        } else if (team.isCoLeader(player)) {
             if (team.isOwner(sender.getUniqueId())) {
                 sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a co-leader! To make them a leader, use /t leader");
             } else {

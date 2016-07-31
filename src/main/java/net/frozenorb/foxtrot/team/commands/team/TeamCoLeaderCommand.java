@@ -31,8 +31,8 @@ public class TeamCoLeaderCommand {
             return;
         }
 
-        if(team.isCoLeader(promote)) {
-           sender.sendMessage(ChatColor.RED + "This player is already a co-leader of your team.");
+        if(team.isOwner(promote) || team.isCoLeader(promote)) {
+           sender.sendMessage(ChatColor.RED + "This player is already a co-leader (or above) of your team.");
             return;
         }
 

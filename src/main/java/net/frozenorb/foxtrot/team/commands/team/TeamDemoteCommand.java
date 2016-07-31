@@ -31,7 +31,9 @@ public class TeamDemoteCommand {
             return;
         }
 
-        if (team.isCoLeader(player)) {
+        if (team.isOwner(player)) {
+            sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is the leader. To change leaders, the team leader must use /t leader <name>");
+        } else if (team.isCoLeader(player)) {
             if (team.isOwner(sender.getUniqueId())) {
                 team.removeCoLeader(player);
                 team.addCaptain(player);
