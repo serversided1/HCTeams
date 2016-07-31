@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import com.google.common.collect.ImmutableSet;
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,6 +42,12 @@ public class FoundDiamondsListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
             int diamonds = countRelative(event.getBlock());
+
+            // no point checking if the server is frozen because
+            // players won't be able to break blocks anyways
+            if (Basic.getInstance().getChatManager().isMuted()) {
+                return;
+            }
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                 if (Foxtrot.getInstance().getToggleFoundDiamondsMap().isFoundDiamondToggled(player.getUniqueId())) {
