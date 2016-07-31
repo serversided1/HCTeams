@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -213,6 +215,19 @@ public class MinerClass extends PvPClass implements Listener {
                 player.removePotionEffect(PotionEffectType.INVISIBILITY);
                 player.sendMessage(ChatColor.BLUE + "Miner Invisibility" + ChatColor.YELLOW + " has been removed!");
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        Player player = event.getPlayer();
+
+        if (!PvPClassHandler.hasKitOn(player, this) || event.getItem().getItemStack().getType() != Material.COBBLESTONE) {
+            return;
+        }
+
+        if (!Foxtrot.getInstance().getCobblePickupMap().isCobblePickup(player.getUniqueId())) {
+            event.setCancelled(true);
         }
     }
 

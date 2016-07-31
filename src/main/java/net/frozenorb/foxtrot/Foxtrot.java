@@ -97,6 +97,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private TabListModeMap tabListModeMap;
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
+    @Getter private CobblePickupMap cobblePickupMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
 
@@ -275,6 +276,7 @@ public class Foxtrot extends JavaPlugin {
         (tabListModeMap = new TabListModeMap()).loadFromRedis();
         (ipMap = new IPMap()).loadFromRedis();
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
+        (cobblePickupMap = new CobblePickupMap()).loadFromRedis();
     }
 
 }
