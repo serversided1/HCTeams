@@ -44,6 +44,7 @@ public class MapHandler {
     @Getter private int goppleCooldown;
     @Getter private int minForceInviteMembers = 10;
     @Getter private String endPortalLocation;
+    @Getter private boolean fastSmeltEnabled;
     @Getter @Setter private int netherBuffer;
     @Getter @Setter private int worldBuffer;
 
@@ -89,6 +90,7 @@ public class MapHandler {
                 this.netherBuffer = dbObject.getInt("netherBuffer");
                 this.worldBuffer = dbObject.getInt("worldBuffer");
                 this.endPortalLocation = dbObject.getString("endPortalLocation");
+                this.fastSmeltEnabled = dbObject.getBoolean("fastSmeltEnabled", true);
 
                 BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
 
@@ -192,6 +194,7 @@ public class MapHandler {
         dbObject.put("endPortalLocation", "2500, 2500");
         dbObject.put("border", 3000);
         dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
+        dbObject.put("fastSmeltEnabled", true);
 
         looting.put("base", 1D);
         looting.put("level1", 1.2D);
