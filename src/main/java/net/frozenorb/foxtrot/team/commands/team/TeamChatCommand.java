@@ -20,6 +20,8 @@ public class TeamChatCommand {
             parsedChatMode = ChatMode.PUBLIC;
         } else if (chatMode.equalsIgnoreCase("a") || chatMode.equalsIgnoreCase("allies") || chatMode.equalsIgnoreCase("ally") || chatMode.equalsIgnoreCase("alliance") || chatMode.equalsIgnoreCase("ac")) {
             parsedChatMode = ChatMode.ALLIANCE;
+        } else if (chatMode.equalsIgnoreCase("captain") || chatMode.equalsIgnoreCase("officer") || chatMode.equalsIgnoreCase("o") || chatMode.equalsIgnoreCase("c") || chatMode.equalsIgnoreCase("oc")) {
+            parsedChatMode = ChatMode.OFFICER;
         }
 
         setChat(sender, parsedChatMode);
@@ -35,11 +37,23 @@ public class TeamChatCommand {
         setChat(sender, ChatMode.PUBLIC);
     }
 
+    @Command(names={ "oc" }, permission="")
+    public static void oc(Player sender) {
+        setChat(sender, ChatMode.OFFICER);
+    }
+
     private static void setChat(Player player, ChatMode chatMode) {
         if (chatMode != null) {
-            if (chatMode != ChatMode.PUBLIC && Foxtrot.getInstance().getTeamHandler().getTeam(player) == null) {
-                player.sendMessage(ChatColor.RED + "You must be on a team to use this chat mode.");
-                return;
+            Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
+
+            if (chatMode != ChatMode.PUBLIC) {
+                if (playerTeam == null) {
+                    player.sendMessage(ChatColor.RED + "You must be on a team to use this chat mode.");
+                    return;
+                } else if (chatMode == ChatMode.OFFICER && !playerTeam.isCaptain(player.getUniqueId()) && !playerTeam.isCoLeader(player.getUniqueId()) && !playerTeam.isOwner(player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "You must be an officer or above in your team to use this chat mode.");
+                    return;
+                }
             }
 
             switch (chatMode) {
@@ -51,6 +65,9 @@ public class TeamChatCommand {
                     break;
                 case TEAM:
                     player.sendMessage(ChatColor.DARK_AQUA + "You are now in team chat.");
+                    break;
+                case OFFICER:
+                    player.sendMessage(ChatColor.DARK_AQUA + "You are now in officer chat.");
                     break;
             }
 
@@ -67,6 +84,12 @@ public class TeamChatCommand {
                     setChat(player, ChatMode.TEAM);
                     break;
                 case TEAM:
+                    Team team2 = Foxtrot.getInstance().getTeamHandler().getTeam(player);
+                    boolean isOfficer = team2 != null && (team2.isCaptain(player.getUniqueId()) || team2.isCoLeader(player.getUniqueId()) || team2.isOwner(player.getUniqueId()));
+
+                    setChat(player, isOfficer ? ChatMode.OFFICER : ChatMode.PUBLIC);
+                    break;
+                case OFFICER:
                     setChat(player, ChatMode.PUBLIC);
                     break;
             }

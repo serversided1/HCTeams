@@ -10,6 +10,7 @@ public enum TeamActionType {
     KILLS("kills"),
     CONNECTIONS("connections"),
     TEAM_CHAT("teamChat"),
+    OFFICER_CHAT("officerChat"),
     ALLY_CHAT("allyChat");
 
     @Getter private String name;
