@@ -921,7 +921,7 @@ public class Team {
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
 
-        FancyMessage coleadersJson = new FancyMessage("Coleaders: ").color(ChatColor.YELLOW);
+        FancyMessage coleadersJson = new FancyMessage("Co-Leaders: ").color(ChatColor.YELLOW);
 
         FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
 

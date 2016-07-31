@@ -47,7 +47,7 @@ public class TeamCommand {
                 "",
                 "§9Leader Commands:",
 
-                "§e/t coleader <add|remove> <player> §7- Add or remove a coleader",
+                "§e/t coleader <add|remove> <player> §7- Add or remove a co-leader",
                 "§e/t captain <add|remove> <player> §7- Add or remove a captain",
                 "§e/t revive <player> §7- Revive a teammate using team lives",
                 "§e/t unclaim [all] §7- Unclaim land",

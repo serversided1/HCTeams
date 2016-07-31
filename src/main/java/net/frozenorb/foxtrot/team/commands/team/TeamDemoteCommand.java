@@ -22,7 +22,7 @@ public class TeamDemoteCommand {
         }
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team coleaders (and above) can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team co-leaders (and above) can do this.");
             return;
         }
 
@@ -35,13 +35,13 @@ public class TeamDemoteCommand {
             if (team.isOwner(sender.getUniqueId())) {
                 team.removeCoLeader(player);
                 team.addCaptain(player);
-                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to captain!");
+                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to Captain!");
             } else {
-                sender.sendMessage(ChatColor.RED + "Only the team leader can demote coleaders.");
+                sender.sendMessage(ChatColor.RED + "Only the team leader can demote co-leaders.");
             }
         } else if (team.isCaptain(player)) {
             team.removeCaptain(player);
-            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to member!");
+            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to a member!");
         } else {
             sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is currently a member. To kick them, use /t kick");
         }

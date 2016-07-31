@@ -26,7 +26,7 @@ public class TeamUnclaimCommand {
         }
 
         if (!(team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()))) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team coleaders can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team co-leaders can do this.");
             return;
         }
 

@@ -22,7 +22,7 @@ public class TeamPromoteCommand {
         }
 
         if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.DARK_AQUA + "Only team coleaders (and above) can do this.");
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team co-leaders (and above) can do this.");
             return;
         }
 
@@ -33,20 +33,20 @@ public class TeamPromoteCommand {
 
         if (team.isCoLeader(player)) {
             if (team.isOwner(sender.getUniqueId())) {
-                sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a coleader! To make them a leader, use /t leader");
+                sender.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " is already a co-leader! To make them a leader, use /t leader");
             } else {
                 sender.sendMessage(ChatColor.RED + "Only the team leader can promote new leaders.");
             }
         } else if (team.isCaptain(player)) {
             if (team.isOwner(sender.getUniqueId())) {
-                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to coleader!");
+                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to co-leader!");
                 team.addCoLeader(player);
                 team.removeCaptain(player);
             } else {
-                sender.sendMessage(ChatColor.RED + "Only the team leader can promote new coleaders.");
+                sender.sendMessage(ChatColor.RED + "Only the team leader can promote new co-leaders.");
             }
         } else {
-            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to captain!");
+            team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to Captain!");
             team.addCaptain(player);
         }
     }

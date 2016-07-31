@@ -21,7 +21,7 @@ public class TeamCaptainCommand {
         }
 
         if(!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only team coleaders can execute this command.");
+            sender.sendMessage(ChatColor.RED + "Only team co-leaders can execute this command.");
             return;
         }
 
@@ -37,7 +37,7 @@ public class TeamCaptainCommand {
 
         team.removeCoLeader(promote);
         team.addCaptain(promote);
-        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(promote) + " has been promoted to captain!");
+        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(promote) + " has been promoted to Captain!");
     }
 
     @Command(names={ "team captain remove", "t captain remove", "t mod remove", "team mod remove", "f mod remove", "fac mod remove", "faction mod remove", "f captain remove", "fac captain remove", "faction captain remove" }, permission="")
@@ -49,7 +49,7 @@ public class TeamCaptainCommand {
         }
 
         if(!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only team coleaders can execute this command.");
+            sender.sendMessage(ChatColor.RED + "Only team co-leaders can execute this command.");
             return;
         }
 
@@ -65,7 +65,7 @@ public class TeamCaptainCommand {
 
         team.removeCoLeader(demote);
         team.removeCaptain(demote);
-        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(demote) + " has been demoted to member!");
+        team.sendMessage(org.bukkit.ChatColor.DARK_AQUA + UUIDUtils.name(demote) + " has been demoted to a member!");
     }
 
 }
