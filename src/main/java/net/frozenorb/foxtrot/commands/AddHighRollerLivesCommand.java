@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.conversations.*;
 import org.bukkit.entity.Player;
@@ -15,7 +16,12 @@ public class AddHighRollerLivesCommand {
     public static final int SOULBOUND_LIVE_COUNT = 25;
 
     @Command(names={ "addHighRollerLives" }, permission="op")
-    public static void addHighRollerLives(Player sender) {
+    public static void addHighRollerLives(Player sender, @Param(name="player", defaultValue="some-value-that-will-never-happen") String player) {
+        if (!player.equals("some-value-that-will-never-happen")) {
+            sender.sendMessage(ChatColor.RED + "This command applies to all highrollers and cannot be scoped.");
+            return;
+        }
+        
         ConversationFactory factory = new ConversationFactory(Foxtrot.getInstance()).withModality(true).withPrefix(new NullConversationPrefix()).withFirstPrompt(new StringPrompt() {
 
             public String getPromptText(ConversationContext context) {
