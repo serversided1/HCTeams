@@ -77,10 +77,26 @@ public class TeamClaimCommand implements Listener {
                 return;
             }
 
+            int slot = -1;
+
+            for (int i = 0; i < 9; i++) {
+                if (sender.getInventory().getItem(i) == null) {
+                    slot = i;
+                    break;
+                }
+            }
+
+            if (slot == -1) {
+                sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the claim wand!");
+                return;
+            }
+
+            int finalSlot = slot;
+
             new BukkitRunnable() {
 
                 public void run() {
-                    sender.getInventory().addItem(SELECTION_WAND.clone());
+                    sender.getInventory().setItem(finalSlot, SELECTION_WAND.clone());
                 }
 
             }.runTaskLater(Foxtrot.getInstance(), 1L);
@@ -90,6 +106,8 @@ public class TeamClaimCommand implements Listener {
             if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
                 new VisualClaim(sender, VisualClaimType.MAP, false).draw(true);
             }
+
+            sender.sendMessage(ChatColor.GREEN + "Gave you a claim wand.");
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }
