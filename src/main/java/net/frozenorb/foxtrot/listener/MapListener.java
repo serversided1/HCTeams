@@ -18,8 +18,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class MapListener implements Listener {
 
-    public static final double MAX_HORSE_SPEED = 0.24;
-
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         double multiplier = Foxtrot.getInstance().getMapHandler().getBaseLootingMultiplier();
@@ -68,17 +66,6 @@ public class MapListener implements Listener {
             event.setCancelled(true);
             event.getPlayer().giveExp(4);
             event.getBlock().setType(Material.AIR);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked() instanceof Horse) {
-            AttributeInstance speedAttribute = ((CraftHorse) event.getRightClicked()).getHandle().getAttributeInstance(GenericAttributes.d);
-
-            if (speedAttribute.getValue() > MAX_HORSE_SPEED) {
-                speedAttribute.setValue(MAX_HORSE_SPEED);
-            }
         }
     }
 
