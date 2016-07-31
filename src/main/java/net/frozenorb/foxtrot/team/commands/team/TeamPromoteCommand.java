@@ -41,11 +41,11 @@ public class TeamPromoteCommand {
             }
         } else if (team.isCaptain(player)) {
             if (team.isOwner(sender.getUniqueId())) {
-                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to co-leader!");
+                team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to Co-Leader!");
                 team.addCoLeader(player);
                 team.removeCaptain(player);
             } else {
-                sender.sendMessage(ChatColor.RED + "Only the team leader can promote new co-leaders.");
+                sender.sendMessage(ChatColor.RED + "Only the team leader can promote new Co-Leaders.");
             }
         } else {
             team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been promoted to Captain!");

@@ -39,7 +39,7 @@ public class TeamDemoteCommand {
                 team.addCaptain(player);
                 team.sendMessage(ChatColor.DARK_AQUA + UUIDUtils.name(player) + " has been demoted to Captain!");
             } else {
-                sender.sendMessage(ChatColor.RED + "Only the team leader can demote co-leaders.");
+                sender.sendMessage(ChatColor.RED + "Only the team leader can demote Co-Leaders.");
             }
         } else if (team.isCaptain(player)) {
             team.removeCaptain(player);
