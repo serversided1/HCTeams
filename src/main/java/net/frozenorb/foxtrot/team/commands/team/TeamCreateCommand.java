@@ -66,7 +66,7 @@ public class TeamCreateCommand {
 
         Foxtrot.getInstance().getTeamHandler().setupTeam(createdTeam);
 
-        if (!Basic.getInstance().getServerManager().isFrozen()) {
+        if (!Basic.getInstance().getServerManager().isFrozen() && !Basic.getInstance().getChatManager().isMuted()) {
             Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
         }
     }
