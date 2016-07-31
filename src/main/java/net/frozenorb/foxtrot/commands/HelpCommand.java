@@ -48,6 +48,7 @@ public class HelpCommand {
                 "§9Chat Commands:",
                 "§eGlobal Chat §7- Prefix your message with '§d!§7' or type '§d/gc§7' to set.",
                 "§eTeam Chat §7- Prefix your message with '§d@§7' or type '§d/tc§7' to set.",
+                "§eOfficer Chat §7- Prefix your message with '§d^§7' or type '§d/oc§7' to set.",
                 "§eHide/Show Global Chat §7- Type '§d/tgc§7' to toggle chat visibility.",
 
                 "",
