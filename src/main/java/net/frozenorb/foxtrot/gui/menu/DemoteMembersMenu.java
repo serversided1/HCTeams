@@ -20,7 +20,7 @@ public class DemoteMembersMenu extends Menu {
 
     @Override
     public String getTitle(Player player) {
-        return "Captains & Co-Leaders of " + team.getName();
+        return "Demote captains/co-leaders";
     }
 
     @Override
