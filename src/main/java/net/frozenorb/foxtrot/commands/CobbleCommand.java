@@ -11,7 +11,7 @@ public class CobbleCommand {
     public static void cobble(Player sender) {
         boolean val = !Foxtrot.getInstance().getCobblePickupMap().isCobblePickup(sender.getUniqueId());
 
-        sender.sendMessage(ChatColor.YELLOW + "You are now " + (!val ? ChatColor.RED + "unable" : ChatColor.GREEN + "able") + ChatColor.YELLOW + " to pick up cobblestone!");
+        sender.sendMessage(ChatColor.YELLOW + "You are now " + (!val ? ChatColor.RED + "unable" : ChatColor.GREEN + "able") + ChatColor.YELLOW + " to pick up cobblestone while in Miner class!");
         Foxtrot.getInstance().getCobblePickupMap().setCobblePickup(sender.getUniqueId(), val);
     }
 
