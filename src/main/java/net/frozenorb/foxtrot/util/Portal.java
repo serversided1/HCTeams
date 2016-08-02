@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.util;
 import net.frozenorb.foxtrot.listener.PortalTrapListener;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.qlib.cuboid.Cuboid;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -143,9 +144,9 @@ public class Portal {
     public void patchOverworld() {
         Cuboid expanded;
         if (direction == PortalDirection.NORTH_SOUTH) {
-            expanded = portal.expand(Cuboid.CuboidDirection.South, 1).expand(Cuboid.CuboidDirection.North, 1);
+            expanded = portal.expand(Cuboid.CuboidDirection.SOUTH, 1).expand(Cuboid.CuboidDirection.NORTH, 1);
         } else {
-            expanded = portal.expand(Cuboid.CuboidDirection.East, 1).expand(Cuboid.CuboidDirection.West, 1);
+            expanded = portal.expand(Cuboid.CuboidDirection.EAST, 1).expand(Cuboid.CuboidDirection.WEST, 1);
         }
 
         first:
@@ -173,11 +174,11 @@ public class Portal {
     public void patchNether() {
         Cuboid expanded;
         if (direction == PortalDirection.NORTH_SOUTH) {
-            expanded = portal.expand(Cuboid.CuboidDirection.South, 4).expand(Cuboid.CuboidDirection.North, 4).expand(Cuboid.CuboidDirection.East, 4).expand(Cuboid.CuboidDirection.West, 4);
+            expanded = portal.expand(Cuboid.CuboidDirection.SOUTH, 4).expand(Cuboid.CuboidDirection.NORTH, 4).expand(Cuboid.CuboidDirection.EAST, 4).expand(Cuboid.CuboidDirection.WEST, 4);
         } else {
-            expanded = portal.expand(Cuboid.CuboidDirection.East, 4).expand(Cuboid.CuboidDirection.West, 4).expand(Cuboid.CuboidDirection.South, 4).expand(Cuboid.CuboidDirection.North, 4);
+            expanded = portal.expand(Cuboid.CuboidDirection.EAST, 4).expand(Cuboid.CuboidDirection.WEST, 4).expand(Cuboid.CuboidDirection.SOUTH, 4).expand(Cuboid.CuboidDirection.NORTH, 4);
         }
-        Cuboid down = expanded.getFace(Cuboid.CuboidDirection.Down);
+        Cuboid down = expanded.getFace(Cuboid.CuboidDirection.DOWN);
 
         for (Block block : expanded) {
             if (!block.getChunk().isLoaded()) {
