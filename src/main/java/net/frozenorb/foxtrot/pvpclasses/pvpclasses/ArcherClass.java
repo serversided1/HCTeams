@@ -48,7 +48,7 @@ public class ArcherClass extends PvPClass {
     @Override
     public void apply(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1), true);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ArcherClass extends PvPClass {
         }
 
         if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
         }
         super.tick(player);
     }
