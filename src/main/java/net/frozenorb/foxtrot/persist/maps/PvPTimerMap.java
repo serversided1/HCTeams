@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -17,6 +18,10 @@ public class PvPTimerMap extends PersistMap<Integer> {
         new BukkitRunnable() {
 
             public void run() {
+                if (Basic.getInstance().getServerManager().isFrozen()) {
+                    return;
+                }
+
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (hasTimer(player.getUniqueId())) {
                         if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
