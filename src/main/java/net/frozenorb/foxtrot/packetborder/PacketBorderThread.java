@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -98,7 +99,14 @@ public class PacketBorderThread extends Thread {
                     Map.Entry<Location, Long> border = bordersIterator.next();
 
                     if (System.currentTimeMillis() >= border.getValue()) {
-                        player.sendBlockChange(border.getKey(), border.getKey().getBlock().getType(), border.getKey().getBlock().getData());
+                        Location loc = border.getKey();
+
+                        if (!loc.getWorld().isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
+                            continue;
+                        }
+
+                        Block block = loc.getBlock();
+                        player.sendBlockChange(loc, block.getType(), block.getData());
                         bordersIterator.remove();
                     }
                 }
@@ -136,8 +144,13 @@ public class PacketBorderThread extends Thread {
 
     private static void clearPlayer(Player player) {
         if (sentBlockChanges.containsKey(player.getName())) {
-            for (Location changedLocation : sentBlockChanges.get(player.getName()).keySet()) {
-                player.sendBlockChange(changedLocation, changedLocation.getBlock().getType(), changedLocation.getBlock().getData());
+            for (Location changedLoc : sentBlockChanges.get(player.getName()).keySet()) {
+                if (!changedLoc.getWorld().isChunkLoaded(changedLoc.getBlockX() >> 4, changedLoc.getBlockZ() >> 4)) {
+                    continue;
+                }
+
+                Block block = changedLoc.getBlock();
+                player.sendBlockChange(changedLoc, block.getType(), block.getData());
             }
 
             sentBlockChanges.remove(player.getName());
