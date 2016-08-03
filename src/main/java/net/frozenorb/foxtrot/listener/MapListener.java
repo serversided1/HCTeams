@@ -58,8 +58,10 @@ public class MapListener implements Listener {
 
             if (blockType == Material.GOLD_ORE) {
                 drop = new ItemStack(Material.GOLD_INGOT);
+                Foxtrot.getInstance().getGoldMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getGoldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
             } else {
                 drop = new ItemStack(Material.IRON_INGOT);
+                Foxtrot.getInstance().getIronMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getIronMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
             }
 
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), drop);

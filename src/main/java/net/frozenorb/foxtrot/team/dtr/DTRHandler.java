@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team.dtr;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,7 +29,7 @@ public class DTRHandler extends BukkitRunnable {
             8.20, 8.40, 8.60, 8.80, 9.00, // 31 to 35
             9, 9, 9, 9, 9 }; // Padding
 
-    private static Set<String> wasOnCooldown = new HashSet<>();
+    private static Set<ObjectId> wasOnCooldown = new HashSet<>();
 
     public static void loadDTR() {
         if (Foxtrot.getInstance().getServerHandler().isSquads()) {
@@ -63,8 +64,8 @@ public class DTRHandler extends BukkitRunnable {
         return (!isOnCooldown(team) && team.getDTR() != team.getMaxDTR());
     }
 
-    public static void setCooldown(Team team) {
-        wasOnCooldown.add(team.getName().toLowerCase());
+    public static void markOnDTRCooldown(Team team) {
+        wasOnCooldown.add(team.getUniqueId());
     }
 
     @Override
@@ -78,35 +79,34 @@ public class DTRHandler extends BukkitRunnable {
 
             Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-            if (playerTeam != null) {
-                if (playerOnlineMap.containsKey(playerTeam)) {
-                    playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
-                } else {
-                    playerOnlineMap.put(playerTeam, 1);
-                }
+            if (playerTeam != null && playerTeam.getOwner() != null) {
+                playerOnlineMap.putIfAbsent(playerTeam, 0);
+                playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
             }
         }
 
-        for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
-            if (teamEntry.getKey().getOwner() != null) {
-                try {
-                    if (isOnCooldown(teamEntry.getKey())) {
-                        wasOnCooldown.add(teamEntry.getKey().getName().toLowerCase());
-                        continue;
-                    }
-
-                    if (wasOnCooldown.contains(teamEntry.getKey().getName().toLowerCase())) {
-                        wasOnCooldown.remove(teamEntry.getKey().getName().toLowerCase());
-                        teamEntry.getKey().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
-                    }
-
-                    teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()), teamEntry.getKey().getMaxDTR()));
-                } catch (Exception e) {
-                    Foxtrot.getInstance().getLogger().warning("Error regenerating DTR for team " + teamEntry.getKey().getName() + ".");
-                    e.printStackTrace();
+        playerOnlineMap.forEach((team, onlineCount) -> {
+            try {
+                // make sure (I guess?)
+                if (isOnCooldown(team)) {
+                    markOnDTRCooldown(team);
+                    return;
                 }
+
+                if (wasOnCooldown.contains(team.getUniqueId())) {
+                    wasOnCooldown.remove(team.getUniqueId());
+                    team.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                }
+
+                double incrementedDtr = team.getDTR() + team.getDTRIncrement(onlineCount);
+                double maxDtr = team.getMaxDTR();
+                double newDtr = Math.min(incrementedDtr, maxDtr);
+                team.setDTR(newDtr);
+            } catch (Exception ex) {
+                Foxtrot.getInstance().getLogger().warning("Error regenerating DTR for team " + team.getName() + ".");
+                ex.printStackTrace();
             }
-        }
+        });
     }
 
 }

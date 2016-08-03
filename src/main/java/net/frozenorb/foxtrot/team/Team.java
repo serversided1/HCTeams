@@ -219,9 +219,9 @@ public class Team {
     public void setPowerFaction( boolean bool ) {
         this.powerFaction = bool;
         if( bool ) {
-            TeamHandler.removePowerFaction(this);
+            TeamHandler.addPowerFaction(this);
         } else {
-           TeamHandler.addPowerFaction(this);
+            TeamHandler.removePowerFaction(this);
         }
         flagForSave();
     }
@@ -531,7 +531,7 @@ public class Team {
             DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeDeath();
         }
 
-        DTRHandler.setCooldown(this);
+        DTRHandler.markOnDTRCooldown(this);
     }
 
     public double getDTRIncrement() {
@@ -1110,16 +1110,17 @@ public class Team {
 
     @Override
     public int hashCode() {
-        return (getUniqueId().hashCode());
+        return uniqueId.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Team) {
-            return ((Team) obj).getUniqueId().equals(getUniqueId());
+        if (!(obj instanceof Team)) {
+            return false;
         }
 
-        return (super.equals(obj));
+        Team other = (Team) obj;
+        return other.uniqueId.equals(uniqueId);
     }
 
     public ChatColor getDTRColor() {
