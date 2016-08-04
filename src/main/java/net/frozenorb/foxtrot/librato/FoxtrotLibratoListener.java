@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.World;
@@ -25,6 +26,11 @@ public class FoxtrotLibratoListener implements Listener {
         int spawnTagged = 0;
         int inNether = 0;
         int inEnd = 0;
+        int inSafeZone = 0;
+        int inCitadel = 0;
+        int inConquest = 0;
+        int serverMinWorth = 0;
+        int serverMaxWorth = 0;
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive()) {
@@ -45,6 +51,16 @@ public class FoxtrotLibratoListener implements Listener {
                 }
             }
 
+            if (!player.hasPermission("inherit.mod")) {
+                if (player.hasPermission("inherit.pro")) {
+                    serverMinWorth += 20;
+                    serverMaxWorth += 120;
+                } else if (player.hasPermission("inherit.vip")) {
+                    serverMinWorth += 10;
+                    serverMaxWorth += 75;
+                }
+            }
+
             if (SpawnTagHandler.isTagged(player)) {
                 spawnTagged++;
             }
@@ -56,45 +72,33 @@ public class FoxtrotLibratoListener implements Listener {
             } else if (world == World.Environment.THE_END) {
                 inEnd++;
             }
+
+            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+                inSafeZone++;
+            } else if (DTRBitmask.CITADEL.appliesAt(player.getLocation())) {
+                inCitadel++;
+            } else if (DTRBitmask.CONQUEST.appliesAt(player.getLocation())) {
+                inConquest++;
+            }
         }
 
-        for (World world : Foxtrot.getInstance().getServer().getWorlds()) {
-            int totalChunks = 0;
-            int activeChunks = 0;
-
-            /*try {
-                Field sleepingField = net.minecraft.server.v1_7_R4.Chunk.class.getField("sleeping");
-
-                for (Chunk chunk : world.getLoadedChunks().clone()) {
-                    net.minecraft.server.v1_7_R4.Chunk nmsChunk = ((CraftChunk) chunk).getHandle();
-                    boolean sleeping = (Boolean) sleepingField.get(nmsChunk);
-
-                    if (!sleeping) {
-                        activeChunks++;
-                    }
-
-                    totalChunks++;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
-
-            event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.total", totalChunks);
-            event.getBatch().addGaugeMeasurement("worlds." + world.getName().toLowerCase() + ".chunks.active", activeChunks);
-        }
-
-        event.getBatch().addGaugeMeasurement("koths.active", kothsActive);
-        event.getBatch().addGaugeMeasurement("players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
-        event.getBatch().addGaugeMeasurement("teams.count", Foxtrot.getInstance().getTeamHandler().getTeams().size());
-        event.getBatch().addGaugeMeasurement("pvpclasses.archer.active", archerActive);
-        event.getBatch().addGaugeMeasurement("pvpclasses.bard.active", bardActive);
-        event.getBatch().addGaugeMeasurement("pvpclasses.miner.active", minerActive);
-        event.getBatch().addGaugeMeasurement("players.total", Foxtrot.getInstance().getFirstJoinMap().getAllPlayersSize());
-        event.getBatch().addGaugeMeasurement("players.spawnTagged", spawnTagged);
-        event.getBatch().addGaugeMeasurement("players.inNether", inNether);
-        event.getBatch().addGaugeMeasurement("players.inEnd", inEnd);
-        event.getBatch().addGaugeMeasurement("entities", MinecraftServer.getServer().entities);
-        event.getBatch().addGaugeMeasurement("activeEntities", MinecraftServer.getServer().activeEntities);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.koths.active", kothsActive);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.deathbanned.count", Foxtrot.getInstance().getDeathbanMap().getDeathbannedPlayers().size());
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.teams.count", Foxtrot.getInstance().getTeamHandler().getTeams().size());
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.pvpclasses.archer.active", archerActive);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.pvpclasses.bard.active", bardActive);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.pvpclasses.miner.active", minerActive);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.totalSeen", Foxtrot.getInstance().getFirstJoinMap().getAllPlayersSize());
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.spawnTagged", spawnTagged);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inNether", inNether);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inEnd", inEnd);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inSafeZone", inSafeZone);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inCitadel", inCitadel);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inConquest", inConquest);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.entities", MinecraftServer.getServer().entities);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.activeEntities", MinecraftServer.getServer().activeEntities);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMinWorth", serverMinWorth);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMaxWorth", serverMaxWorth);
     }
 
 }
