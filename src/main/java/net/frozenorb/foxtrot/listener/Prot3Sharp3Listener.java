@@ -23,6 +23,9 @@ public class Prot3Sharp3Listener implements Listener {
                         player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "This map's kit has changed to");
                         player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Protection 3 Sharpness 3");
                         player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Acknowledge this message with /prot3sharp3");
+                        player.sendMessage("");
+                        player.sendMessage("");
+                        player.sendMessage("");
                     }
                 }
             }
