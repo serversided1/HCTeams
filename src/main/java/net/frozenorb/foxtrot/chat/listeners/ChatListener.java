@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.chat.listeners;
 
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
@@ -116,6 +117,7 @@ public class ChatListener implements Listener {
                     }
                 }
 
+                ChatHandler.getPublicMessagesSent().incrementAndGet();
                 Foxtrot.getInstance().getServer().getConsoleSender().sendMessage(finalMessage);
 //                if (TeamMuteCommand.getTeamMutes().containsKey(event.getPlayer().getUniqueId())) {
 //                    event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your team is muted!");

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.librato;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
@@ -19,6 +20,7 @@ public class FoxtrotLibratoListener implements Listener {
 
     @EventHandler
     public void onLibratoPost(LibratoPostEvent event) {
+        int acknowledgedP3S3 = 0;
         int kothsActive = 0;
         int archerActive = 0;
         int bardActive = 0;
@@ -31,6 +33,7 @@ public class FoxtrotLibratoListener implements Listener {
         int inConquest = 0;
         int serverMinWorth = 0;
         int serverMaxWorth = 0;
+        int chatMessagesSent = ChatHandler.getPublicMessagesSent().getAndSet(0);
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
             if (koth.isActive()) {
@@ -49,6 +52,10 @@ public class FoxtrotLibratoListener implements Listener {
                 } else if (pvpClass instanceof MinerClass) {
                     minerActive++;
                 }
+            }
+
+            if (Foxtrot.getInstance().getP3S3AckMap().acknowledgedP3S3(player.getUniqueId())) {
+                acknowledgedP3S3++;
             }
 
             if (!player.hasPermission("inherit.mod")) {
@@ -95,8 +102,10 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inSafeZone", inSafeZone);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inCitadel", inCitadel);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.inConquest", inConquest);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.players.acknowledgedP3S3", acknowledgedP3S3);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.entities", MinecraftServer.getServer().entities);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.activeEntities", MinecraftServer.getServer().activeEntities);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.chat.publicMessages", chatMessagesSent);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMinWorth", serverMinWorth);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMaxWorth", serverMaxWorth);
     }
