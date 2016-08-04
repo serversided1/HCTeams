@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ReviveCommand {
 
-    @Command(names={ "Revive" }, permission="worldedit.*")
+    @Command(names={ "Revive" }, permission="foxtrot.revive")
     public static void revive(CommandSender sender, @Param(name="player") UUID player, @Param(name="reason", wildcard=true) String reason) {
         if (reason.equals(".")) {
             sender.sendMessage(ChatColor.RED + ". is not a good reason...");
