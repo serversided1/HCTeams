@@ -98,6 +98,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
     @Getter private CobblePickupMap cobblePickupMap;
+    @Getter private P3S3AckMap p3S3AckMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
 
@@ -225,6 +226,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
+        getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
         getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
@@ -277,6 +279,7 @@ public class Foxtrot extends JavaPlugin {
         (ipMap = new IPMap()).loadFromRedis();
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
         (cobblePickupMap = new CobblePickupMap()).loadFromRedis();
+        (p3S3AckMap = new P3S3AckMap()).loadFromRedis();
     }
 
 }
