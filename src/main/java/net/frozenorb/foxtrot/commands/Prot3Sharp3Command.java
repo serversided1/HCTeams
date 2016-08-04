@@ -9,6 +9,10 @@ public class Prot3Sharp3Command {
 
     @Command(names={ "prot3sharp3" }, permission="")
     public static void prot3Sharp3(Player sender) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isSquads()) {
+            return;
+        }
+
         if (Foxtrot.getInstance().getP3S3AckMap().acknowledgedP3S3(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "You've already acknowledged the kit change!");
         } else {

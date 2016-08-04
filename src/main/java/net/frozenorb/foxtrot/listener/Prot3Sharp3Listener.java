@@ -15,6 +15,10 @@ public class Prot3Sharp3Listener implements Listener {
 
             @Override
             public void run() {
+                if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isSquads()) {
+                    return;
+                }
+
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (!Foxtrot.getInstance().getP3S3AckMap().acknowledgedP3S3(player.getUniqueId())) {
                         player.sendMessage("");
@@ -35,6 +39,10 @@ public class Prot3Sharp3Listener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isSquads()) {
+            return;
+        }
+        
         if (!event.getPlayer().hasPlayedBefore()) {
             // new players not bothered by this
             Foxtrot.getInstance().getP3S3AckMap().acknowledgedP3S3(event.getPlayer().getUniqueId());
