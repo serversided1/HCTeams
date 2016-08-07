@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class ServerFakeFreezeTask extends BukkitRunnable {
 
-    public static final double SPIKE_MIN_MOD = 3.0;
-    public static final double STABLE_MIN_MOD = 1.9;
+    public static final double SPIKE_MIN_MOD = 2.0;
+    public static final double STABLE_MIN_MOD = 1.3;
     public static final long STABLE_MIN_TIME = TimeUnit.MINUTES.toMillis(3);
     public static final int MIN_PLAYERS_TO_FREEZE = 50;
 
