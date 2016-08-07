@@ -118,7 +118,7 @@ public class FoxtrotLibratoListener implements Listener {
         boolean frozen = ServerFakeFreezeTask.isFrozen();
 
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.okLatencyResumed", okLatencyResumed < 0 ? 0 : ((System.currentTimeMillis() - okLatencyResumed) / 1000));
-        event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.frozen", frozen ? 0 : 100);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.frozen", frozen ? 100 : 0);
     }
 
 }
