@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot;
 
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -16,8 +17,8 @@ public final class ServerFakeFreezeTask extends BukkitRunnable {
 
     private RollingAverage oneMinLatencyAvg = new RollingAverage(60);
     private double oneMinLatencyAvgBeforeFreeze = 0;
-    private long okLatencyResumed = -1;
-    private boolean frozen = false;
+    @Getter private static long okLatencyResumed = -1;
+    @Getter private static boolean frozen = false;
 
     @Override
     public void run() {

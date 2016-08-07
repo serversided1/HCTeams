@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.librato;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.ServerFakeFreezeTask;
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
@@ -9,6 +10,7 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.librato.FastLibratoPostEvent;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.World;
@@ -108,6 +110,15 @@ public class FoxtrotLibratoListener implements Listener {
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.chat.publicMessages", chatMessagesSent);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMinWorth", serverMinWorth);
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.financial.serverMaxWorth", serverMaxWorth);
+    }
+
+    @EventHandler
+    public void onFastLibratoPost(FastLibratoPostEvent event) {
+        long okLatencyResumed = ServerFakeFreezeTask.getOkLatencyResumed();
+        boolean frozen = ServerFakeFreezeTask.isFrozen();
+
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.okLatencyResumed", okLatencyResumed < 0 ? 0 : ((System.currentTimeMillis() - okLatencyResumed) / 1000));
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.frozen", frozen ? 0 : 100);
     }
 
 }
