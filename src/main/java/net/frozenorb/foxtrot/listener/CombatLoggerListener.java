@@ -346,6 +346,16 @@ public class CombatLoggerListener implements Listener {
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
             //villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
+            if (event.getPlayer().hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+                for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
+                    // have to use .equals() as PotionEffectType isn't an enum
+                    if (potionEffect.getType().equals(PotionEffectType.FIRE_RESISTANCE)) {
+                        villager.addPotionEffect(potionEffect);
+                        break;
+                    }
+                }
+            }
+
             CombatLoggerMetadata metadata = new CombatLoggerMetadata();
 
             metadata.playerName = event.getPlayer().getName();
