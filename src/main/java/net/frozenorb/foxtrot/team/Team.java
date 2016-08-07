@@ -77,6 +77,7 @@ public class Team {
 
     // Not persisted //
     @Getter @Setter private UUID focused;
+    @Getter @Setter private long lastRequestReport;
 
     public Team(String name) {
         this.name = name;

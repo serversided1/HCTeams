@@ -245,6 +245,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
+        getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
