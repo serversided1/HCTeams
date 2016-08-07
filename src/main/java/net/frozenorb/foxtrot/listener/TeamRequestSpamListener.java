@@ -23,7 +23,7 @@ public class TeamRequestSpamListener implements Listener {
 
         if (lastTeamRequestMsAgo < TimeUnit.MINUTES.toMillis(1)) {
             event.setCancelled(true);
-            event.setCancelledMessage(ChatColor.RED + "Someone on your team has recently ");
+            event.setCancelledMessage(ChatColor.RED + "Someone on your team has recently made a request/report.");
         } else {
             team.setLastRequestReport(System.currentTimeMillis());
         }
