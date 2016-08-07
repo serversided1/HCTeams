@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.librato;
 
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.ServerFakeFreezeTask;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -119,6 +120,7 @@ public class FoxtrotLibratoListener implements Listener {
 
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.okLatencyResumed", okLatencyResumed < 0 ? 0 : ((System.currentTimeMillis() - okLatencyResumed) / 1000));
         event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.frozen", frozen ? 100 : 0);
+        event.getBatch().addGaugeMeasurement("bukkit.hcteams.fakeFreeze.actualFrozen", Basic.getInstance().getServerManager().isFrozen() ? 130 : 0);
     }
 
 }

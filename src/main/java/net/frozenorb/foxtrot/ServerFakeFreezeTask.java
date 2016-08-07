@@ -10,12 +10,13 @@ import java.util.concurrent.TimeUnit;
 
 public final class ServerFakeFreezeTask extends BukkitRunnable {
 
-    public static final double SPIKE_MIN_MOD = 2.5;
-    public static final double STABLE_MIN_MOD = 1.6;
+    public static final double SPIKE_MIN_MOD = 3.0;
+    public static final double STABLE_MIN_MOD = 1.9;
     public static final long STABLE_MIN_TIME = TimeUnit.MINUTES.toMillis(3);
     public static final int MIN_PLAYERS_TO_FREEZE = 50;
 
     private RollingAverage oneMinLatencyAvg = new RollingAverage(60);
+    private RollingAverage healLatencyAvg;
     private double oneMinLatencyAvgBeforeFreeze = 0;
     @Getter private static long okLatencyResumed = -1;
     @Getter private static boolean frozen = false;
@@ -34,7 +35,12 @@ public final class ServerFakeFreezeTask extends BukkitRunnable {
         }
 
         if (frozen) {
-            boolean stable = currentLatencyAvg <= oneMinLatencyAvgBeforeFreeze * STABLE_MIN_MOD;
+            if (healLatencyAvg == null) {
+                healLatencyAvg = new RollingAverage(60, 1_000_000);
+            }
+
+            healLatencyAvg.add(currentLatencyAvg);
+            boolean stable = healLatencyAvg.getAverage() <= oneMinLatencyAvgBeforeFreeze * STABLE_MIN_MOD;
 
             if (stable) {
                 if (okLatencyResumed < 0) {
@@ -47,6 +53,7 @@ public final class ServerFakeFreezeTask extends BukkitRunnable {
                     unfreeze();
                 }
             } else {
+                healLatencyAvg = null;
                 okLatencyResumed = -1;
             }
         } else {
@@ -112,9 +119,13 @@ public final class ServerFakeFreezeTask extends BukkitRunnable {
         private double samples[];
 
         public RollingAverage(int size) {
+            this(size, 0);
+        }
+
+        public RollingAverage(int size, double fill) {
             this.size = size;
             samples = new double[size];
-            for (int i = 0; i < size; i++) samples[i] = 0d;
+            for (int i = 0; i < size; i++) samples[i] = fill;
         }
 
         public void add(double x) {
