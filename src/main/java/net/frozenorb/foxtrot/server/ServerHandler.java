@@ -25,6 +25,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -414,6 +415,12 @@ public class ServerHandler {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 
+                    for (EnderPearl enderPearl : player.getWorld().getEntitiesByClass(EnderPearl.class)) {
+                        if (enderPearl.getShooter() != null && enderPearl.getShooter().equals(player)) {
+                            enderPearl.remove();
+                        }
+                    }
+
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
                     player.teleport(team.getHQ());
                     homeTimer.remove(player.getName());
@@ -426,6 +433,12 @@ public class ServerHandler {
                     // Remove their PvP timer.
                     if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
+                    }
+
+                    for (EnderPearl enderPearl : player.getWorld().getEntitiesByClass(EnderPearl.class)) {
+                        if (enderPearl.getShooter() != null && enderPearl.getShooter().equals(player)) {
+                            enderPearl.remove();
+                        }
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s HQ.");
