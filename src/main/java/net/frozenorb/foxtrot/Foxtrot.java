@@ -140,6 +140,10 @@ public class Foxtrot extends JavaPlugin {
             world.setGameRuleValue("doFireTick", "false");
             world.setGameRuleValue("mobGriefing", "false");
         }
+
+        // we just define this here while we're testing, if we actually
+        // accept this feature it'll be moved to somewhere better
+        new ServerFakeFreezeTask().runTaskTimerAsynchronously(this, 20L, 20L);
     }
 
     @Override
