@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
@@ -306,6 +307,10 @@ public class Team {
             if (ally != null) {
                 ally.getAllies().remove(getUniqueId());
             }
+        }
+
+        for (UUID uuid : members) {
+            Foxtrot.getInstance().getChatModeMap().setChatMode(uuid, ChatMode.PUBLIC);
         }
 
         Foxtrot.getInstance().getTeamHandler().removeTeam(this);
