@@ -223,20 +223,12 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
             if (ServerHandler.getTasks().containsKey(player.getName())) {
-
-                if (event instanceof EntityDamageByEntityEvent) {
-                    EntityDamageByEntityEvent edbee = ((EntityDamageByEntityEvent) event);
-                    if (edbee.getDamager() instanceof Player && Foxtrot.getInstance().getPvPTimerMap().hasTimer(edbee.getDamager().getUniqueId())) {
-                        return; // prevent log out being cancelled by a pvptimer'd player
-                    }
-                }
-
                 Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(player.getName()).getTaskId());
                 ServerHandler.getTasks().remove(player.getName());
                 player.sendMessage(YELLOW.toString() + BOLD + "LOGOUT " + RED.toString() + BOLD + "CANCELLED!");
