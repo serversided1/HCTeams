@@ -54,18 +54,20 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        /* if we just check team.getSize() players can make a team with 10 players,
-        send out 20 invites, and then have them all accepted (instead of 1 invite,
-        1 join, 1 invite, etc) To solve this we treat their size as their actual
-        size + number of open invites. */
-        int possibleTeamSize = team.getSize() + team.getInvitations().size();
+        if (!Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+            /* if we just check team.getSize() players can make a team with 10 players,
+            send out 20 invites, and then have them all accepted (instead of 1 invite,
+            1 join, 1 invite, etc) To solve this we treat their size as their actual
+            size + number of open invites. */
+            int possibleTeamSize = team.getSize() + team.getInvitations().size();
 
-        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && possibleTeamSize > Foxtrot.getInstance().getMapHandler().getMinForceInviteMembers()) {
-            sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to re-invite " + UUIDUtils.name(player) + ". Type "
-                    + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
-            );
+            if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && possibleTeamSize > Foxtrot.getInstance().getMapHandler().getMinForceInviteMembers()) {
+                sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to re-invite " + UUIDUtils.name(player) + ". Type "
+                        + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
+                );
 
-            return;
+                return;
+            }
         }
 
         TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");

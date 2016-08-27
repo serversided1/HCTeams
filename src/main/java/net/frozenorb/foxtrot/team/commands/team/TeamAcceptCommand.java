@@ -25,7 +25,7 @@ public class TeamAcceptCommand {
                 return;
             }
 
-            if (DTRHandler.isOnCooldown(team) && !Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            if (DTRHandler.isOnCooldown(team) && !Foxtrot.getInstance().getServerHandler().isPreEOTW() && !Foxtrot.getInstance().getMapHandler().isKitMap()) {
                 sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team not regenerating DTR!");
                 return;
             }
