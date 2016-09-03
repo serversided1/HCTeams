@@ -230,7 +230,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
-        getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
+        //getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
         getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
