@@ -520,6 +520,7 @@ public class FoxListener implements Listener {
 
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
 
+            /*
             //prevent stack overflow
             if (ownerTo != null && ownerTo.getName().equalsIgnoreCase("spawn")) {
                 return;
@@ -529,6 +530,7 @@ public class FoxListener implements Listener {
             if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
                 return;
             }
+            */
 
             if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getTo())) {
 
