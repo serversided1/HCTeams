@@ -14,7 +14,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -119,11 +118,6 @@ public class BasicPreventionListener implements Listener {
         if (Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
-    }
-    
-    @EventHandler
-    public void onLeavesDecay(LeavesDecayEvent event) {
-       event.setCancelled(true);
     }
 
     @EventHandler
