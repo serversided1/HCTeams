@@ -13,6 +13,7 @@ import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.redis.RedisCommand;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
@@ -97,16 +98,17 @@ public class TeamHandler {
         }
 
         if(update) {
-            // update their team in mongo
-            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
-            BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
+            Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
+                // update their team in mongo
+                DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
+                BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
 
-            if (team != null) {
-                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
-            } else {
-                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
-            }
-
+                if (team != null) {
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
+                } else {
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
+                }
+            });
         }
     }
 
