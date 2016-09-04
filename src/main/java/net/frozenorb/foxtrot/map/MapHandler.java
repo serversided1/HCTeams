@@ -53,6 +53,65 @@ public class MapHandler {
     @Getter private KillstreakHandler killstreakHandler;
 
     public MapHandler() {
+        reloadConfig();
+
+        Iterator<Recipe> recipeIterator = Foxtrot.getInstance().getServer().recipeIterator();
+
+        while (recipeIterator.hasNext()) {
+            Recipe recipe = recipeIterator.next();
+
+            // Disallow the crafting of gopples.
+            if (!craftingGopple && recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
+                recipeIterator.remove();
+            }
+
+            // Remove vanilla glistering melon recipe
+            if (craftingReducedMelon && recipe.getResult().getType() == Material.SPECKLED_MELON) {
+                recipeIterator.remove();
+            }
+        }
+
+        // add our glistering melon recipe
+        if (craftingReducedMelon) {
+            Foxtrot.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
+        }
+
+        ShapedRecipe nametagRecipe = new ShapedRecipe(new ItemStack(Material.NAME_TAG));
+        ShapedRecipe saddleRecipe = new ShapedRecipe(new ItemStack(Material.SADDLE));
+        ShapedRecipe horseArmorRecipe = new ShapedRecipe(new ItemStack(Material.DIAMOND_BARDING));
+
+        nametagRecipe.shape(" I ",
+                                                     " P ",
+                                                     " S ");
+        nametagRecipe.setIngredient('I', Material.INK_SACK);
+        nametagRecipe.setIngredient('P', Material.PAPER);
+        nametagRecipe.setIngredient('S', Material.STRING);
+
+        saddleRecipe.shape("  L",
+                                                 "LLL",
+                                                 "B B");
+        saddleRecipe.setIngredient('L', Material.LEATHER);
+        saddleRecipe.setIngredient('B', Material.LEASH);
+
+        horseArmorRecipe.shape(" SD",
+                                                            "BBL",
+                                                            "LL ");
+        horseArmorRecipe.setIngredient('S', Material.SADDLE);
+        horseArmorRecipe.setIngredient('D', Material.DIAMOND);
+        horseArmorRecipe.setIngredient('B', Material.DIAMOND_BLOCK);
+        horseArmorRecipe.setIngredient('L', Material.LEATHER);
+
+        Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
+        Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
+        Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
+
+        if (isKitMap()) {
+            statsHandler = new StatsHandler();
+            killstreakHandler = new KillstreakHandler();
+        }
+    }
+
+    public void reloadConfig() {
         try {
             mapInfo = new File(Foxtrot.getInstance().getDataFolder(), "mapInfo.json");
 
@@ -116,61 +175,6 @@ public class MapHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        Iterator<Recipe> recipeIterator = Foxtrot.getInstance().getServer().recipeIterator();
-
-        while (recipeIterator.hasNext()) {
-            Recipe recipe = recipeIterator.next();
-
-            // Disallow the crafting of gopples.
-            if (!craftingGopple && recipe.getResult().getDurability() == (short) 1 && recipe.getResult().getType() == org.bukkit.Material.GOLDEN_APPLE) {
-                recipeIterator.remove();
-            }
-
-            // Remove vanilla glistering melon recipe
-            if (craftingReducedMelon && recipe.getResult().getType() == Material.SPECKLED_MELON) {
-                recipeIterator.remove();
-            }
-        }
-
-        // add our glistering melon recipe
-        if (craftingReducedMelon) {
-            Foxtrot.getInstance().getServer().addRecipe(new ShapelessRecipe(new ItemStack(Material.SPECKLED_MELON)).addIngredient(Material.MELON).addIngredient(Material.GOLD_NUGGET));
-        }
-
-        ShapedRecipe nametagRecipe = new ShapedRecipe(new ItemStack(Material.NAME_TAG));
-        ShapedRecipe saddleRecipe = new ShapedRecipe(new ItemStack(Material.SADDLE));
-        ShapedRecipe horseArmorRecipe = new ShapedRecipe(new ItemStack(Material.DIAMOND_BARDING));
-
-        nametagRecipe.shape(" I ",
-                                                     " P ",
-                                                     " S ");
-        nametagRecipe.setIngredient('I', Material.INK_SACK);
-        nametagRecipe.setIngredient('P', Material.PAPER);
-        nametagRecipe.setIngredient('S', Material.STRING);
-
-        saddleRecipe.shape("  L",
-                                                 "LLL",
-                                                 "B B");
-        saddleRecipe.setIngredient('L', Material.LEATHER);
-        saddleRecipe.setIngredient('B', Material.LEASH);
-
-        horseArmorRecipe.shape(" SD",
-                                                            "BBL",
-                                                            "LL ");
-        horseArmorRecipe.setIngredient('S', Material.SADDLE);
-        horseArmorRecipe.setIngredient('D', Material.DIAMOND);
-        horseArmorRecipe.setIngredient('B', Material.DIAMOND_BLOCK);
-        horseArmorRecipe.setIngredient('L', Material.LEATHER);
-
-        Foxtrot.getInstance().getServer().addRecipe(nametagRecipe);
-        Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
-        Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
-
-        if (isKitMap()) {
-            statsHandler = new StatsHandler();
-            killstreakHandler = new KillstreakHandler();
         }
     }
 
