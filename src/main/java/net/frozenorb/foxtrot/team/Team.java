@@ -107,7 +107,7 @@ public class Team {
 
     public String getName(Player player) {
         if (name.equals(GlowHandler.getGlowTeamName())) {
-            return ChatColor.GOLD + "Glowstone Mountain"; // override team name
+            return ChatColor.GOLD + "Glowstone Castle"; // override team name
         } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
