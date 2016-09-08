@@ -29,7 +29,7 @@ public class GoldenAppleListener implements Listener {
         }
 
         if (event.getItem().getDurability() == 0 && !crappleCooldown.containsKey(player.getUniqueId())) {
-            crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10));
+            crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
             return;
         }
 
@@ -43,7 +43,7 @@ public class GoldenAppleListener implements Listener {
                 event.setCancelled(true);
                 return;
             } else {
-                crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
+                crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
                 return;
             }
         }
