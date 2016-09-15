@@ -29,7 +29,7 @@ public class HighrollerCommand {
             highRollers.setLength(highRollers.length() - 2);
         }
 
-        sender.sendMessage(ChatColor.GOLD + "HighRollers: " + highRollers.toString());
+        sender.sendMessage(ChatColor.GOLD + "Online HighRollers: " + highRollers.toString());
     }
 
 }
