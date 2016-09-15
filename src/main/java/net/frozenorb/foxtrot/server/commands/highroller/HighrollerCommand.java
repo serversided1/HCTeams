@@ -14,12 +14,15 @@ public class HighrollerCommand {
     public static void highroller(Player sender) {
         StringBuilder highRollers = new StringBuilder();
 
-        for (UUID highRoller : Foxtrot.getInstance().getServerHandler().getHighRollers()) {
-            if (UUIDUtils.name(highRoller) == null) {
+        for (Player onlineHighRoller : Foxtrot.getInstance().getServerHandler().getOnlineHighRollers()) {
+            // shouldn't happen often but occasionally
+            // staff members will have highroller "left over"
+            // so we have to respect invisibility
+            if (onlineHighRoller.hasMetadata("ModMode")) {
                 continue;
             }
 
-            highRollers.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
+            highRollers.append(ChatColor.DARK_PURPLE).append(onlineHighRoller.getName()).append(ChatColor.GOLD).append(", ");
         }
 
         if (highRollers.length() > 2) {

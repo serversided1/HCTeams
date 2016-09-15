@@ -47,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
@@ -112,12 +113,15 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (UUID highRoller : getHighRollers()) {
-                    if (UUIDUtils.name(highRoller) == null) {
+                for (Player onlineHighRoller : getOnlineHighRollers()) {
+                    // shouldn't happen often but occasionally
+                    // staff members will have highroller "left over"
+                    // so we have to respect invisibility
+                    if (onlineHighRoller.hasMetadata("ModMode")) {
                         continue;
                     }
 
-                    messageBuilder.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
+                    messageBuilder.append(ChatColor.DARK_PURPLE).append(onlineHighRoller.getName()).append(ChatColor.GOLD).append(", ");
                 }
 
                 if (messageBuilder.length() > 2) {
@@ -161,6 +165,15 @@ public class ServerHandler {
         } else {
             return ImmutableSet.of();
         }
+    }
+
+    public Set<Player> getOnlineHighRollers() {
+        Set<Player> players = getHighRollers().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return ImmutableSet.copyOf(players);
     }
 
     public String getEnchants() {
