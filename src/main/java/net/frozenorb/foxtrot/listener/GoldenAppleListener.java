@@ -65,7 +65,12 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        Foxtrot.getInstance().getOppleMap().useGoldenApple(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getMapHandler().isKitMap() ? TimeUnit.MINUTES.toSeconds(5) : Foxtrot.getInstance().getMapHandler().getGoppleCooldown());
+        Foxtrot.getInstance().getOppleMap().useGoldenApple(
+            event.getPlayer().getUniqueId(),
+            Foxtrot.getInstance().getMapHandler().isKitMap() ?
+                TimeUnit.MINUTES.toSeconds(5) :
+                (Foxtrot.getInstance().getMapHandler().getGoppleCooldown() * 60) // minutes to seconds
+        );
         long millisLeft = Foxtrot.getInstance().getOppleMap().getCooldown(event.getPlayer().getUniqueId()) - System.currentTimeMillis();
 
         event.getPlayer().sendMessage(ChatColor.DARK_GREEN + "███" + ChatColor.BLACK + "██" + ChatColor.DARK_GREEN + "███");
