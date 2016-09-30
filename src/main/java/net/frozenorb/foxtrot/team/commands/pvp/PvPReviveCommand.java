@@ -20,7 +20,7 @@ public class PvPReviveCommand {
             return;
         }
 
-        if (friendLives == 0) {
+        if (friendLives <= 0) {
             sender.sendMessage(ChatColor.RED + "You have no lives which can be used to revive other players!");
             return;
         }
