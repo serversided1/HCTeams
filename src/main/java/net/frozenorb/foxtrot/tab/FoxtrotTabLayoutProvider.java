@@ -21,7 +21,13 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
@@ -255,9 +261,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         if (mode == TabListMode.DETAILED) {
-            if (!Foxtrot.getInstance().getMapHandler().getEndPortalLocation().equals("N/A")) {
+            String endPortalLocation = Foxtrot.getInstance().getMapHandler().getEndPortalLocation();
+            if (endPortalLocation != null && (!endPortalLocation.equals("N/A") && !endPortalLocation.isEmpty())) {
                 layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
-                layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
+                layout.set(2, ++y, ChatColor.YELLOW + endPortalLocation);
                 layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
 
                 ++y;
