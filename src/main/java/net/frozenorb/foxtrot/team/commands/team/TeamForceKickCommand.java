@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -51,7 +53,12 @@ public class TeamForceKickCommand {
             return;
         }
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(player) + " [Force Kicked by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.MEMBER_KICKED, ImmutableMap.of(
+                "playerId", player,
+                "kickedById", sender.getUniqueId(),
+                "kickedByName", sender.getName(),
+                "usedForceKick", "true"
+        ));
 
         if (team.removeMember(player)) {
             team.disband();

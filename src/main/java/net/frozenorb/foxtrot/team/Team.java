@@ -1,6 +1,8 @@
 package net.frozenorb.foxtrot.team;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -17,7 +19,7 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
@@ -89,7 +91,7 @@ public class Team {
         }
 
         if (DTR <= 0 && newDTR > 0) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team no longer raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NO_LONGER_RAIDABLE, ImmutableMap.of());
         }
 
         if (!isLoading()) {
@@ -139,25 +141,35 @@ public class Team {
     }
 
     public void addMember(UUID member) {
-        members.add(member);
-        historicalMembers.add(member);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + UUIDUtils.formatPretty(member));
-        pushToMongoLog(new BasicDBObject("Type", "MemberAdded").append("Member", member.toString()));
-        flagForSave();
+        if (members.add(member)) {
+            historicalMembers.add(member);
+
+            TeamActionTracker.logActionAsync(this, TeamActionType.PLAYER_JOINED, ImmutableMap.of(
+                    "playerId", member
+            ));
+
+            flagForSave();
+        }
     }
 
     public void addCaptain(UUID captain) {
-        captains.add(captain);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + UUIDUtils.formatPretty(captain));
-        pushToMongoLog(new BasicDBObject("Type", "CaptainAdded").append("Captain", captain.toString()));
-        flagForSave();
+        if (captains.add(captain)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CAPTAIN, ImmutableMap.of(
+                    "playerId", captain
+            ));
+
+            flagForSave();
+        }
     }
 
     public void addCoLeader(UUID co) {
-        coleaders.add(co);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Coleader added: " + UUIDUtils.formatPretty(co));
-        pushToMongoLog(new BasicDBObject("Type", "ColeaderAdded").append("Coleader", co.toString()));
-        flagForSave();
+        if (coleaders.add(co)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CO_LEADER, ImmutableMap.of(
+                    "playerId", co
+            ));
+
+            flagForSave();
+        }
     }
 
     public void setBalance(double balance) {
@@ -171,17 +183,23 @@ public class Team {
     }
 
     public void removeCaptain(UUID captain) {
-        captains.remove(captain);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + UUIDUtils.formatPretty(captain));
-        pushToMongoLog(new BasicDBObject("Type", "CaptainRemoved").append("Captain", captain.toString()));
-        flagForSave();
+        if (captains.remove(captain)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.DEMOTED_FROM_CAPTAIN, ImmutableMap.of(
+                    "playerId", captain
+            ));
+
+            flagForSave();
+        }
     }
 
     public void removeCoLeader(UUID co) {
-        coleaders.remove(co);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Coleader Removed: " + UUIDUtils.formatPretty(co));
-        pushToMongoLog(new BasicDBObject("Type", "ColeaderRemoved").append("Coleader", co.toString()));
-        flagForSave();
+        if (coleaders.remove(co)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.DEMOTED_FROM_CO_LEADER, ImmutableMap.of(
+                    "playerId", co
+            ));
+
+            flagForSave();
+        }
     }
 
     public void setOwner(UUID owner) {
@@ -193,8 +211,10 @@ public class Team {
             captains.remove(owner);
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
-        pushToMongoLog(new BasicDBObject("Type", "OwnerChanged").append("NewOwner", owner == null ? "null" : owner.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.LEADER_CHANGED, ImmutableMap.of(
+                "playerId", owner
+        ));
+
         flagForSave();
     }
 
@@ -205,7 +225,11 @@ public class Team {
 
     public void setAnnouncement(String announcement) {
         this.announcement = announcement;
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Announcement Changed: " + announcement);
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.ANNOUNCEMENT_CHANGED, ImmutableMap.of(
+                "newAnnouncement", announcement
+        ));
+
         flagForSave();
     }
 
@@ -213,7 +237,12 @@ public class Team {
         String oldHQ = this.HQ == null ? "None" : (getHQ().getBlockX() + ", " + getHQ().getBlockY() + ", " + getHQ().getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         this.HQ = hq;
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.HEADQUARTERS_CHANGED, ImmutableMap.of(
+                "oldHq", oldHQ,
+                "newHq", newHQ
+        ));
+
         flagForSave();
     }
 
@@ -224,6 +253,11 @@ public class Team {
         } else {
             TeamHandler.removePowerFaction(this);
         }
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.POWER_FAC_STATUS_CHANGED, ImmutableMap.of(
+                "powerFaction", bool
+        ));
+
         flagForSave();
     }
 
@@ -426,8 +460,10 @@ public class Team {
             DTR = getMaxDTR();
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + UUIDUtils.formatPretty(member));
-        pushToMongoLog(new BasicDBObject("Type", "MemberRemoved").append("Member", member.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.MEMBER_REMOVED, ImmutableMap.of(
+                "playerId", member
+        ));
+
         flagForSave();
         return (owner == null || members.size() == 0);
     }
@@ -513,7 +549,13 @@ public class Team {
 
     public void playerDeath(String playerName, double dtrLoss) {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + playerName + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.MEMBER_DEATH, ImmutableMap.of(
+                "playerName", playerName,
+                "dtrLoss", dtrLoss,
+                "oldDtr", DTR,
+                "newDtr", newDTR
+        ));
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (isMember(player.getUniqueId())) {
@@ -526,7 +568,7 @@ public class Team {
         setDTR(newDTR);
 
         if (isRaidable()) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team now raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NOW_RAIDABLE, ImmutableMap.of());
             DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeRaidable();
         } else {
             DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeDeath();
@@ -865,27 +907,6 @@ public class Team {
                 player.sendMessage(message);
             }
         }
-    }
-
-    public void pushToMongoLog(BasicDBObject toLog) {
-//        new BukkitRunnable() {
-//
-//            public void run() {
-//                System.out.print("updating for " + name + ": " + isLoading());
-//                if (isLoading() || getName() == null || getUniqueId() == null) {
-//                    return;
-//                }
-//
-//                DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("TeamLog");
-//
-//                toLog.put("Team", getUniqueId().toString());
-//                toLog.put("TeamName", getName());
-//                toLog.put("Date", new Date());
-//
-//                teamLogCollection.insert(toLog);
-//            }
-//
-//        }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
     public void sendTeamInfo(Player player) {

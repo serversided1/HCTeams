@@ -1,15 +1,18 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -41,7 +44,17 @@ public class TeamUnclaimCommand {
 
             for (Claim claim : team.getClaims()) {
                 refund += Claim.getPrice(claim, team, false);
-                TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
+
+                Location minLoc = claim.getMinimumPoint();
+                Location maxLoc = claim.getMaximumPoint();
+
+                TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_UNCLAIM_LAND, ImmutableMap.of(
+                        "playerId", sender.getUniqueId(),
+                        "playerName", sender.getName(),
+                        "refund", Claim.getPrice(claim, team, false),
+                        "point1", minLoc.getBlockX() + ", " + minLoc.getBlockY() + ", " + minLoc.getBlockZ(),
+                        "point2", maxLoc.getBlockX() + ", " + maxLoc.getBlockY() + ", " + maxLoc.getBlockZ()
+                ));
             }
 
             team.setBalance(team.getBalance() + refund);
@@ -83,7 +96,17 @@ public class TeamUnclaimCommand {
             team.flagForSave();
 
             LandBoard.getInstance().setTeamAt(claim, null);
-            TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Land Unclaim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Unclaimed by: " + sender.getName() + ", Refund: " + refund + "]");
+
+            Location minLoc = claim.getMinimumPoint();
+            Location maxLoc = claim.getMaximumPoint();
+
+            TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_UNCLAIM_LAND, ImmutableMap.of(
+                    "playerId", sender.getUniqueId(),
+                    "playerName", sender.getName(),
+                    "refund", Claim.getPrice(claim, team, false),
+                    "point1", minLoc.getBlockX() + ", " + minLoc.getBlockY() + ", " + minLoc.getBlockZ(),
+                    "point2", maxLoc.getBlockX() + ", " + maxLoc.getBlockY() + ", " + maxLoc.getBlockZ()
+            ));
 
             if (team.getHQ() != null && claim.contains(team.getHQ())) {
                 team.setHQ(null);

@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
@@ -50,7 +52,14 @@ public class TeamWithdrawCommand {
             FrozenEconomyHandler.deposit(sender.getUniqueId(), amount);
             sender.sendMessage(ChatColor.YELLOW + "You have withdrawn " + ChatColor.LIGHT_PURPLE + amount + ChatColor.YELLOW + " from the team balance!");
 
-            TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Balance Change: $" + team.getBalance() + " -> $" + (team.getBalance() - amount) + " [Amount: " + amount + ", Withdrew by: " + sender.getName() + "]");
+            TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_WITHDRAW_MONEY, ImmutableMap.of(
+                    "playerId", sender.getUniqueId(),
+                    "playerName", sender.getName(),
+                    "amount", amount,
+                    "oldBalance", team.getBalance(),
+                    "newBalance", team.getBalance() - amount
+            ));
+
             team.setBalance(team.getBalance() - amount);
             team.sendMessage(ChatColor.LIGHT_PURPLE + sender.getName() + ChatColor.YELLOW + " withdrew " + ChatColor.LIGHT_PURPLE + "$" + amount + ChatColor.YELLOW + " from the team balance.");
         } else {

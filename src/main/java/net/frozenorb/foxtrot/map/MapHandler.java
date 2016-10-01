@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
 import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
 import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
@@ -108,6 +109,8 @@ public class MapHandler {
         if (isKitMap()) {
             statsHandler = new StatsHandler();
             killstreakHandler = new KillstreakHandler();
+
+            TeamActionTracker.setDatabaseLogEnabled(false);
         }
     }
 

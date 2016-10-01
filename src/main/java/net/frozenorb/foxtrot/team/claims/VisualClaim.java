@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.team.claims;
 
+import com.google.common.collect.ImmutableMap;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamResizeCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ItemUtils;
@@ -524,7 +526,17 @@ public class VisualClaim implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) playerTeam.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + price + ")");
             }
 
-            TeamActionTracker.logActionAsync(playerTeam, TeamActionType.GENERAL, "Land Claim: [" + claim.getMinimumPoint().getBlockX() + ", " + claim.getMinimumPoint().getBlockY() + ", " + claim.getMinimumPoint().getBlockZ() + "] -> [" + claim.getMaximumPoint().getBlockX() + ", " + claim.getMaximumPoint().getBlockY() + ", " + claim.getMaximumPoint().getBlockZ() + "] [Claimed by: " + player.getName() + ", Cost: " + price + "]");
+            Location minLoc = claim.getMinimumPoint();
+            Location maxLoc = claim.getMaximumPoint();
+
+            TeamActionTracker.logActionAsync(playerTeam, TeamActionType.PLAYER_CLAIM_LAND, ImmutableMap.of(
+                    "playerId", player.getUniqueId(),
+                    "playerName", playerTeam.getName(),
+                    "cost", price,
+                    "point1", minLoc.getBlockX() + ", " + minLoc.getBlockY() + ", " + minLoc.getBlockZ(),
+                    "point2", maxLoc.getBlockX() + ", " + maxLoc.getBlockY() + ", " + maxLoc.getBlockZ()
+            ));
+
             cancel();
 
             new BukkitRunnable() {
@@ -594,7 +606,17 @@ public class VisualClaim implements Listener {
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) playerTeam.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + cost + ")");
             }
 
-            TeamActionTracker.logActionAsync(playerTeam, TeamActionType.GENERAL, "Land Resize: [" + resizing.getMinimumPoint().getBlockX() + ", " + resizing.getMinimumPoint().getBlockY() + ", " + resizing.getMinimumPoint().getBlockZ() + "] -> [" + resizing.getMaximumPoint().getBlockX() + ", " + resizing.getMaximumPoint().getBlockY() + ", " + resizing.getMaximumPoint().getBlockZ() + "] [Resized by: " + player.getName() + ", Cost: " + cost + "]");
+            Location minLoc = resizing.getMinimumPoint();
+            Location maxLoc = resizing.getMaximumPoint();
+
+            TeamActionTracker.logActionAsync(playerTeam, TeamActionType.PLAYER_RESIZE_LAND, ImmutableMap.of(
+                    "playerId", player.getUniqueId(),
+                    "playerName", playerTeam.getName(),
+                    "cost", cost,
+                    "newPoint1", minLoc.getBlockX() + ", " + minLoc.getBlockY() + ", " + minLoc.getBlockZ(),
+                    "newPoint2", maxLoc.getBlockX() + ", " + maxLoc.getBlockY() + ", " + maxLoc.getBlockZ()
+            ));
+
             cancel();
 
             new BukkitRunnable() {

@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -14,11 +15,11 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
@@ -33,7 +34,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
@@ -450,12 +450,33 @@ public class FoxListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         SpawnTagHandler.removeTag(event.getEntity());
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity());
+        Player killer = event.getEntity().getKiller();
 
-        if (event.getEntity().getKiller() != null) {
-            Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
+        if (killer != null) {
+            Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(killer);
+            Location deathLoc = event.getEntity().getLocation();
+            int deathX = deathLoc.getBlockX();
+            int deathY = deathLoc.getBlockY();
+            int deathZ = deathLoc.getBlockZ();
 
             if (killerTeam != null) {
-                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.KILLS, "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName() + " [X: " + event.getEntity().getLocation().getBlockX() + ", Y: " + event.getEntity().getLocation().getBlockY() + ", Z: " + event.getEntity().getLocation().getBlockZ() + "]");
+                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.MEMBER_KILLED_ENEMY_IN_PVP, ImmutableMap.of(
+                        "playerId", killer.getUniqueId(),
+                        "playerName", killer.getName(),
+                        "killedId", event.getEntity().getUniqueId(),
+                        "killedName", event.getEntity().getName(),
+                        "coordinates", deathX + ", " + deathY + ", " + deathZ
+                ));
+            }
+
+            if (playerTeam != null) {
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.MEMBER_KILLED_BY_ENEMY_IN_PVP, ImmutableMap.of(
+                        "playerId", event.getEntity().getUniqueId(),
+                        "playerName", event.getEntity().getName(),
+                        "killerId", killer.getUniqueId(),
+                        "killerName", killer.getName(),
+                        "coordinates", deathX + ", " + deathY + ", " + deathZ
+                ));
             }
         }
 
@@ -472,8 +493,7 @@ public class FoxListener implements Listener {
             }
         }
 
-        if (event.getEntity().getKiller() != null) {
-            Player killer = event.getEntity().getKiller();
+        if (killer != null) {
             ItemStack hand = killer.getItemInHand();
 
             // Add kills to sword lore

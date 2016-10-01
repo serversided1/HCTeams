@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.team.Team;
@@ -7,7 +9,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import org.bukkit.ChatColor;
@@ -55,7 +57,10 @@ public class TeamListener implements Listener {
                 }
             }
 
-            TeamActionTracker.logActionAsync(team, TeamActionType.CONNECTIONS, "Member Online: " + event.getPlayer().getName());
+            TeamActionTracker.logActionAsync(team, TeamActionType.MEMBER_CONNECTED, ImmutableMap.of(
+                    "playerId", event.getPlayer().getUniqueId(),
+                    "playerName", event.getPlayer().getName()
+            ));
 
             new BukkitRunnable() {
 
@@ -86,7 +91,10 @@ public class TeamListener implements Listener {
                 }
             }
 
-            TeamActionTracker.logActionAsync(team, TeamActionType.CONNECTIONS, "Member Offline: " + event.getPlayer().getName());
+            TeamActionTracker.logActionAsync(team, TeamActionType.MEMBER_DISCONNECTED, ImmutableMap.of(
+                    "playerId", event.getPlayer().getUniqueId(),
+                    "playerName", event.getPlayer().getName()
+            ));
         }
     }
 

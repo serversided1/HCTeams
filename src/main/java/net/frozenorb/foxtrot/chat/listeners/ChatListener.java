@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -8,7 +10,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -217,12 +219,23 @@ public class ChatListener implements Listener {
                     Team ally = Foxtrot.getInstance().getTeamHandler().getTeam(allyId);
 
                     if (ally != null) {
-                        TeamActionTracker.logAction(ally, TeamActionType.ALLY_CHAT, "[" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                        TeamActionTracker.logActionAsync(ally, TeamActionType.ALLY_CHAT_MESSAGE, ImmutableMap.<String, Object>builder()
+                            .put("allyTeamId", playerTeam.getUniqueId())
+                            .put("allyTeamName", playerTeam.getName())
+                            .put("playerId", event.getPlayer().getUniqueId())
+                            .put("playerName", event.getPlayer().getName())
+                            .put("message", event.getMessage())
+                            .build()
+                        );
                     }
                 }
 
-                // Log to our own allychat log.
-                TeamActionTracker.logAction(playerTeam, TeamActionType.ALLY_CHAT, "[" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.ALLY_CHAT_MESSAGE, ImmutableMap.of(
+                    "playerId", event.getPlayer().getUniqueId(),
+                    "playerName", event.getPlayer().getName(),
+                    "message", event.getMessage()
+                ));
+
                 Foxtrot.getInstance().getServer().getLogger().info("[Ally Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case TEAM:
@@ -240,7 +253,12 @@ public class ChatListener implements Listener {
                 }
 
                 // Log to our teamchat log.
-                TeamActionTracker.logAction(playerTeam, TeamActionType.TEAM_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.TEAM_CHAT_MESSAGE, ImmutableMap.of(
+                        "playerId", event.getPlayer().getUniqueId(),
+                        "playerName", event.getPlayer().getName(),
+                        "message", event.getMessage()
+                ));
+
                 Foxtrot.getInstance().getServer().getLogger().info("[Team Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
             case OFFICER:
@@ -255,7 +273,12 @@ public class ChatListener implements Listener {
                 }
 
                 // Log to our teamchat log.
-                TeamActionTracker.logAction(playerTeam, TeamActionType.OFFICER_CHAT, event.getPlayer().getName() + ": " + event.getMessage());
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.OFFICER_CHAT_MESSAGE, ImmutableMap.of(
+                        "playerId", event.getPlayer().getUniqueId(),
+                        "playerName", event.getPlayer().getName(),
+                        "message", event.getMessage()
+                ));
+
                 Foxtrot.getInstance().getServer().getLogger().info("[Officer Chat] [" + playerTeam.getName() + "] " + event.getPlayer().getName() + ": " + event.getMessage());
                 break;
         }

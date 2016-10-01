@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -66,7 +68,13 @@ public class TeamForceInviteCommand {
         }
 
         team.setForceInvites(team.getForceInvites() - 1);
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Force-invite used: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_INVITE_SENT, ImmutableMap.of(
+                "playerId", player,
+                "invitedById", sender.getUniqueId(),
+                "invitedByName", sender.getName(),
+                "betrayOverride", "false",
+                "usedForceInvite", "true"
+        ));
 
         // we use a runnable so this message gets displayed at the end
         new BukkitRunnable() {
@@ -82,7 +90,6 @@ public class TeamForceInviteCommand {
             }
         }.runTask(Foxtrot.getInstance());
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
         team.getInvitations().add(player);
         team.flagForSave();
 
