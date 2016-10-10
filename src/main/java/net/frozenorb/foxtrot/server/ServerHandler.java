@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.server;
 
 import com.google.common.collect.ImmutableSet;
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
@@ -12,6 +11,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
+import net.frozenorb.foxtrot.util.HydrogenUtil;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
@@ -25,6 +25,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Sign;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -72,32 +73,12 @@ public class ServerHandler {
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
-    @Getter private Set<UUID> highRollers = new HashSet<>();
-
     @Getter private static Map<String, Long> homeTimer = new ConcurrentHashMap<>();
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
 
     public ServerHandler() {
-        try {
-            File f = new File(Foxtrot.getInstance().getDataFolder(), "highRollers.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(f));
-
-            if (dbo != null) {
-                highRollers.addAll(((BasicDBList) dbo.get("uuids")).stream().map(o -> UUID.fromString((String) o)).collect(Collectors.toList()));
-            }
-
-            highRollers.forEach(FrozenUUIDCache::ensure);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try {
             File f = new File(Foxtrot.getInstance().getDataFolder(), "betrayers.json");
 
@@ -132,17 +113,20 @@ public class ServerHandler {
             public void run() {
                 StringBuilder messageBuilder = new StringBuilder();
 
-                for (UUID highRoller : highRollers) {
-                    if (UUIDUtils.name(highRoller) == null) {
+                for (Player onlineHighRoller : getOnlineHighRollers()) {
+                    // shouldn't happen often but occasionally
+                    // staff members will have highroller "left over"
+                    // so we have to respect invisibility
+                    if (onlineHighRoller.hasMetadata("ModMode")) {
                         continue;
                     }
 
-                    messageBuilder.append(ChatColor.DARK_PURPLE).append(UUIDUtils.name(highRoller)).append(ChatColor.GOLD).append(", ");
+                    messageBuilder.append(ChatColor.DARK_PURPLE).append(onlineHighRoller.getName()).append(ChatColor.GOLD).append(", ");
                 }
 
                 if (messageBuilder.length() > 2) {
                     messageBuilder.setLength(messageBuilder.length() - 2);
-                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "HighRollers: " + messageBuilder.toString());
+                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "Online HighRollers: " + messageBuilder.toString());
                 }
             }
 
@@ -152,22 +136,6 @@ public class ServerHandler {
     }
 
     public void save() {
-        try {
-            File f = new File(Foxtrot.getInstance().getDataFolder(), "highRollers.json");
-
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-
-            BasicDBObject dbo = new BasicDBObject();
-            BasicDBList list = highRollers.stream().map(UUID::toString).collect(Collectors.toCollection(BasicDBList::new));
-
-            dbo.put("uuids", list);
-            FileUtils.write(f, qLib.GSON.toJson(new JsonParser().parse(dbo.toString())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try {
             File f = new File(Foxtrot.getInstance().getDataFolder(), "betrayers.json");
 
@@ -189,6 +157,23 @@ public class ServerHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Set<UUID> getHighRollers() {
+        if (Foxtrot.getInstance().getServer().getPluginManager().getPlugin("Hydrogen") != null) {
+            return ImmutableSet.copyOf(HydrogenUtil.getHighRollers());
+        } else {
+            return ImmutableSet.of();
+        }
+    }
+
+    public Set<Player> getOnlineHighRollers() {
+        Set<Player> players = getHighRollers().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return ImmutableSet.copyOf(players);
     }
 
     public String getEnchants() {
@@ -443,18 +428,30 @@ public class ServerHandler {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
 
-                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ. (NS)");
+                    for (EnderPearl enderPearl : player.getWorld().getEntitiesByClass(EnderPearl.class)) {
+                        if (enderPearl.getShooter() != null && enderPearl.getShooter().equals(player)) {
+                            enderPearl.remove();
+                        }
+                    }
+
+                    player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
                     player.teleport(team.getHQ());
                     homeTimer.remove(player.getName());
                     cancel();
                     return;
                 }
 
-                // We'll keep this here just in case. Changed the color on the message output if we ever need to debug since this could *should* never be run.
+                // After testing, this code is actually run sometimes. I'm going to leave it. FIXME
                 if (time == 0) {
                     // Remove their PvP timer.
                     if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
+                    }
+
+                    for (EnderPearl enderPearl : player.getWorld().getEntitiesByClass(EnderPearl.class)) {
+                        if (enderPearl.getShooter() != null && enderPearl.getShooter().equals(player)) {
+                            enderPearl.remove();
+                        }
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s HQ.");

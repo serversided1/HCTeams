@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class PvPSetLivesCommand {
 
-    @Command(names={ "pvptimer setlives", "timer setlives", "pvp setlives", "pvptimer setlives", "timer setlives", "pvp setlives" }, permission="op")
+    @Command(names={ "pvptimer setlives", "timer setlives", "pvp setlives", "pvptimer setlives", "timer setlives", "pvp setlives" }, permission="foxtrot.setlives")
     public static void pvpSetLives(Player sender, @Param(name="player") UUID player, @Param(name="life type") String lifeType, @Param(name="amount") int amount) {
         if (lifeType.equalsIgnoreCase("soulbound")) {
             Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, amount);

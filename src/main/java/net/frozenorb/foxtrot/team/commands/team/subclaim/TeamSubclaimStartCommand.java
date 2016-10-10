@@ -19,6 +19,11 @@ public class TeamSubclaimStartCommand {
             return;
         }
 
+        if (!team.isCaptain(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId()) && !team.isOwner(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
+            return;
+        }
+
         int slot = -1;
 
         for (int i = 0; i < 9; i++) {
@@ -29,7 +34,7 @@ public class TeamSubclaimStartCommand {
         }
 
         if (slot == -1) {
-            sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the Subclaim Wand!");
+            sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the subclaim wand!");
             return;
         }
 
@@ -38,6 +43,7 @@ public class TeamSubclaimStartCommand {
         }
 
         sender.getInventory().setItem(slot, TeamSubclaimCommand.SELECTION_WAND.clone());
+        sender.sendMessage(ChatColor.GREEN + "Gave you a subclaim wand.");
     }
 
 }

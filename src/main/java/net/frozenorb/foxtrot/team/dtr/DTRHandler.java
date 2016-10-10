@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team.dtr;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,12 +24,12 @@ public class DTRHandler extends BukkitRunnable {
             5.05, 5.25, 5.50, 5.80, 6.05, // 11 to 15
             6.15, 6.25, 6.35, 6.45, 6.55, // 16 to 20
 
-            6.65, 6.75, 6.85, 6.95, 7.05, // 21 to 25
+            6.65, 6.75, 6.85, 6.95, 7.00, // 21 to 25
             7.15, 7.25, 7.50, 7.75, 8.0, // 26 to 30
             8.20, 8.40, 8.60, 8.80, 9.00, // 31 to 35
             9, 9, 9, 9, 9 }; // Padding
 
-    private static Set<String> wasOnCooldown = new HashSet<>();
+    private static Set<ObjectId> wasOnCooldown = new HashSet<>();
 
     public static void loadDTR() {
         if (Foxtrot.getInstance().getServerHandler().isSquads()) {
@@ -36,11 +37,11 @@ public class DTRHandler extends BukkitRunnable {
                     1.01, 1.44, 1.80, 2.20, // 1 to 4
                     2.60, 3.00, 3.40, 3.80, // 5 to 8
 
-                    3.80, 3.80, 3.80, 3.80,
-                    3.80, 3.80, 3.80, 3.80,
-                    3.80, 3.80, 3.80, 3.80,
-                    3.80, 3.80, 3.80, 3.80,
-                    3.80, 3.80, 3.80, 3.80 }; // Padding
+                    4.10, 4.20, 4.20, 4.20, // 9 to 10
+                    4.20, 4.20, 4.20, 4.20,
+                    4.20, 4.20, 4.20, 4.20,
+                    4.20, 4.20, 4.20, 4.20,
+                    4.20, 4.20, 4.20, 4.20 }; // Padding
         }
     }
 
@@ -63,8 +64,8 @@ public class DTRHandler extends BukkitRunnable {
         return (!isOnCooldown(team) && team.getDTR() != team.getMaxDTR());
     }
 
-    public static void setCooldown(Team team) {
-        wasOnCooldown.add(team.getName().toLowerCase());
+    public static void markOnDTRCooldown(Team team) {
+        wasOnCooldown.add(team.getUniqueId());
     }
 
     @Override
@@ -78,35 +79,34 @@ public class DTRHandler extends BukkitRunnable {
 
             Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-            if (playerTeam != null) {
-                if (playerOnlineMap.containsKey(playerTeam)) {
-                    playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
-                } else {
-                    playerOnlineMap.put(playerTeam, 1);
-                }
+            if (playerTeam != null && playerTeam.getOwner() != null) {
+                playerOnlineMap.putIfAbsent(playerTeam, 0);
+                playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
             }
         }
 
-        for (Map.Entry<Team, Integer> teamEntry : playerOnlineMap.entrySet()) {
-            if (teamEntry.getKey().getOwner() != null) {
-                try {
-                    if (isOnCooldown(teamEntry.getKey())) {
-                        wasOnCooldown.add(teamEntry.getKey().getName().toLowerCase());
-                        continue;
-                    }
-
-                    if (wasOnCooldown.contains(teamEntry.getKey().getName().toLowerCase())) {
-                        wasOnCooldown.remove(teamEntry.getKey().getName().toLowerCase());
-                        teamEntry.getKey().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
-                    }
-
-                    teamEntry.getKey().setDTR(Math.min(teamEntry.getKey().getDTR() + teamEntry.getKey().getDTRIncrement(teamEntry.getValue()), teamEntry.getKey().getMaxDTR()));
-                } catch (Exception e) {
-                    Foxtrot.getInstance().getLogger().warning("Error regenerating DTR for team " + teamEntry.getKey().getName() + ".");
-                    e.printStackTrace();
+        playerOnlineMap.forEach((team, onlineCount) -> {
+            try {
+                // make sure (I guess?)
+                if (isOnCooldown(team)) {
+                    markOnDTRCooldown(team);
+                    return;
                 }
+
+                if (wasOnCooldown.contains(team.getUniqueId())) {
+                    wasOnCooldown.remove(team.getUniqueId());
+                    team.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
+                }
+
+                double incrementedDtr = team.getDTR() + team.getDTRIncrement(onlineCount);
+                double maxDtr = team.getMaxDTR();
+                double newDtr = Math.min(incrementedDtr, maxDtr);
+                team.setDTR(newDtr);
+            } catch (Exception ex) {
+                Foxtrot.getInstance().getLogger().warning("Error regenerating DTR for team " + team.getName() + ".");
+                ex.printStackTrace();
             }
-        }
+        });
     }
 
 }

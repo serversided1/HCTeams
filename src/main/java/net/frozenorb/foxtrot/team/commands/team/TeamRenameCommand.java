@@ -18,13 +18,13 @@ public class TeamRenameCommand {
             return;
         }
 
-        if (team == Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper())) {
+        if (Foxtrot.getInstance().getCitadelHandler().getCappers().contains(team.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Citadel cappers cannot change their name. Please contact an admin to rename your team.");
             return;
         }
 
-        if (!team.isOwner(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only team owners can use this command!");
+        if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId())) {
+            sender.sendMessage(ChatColor.RED + "Only team owners and co-leaders can use this command!");
             return;
         }
 

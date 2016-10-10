@@ -1,9 +1,11 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -24,7 +26,7 @@ public class TeamUninviteCommand {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             if (allPlayer.equalsIgnoreCase("all")) {
                 team.getInvitations().clear();
                 sender.sendMessage(ChatColor.GRAY + "You have cleared all pending invitations.");
@@ -38,7 +40,12 @@ public class TeamUninviteCommand {
 
                             public void run() {
                                 if (team.getInvitations().remove(nameUUID)) {
-                                    TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Uninvited: " + allPlayer + " [Uninvited by: " + sender.getName() + "]");
+                                    TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_INVITE_REVOKED, ImmutableMap.of(
+                                            "playerId", allPlayer,
+                                            "uninvitedById", sender.getUniqueId(),
+                                            "uninvitedByName", sender.getName()
+                                    ));
+
                                     team.getInvitations().remove(nameUUID);
                                     team.flagForSave();
                                     sender.sendMessage(ChatColor.GREEN + "Cancelled pending invitation for " + allPlayer + "!");

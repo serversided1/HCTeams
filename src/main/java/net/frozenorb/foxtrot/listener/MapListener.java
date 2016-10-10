@@ -1,11 +1,20 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.minecraft.server.v1_7_R4.AttributeInstance;
+import net.minecraft.server.v1_7_R4.GenericAttributes;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHorse;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class MapListener implements Listener {
 
@@ -34,6 +43,32 @@ public class MapListener implements Listener {
         }
 
         event.setDroppedExp((int) Math.ceil(event.getDroppedExp() * multiplier));
+    }
+
+    @EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true) // This is actually 'Lowest', but Bukkit calls listeners LOWEST -> HIGHEST, so HIGHEST is what's actually called last. #BukkitBeLike
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (!Foxtrot.getInstance().getMapHandler().isFastSmeltEnabled() || event.getPlayer().getItemInHand() == null || !event.getPlayer().getItemInHand().getType().name().contains("PICKAXE") || event.getPlayer().getItemInHand().containsEnchantment(Enchantment.SILK_TOUCH)) {
+            return;
+        }
+
+        Material blockType = event.getBlock().getType();
+
+        if (blockType == Material.GOLD_ORE || blockType == Material.IRON_ORE) {
+            ItemStack drop;
+
+            if (blockType == Material.GOLD_ORE) {
+                drop = new ItemStack(Material.GOLD_INGOT);
+                Foxtrot.getInstance().getGoldMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getGoldMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+            } else {
+                drop = new ItemStack(Material.IRON_INGOT);
+                Foxtrot.getInstance().getIronMinedMap().setMined(event.getPlayer().getUniqueId(), Foxtrot.getInstance().getIronMinedMap().getMined(event.getPlayer().getUniqueId()) + 1);
+            }
+
+            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), drop);
+            event.setCancelled(true);
+            event.getPlayer().giveExp(4);
+            event.getBlock().setType(Material.AIR);
+        }
     }
 
 }

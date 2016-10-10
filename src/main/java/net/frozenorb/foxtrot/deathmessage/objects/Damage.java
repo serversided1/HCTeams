@@ -25,4 +25,8 @@ public abstract class Damage {
         return (ChatColor.RED + player + ChatColor.DARK_RED + "[" + kills + "]" + ChatColor.YELLOW);
     }
 
+    public long getTimeDifference() {
+        return System.currentTimeMillis() - time;
+    }
+
 }

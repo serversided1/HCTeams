@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class PvPReviveCommand {
 
-    @Command(names = {"pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive", "f revive"}, permission = "")
+    @Command(names = {"pvptimer revive", "timer revive", "pvp revive", "pvptimer revive", "timer revive", "pvp revive" }, permission = "")
     public static void pvpRevive(Player sender, @Param(name = "player") UUID player) {
         int friendLives = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
 
@@ -20,7 +20,7 @@ public class PvPReviveCommand {
             return;
         }
 
-        if (friendLives == 0) {
+        if (friendLives <= 0) {
             sender.sendMessage(ChatColor.RED + "You have no lives which can be used to revive other players!");
             return;
         }

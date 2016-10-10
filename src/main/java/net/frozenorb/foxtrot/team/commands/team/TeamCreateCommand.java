@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import org.bson.types.ObjectId;
@@ -56,7 +58,10 @@ public class TeamCreateCommand {
 
         Team createdTeam = new Team(team);
 
-        TeamActionTracker.logActionAsync(createdTeam, TeamActionType.GENERAL, "Team created. [Created by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(createdTeam, TeamActionType.PLAYER_CREATE_TEAM, ImmutableMap.of(
+                "playerId", sender.getUniqueId(),
+                "playerName", sender.getName()
+        ));
 
         createdTeam.setUniqueId(new ObjectId());
         createdTeam.setOwner(sender.getUniqueId());
@@ -64,7 +69,10 @@ public class TeamCreateCommand {
         createdTeam.setDTR(1);
 
         Foxtrot.getInstance().getTeamHandler().setupTeam(createdTeam);
-        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+
+        if (!Basic.getInstance().getServerManager().isFrozen() && !Basic.getInstance().getChatManager().isMuted()) {
+            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+        }
     }
 
 }

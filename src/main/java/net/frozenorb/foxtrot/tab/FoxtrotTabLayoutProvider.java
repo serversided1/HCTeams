@@ -14,13 +14,20 @@ import net.frozenorb.foxtrot.util.PlayerDirection;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
@@ -38,7 +45,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         TabLayout layout = TabLayout.create(player);
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ? "HCSquads.com" : "HCTeams.com";
+        String serverName = Foxtrot.getInstance().getMapHandler().isKitMap() ? "MineHQ Kit Map" :  Foxtrot.getInstance().getServerHandler().isSquads() ? "HCSquads.com" : "HCTeams.com";
 
         layout.set(1, 0, ChatColor.GOLD.toString() + ChatColor.BOLD + serverName);
 
@@ -154,6 +161,8 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             String watcherName = ChatColor.DARK_GREEN + player.getName();
             if (team.isOwner(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "**";
+            } else if (team.isCoLeader(player.getUniqueId())) {
+                watcherName += ChatColor.GRAY + "**";
             } else if (team.isCaptain(player.getUniqueId())) {
                 watcherName += ChatColor.GRAY + "*";
             }
@@ -161,11 +170,14 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(1, mode == TabListMode.DETAILED_WITH_FACTION_INFO ? 6 : 3, watcherName, ((CraftPlayer) player).getHandle().ping); // the viewer is always first on the list
 
             Player owner = null;
+            List<Player> coleaders = Lists.newArrayList();
             List<Player> captains = Lists.newArrayList();
             List<Player> members = Lists.newArrayList();
             for (Player member : team.getOnlineMembers()) {
                 if (team.isOwner(member.getUniqueId())) {
                     owner = member;
+                } else if (team.isCoLeader(member.getUniqueId())) {
+                    coleaders.add(member);
                 } else if (team.isCaptain(member.getUniqueId())) {
                     captains.add(member);
                 } else {
@@ -187,6 +199,21 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                     x++;
                 }
             }
+
+            // then the coleaders
+            for (Player coleader : coleaders) {
+                if (coleader.equals(player)) continue;
+
+                layout.set(x, y, ChatColor.DARK_GREEN + coleader.getName() + ChatColor.GRAY + "**", ((CraftPlayer) coleader).getHandle().ping);
+
+                y++;
+
+                if (y >= 20) {
+                    y = 0;
+                    x++;
+                }
+            }
+
 
             // then the captains
             for (Player captain : captains) {
@@ -234,9 +261,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         }
 
         if (mode == TabListMode.DETAILED) {
-            if (!Foxtrot.getInstance().getMapHandler().getEndPortalLocation().equals("N/A")) {
+            String endPortalLocation = Foxtrot.getInstance().getMapHandler().getEndPortalLocation();
+            if (endPortalLocation != null && (!endPortalLocation.equals("N/A") && !endPortalLocation.isEmpty())) {
                 layout.set(2, y, ChatColor.DARK_PURPLE + "End Portals:");
-                layout.set(2, ++y, ChatColor.YELLOW + Foxtrot.getInstance().getMapHandler().getEndPortalLocation());
+                layout.set(2, ++y, ChatColor.YELLOW + endPortalLocation);
                 layout.set(2, ++y, ChatColor.YELLOW + "in each quadrant");
 
                 ++y;
@@ -255,11 +283,27 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             layout.set(2, ++y, ChatColor.DARK_PURPLE + "Players Online:");
             layout.set(2, ++y, ChatColor.YELLOW + String.valueOf(Bukkit.getOnlinePlayers().size()));
 
-            Team capper = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-            if (capper != null) {
-                ++y;
-                layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
-                layout.set(2, ++y, ChatColor.YELLOW + capper.getName());
+            Set<ObjectId> cappers = Foxtrot.getInstance().getCitadelHandler().getCappers();
+
+            if (!cappers.isEmpty()) {
+                Set<String> capperNames = new HashSet<>();
+
+                for (ObjectId capper : cappers) {
+                    Team capperTeam = Foxtrot.getInstance().getTeamHandler().getTeam(capper);
+
+                    if (capperTeam != null) {
+                        capperNames.add(capperTeam.getName());
+                    }
+                }
+
+                if (!capperNames.isEmpty()) {
+                    ++y;
+                    layout.set(2, ++y, ChatColor.DARK_PURPLE + "Citadel Cappers:");
+
+                    for (String capper : capperNames) {
+                        layout.set(2, ++y, ChatColor.YELLOW + capper);
+                    }
+                }
             }
         } else {
             layout.set(1, 2, ChatColor.DARK_PURPLE + "Players Online:");

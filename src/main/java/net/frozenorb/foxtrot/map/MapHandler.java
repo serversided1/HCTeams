@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
 import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
 import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.ChatColor;
@@ -44,6 +45,7 @@ public class MapHandler {
     @Getter private int goppleCooldown;
     @Getter private int minForceInviteMembers = 10;
     @Getter private String endPortalLocation;
+    @Getter private boolean fastSmeltEnabled;
     @Getter @Setter private int netherBuffer;
     @Getter @Setter private int worldBuffer;
 
@@ -52,69 +54,7 @@ public class MapHandler {
     @Getter private KillstreakHandler killstreakHandler;
 
     public MapHandler() {
-        try {
-            mapInfo = new File(Foxtrot.getInstance().getDataFolder(), "mapInfo.json");
-
-            if (!mapInfo.exists()) {
-                mapInfo.createNewFile();
-
-                BasicDBObject dbObject = getDefaults();
-
-                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString())));
-            } else {
-                // basically check for any new keys in the defaults which aren't contained in the actual file
-                // if there are any, add them to the file.
-                BasicDBObject file = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
-
-                BasicDBObject defaults = getDefaults();
-
-                defaults.keySet().stream().filter(key -> !file.containsKey(key)).forEach(key -> file.put(key, defaults.get(key)));
-
-                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(file.toString())));
-            }
-
-            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
-
-            if (dbObject != null) {
-                this.kitMap = dbObject.getBoolean("kitMap", false);
-                this.allyLimit = dbObject.getInt("allyLimit", 0);
-                this.teamSize = dbObject.getInt("teamSize", 30);
-                this.regenTimeDeath = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeDeath", 60));
-                this.regenTimeRaidable = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeRaidable", 60));
-                this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbObject.getString("scoreboardTitle"));
-                this.mapStartedString = dbObject.getString("mapStartedString");
-                ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);
-                BorderListener.BORDER_SIZE = dbObject.getInt("border", 3000);
-                this.goppleCooldown = dbObject.getInt("goppleCooldown");
-                this.netherBuffer = dbObject.getInt("netherBuffer");
-                this.worldBuffer = dbObject.getInt("worldBuffer");
-                this.endPortalLocation = dbObject.getString("endPortalLocation");
-
-                BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
-
-                this.baseLootingMultiplier = looting.getDouble("base");
-                this.level1LootingMultiplier = looting.getDouble("level1");
-                this.level2LootingMultiplier = looting.getDouble("level2");
-                this.level3LootingMultiplier = looting.getDouble("level3");
-
-                BasicDBObject crafting = (BasicDBObject) dbObject.get("crafting");
-
-                this.craftingGopple = crafting.getBoolean("gopple");
-                this.craftingReducedMelon = crafting.getBoolean("reducedMelon");
-
-                if (dbObject.containsKey("deathban")) {
-                    BasicDBObject deathban = (BasicDBObject) dbObject.get("deathban");
-
-                    Deathban.load(deathban);
-                }
-
-                if (dbObject.containsKey("minForceInviteMembers")) {
-                    minForceInviteMembers = dbObject.getInt("minForceInviteMembers");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        reloadConfig();
 
         Iterator<Recipe> recipeIterator = Foxtrot.getInstance().getServer().recipeIterator();
 
@@ -169,6 +109,75 @@ public class MapHandler {
         if (isKitMap()) {
             statsHandler = new StatsHandler();
             killstreakHandler = new KillstreakHandler();
+
+            TeamActionTracker.setDatabaseLogEnabled(false);
+        }
+    }
+
+    public void reloadConfig() {
+        try {
+            mapInfo = new File(Foxtrot.getInstance().getDataFolder(), "mapInfo.json");
+
+            if (!mapInfo.exists()) {
+                mapInfo.createNewFile();
+
+                BasicDBObject dbObject = getDefaults();
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(dbObject.toString())));
+            } else {
+                // basically check for any new keys in the defaults which aren't contained in the actual file
+                // if there are any, add them to the file.
+                BasicDBObject file = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+                BasicDBObject defaults = getDefaults();
+
+                defaults.keySet().stream().filter(key -> !file.containsKey(key)).forEach(key -> file.put(key, defaults.get(key)));
+
+                FileUtils.write(mapInfo, qLib.GSON.toJson(new JsonParser().parse(file.toString())));
+            }
+
+            BasicDBObject dbObject = (BasicDBObject) JSON.parse(FileUtils.readFileToString(mapInfo));
+
+            if (dbObject != null) {
+                this.kitMap = dbObject.getBoolean("kitMap", false);
+                this.allyLimit = dbObject.getInt("allyLimit", 0);
+                this.teamSize = dbObject.getInt("teamSize", 30);
+                this.regenTimeDeath = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeDeath", 60));
+                this.regenTimeRaidable = TimeUnit.MINUTES.toMillis(dbObject.getInt("regenTimeRaidable", 60));
+                this.scoreboardTitle = ChatColor.translateAlternateColorCodes('&', dbObject.getString("scoreboardTitle"));
+                this.mapStartedString = dbObject.getString("mapStartedString");
+                ServerHandler.WARZONE_RADIUS = dbObject.getInt("warzone", 1000);
+                BorderListener.BORDER_SIZE = dbObject.getInt("border", 3000);
+                this.goppleCooldown = dbObject.getInt("goppleCooldown");
+                this.netherBuffer = dbObject.getInt("netherBuffer");
+                this.worldBuffer = dbObject.getInt("worldBuffer");
+                this.endPortalLocation = dbObject.getString("endPortalLocation");
+                this.fastSmeltEnabled = dbObject.getBoolean("fastSmeltEnabled", true);
+
+                BasicDBObject looting = (BasicDBObject) dbObject.get("looting");
+
+                this.baseLootingMultiplier = looting.getDouble("base");
+                this.level1LootingMultiplier = looting.getDouble("level1");
+                this.level2LootingMultiplier = looting.getDouble("level2");
+                this.level3LootingMultiplier = looting.getDouble("level3");
+
+                BasicDBObject crafting = (BasicDBObject) dbObject.get("crafting");
+
+                this.craftingGopple = crafting.getBoolean("gopple");
+                this.craftingReducedMelon = crafting.getBoolean("reducedMelon");
+
+                if (dbObject.containsKey("deathban")) {
+                    BasicDBObject deathban = (BasicDBObject) dbObject.get("deathban");
+
+                    Deathban.load(deathban);
+                }
+
+                if (dbObject.containsKey("minForceInviteMembers")) {
+                    minForceInviteMembers = dbObject.getInt("minForceInviteMembers");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -192,6 +201,7 @@ public class MapHandler {
         dbObject.put("endPortalLocation", "2500, 2500");
         dbObject.put("border", 3000);
         dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
+        dbObject.put("fastSmeltEnabled", true);
 
         looting.put("base", 1D);
         looting.put("level1", 1.2D);

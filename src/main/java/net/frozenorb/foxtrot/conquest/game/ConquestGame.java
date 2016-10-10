@@ -53,6 +53,12 @@ public class ConquestGame implements Listener {
             Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
         }
 
+        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+            if (koth.getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
+                koth.deactivate();
+            }
+        }
+
         HandlerList.unregisterAll(this);
         Foxtrot.getInstance().getConquestHandler().setGame(null);
     }

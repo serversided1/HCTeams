@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -14,13 +15,12 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.Sign;
@@ -34,14 +34,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
@@ -225,20 +223,12 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
             if (ServerHandler.getTasks().containsKey(player.getName())) {
-
-                if (event instanceof EntityDamageByEntityEvent) {
-                    EntityDamageByEntityEvent edbee = ((EntityDamageByEntityEvent) event);
-                    if (edbee.getDamager() instanceof Player && Foxtrot.getInstance().getPvPTimerMap().hasTimer(edbee.getDamager().getUniqueId())) {
-                        return; // prevent log out being cancelled by a pvptimer'd player
-                    }
-                }
-
                 Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(player.getName()).getTaskId());
                 ServerHandler.getTasks().remove(player.getName());
                 player.sendMessage(YELLOW.toString() + BOLD + "LOGOUT " + RED.toString() + BOLD + "CANCELLED!");
@@ -259,7 +249,7 @@ public class FoxListener implements Listener {
                     if (i.getDurability() != (short) 0) {
                         Potion pot = Potion.fromItemStack(i);
 
-                        if (pot != null && pot.isSplash() && DEBUFFS.contains(pot.getType().getEffectType())) {
+                        if (pot != null && pot.isSplash() && pot.getType() != null && DEBUFFS.contains(pot.getType().getEffectType())) {
                             if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                                 player.sendMessage(RED + "You cannot do this while your PVP Timer is active!");
                                 player.sendMessage(RED + "Type '" + YELLOW + "/pvp enable" + RED + "' to remove your timer.");
@@ -332,7 +322,9 @@ public class FoxListener implements Listener {
                 event.getPlayer().sendMessage(RED + "You can only do this in your own claims!");
             }
         } else {
-            if (team != null && !team.isCaptain(event.getPlayer().getUniqueId()) && !team.isOwner(event.getPlayer().getUniqueId())) {
+            UUID uuid = player.getUniqueId();
+
+            if (team != null && !team.isCaptain(uuid) && !team.isCoLeader(uuid) && !team.isOwner(uuid)) {
                 Subclaim subclaim = team.getSubclaim(event.getClickedBlock().getLocation());
 
                 if (subclaim != null && !subclaim.isMember(event.getPlayer().getUniqueId())) {
@@ -458,12 +450,33 @@ public class FoxListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         SpawnTagHandler.removeTag(event.getEntity());
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity());
+        Player killer = event.getEntity().getKiller();
 
-        if (event.getEntity().getKiller() != null) {
-            Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity().getKiller());
+        if (killer != null) {
+            Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(killer);
+            Location deathLoc = event.getEntity().getLocation();
+            int deathX = deathLoc.getBlockX();
+            int deathY = deathLoc.getBlockY();
+            int deathZ = deathLoc.getBlockZ();
 
             if (killerTeam != null) {
-                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.KILLS, "Member Kill: " + event.getEntity().getName() + " slain by " + event.getEntity().getKiller().getName() + " [X: " + event.getEntity().getLocation().getBlockX() + ", Y: " + event.getEntity().getLocation().getBlockY() + ", Z: " + event.getEntity().getLocation().getBlockZ() + "]");
+                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.MEMBER_KILLED_ENEMY_IN_PVP, ImmutableMap.of(
+                        "playerId", killer.getUniqueId(),
+                        "playerName", killer.getName(),
+                        "killedId", event.getEntity().getUniqueId(),
+                        "killedName", event.getEntity().getName(),
+                        "coordinates", deathX + ", " + deathY + ", " + deathZ
+                ));
+            }
+
+            if (playerTeam != null) {
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.MEMBER_KILLED_BY_ENEMY_IN_PVP, ImmutableMap.of(
+                        "playerId", event.getEntity().getUniqueId(),
+                        "playerName", event.getEntity().getName(),
+                        "killerId", killer.getUniqueId(),
+                        "killerName", killer.getName(),
+                        "coordinates", deathX + ", " + deathY + ", " + deathZ
+                ));
             }
         }
 
@@ -480,8 +493,7 @@ public class FoxListener implements Listener {
             }
         }
 
-        if (event.getEntity().getKiller() != null) {
-            Player killer = event.getEntity().getKiller();
+        if (killer != null) {
             ItemStack hand = killer.getItemInHand();
 
             // Add kills to sword lore
@@ -528,6 +540,7 @@ public class FoxListener implements Listener {
 
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(event.getPlayer().getUniqueId())) {
 
+            /*
             //prevent stack overflow
             if (ownerTo != null && ownerTo.getName().equalsIgnoreCase("spawn")) {
                 return;
@@ -537,6 +550,7 @@ public class FoxListener implements Listener {
             if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
                 return;
             }
+            */
 
             if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getTo())) {
 

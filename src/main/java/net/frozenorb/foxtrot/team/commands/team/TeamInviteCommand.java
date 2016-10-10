@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -29,7 +31,7 @@ public class TeamInviteCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }
@@ -54,15 +56,30 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && team.getSize() > Foxtrot.getInstance().getMapHandler().getMinForceInviteMembers()) {
-            sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to re-invite " + UUIDUtils.name(player) + ". Type "
-                    + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
-            );
+        if (!Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+            /* if we just check team.getSize() players can make a team with 10 players,
+            send out 20 invites, and then have them all accepted (instead of 1 invite,
+            1 join, 1 invite, etc) To solve this we treat their size as their actual
+            size + number of open invites. */
+            int possibleTeamSize = team.getSize() + team.getInvitations().size();
 
-            return;
+            if (!Foxtrot.getInstance().getMapHandler().isKitMap() && team.getHistoricalMembers().contains(player) && possibleTeamSize > Foxtrot.getInstance().getMapHandler().getMinForceInviteMembers()) {
+                sender.sendMessage(ChatColor.RED + "This player has previously joined your faction. You must use a force-invite to re-invite " + UUIDUtils.name(player) + ". Type "
+                        + ChatColor.YELLOW + "'/f forceinvite " + UUIDUtils.name(player) + "'" + ChatColor.RED + " to use a force-invite."
+                );
+
+                return;
+            }
         }
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Player Invited: " + UUIDUtils.name(player) + " [Invited by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.PLAYER_INVITE_SENT, ImmutableMap.of(
+                "playerId", player,
+                "invitedById", sender.getUniqueId(),
+                "invitedByName", sender.getName(),
+                "betrayOverride", override.equalsIgnoreCase("override"),
+                "usedForceInvite", "false"
+        ));
+
         team.getInvitations().add(player);
         team.flagForSave();
 

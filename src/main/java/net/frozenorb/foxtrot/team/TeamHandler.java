@@ -13,13 +13,11 @@ import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.redis.RedisCommand;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TeamHandler {
@@ -28,8 +26,10 @@ public class TeamHandler {
     private Map<ObjectId, Team> teamUniqueIdMap = new ConcurrentHashMap<>(); // Team UUID -> Team
     private Map<UUID, Team> playerTeamMap = new ConcurrentHashMap<>(); // Player UUID -> Team
     @Getter @Setter private boolean rostersLocked = false;
+    @Getter private static HashSet<Team> powerFactions = new HashSet<>();
 
     public TeamHandler() {
+        powerFactions = new HashSet<>();
         FrozenCommandHandler.registerParameterType(Team.class, new TeamType());
         FrozenCommandHandler.registerParameterType(DTRBitmask.class, new DTRBitmaskType());
         FrozenCommandHandler.registerParameterType(Subclaim.class, new SubclaimType());
@@ -60,6 +60,16 @@ public class TeamHandler {
         });
     }
 
+    public static void addPowerFaction(Team t) {
+        powerFactions.add(t);
+    }
+
+    public static void removePowerFaction(Team t) {
+        powerFactions.remove(t);
+    }
+
+    public static boolean isPowerFaction(Team t) { return powerFactions.contains(t); }
+
     public List<Team> getTeams() {
         return (new ArrayList<>(teamNameMap.values()));
     }
@@ -88,16 +98,17 @@ public class TeamHandler {
         }
 
         if(update) {
-            // update their team in mongo
-            DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
-            BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
+            Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
+                // update their team in mongo
+                DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
+                BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
 
-            if (team != null) {
-                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
-            } else {
-                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
-            }
-
+                if (team != null) {
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
+                } else {
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
+                }
+            });
         }
     }
 

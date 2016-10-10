@@ -1,14 +1,14 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import lombok.Getter;
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.serialization.ItemStackSerializer;
+import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
 import net.minecraft.server.v1_7_R4.*;
 import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.*;
@@ -41,7 +41,7 @@ import java.util.*;
 public class CombatLoggerListener implements Listener {
 
     public static final String COMBAT_LOGGER_METADATA = "CombatLogger";
-    private Set<Entity> combatLoggers = new HashSet<>();
+    @Getter private Set<Entity> combatLoggers = new HashSet<>();
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
@@ -77,11 +77,36 @@ public class CombatLoggerListener implements Listener {
                 event.getDrops().add(item);
             }
 
+            // give them a death
+            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
+            }
+            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
+
+            // store the death amount -- we'll use this later on.
+            int victimKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getUniqueId());
+
+            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                victimKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getUniqueId()).getKills();
+            }
+
             if (event.getEntity().getKiller() != null) {
-                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.YELLOW + ".";
+                // give them a kill
+                Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId()) + 1);
+
+                // store the kill amount -- we'll use this later on.
+                int killerKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
+
+                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                    Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
+
+                    killerKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).getKills();
+                }
+
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " was slain by " + ChatColor.RED + event.getEntity().getKiller().getName() + ChatColor.DARK_RED + "[" + killerKills + "]" + ChatColor.YELLOW + ".";
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                    if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                         player.sendMessage(deathMessage);
                     } else {
                         if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
@@ -102,19 +127,11 @@ public class CombatLoggerListener implements Listener {
 
                 // Add the death sign.
 
-//                if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-//                    event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
-//                }
-
-                // and give them the kill
-                int kills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
-                Foxtrot.getInstance().getKillsMap().setKills(event.getEntity().getKiller().getUniqueId(), kills + 1);
-
-                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-                    Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
-                }
+//              if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+//                  event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
+//              }
             } else {
-                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
+                String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
@@ -131,12 +148,6 @@ public class CombatLoggerListener implements Listener {
                     }
                 }
             }
-
-            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-                Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
-            }
-
-            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
 
             Player target = Foxtrot.getInstance().getServer().getPlayer(metadata.playerUUID);
 
@@ -335,6 +346,16 @@ public class CombatLoggerListener implements Listener {
             villager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 100));
             //villager.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 100));
 
+            if (event.getPlayer().hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)) {
+                for (PotionEffect potionEffect : event.getPlayer().getActivePotionEffects()) {
+                    // have to use .equals() as PotionEffectType isn't an enum
+                    if (potionEffect.getType().equals(PotionEffectType.FIRE_RESISTANCE)) {
+                        villager.addPotionEffect(potionEffect);
+                        break;
+                    }
+                }
+            }
+
             CombatLoggerMetadata metadata = new CombatLoggerMetadata();
 
             metadata.playerName = event.getPlayer().getName();
@@ -483,76 +504,18 @@ public class CombatLoggerListener implements Listener {
         final BasicDBObject playerDeath = new BasicDBObject();
 
         if (killer != null) {
-            playerDeath.append("soups", -1);
             playerDeath.append("healthLeft", (int) killer.getHealth());
             playerDeath.append("killerUUID", killer.getUniqueId().toString().replace("-", ""));
-            playerDeath.append("killerHunger", killer.getFoodLevel());
-
-            if (killer.getItemInHand() != null) {
-                playerDeath.append("item", ItemStackSerializer.serialize(killer.getItemInHand()));
-            } else {
-                playerDeath.append("item", "NONE");
-            }
+            playerDeath.append("killerInventory", PlayerInventorySerializer.getInsertableObject(killer));
         } else {
             try{
                 playerDeath.append("reason", "combat-logger");
-            } catch (NullPointerException ignored) {
-
-            }
+            } catch (NullPointerException ignored) {}
         }
 
-        playerDeath.append("playerHunger", killed.getFoodLevel());
-
-        BasicDBObject playerInv = new BasicDBObject();
-        BasicDBObject armor = new BasicDBObject();
-
-        armor.put("helmet", ItemStackSerializer.serialize(killed.getInventory().getHelmet()));
-        armor.put("chestplate", ItemStackSerializer.serialize(killed.getInventory().getChestplate()));
-        armor.put("leggings", ItemStackSerializer.serialize(killed.getInventory().getLeggings()));
-        armor.put("boots", ItemStackSerializer.serialize(killed.getInventory().getBoots()));
-
-        BasicDBList contents = new BasicDBList();
-
-        for (int i = 0; i < 9; i++) {
-            if (killed.getInventory().getItem(i) != null) {
-                contents.add(ItemStackSerializer.serialize(killed.getInventory().getItem(i)));
-            } else {
-                contents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-            }
-        }
-
-        playerInv.append("armor", armor);
-        playerInv.append("items", contents);
-
-        playerDeath.append("playerInventory", playerInv);
-
-        if (killer != null) {
-            BasicDBObject killerInventory = new BasicDBObject();
-            BasicDBObject killerArmor = new BasicDBObject();
-
-            armor.put("helmet", ItemStackSerializer.serialize(killer.getInventory().getHelmet()));
-            armor.put("chestplate", ItemStackSerializer.serialize(killer.getInventory().getChestplate()));
-            armor.put("leggings", ItemStackSerializer.serialize(killer.getInventory().getLeggings()));
-            armor.put("boots", ItemStackSerializer.serialize(killer.getInventory().getBoots()));
-
-            BasicDBList killerContents = new BasicDBList();
-
-            for (int i = 0; i < 9; i++) {
-                if (killer.getInventory().getItem(i) != null) {
-                    killerContents.add(ItemStackSerializer.serialize(killer.getInventory().getItem(i)));
-                } else {
-                    killerContents.add(ItemStackSerializer.serialize(new ItemStack(Material.AIR)));
-                }
-            }
-
-            killerInventory.append("armor", killerArmor);
-            killerInventory.append("items", killerContents);
-            playerDeath.append("killerInventory", killerInventory);
-        }
-
+        playerDeath.append("playerInventory", PlayerInventorySerializer.getInsertableObject(killed));
         playerDeath.append("uuid", killed.getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", killed.getName());
-        playerDeath.append("type", "death");
         playerDeath.append("when", new Date());
 
         new BukkitRunnable() {

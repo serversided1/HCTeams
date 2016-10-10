@@ -34,10 +34,12 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import net.frozenorb.qlib.tab.FrozenTabHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -95,6 +97,10 @@ public class Foxtrot extends JavaPlugin {
     @Getter private TabListModeMap tabListModeMap;
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
+    @Getter private CobblePickupMap cobblePickupMap;
+    @Getter private P3S3AckMap p3S3AckMap;
+
+    @Getter private CombatLoggerListener combatLoggerListener;
 
     @Override
     public void onEnable() {
@@ -131,7 +137,13 @@ public class Foxtrot extends JavaPlugin {
             world.setThundering(false);
             world.setStorm(false);
             world.setWeatherDuration(Integer.MAX_VALUE);
+            world.setGameRuleValue("doFireTick", "false");
+            world.setGameRuleValue("mobGriefing", "false");
         }
+
+        // we just define this here while we're testing, if we actually
+        // accept this feature it'll be moved to somewhere better
+        new ServerFakeFreezeTask().runTaskTimerAsynchronously(this, 20L, 20L);
     }
 
     @Override
@@ -145,12 +157,23 @@ public class Foxtrot extends JavaPlugin {
             PvPClassHandler.getEquippedKits().get(playerName).remove(getServer().getPlayerExact(playerName));
         }
 
+        for( Entity e : this.combatLoggerListener.getCombatLoggers() ) {
+            if( e != null ) {
+                e.remove();
+            }
+        }
+
         RedisSaveTask.save(null, false);
         Foxtrot.getInstance().getServerHandler().save();
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().save();
         }
+
+        qLib.getInstance().runRedisCommand((jedis) -> {
+            jedis.save();
+            return null;
+        });
     }
 
     private void setupConfigurations() {
@@ -194,7 +217,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new CombatLoggerListener(), this);
+        combatLoggerListener = new CombatLoggerListener();
+        getServer().getPluginManager().registerEvents(combatLoggerListener, this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
         getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
@@ -206,6 +230,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
+        //getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
         getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
@@ -219,6 +244,8 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
+        getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
+        getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
     }
@@ -256,6 +283,8 @@ public class Foxtrot extends JavaPlugin {
         (tabListModeMap = new TabListModeMap()).loadFromRedis();
         (ipMap = new IPMap()).loadFromRedis();
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
+        (cobblePickupMap = new CobblePickupMap()).loadFromRedis();
+        (p3S3AckMap = new P3S3AckMap()).loadFromRedis();
     }
 
 }

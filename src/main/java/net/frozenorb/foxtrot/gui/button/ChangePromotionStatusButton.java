@@ -48,25 +48,34 @@ public class ChangePromotionStatusButton extends Button {
     @Override
     public void clicked(Player player, int i, ClickType clickType) {
         if (promote) {
-
-            new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " captain?", (b) -> {
+            String newRank;
+            if(team.isCaptain(uuid)) {
+                newRank = "co-leader";
+            } else {
+                newRank = "captain";
+            }
+            new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " " + newRank + "?", (b) -> {
                 if (b) {
-                    team.addCaptain(uuid);
-
+                    if(team.isCaptain(uuid)) {
+                        team.removeCaptain(uuid);
+                        team.addCoLeader(uuid);
+                    } else {
+                        team.addCaptain(uuid);
+                    }
                     Player bukkitPlayer= Bukkit.getPlayer(uuid);
 
                     if (bukkitPlayer != null && bukkitPlayer.isOnline()) {
-                        bukkitPlayer.sendMessage(ChatColor.YELLOW + "A staff member has made you a §acaptain §eof your team.");
+                        bukkitPlayer.sendMessage(ChatColor.YELLOW + "A staff member has made you a §a" + newRank + " §eof your team.");
                     }
 
-                    player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a captain of " + team.getName() + ".");
+                    player.sendMessage(ChatColor.YELLOW + UUIDUtils.name(uuid) + " has been made a " + newRank + " of " + team.getName() + ".");
                 }
             }).openMenu(player);
         } else {
-
             new ConfirmMenu("Make " + UUIDUtils.name(uuid) + " member?", (b) -> {
                 if (b) {
                     team.removeCaptain(uuid);
+                    team.removeCoLeader(uuid);
 
                     Player bukkitPlayer= Bukkit.getPlayer(uuid);
 

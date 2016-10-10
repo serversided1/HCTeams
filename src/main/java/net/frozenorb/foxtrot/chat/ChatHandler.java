@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.chat;
 import com.google.common.collect.ImmutableMap;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.listeners.ChatListener;
 import net.frozenorb.foxtrot.chat.tasks.SaveCustomPrefixesTask;
@@ -16,11 +17,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChatHandler {
 
-    public static final String HIGHROLLER_PREFIX = ChatColor.DARK_PURPLE + "[HighRoller]";
     private static File customPrefixesFile;
+    @Getter private static AtomicInteger publicMessagesSent = new AtomicInteger();
 
     private Map<UUID, String> customPrefixes = new HashMap<>();
 

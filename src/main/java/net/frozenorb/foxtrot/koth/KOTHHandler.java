@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.listeners.KOTHListener;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
@@ -40,6 +41,10 @@ public class KOTHHandler {
         new BukkitRunnable() {
 
             public void run() {
+                if (Basic.getInstance().getServerManager().isFrozen()) {
+                    return;
+                }
+                
                 for (KOTH koth : KOTHs) {
                     if (koth.isActive()) {
                         koth.tick();

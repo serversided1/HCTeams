@@ -53,10 +53,13 @@ public class KOTH {
     }
 
     public void setCapTime(int capTime) {
+        int oldCapTime = this.capTime;
         this.capTime = capTime;
 
-        if (this.remainingCapTime > this.capTime) {
-            this.capTime = capTime;
+        if (this.remainingCapTime > capTime) {
+            this.remainingCapTime = capTime;
+        } else if (remainingCapTime == oldCapTime) { // this will catch the time going up
+            this.remainingCapTime = capTime;
         }
 
         Foxtrot.getInstance().getKOTHHandler().saveKOTHs();

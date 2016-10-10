@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -26,7 +28,7 @@ public class TeamForceKickCommand {
             return;
         }
 
-        if (!(team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
+        if (!(team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
             return;
         }
@@ -41,12 +43,22 @@ public class TeamForceKickCommand {
             return;
         }
 
-        if (team.isCaptain(player) && !team.isOwner(sender.getUniqueId())) {
-            sender.sendMessage(ChatColor.RED + "Only the owner can kick other captains!");
+        if(team.isCoLeader(player) && (!team.isOwner(sender.getUniqueId()))) {
+            sender.sendMessage(ChatColor.RED + "Only the owner can kick other co-leaders!");
             return;
         }
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Member Kicked: " + UUIDUtils.name(player) + " [Force Kicked by: " + sender.getName() + "]");
+        if (team.isCaptain(player) && (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId()))) {
+            sender.sendMessage(ChatColor.RED + "Only an owner or co-leader can kick other captains!");
+            return;
+        }
+
+        TeamActionTracker.logActionAsync(team, TeamActionType.MEMBER_KICKED, ImmutableMap.of(
+                "playerId", player,
+                "kickedById", sender.getUniqueId(),
+                "kickedByName", sender.getName(),
+                "usedForceKick", "true"
+        ));
 
         if (team.removeMember(player)) {
             team.disband();

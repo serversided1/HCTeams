@@ -49,7 +49,7 @@ public class TeamResizeCommand {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
             sender.getInventory().remove(SELECTION_WAND);
 
             if (team.isRaidable()) {

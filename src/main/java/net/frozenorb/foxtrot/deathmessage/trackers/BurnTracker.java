@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BurnTracker implements Listener {
 
@@ -36,10 +37,11 @@ public class BurnTracker implements Listener {
             }
         }
 
-        if (knocker != null) {
+        if (knocker != null && knockerTime + TimeUnit.MINUTES.toMillis(1) > System.currentTimeMillis() ) {
             event.setTrackerDamage(new BurnDamageByPlayer(event.getPlayer().getName(), event.getDamage(), ((PlayerDamage) knocker).getDamager()));
         } else {
             event.setTrackerDamage(new BurnDamage(event.getPlayer().getName(), event.getDamage()));
+
         }
     }
 

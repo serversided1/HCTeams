@@ -1,5 +1,8 @@
 package net.frozenorb.foxtrot.team;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -16,7 +19,7 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
@@ -62,18 +65,21 @@ public class Team {
     @Getter private UUID owner = null;
     @Getter private Set<UUID> members = new HashSet<>();
     @Getter private Set<UUID> captains = new HashSet<>();
+    @Getter private Set<UUID> coleaders = new HashSet<>();
     @Getter private Set<UUID> invitations = new HashSet<>();
     @Getter private Set<ObjectId> allies = new HashSet<>();
     @Getter private Set<ObjectId> requestedAllies = new HashSet<>();
-    @Getter private Set<ObjectId> ignoring = new HashSet<>();
     @Getter private String announcement;
     @Getter private int maxOnline = -1;
+    @Getter private boolean powerFaction = false;
+    @Getter private int lives = 0;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
 
     // Not persisted //
     @Getter @Setter private UUID focused;
+    @Getter @Setter private long lastRequestReport;
 
     public Team(String name) {
         this.name = name;
@@ -85,7 +91,7 @@ public class Team {
         }
 
         if (DTR <= 0 && newDTR > 0) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team no longer raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NO_LONGER_RAIDABLE, ImmutableMap.of());
         }
 
         if (!isLoading()) {
@@ -103,7 +109,7 @@ public class Team {
 
     public String getName(Player player) {
         if (name.equals(GlowHandler.getGlowTeamName())) {
-            return ChatColor.GOLD + "Glowstone Mountain"; // override team name
+            return ChatColor.GOLD + "Glowstone Castle"; // override team name
         } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
@@ -135,18 +141,35 @@ public class Team {
     }
 
     public void addMember(UUID member) {
-        members.add(member);
-        historicalMembers.add(member);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Added: " + UUIDUtils.formatPretty(member));
-        pushToMongoLog(new BasicDBObject("Type", "MemberAdded").append("Member", member.toString()));
-        flagForSave();
+        if (members.add(member)) {
+            historicalMembers.add(member);
+
+            TeamActionTracker.logActionAsync(this, TeamActionType.PLAYER_JOINED, ImmutableMap.of(
+                    "playerId", member
+            ));
+
+            flagForSave();
+        }
     }
 
     public void addCaptain(UUID captain) {
-        captains.add(captain);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Added: " + UUIDUtils.formatPretty(captain));
-        pushToMongoLog(new BasicDBObject("Type", "CaptainAdded").append("Captain", captain.toString()));
-        flagForSave();
+        if (captains.add(captain)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CAPTAIN, ImmutableMap.of(
+                    "playerId", captain
+            ));
+
+            flagForSave();
+        }
+    }
+
+    public void addCoLeader(UUID co) {
+        if (coleaders.add(co)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CO_LEADER, ImmutableMap.of(
+                    "playerId", co
+            ));
+
+            flagForSave();
+        }
     }
 
     public void setBalance(double balance) {
@@ -160,10 +183,23 @@ public class Team {
     }
 
     public void removeCaptain(UUID captain) {
-        captains.remove(captain);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Captain Removed: " + UUIDUtils.formatPretty(captain));
-        pushToMongoLog(new BasicDBObject("Type", "CaptainRemoved").append("Captain", captain.toString()));
-        flagForSave();
+        if (captains.remove(captain)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.DEMOTED_FROM_CAPTAIN, ImmutableMap.of(
+                    "playerId", captain
+            ));
+
+            flagForSave();
+        }
+    }
+
+    public void removeCoLeader(UUID co) {
+        if (coleaders.remove(co)) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.DEMOTED_FROM_CO_LEADER, ImmutableMap.of(
+                    "playerId", co
+            ));
+
+            flagForSave();
+        }
     }
 
     public void setOwner(UUID owner) {
@@ -171,10 +207,14 @@ public class Team {
 
         if (owner != null) {
             members.add(owner);
+            coleaders.remove(owner);
+            captains.remove(owner);
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Owner Changed: " + UUIDUtils.formatPretty(owner));
-        pushToMongoLog(new BasicDBObject("Type", "OwnerChanged").append("NewOwner", owner == null ? "null" : owner.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.LEADER_CHANGED, ImmutableMap.of(
+                "playerId", owner
+        ));
+
         flagForSave();
     }
 
@@ -185,7 +225,11 @@ public class Team {
 
     public void setAnnouncement(String announcement) {
         this.announcement = announcement;
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Announcement Changed: " + announcement);
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.ANNOUNCEMENT_CHANGED, ImmutableMap.of(
+                "newAnnouncement", announcement
+        ));
+
         flagForSave();
     }
 
@@ -193,15 +237,64 @@ public class Team {
         String oldHQ = this.HQ == null ? "None" : (getHQ().getBlockX() + ", " + getHQ().getBlockY() + ", " + getHQ().getBlockZ());
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         this.HQ = hq;
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "HQ Changed: [" + oldHQ + "] -> [" + newHQ + "]");
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.HEADQUARTERS_CHANGED, ImmutableMap.of(
+                "oldHq", oldHQ,
+                "newHq", newHQ
+        ));
+
         flagForSave();
+    }
+
+    public void setPowerFaction( boolean bool ) {
+        this.powerFaction = bool;
+        if( bool ) {
+            TeamHandler.addPowerFaction(this);
+        } else {
+            TeamHandler.removePowerFaction(this);
+        }
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.POWER_FAC_STATUS_CHANGED, ImmutableMap.of(
+                "powerFaction", bool
+        ));
+
+        flagForSave();
+    }
+
+    public void setLives( int lives ) {
+        this.lives = lives;
+        flagForSave();
+    }
+
+    public boolean addLives( int lives ) {
+        if( lives < 0 ) {
+            return false;
+        }
+        this.lives += lives;
+        flagForSave();
+        return true;
+    }
+
+    public boolean removeLives( int lives ) {
+        if( this.lives < lives || lives < 0) {
+            return false; //You twat.
+        }
+        this.lives -= lives;
+        flagForSave();
+        return true;
     }
 
     public void disband() {
         try {
             if (owner != null) {
-                FrozenEconomyHandler.deposit(owner, balance);
-                Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + balance + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
+                double refund = balance;
+
+                for (Claim claim : claims) {
+                    refund += Claim.getPrice(claim, this, false);
+                }
+
+                FrozenEconomyHandler.deposit(owner, refund);
+                Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + refund + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -293,13 +386,23 @@ public class Team {
     }
 
     public boolean isCaptain(UUID check) {
-        for (UUID captain : captains) {
-            if (check.equals(captain)) {
-                return (true);
+        for(UUID co : captains) {
+            if (co.equals(check)) {
+                return true;
             }
         }
 
-        return (false);
+        return false;
+    }
+
+    public boolean isCoLeader(UUID check) {
+        for(UUID co : coleaders) {
+            if (co.equals(check)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void validateAllies() {
@@ -335,6 +438,7 @@ public class Team {
     public boolean removeMember(UUID member) {
         members.remove(member);
         captains.remove(member);
+        coleaders.remove(member);
 
         // If the owner leaves (somehow)
         if (isOwner(member)) {
@@ -356,8 +460,10 @@ public class Team {
             DTR = getMaxDTR();
         }
 
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Removed: " + UUIDUtils.formatPretty(member));
-        pushToMongoLog(new BasicDBObject("Type", "MemberRemoved").append("Member", member.toString()));
+        TeamActionTracker.logActionAsync(this, TeamActionType.MEMBER_REMOVED, ImmutableMap.of(
+                "playerId", member
+        ));
+
         flagForSave();
         return (owner == null || members.size() == 0);
     }
@@ -443,7 +549,13 @@ public class Team {
 
     public void playerDeath(String playerName, double dtrLoss) {
         double newDTR = Math.max(DTR - dtrLoss, -.99);
-        TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Member Death: " + playerName + " [DTR Loss: " + dtrLoss + ", Old DTR: " + DTR + ", New DTR: " + newDTR + "]");
+
+        TeamActionTracker.logActionAsync(this, TeamActionType.MEMBER_DEATH, ImmutableMap.of(
+                "playerName", playerName,
+                "dtrLoss", dtrLoss,
+                "oldDtr", DTR,
+                "newDtr", newDTR
+        ));
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             if (isMember(player.getUniqueId())) {
@@ -456,13 +568,13 @@ public class Team {
         setDTR(newDTR);
 
         if (isRaidable()) {
-            TeamActionTracker.logActionAsync(this, TeamActionType.GENERAL, "Team now raidable.");
+            TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NOW_RAIDABLE, ImmutableMap.of());
             DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeRaidable();
         } else {
             DTRCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeDeath();
         }
 
-        DTRHandler.setCooldown(this);
+        DTRHandler.markOnDTRCooldown(this);
     }
 
     public double getDTRIncrement() {
@@ -502,6 +614,12 @@ public class Team {
                 for (String name : lineParts) {
                     if (name.length() >= 2) {
                         addMember(UUID.fromString(name.trim()));
+                    }
+                }
+            } else if(identifier.equalsIgnoreCase("CoLeaders")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2) {
+                        addCoLeader(UUID.fromString(name.trim()));
                     }
                 }
             } else if (identifier.equalsIgnoreCase("Captains")) {
@@ -584,14 +702,6 @@ public class Team {
                         requestedAllies.add(new ObjectId(requestedAlly.trim()));
                     }
                 }
-            } else if (identifier.equalsIgnoreCase("Ignoring")) {
-                for (String ignore : lineParts) {
-                    ignore = ignore.replace("[", "").replace("]", "");
-
-                    if (ignore.length() != 0) {
-                        ignoring.add(new ObjectId(ignore.trim()));
-                    }
-                }
             } else if (identifier.equalsIgnoreCase("Subclaims")) {
                 for (String subclaim : lineParts) {
                     subclaim = subclaim.replace("[", "").replace("]", "");
@@ -632,6 +742,10 @@ public class Team {
                 }
             } else if (identifier.equalsIgnoreCase("Announcement")) {
                 setAnnouncement(lineParts[0]);
+            } else if(identifier.equalsIgnoreCase("PowerFaction")) {
+                setPowerFaction(Boolean.valueOf(lineParts[0]));
+            } else if(identifier.equalsIgnoreCase("Lives")) {
+                setLives(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -661,6 +775,7 @@ public class Team {
 
         StringBuilder members = new StringBuilder();
         StringBuilder captains = new StringBuilder();
+        StringBuilder coleaders = new StringBuilder();
         StringBuilder invites = new StringBuilder();
         StringBuilder historicalMembers = new StringBuilder();
 
@@ -670,6 +785,10 @@ public class Team {
 
         for (UUID captain : getCaptains()) {
             captains.append(captain.toString()).append(", ");
+        }
+
+        for (UUID co : getColeaders()) {
+            coleaders.append(co.toString()).append(", ");
         }
 
         for (UUID invite : getInvitations()) {
@@ -698,6 +817,7 @@ public class Team {
 
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
+        teamString.append("CoLeaders:").append(coleaders.toString()).append('\n');
         teamString.append("Captains:").append(captains.toString()).append('\n');
         teamString.append("Members:").append(members.toString()).append('\n');
         teamString.append("Invited:").append(invites.toString().replace("\n", "")).append('\n');
@@ -705,7 +825,6 @@ public class Team {
         teamString.append("Claims:").append(getClaims().toString().replace("\n", "")).append('\n');
         teamString.append("Allies:").append(getAllies().toString()).append('\n');
         teamString.append("RequestedAllies:").append(getRequestedAllies().toString()).append('\n');
-        teamString.append("Ignoring:").append(getIgnoring().toString()).append('\n');
         teamString.append("HistoricalMembers:").append(historicalMembers.toString()).append('\n');
         teamString.append("DTR:").append(getDTR()).append('\n');
         teamString.append("Balance:").append(getBalance()).append('\n');
@@ -714,6 +833,8 @@ public class Team {
         teamString.append("DTRCooldown:").append(getDTRCooldown()).append('\n');
         teamString.append("FriendlyName:").append(getName().replace("\n", "")).append('\n');
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
+        teamString.append("PowerFaction:").append(String.valueOf(isPowerFaction())).append("\n");
+        teamString.append("Lives:").append(String.valueOf(getLives())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -728,12 +849,12 @@ public class Team {
 
         dbObject.put("_id", getUniqueId());
         dbObject.put("Owner", getOwner() == null ? null : getOwner().toString());
+        dbObject.put("CoLeaders", UUIDUtils.uuidsToStrings(getColeaders()));
         dbObject.put("Captains", UUIDUtils.uuidsToStrings(getCaptains()));
         dbObject.put("Members", UUIDUtils.uuidsToStrings(getMembers()));
         dbObject.put("Invitations", UUIDUtils.uuidsToStrings(getInvitations()));
         dbObject.put("Allies", getAllies());
         dbObject.put("RequestedAllies", getRequestedAllies());
-        dbObject.put("Ignoring", getIgnoring());
         dbObject.put("DTR", getDTR());
         dbObject.put("DTRCooldown", new Date(getDTRCooldown()));
         dbObject.put("Balance", getBalance());
@@ -741,6 +862,8 @@ public class Team {
         dbObject.put("Name", getName());
         dbObject.put("HQ", LocationSerializer.serialize(getHQ()));
         dbObject.put("Announcement", getAnnouncement());
+        dbObject.put("PowerFaction", isPowerFaction());
+        dbObject.put("Lives", getLives());
 
         BasicDBList claims = new BasicDBList();
         BasicDBList subclaims = new BasicDBList();
@@ -786,27 +909,6 @@ public class Team {
         }
     }
 
-    public void pushToMongoLog(BasicDBObject toLog) {
-//        new BukkitRunnable() {
-//
-//            public void run() {
-//                System.out.print("updating for " + name + ": " + isLoading());
-//                if (isLoading() || getName() == null || getUniqueId() == null) {
-//                    return;
-//                }
-//
-//                DBCollection teamLogCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("TeamLog");
-//
-//                toLog.put("Team", getUniqueId().toString());
-//                toLog.put("TeamName", getName());
-//                toLog.put("Date", new Date());
-//
-//                teamLogCollection.insert(toLog);
-//            }
-//
-//        }.runTaskAsynchronously(Foxtrot.getInstance());
-    }
-
     public void sendTeamInfo(Player player) {
         // Don't make our null teams have DTR....
         // @HCFactions
@@ -821,10 +923,20 @@ public class Team {
                 player.sendMessage(ChatColor.YELLOW + "Location: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
             }
 
-            if( this.getName().equalsIgnoreCase("Citadel")) {
-                Team t = Foxtrot.getInstance().getTeamHandler().getTeam(Foxtrot.getInstance().getCitadelHandler().getCapper());
-                if( t != null ) {
-                    player.sendMessage(ChatColor.YELLOW + "Currently Owned By: " + ChatColor.RED + t.getName() );
+            if (getName().equalsIgnoreCase("Citadel")) {
+                Set<ObjectId> cappers = Foxtrot.getInstance().getCitadelHandler().getCappers();
+                Set<String> capperNames = new HashSet<>();
+
+                for (ObjectId capper : cappers) {
+                    Team capperTeam = Foxtrot.getInstance().getTeamHandler().getTeam(capper);
+
+                    if (capperTeam != null) {
+                        capperNames.add(capperTeam.getName());
+                    }
+                }
+
+                if (!cappers.isEmpty()) {
+                    player.sendMessage(ChatColor.YELLOW + "Currently captured by: " + ChatColor.RED + Joiner.on(", ").join(capperNames));
                 }
             }
 
@@ -837,6 +949,8 @@ public class Team {
         Player owner = Foxtrot.getInstance().getServer().getPlayer(getOwner());
         StringBuilder allies = new StringBuilder();
 
+        FancyMessage coleadersJson = new FancyMessage("Co-Leaders: ").color(ChatColor.YELLOW);
+
         FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
 
         if (player.hasPermission("basic.staff")) {
@@ -848,7 +962,6 @@ public class Team {
         if (player.hasPermission("basic.staff")) {
             membersJson.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
         }
-
 
         int onlineMembers = 0;
 
@@ -869,9 +982,12 @@ public class Team {
                 continue;
             }
 
-            boolean captain = isCaptain(onlineMember.getUniqueId());
-
-            FancyMessage appendTo = captain ? captainsJson : membersJson;
+            FancyMessage appendTo = membersJson;
+            if(isCoLeader(onlineMember.getUniqueId())) {
+                appendTo = coleadersJson;
+            } else if(isCaptain(onlineMember.getUniqueId())) {
+                appendTo = captainsJson;
+            }
 
             if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
                 appendTo.then(", ").color(ChatColor.GRAY);
@@ -880,7 +996,6 @@ public class Team {
             appendTo.then(onlineMember.getName()).color(ChatColor.GREEN).then("[").color(ChatColor.YELLOW);
             appendTo.then(killsMap.getKills(onlineMember.getUniqueId()) + "").color(ChatColor.GREEN);
             appendTo.then("]").color(ChatColor.YELLOW);
-
         }
 
         for (UUID offlineMember : getOfflineMembers()) {
@@ -888,9 +1003,12 @@ public class Team {
                 continue;
             }
 
-            boolean captain = isCaptain(offlineMember);
-
-            FancyMessage appendTo = captain ? captainsJson : membersJson;
+            FancyMessage appendTo = membersJson;
+            if(isCoLeader(offlineMember)) {
+                appendTo = coleadersJson;
+            } else if(isCaptain(offlineMember)) {
+                appendTo = captainsJson;
+            }
 
             if (!ChatColor.stripColor(appendTo.toOldMessageFormat()).endsWith("s: ")) {
                 appendTo.then(", ").color(ChatColor.GRAY);
@@ -914,7 +1032,6 @@ public class Team {
         if (HQ != null && player.hasPermission("basic.staff")) {
             teamLine.command("/tppos " + HQ.getBlockX() + " " + HQ.getBlockY() + " " + HQ.getBlockZ());
             teamLine.tooltip("§aClick to warp to HQ");
-
         }
 
         if (player.hasPermission("basic.staff")) {
@@ -936,6 +1053,10 @@ public class Team {
         }
 
         leader.send(player);
+
+        if (!ChatColor.stripColor(coleadersJson.toOldMessageFormat()).endsWith("s: ")) {
+            coleadersJson.send(player);
+        }
 
         if (!ChatColor.stripColor(captainsJson.toOldMessageFormat()).endsWith("s: ")) {
             captainsJson.send(player);
@@ -967,7 +1088,9 @@ public class Team {
 
         if (isMember(player.getUniqueId()) || player.hasPermission("basic.staff")) {
             player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
+            player.sendMessage(ChatColor.YELLOW + "Lives: " + ChatColor.RED + getLives());
         }
+
 
         if (DTRHandler.isOnCooldown(this)) {
             if (!player.isOp()) {
@@ -983,6 +1106,21 @@ public class Team {
             }
         }
 
+        if(player.hasPermission("foxtrot.powerfactions")) {
+            FancyMessage powerFactionLine = new FancyMessage();
+            powerFactionLine.text(ChatColor.YELLOW + "Power Faction: ");
+            if( isPowerFaction() ) {
+                powerFactionLine.then().text(ChatColor.GREEN + "True");
+                powerFactionLine.command("/powerfaction remove " + getName());
+                powerFactionLine.tooltip("§bClick change faction to a non power faction.");
+            } else {
+                powerFactionLine.then().text(ChatColor.RED + "False");
+                powerFactionLine.command("/powerfaction add " + getName());
+                powerFactionLine.tooltip("§bClick change faction to a power faction.");
+            }
+            powerFactionLine.send(player);
+        }
+
         // Only show this if they're a member.
         if (isMember(player.getUniqueId()) && announcement != null && !announcement.equals("null")) {
             player.sendMessage(ChatColor.YELLOW + "Announcement: " + ChatColor.LIGHT_PURPLE + announcement);
@@ -994,16 +1132,17 @@ public class Team {
 
     @Override
     public int hashCode() {
-        return (getUniqueId().hashCode());
+        return uniqueId.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Team) {
-            return ((Team) obj).getUniqueId().equals(getUniqueId());
+        if (!(obj instanceof Team)) {
+            return false;
         }
 
-        return (super.equals(obj));
+        Team other = (Team) obj;
+        return other.uniqueId.equals(uniqueId);
     }
 
     public ChatColor getDTRColor() {

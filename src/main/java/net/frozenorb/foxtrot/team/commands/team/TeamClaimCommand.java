@@ -48,6 +48,10 @@ public class TeamClaimCommand implements Listener {
 
     @Command(names={ "team claim", "t claim", "f claim", "faction claim", "fac claim" }, permission="")
     public static void teamClaim(final Player sender) {
+        if( Foxtrot.getInstance().getMapHandler().isKitMap() ) {
+            sender.sendMessage(ChatColor.RED + "You cannot use this command on a Kit map.");
+            return;
+        }
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (team == null) {
@@ -65,7 +69,7 @@ public class TeamClaimCommand implements Listener {
             return;
         }
 
-        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId())) {
+        if (team.isOwner(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId())) {
             sender.getInventory().remove(SELECTION_WAND);
 
             if (team.isRaidable()) {
@@ -73,10 +77,26 @@ public class TeamClaimCommand implements Listener {
                 return;
             }
 
+            int slot = -1;
+
+            for (int i = 0; i < 9; i++) {
+                if (sender.getInventory().getItem(i) == null) {
+                    slot = i;
+                    break;
+                }
+            }
+
+            if (slot == -1) {
+                sender.sendMessage(ChatColor.RED + "You don't have space in your hotbar for the claim wand!");
+                return;
+            }
+
+            int finalSlot = slot;
+
             new BukkitRunnable() {
 
                 public void run() {
-                    sender.getInventory().addItem(SELECTION_WAND.clone());
+                    sender.getInventory().setItem(finalSlot, SELECTION_WAND.clone());
                 }
 
             }.runTaskLater(Foxtrot.getInstance(), 1L);
@@ -86,6 +106,8 @@ public class TeamClaimCommand implements Listener {
             if (!VisualClaim.getCurrentMaps().containsKey(sender.getName())) {
                 new VisualClaim(sender, VisualClaimType.MAP, false).draw(true);
             }
+
+            sender.sendMessage(ChatColor.GREEN + "Gave you a claim wand.");
         } else {
             sender.sendMessage(ChatColor.DARK_AQUA + "Only team captains can do this.");
         }

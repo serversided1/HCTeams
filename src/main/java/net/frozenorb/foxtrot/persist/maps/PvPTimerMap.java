@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -17,6 +18,10 @@ public class PvPTimerMap extends PersistMap<Integer> {
         new BukkitRunnable() {
 
             public void run() {
+                if (Basic.getInstance().getServerManager().isFrozen()) {
+                    return;
+                }
+
                 for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
                     if (hasTimer(player.getUniqueId())) {
                         if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
@@ -26,7 +31,13 @@ public class PvPTimerMap extends PersistMap<Integer> {
                         int newValue = getValue(player.getUniqueId()) - 1;
 
                         if (newValue % 60 == 0) {
-                            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + (newValue / 60) + ChatColor.RED + " minutes of PvP Protection remaining.");
+                            int minutes = newValue / 60;
+
+                            if (minutes <= 0) {
+                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your PvP Protection has expired!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + minutes + ChatColor.RED + " minute" + (minutes == 1 ? "" : "s") + " of PvP Protection remaining.");
+                            }
                         }
 
                         updateValueAsync(player.getUniqueId(), newValue);

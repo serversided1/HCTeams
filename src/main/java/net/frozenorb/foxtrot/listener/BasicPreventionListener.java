@@ -10,17 +10,14 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBurnEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class BasicPreventionListener implements Listener {
@@ -70,6 +67,14 @@ public class BasicPreventionListener implements Listener {
     }
 
     @EventHandler
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked().getType() == EntityType.HORSE) {
+            event.getPlayer().sendMessage(ChatColor.RED.toString() + "It appears that this horse doesn't like you.");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onVehicleEnter(VehicleEnterEvent event) {
         if (event.getVehicle() instanceof Horse && event.getEntered() instanceof Player) {
             Horse horse = (Horse) event.getVehicle();
@@ -99,7 +104,12 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Foxtrot.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);//moved inside here due to occasional CME maybe this will fix?
+            }
+        }, 20L);
         event.setRespawnLocation(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
     }
 
@@ -151,6 +161,13 @@ public class BasicPreventionListener implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
         event.blockList().clear();
+    }
+
+    @EventHandler
+    public void onEntitySpawn(EntitySpawnEvent event) {
+        if(event.getEntityType().equals(EntityType.HORSE)) {
+            event.setCancelled(true);
+        }
     }
 
 }

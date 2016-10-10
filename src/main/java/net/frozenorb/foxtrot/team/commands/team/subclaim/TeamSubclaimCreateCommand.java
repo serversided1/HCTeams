@@ -28,7 +28,7 @@ public class TeamSubclaimCreateCommand {
             return;
         }
 
-        if (!team.isOwner(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
+        if (!team.isOwner(sender.getUniqueId()) && !team.isCoLeader(sender.getUniqueId()) && !team.isCaptain(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Only team captains can create subclaims!");
             return;
         }

@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import com.google.common.collect.ImmutableMap;
+
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.TimeUtils;
@@ -35,12 +37,19 @@ public class TeamMuteCommand {
             }
         }
 
-        TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team mute added. [Duration: " + time + ", Muted by: " + sender.getName() + "]");
+        TeamActionTracker.logActionAsync(team, TeamActionType.TEAM_MUTE_CREATED, ImmutableMap.of(
+                "shadowMute", "false",
+                "mutedById", sender.getUniqueId(),
+                "mutedByName", sender.getName(),
+                "duration", time
+        ));
 
         new BukkitRunnable() {
 
             public void run() {
-                TeamActionTracker.logActionAsync(team, TeamActionType.GENERAL, "Mute: Team mute expired.");
+                TeamActionTracker.logActionAsync(team, TeamActionType.TEAM_MUTE_EXPIRED, ImmutableMap.of(
+                        "shadowMute", "false"
+                ));
 
                 Iterator<Map.Entry<UUID, String>> mutesIterator = teamMutes.entrySet().iterator();
 

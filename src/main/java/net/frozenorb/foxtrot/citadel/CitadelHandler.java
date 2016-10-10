@@ -28,13 +28,14 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CitadelHandler {
 
     public static final String PREFIX = ChatColor.DARK_PURPLE + "[Citadel]";
 
     private File citadelInfo;
-    @Getter private ObjectId capper;
+    @Getter private Set<ObjectId> cappers;
     @Getter private Date lootable;
 
     @Getter private Set<Location> citadelChests = new HashSet<>();
@@ -54,7 +55,7 @@ public class CitadelHandler {
             if (!citadelInfo.exists() && citadelInfo.createNewFile()) {
                 BasicDBObject dbo = new BasicDBObject();
 
-                dbo.put("capper", null);
+                dbo.put("cappers", new HashSet<>());
                 dbo.put("lootable", new Date());
                 dbo.put("chests", new BasicDBList());
                 dbo.put("loot", new BasicDBList());
@@ -65,7 +66,17 @@ public class CitadelHandler {
             BasicDBObject dbo = (BasicDBObject) JSON.parse(FileUtils.readFileToString(citadelInfo));
 
             if (dbo != null) {
-                this.capper = dbo.getString("capper") == null ? null : new ObjectId(dbo.getString("capper"));
+                this.cappers = new HashSet<>();
+
+                // Conversion
+                if (dbo.containsField("capper")) {
+                    cappers.add(new ObjectId(dbo.getString("capper")));
+                }
+
+                for (String capper : (List<String>) dbo.get("cappers")) {
+                    cappers.add(new ObjectId(capper));
+                }
+
                 this.lootable = dbo.getDate("lootable");
 
                 BasicDBList chests = (BasicDBList) dbo.get("chests");
@@ -89,7 +100,7 @@ public class CitadelHandler {
         try {
             BasicDBObject dbo = new BasicDBObject();
 
-            dbo.put("capper", capper == null ? null : capper.toString());
+            dbo.put("cappers", cappers.stream().map(ObjectId::toString).collect(Collectors.toList()));
             dbo.put("lootable", lootable);
 
             BasicDBList chests = new BasicDBList();
@@ -115,8 +126,12 @@ public class CitadelHandler {
         }
     }
 
-    public void setCapper(ObjectId capper) {
-        this.capper = capper;
+    public void resetCappers() {
+        this.cappers.clear();
+    }
+
+    public void addCapper(ObjectId capper) {
+        this.cappers.add(capper);
         this.lootable = generateLootableDate();
 
         Foxtrot.getInstance().getServer().getPluginManager().callEvent(new CitadelCapturedEvent(capper));
@@ -125,7 +140,7 @@ public class CitadelHandler {
 
     public boolean canLootCitadel(Player player) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
-        return ((team != null && team.getUniqueId().equals(capper)) || System.currentTimeMillis() > lootable.getTime());
+        return ((team != null && cappers.contains(team.getUniqueId())) || System.currentTimeMillis() > lootable.getTime());
     }
 
     // Credit to http://stackoverflow.com/a/3465656 on StackOverflow.

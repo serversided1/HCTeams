@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class PvPAddLivesCommand {
 
-    @Command(names = {"pvptimer addlives", "timer addlives", "pvp addlives", "pvptimer addlives", "timer addlives", "pvp addlives"}, permission = "worldedit.*")
+    @Command(names = {"pvp addlives", "addlives"}, permission = "foxtrot.addlives")
     public static void pvpSetLives(CommandSender sender, @Param(name = "player") UUID player, @Param(name = "life type") String lifeType, @Param(name = "amount") int amount) {
         if (lifeType.equalsIgnoreCase("soulbound")) {
             Foxtrot.getInstance().getSoulboundLivesMap().setLives(player, Foxtrot.getInstance().getSoulboundLivesMap().getLives(player) + amount);

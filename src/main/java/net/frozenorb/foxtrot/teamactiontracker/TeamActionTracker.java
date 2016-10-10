@@ -1,45 +1,106 @@
 package net.frozenorb.foxtrot.teamactiontracker;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.teamactiontracker.enums.TeamActionType;
-import org.bukkit.scheduler.BukkitRunnable;
+
+import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Map;
 
-public class TeamActionTracker {
+import lombok.Getter;
+import lombok.Setter;
 
-    public static void logActionAsync(final Team team, final TeamActionType actionType, final String message) {
-        new BukkitRunnable() {
+public final class TeamActionTracker {
 
-            public void run() {
-                logAction(team, actionType, message);
-            }
+    @Getter @Setter private static boolean databaseLogEnabled = true;
+    private static final File logFileRoot = new File(new File("foxlogs"), "teamactiontracker");
 
-        }.runTaskAsynchronously(Foxtrot.getInstance());
-    }
-
-    public static void logAction(Team team, TeamActionType actionType, String message) {
-        // If the team is still being setup this will happen.
-        if (team == null || team.isLoading() || (Foxtrot.getInstance().getMapHandler() != null && Foxtrot.getInstance().getMapHandler().isKitMap())) {
+    public static void logActionAsync(Team team, TeamActionType actionType, Map<String, Object> params) {
+        if (team.isLoading()) {
             return;
         }
 
-        File logToFolder = new File("foxlogs" + File.separator + "teamactiontracker" + File.separator + team.getName());
-        File logTo = new File(logToFolder, actionType.getName().toLowerCase() + ".log");
+        Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
+            logActionToFile(team, actionType, params);
+
+            if (databaseLogEnabled && actionType.isLoggedToDatabase()) {
+                logActionToDatabase(team, actionType, params);
+            }
+        });
+    }
+
+    private static void logActionToFile(Team team, TeamActionType actionType, Map<String, Object> params) {
+        File teamLogFolder = new File(logFileRoot, team.getName());
+        File teamLogFile = new File(teamLogFolder, (actionType.isLoggedToDatabase() ? "general" : "misc") + ".log");
 
         try {
-            logTo.getParentFile().mkdirs();
-            logTo.createNewFile();
+            StringBuilder logLine = new StringBuilder();
 
-            Files.append("[" + SimpleDateFormat.getDateTimeInstance().format(new Date()) + "] " + message + "\n", logTo, Charset.defaultCharset());
-        } catch (Exception e) {
-            e.printStackTrace();
+            logLine.append('[');
+            logLine.append(DateTimeFormatter.ISO_INSTANT.format(Instant.now())); // ISO 8601
+            logLine.append(", ");
+            logLine.append(actionType.getInternalName());
+            logLine.append("] ");
+
+            params.forEach((key, value) -> {
+                logLine.append(key);
+                logLine.append(": ");
+                logLine.append(value);
+                logLine.append(' ');
+            });
+
+            logLine.append('\n');
+
+            teamLogFile.getParentFile().mkdirs();
+            teamLogFile.createNewFile();
+
+            Files.append(
+                logLine.toString(),
+                teamLogFile,
+                Charsets.UTF_8
+            );
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
+    }
+
+    private static void logActionToDatabase(Team team, TeamActionType actionType, Map<String, Object> params) {
+        BasicDBObject entry = new BasicDBObject();
+
+        entry.put("teamId", team.getUniqueId().toString());
+        entry.put("teamName", team.getName());
+        entry.put("time", new Date());
+        entry.put("type", actionType.getInternalName());
+
+        BasicDBObject paramsJson = new BasicDBObject();
+
+        // we manually serialize this so we use .toString
+        // instead of Mongo's serialization (ex UUID -> binary)
+        params.forEach((key, value) -> {
+            paramsJson.put(key, value.toString());
+        });
+
+        entry.put("params", paramsJson);
+
+        // we embed the entire team json here :(
+        // this is bad and uses a lot of data, but
+        // the web dev team (Ariel) will have to do
+        // less work if we embed it.
+        entry.put("teamAfterAction", team.toJSON());
+
+        DB db = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME);
+        db.getCollection("TeamActions").insert(entry);
     }
 
 }
