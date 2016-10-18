@@ -7,16 +7,21 @@ import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
 import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
+import net.frozenorb.foxtrot.koth.events.KOTHDeactivatedEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.event.HalfHourEvent;
+import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.block.Sign;
@@ -29,6 +34,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -232,6 +238,33 @@ public class KOTHListener implements Listener {
 
             Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] Control of " + ChatColor.YELLOW + event.getKOTH().getName() + ChatColor.GOLD + " lost.");
         }
+    }
+
+    @EventHandler
+    public void onKOTHDeactivated(KOTHDeactivatedEvent event) {
+        // activate koths every 10m on the kitmap
+        if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+            KOTHHandler kothHandler = Foxtrot.getInstance().getKOTHHandler();
+            List<KOTH> koths = new ArrayList<>(kothHandler.getKOTHs());
+
+            if (koths.isEmpty()) {
+                return;
+            }
+
+            // don't start a koth while another is active
+            for (KOTH koth : koths) {
+                if (koth.isActive()) {
+                    return;
+                }
+            }
+
+            KOTH selected = koths.get(qLib.RANDOM.nextInt(koths.size()));
+            selected.activate();
+        }, 10 * 60 * 20);
     }
 
     @EventHandler
