@@ -37,7 +37,6 @@ public class HelpCommand {
                 "§eEnd Portals: §7" +  Foxtrot.getInstance().getMapHandler().getEndPortalLocation() + " in each quadrant",
                 "§eEnchant Limits: §7" + prot + ", " + sharp + ", " + bow,
                 "§eDeathban: §7" + "§6PRO§7: " + proTime + ", §aVIP§7: " + vipTime + ", §fDefault§7: " + defaultTime,
-                "§eWorld Map: §7" + "http://www.hcteams.com/map/",
 
                 "",
                 "§9Helpful Commands:",
@@ -56,7 +55,6 @@ public class HelpCommand {
                 "§eOfficial Teamspeak §7- §dts.minehq.com",
                 "§eMineHQ Rules §7- §dwww.minehq.com/rules",
                 "§eStore §7- §dwww.minehq.com/store",
-                "§eHCTeams Website §7- §dwww.hcteams.com",
                 "§6§m-----------------------------------------------------",
 
         });
