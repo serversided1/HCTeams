@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
 import com.google.common.collect.ImmutableMap;
-
 import net.frozenorb.foxtrot.FoxConstants;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -18,11 +17,31 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class ChatListener implements Listener {
 
+    @EventHandler // this handler prevents people from getting banned for spam in faction (or ally) chat
+    public void onAsyncPlayerChatEarly(AsyncPlayerChatEvent event) {
+        ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
+        ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
+        ChatMode finalChatMode;
+
+        if (forcedChatMode != null) {
+            finalChatMode = forcedChatMode;
+        } else {
+            finalChatMode = playerChatMode;
+        }
+
+        if (finalChatMode != ChatMode.PUBLIC) {
+            event.getPlayer().setMetadata("NoSpamCheck", new FixedMetadataValue(Foxtrot.getInstance(), true));
+        }
+    }
+
     @EventHandler(priority=EventPriority.MONITOR)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        event.getPlayer().removeMetadata("NoSpamCheck", Foxtrot.getInstance());
+
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
         String rankPrefix = event.getPlayer().hasMetadata("HydrogenPrefix") ? event.getPlayer().getMetadata("HydrogenPrefix").get(0).asString() : "";
         String customPrefix = Foxtrot.getInstance().getChatHandler().getCustomPrefix(event.getPlayer().getUniqueId());
