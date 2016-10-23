@@ -5,14 +5,19 @@ import com.mongodb.util.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
+import net.frozenorb.foxtrot.map.kit.kits.KitManager;
 import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
 import net.frozenorb.foxtrot.server.Deathban;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
@@ -23,7 +28,9 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MapHandler {
@@ -52,6 +59,7 @@ public class MapHandler {
     // Kit-Map only stuff:
     @Getter private StatsHandler statsHandler;
     @Getter private KillstreakHandler killstreakHandler;
+    @Getter private KitManager kitManager;
 
     public MapHandler() {
         reloadConfig();
@@ -109,6 +117,20 @@ public class MapHandler {
         if (isKitMap()) {
             statsHandler = new StatsHandler();
             killstreakHandler = new KillstreakHandler();
+            kitManager = new KitManager();
+
+            // start a KOTH after 5 minutes of uptime
+            Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+                KOTHHandler kothHandler = Foxtrot.getInstance().getKOTHHandler();
+                List<KOTH> koths = new ArrayList<>(kothHandler.getKOTHs());
+
+                if (koths.isEmpty()) {
+                    return;
+                }
+
+                KOTH selected = koths.get(qLib.RANDOM.nextInt(koths.size()));
+                selected.activate();
+            }, 5 * 60 * 20);
 
             TeamActionTracker.setDatabaseLogEnabled(false);
         }

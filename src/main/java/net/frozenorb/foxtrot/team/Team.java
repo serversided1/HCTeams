@@ -1025,7 +1025,7 @@ public class Team {
 
         FancyMessage teamLine = new FancyMessage();
 
-        teamLine.text(ChatColor.BLUE + getName()).link("http://www.HCTeams.com/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!");
+        teamLine.text(ChatColor.BLUE + getName()).link("http://www.minehq.com/hcteams/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!");
         teamLine.then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - ");
         teamLine.then().text(ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
 
