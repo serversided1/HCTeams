@@ -50,6 +50,10 @@ public class RogueClass extends PvPClass {
         if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1));
         }
+
+        if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
+        }
     }
 
     @Override
