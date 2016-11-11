@@ -5,6 +5,8 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,6 +33,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         if (!Foxtrot.getInstance().getServerHandler().isSquads()) {
             pvpClasses.add(new ArcherClass());
             pvpClasses.add(new BardClass());
+            pvpClasses.add(new RogueClass());
         }
         pvpClasses.add(new MinerClass());
 

@@ -1,15 +1,16 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.TimeUtils;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,9 +27,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import lombok.Getter;
 
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
@@ -237,6 +244,26 @@ public class ArcherClass extends PvPClass {
     }
 
     private boolean canUseMark(Player player, Player victim) {
+        if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
+            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
+
+            int amount = 0;
+            for (Player member : team.getOnlineMembers()) {
+                if (PvPClassHandler.hasKitOn(member, this)) {
+                    amount++;
+
+                    if (amount > 3) {
+                        break;
+                    }
+                }
+            }
+
+            if (amount > 3) {
+                player.sendMessage(ChatColor.RED + "Your team has too many archers. Archer mark was not applied.");
+                return false;
+            }
+        }
+
         if (markedBy.containsKey(player.getName())) {
             for (Pair<String, Long> pair : markedBy.get(player.getName())) {
                 if (victim.getName().equals(pair.first) && pair.second > System.currentTimeMillis()) {
