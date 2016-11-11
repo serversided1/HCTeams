@@ -101,7 +101,7 @@ public class RogueClass extends PvPClass {
                     return;
                 }
 
-                backstabCooldown.put(damager.getName(), System.currentTimeMillis() + 2000L);
+                backstabCooldown.put(damager.getName(), System.currentTimeMillis() + 1500L);
 
                 Vector playerVector = damager.getLocation().getDirection();
                 Vector entityVector = victim.getLocation().getDirection();
