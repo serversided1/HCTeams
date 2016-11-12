@@ -51,9 +51,9 @@ public class GlowListener implements Listener {
                 }
 
                 if (total - mined == half) {
-                    Bukkit.broadcastMessage(GOLD + "[Glowstone Castle]" + AQUA + " 50% of Glowstone has been mined!");
+                    Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + AQUA + " 50% of Glowstone has been mined!");
                 } else if (total - mined == 0) {
-                    Bukkit.broadcastMessage(GOLD + "[Glowstone Castle]" + RED + "  All Glowstone has been mined!");
+                    Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + RED + "  All Glowstone has been mined!");
                 }
             }
         }
@@ -72,10 +72,10 @@ public class GlowListener implements Listener {
                 // Only "add" a new glowstone if there wasn't already a glowstone there
                 if(!glow.getGlowMountain().getGlowstone().contains(vector)) {
                     glow.getGlowMountain().getGlowstone().add(vector);
-                    event.getPlayer().sendMessage(GOLD + "[Glowstone Castle]" + GREEN + " Manually added a new glowstone to the claim!");
+                    event.getPlayer().sendMessage(GOLD + "[Glowstone Mountain]" + GREEN + " Manually added a new glowstone to the claim!");
                     glow.save(); // Save updated glow mountain to file
                 } else {
-                    event.getPlayer().sendMessage(GOLD + "[Glowstone Castle]" + GREEN + " A Glowstone already existed there, it'll regen on reset :P ");
+                    event.getPlayer().sendMessage(GOLD + "[Glowstone Mountain]" + GREEN + " A Glowstone already existed there, it'll regen on reset :P ");
                 }
             }
         }
@@ -94,12 +94,12 @@ public class GlowListener implements Listener {
             if (event.getHour() % 2 == 1 && event.getMinute() == 0) {
                 handler.getGlowMountain().reset(); // reset all glowstone every other odd hour (offsetting koths)
 
-                Bukkit.broadcastMessage(GOLD + "[Glowstone Castle]" + GREEN + " All glowstone has been reset!");
+                Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
             }
         } else {
             handler.getGlowMountain().reset(); // reset all glowstone every other odd hour (offsetting koths)
 
-            Bukkit.broadcastMessage(GOLD + "[Glowstone Castle]" + GREEN + " All glowstone has been reset!");
+            Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
         }
     }
 }
