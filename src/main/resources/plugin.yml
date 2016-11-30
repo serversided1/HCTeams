@@ -1,5 +1,5 @@
 name: ${name}
-version: ${version}
-author: MineHQ Development Team
+version: ${git.commit.id.abbrev}
+author: ${minehq.pluginAuthor}
 main: net.frozenorb.foxtrot.Foxtrot
-depend: [qLib, ProtocolLib, Basic ]
+depend: [ qLib, ProtocolLib, Basic ]
