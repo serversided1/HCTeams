@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class KOTHActivateCommand {
 
-    @Command(names={ "KOTH Activate", "KOTH Active" }, permission="foxtrot.koth")
+    @Command(names={ "KOTH Activate", "KOTH Active" }, permission="foxtrot.activatekoth")
     public static void kothActivate(Player sender, @Param(name="koth") KOTH koth) {
         // Don't start a KOTH if another one is active.
         for (KOTH otherKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
