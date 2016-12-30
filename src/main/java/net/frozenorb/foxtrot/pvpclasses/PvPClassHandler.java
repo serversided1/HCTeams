@@ -30,11 +30,6 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
     @Getter List<PvPClass> pvpClasses = new ArrayList<>();
 
     public PvPClassHandler() {
-        if (!Foxtrot.getInstance().getServerHandler().isSquads()) {
-            pvpClasses.add(new ArcherClass());
-            pvpClasses.add(new BardClass());
-            pvpClasses.add(new RogueClass());
-        }
         pvpClasses.add(new MinerClass());
 
         for (PvPClass pvpClass : pvpClasses) {
