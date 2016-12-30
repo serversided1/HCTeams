@@ -237,6 +237,8 @@ public class MapHandler {
 
         dbObject.put("crafting", crafting);
 
+        deathban.put("HIGHROLLER", 45);
+        deathban.put("EPIC", 45);
         deathban.put("PRO", 90);
         deathban.put("VIP", 120);
         deathban.put("DEFAULT", 240);

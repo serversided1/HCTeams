@@ -11,7 +11,9 @@ public enum Deathban {
 
     DEFAULT("", 240),
     VIP("inherit.vip", 120),
-    PRO("inherit.pro", 90);
+    PRO("inherit.pro", 90),
+    EPIC("inherit.epic", 45),
+    HIGHROLLER("inherit.highroller", 45);
 
     @Getter private final String permission;
     private int minutes;
