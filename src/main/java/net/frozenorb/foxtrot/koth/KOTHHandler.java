@@ -115,7 +115,7 @@ public class KOTHHandler {
                 }
 
                 for (int dayOffset = 0; dayOffset < 100; dayOffset++) {
-                    int day = currentDay + dayOffset;
+                    int day = (currentDay + dayOffset) % 365;
                     KOTHScheduledTime[] times = new KOTHScheduledTime[] {
 
                             new KOTHScheduledTime(day, 1, 30), // 1:30am EST
