@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
+import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
@@ -29,6 +30,11 @@ public class TeamHQCommand {
 
         if (sender.hasMetadata("frozen")) {
             sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters while you're frozen!");
+            return;
+        }
+
+        if (Basic.getInstance().getServerManager().isFrozen()) {
+            sender.sendMessage(ChatColor.RED + "You cannot teleport to your team headquarters while the server is frozen!");
             return;
         }
 
