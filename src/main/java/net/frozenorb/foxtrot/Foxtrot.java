@@ -10,6 +10,7 @@ import net.frozenorb.foxtrot.crates.CrateListener;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
+import net.frozenorb.foxtrot.idle.IdleCheckRunnable;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.AntiGlitchListener;
@@ -177,6 +178,7 @@ public class Foxtrot extends JavaPlugin {
         (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
         (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
         (new PacketBorderThread()).start();
+        (new IdleCheckRunnable()).runTaskTimer(this, 10L, 10L);
 
         setupHandlers();
         setupPersistence();
