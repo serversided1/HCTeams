@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.team.claims.VisualClaim;
 import net.frozenorb.foxtrot.team.claims.VisualClaimType;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.qlib.command.Command;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -56,11 +57,6 @@ public class TeamClaimCommand implements Listener {
 
         if (team == null) {
             sender.sendMessage(ChatColor.GRAY + "You are not on a team!");
-            return;
-        }
-
-        if (sender.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
-            sender.sendMessage(ChatColor.RED + "You can't claim land in the Miner World.");
             return;
         }
 

@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
-import lombok.Getter;
+
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -12,14 +12,71 @@ import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
-import net.frozenorb.foxtrot.listener.*;
+import net.frozenorb.foxtrot.listener.AntiGlitchListener;
+import net.frozenorb.foxtrot.listener.BasicPreventionListener;
+import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.listener.CombatLoggerListener;
+import net.frozenorb.foxtrot.listener.CrowbarListener;
+import net.frozenorb.foxtrot.listener.DeathbanListener;
+import net.frozenorb.foxtrot.listener.EnchantmentLimiterListener;
+import net.frozenorb.foxtrot.listener.EndListener;
+import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.listener.FoundDiamondsListener;
+import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.listener.GoldenAppleListener;
+import net.frozenorb.foxtrot.listener.KOTHRewardKeyListener;
+import net.frozenorb.foxtrot.listener.MapListener;
+import net.frozenorb.foxtrot.listener.NetherPortalListener;
+import net.frozenorb.foxtrot.listener.PortalTrapListener;
+import net.frozenorb.foxtrot.listener.PotionLimiterListener;
+import net.frozenorb.foxtrot.listener.PvPTimerListener;
+import net.frozenorb.foxtrot.listener.SignSubclaimListener;
+import net.frozenorb.foxtrot.listener.SpawnListener;
+import net.frozenorb.foxtrot.listener.SpawnTagListener;
+import net.frozenorb.foxtrot.listener.StaffUtilsListener;
+import net.frozenorb.foxtrot.listener.StatTrakListener;
+import net.frozenorb.foxtrot.listener.TeamListener;
+import net.frozenorb.foxtrot.listener.TeamRequestSpamListener;
+import net.frozenorb.foxtrot.listener.WebsiteListener;
 import net.frozenorb.foxtrot.map.MapHandler;
-import net.frozenorb.foxtrot.minerworld.MinerWorldHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
-import net.frozenorb.foxtrot.persist.maps.*;
-import net.frozenorb.foxtrot.persist.maps.statistics.*;
+import net.frozenorb.foxtrot.persist.maps.ChatModeMap;
+import net.frozenorb.foxtrot.persist.maps.ChatSpyMap;
+import net.frozenorb.foxtrot.persist.maps.CoalMinedMap;
+import net.frozenorb.foxtrot.persist.maps.CobblePickupMap;
+import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
+import net.frozenorb.foxtrot.persist.maps.DeathsMap;
+import net.frozenorb.foxtrot.persist.maps.DiamondMinedMap;
+import net.frozenorb.foxtrot.persist.maps.EmeraldMinedMap;
+import net.frozenorb.foxtrot.persist.maps.FirstJoinMap;
+import net.frozenorb.foxtrot.persist.maps.FishingKitMap;
+import net.frozenorb.foxtrot.persist.maps.FriendLivesMap;
+import net.frozenorb.foxtrot.persist.maps.GoldMinedMap;
+import net.frozenorb.foxtrot.persist.maps.IPMap;
+import net.frozenorb.foxtrot.persist.maps.IronMinedMap;
+import net.frozenorb.foxtrot.persist.maps.KillsMap;
+import net.frozenorb.foxtrot.persist.maps.LapisMinedMap;
+import net.frozenorb.foxtrot.persist.maps.LastJoinMap;
+import net.frozenorb.foxtrot.persist.maps.OppleMap;
+import net.frozenorb.foxtrot.persist.maps.P3S3AckMap;
+import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
+import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
+import net.frozenorb.foxtrot.persist.maps.RedstoneMinedMap;
+import net.frozenorb.foxtrot.persist.maps.SoulboundLivesMap;
+import net.frozenorb.foxtrot.persist.maps.TabListModeMap;
+import net.frozenorb.foxtrot.persist.maps.ToggleDeathMessageMap;
+import net.frozenorb.foxtrot.persist.maps.ToggleFoundDiamondsMap;
+import net.frozenorb.foxtrot.persist.maps.ToggleGlobalChatMap;
+import net.frozenorb.foxtrot.persist.maps.WhitelistedIPMap;
+import net.frozenorb.foxtrot.persist.maps.WrappedBalanceMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.BaseStatisticMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.EnderPearlsUsedMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.ExpCollectedMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.ItemsRepairedMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.SplashPotionsBrewedMap;
+import net.frozenorb.foxtrot.persist.maps.statistics.SplashPotionsUsedMap;
 import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
 import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
@@ -37,12 +94,15 @@ import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import net.frozenorb.qlib.tab.FrozenTabHandler;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import lombok.Getter;
 import redis.clients.jedis.JedisPool;
 
 public class Foxtrot extends JavaPlugin {
@@ -63,7 +123,6 @@ public class Foxtrot extends JavaPlugin {
     @Getter private KOTHHandler KOTHHandler;
     @Getter private ConquestHandler conquestHandler;
     @Getter private GlowHandler glowHandler;
-    @Getter private MinerWorldHandler minerWorldHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -183,9 +242,6 @@ public class Foxtrot extends JavaPlugin {
 
     private void setupHandlers() {
         mapHandler = new MapHandler();
-
-        // Load this before so the LandBoard
-        minerWorldHandler = new MinerWorldHandler();
 
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();

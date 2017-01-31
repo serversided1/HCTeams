@@ -498,10 +498,6 @@ public class ServerHandler {
             return (false);
         }
 
-        if (loc.getWorld().equals(Foxtrot.getInstance().getMinerWorldHandler().getWorld())) {
-            return false;
-        }
-
         int radius = Foxtrot.getInstance().getMapHandler().getWorldBuffer();
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
