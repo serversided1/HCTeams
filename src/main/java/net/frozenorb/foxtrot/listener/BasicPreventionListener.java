@@ -165,7 +165,9 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent event) {
-        if(event.getEntityType().equals(EntityType.HORSE)) {
+        EntityType type = event.getEntityType();
+
+        if (type == EntityType.HORSE || type == EntityType.MINECART_TNT) {
             event.setCancelled(true);
         }
     }
