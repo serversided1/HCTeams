@@ -78,6 +78,7 @@ public class ServerHandler {
 
     @Getter private final boolean squads;
     @Getter private final boolean startingTimerEnabled;
+    @Getter private final boolean forceInvitesEnabled;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -150,6 +151,7 @@ public class ServerHandler {
 
         squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
         startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
+        forceInvitesEnabled = Foxtrot.getInstance().getConfig().getBoolean("forceInvites");
     }
 
     public void save() {

@@ -56,7 +56,7 @@ public class TeamInviteCommand {
             return;
         }*/
 
-        if (!Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
+        if (Foxtrot.getInstance().getServerHandler().isForceInvitesEnabled() && !Foxtrot.getInstance().getServerHandler().isPreEOTW()) {
             /* if we just check team.getSize() players can make a team with 10 players,
             send out 20 invites, and then have them all accepted (instead of 1 invite,
             1 join, 1 invite, etc) To solve this we treat their size as their actual

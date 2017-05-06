@@ -1111,7 +1111,9 @@ public class Team {
         dtrMessage.send(player);
 
         if (isMember(player.getUniqueId()) || player.hasPermission("basic.staff")) {
-            player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
+            if (Foxtrot.getInstance().getServerHandler().isForceInvitesEnabled()) {
+                player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
+            }
             player.sendMessage(ChatColor.YELLOW + "Lives: " + ChatColor.RED + getLives());
         }
 

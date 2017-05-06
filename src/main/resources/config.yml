@@ -12,6 +12,7 @@ tab:
   sectionColor: '&5'
   infoColor: '&e'
 startingTimer: false
+forceInvites: true
 squads: false
 minerWorld:
   regen:

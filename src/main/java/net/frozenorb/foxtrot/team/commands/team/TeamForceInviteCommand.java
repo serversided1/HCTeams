@@ -20,6 +20,11 @@ public class TeamForceInviteCommand {
 
     @Command(names = {"team forceinvite", "t forceinvite", "f forceinvite", "faction forceinvite", "fac forceinvite"}, permission = "")
     public static void teamForceInvite(Player sender, @Param(name="player") UUID player) {
+        if (!Foxtrot.getInstance().getServerHandler().isForceInvitesEnabled()) {
+            sender.sendMessage(ChatColor.RED + "Force-invites are not enabled on this server.");
+            return;
+        }
+
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
