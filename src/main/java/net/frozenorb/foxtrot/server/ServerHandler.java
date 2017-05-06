@@ -17,7 +17,6 @@ import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ItemUtils;
-import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 import org.bukkit.*;
@@ -68,6 +67,14 @@ public class ServerHandler {
     );
 
     @Getter private static Map<String, Logout> tasks = new HashMap<>();
+
+    @Getter private final String serverName;
+    @Getter private final String networkWebsite;
+    @Getter private final String statsWebsiteRoot;
+
+    @Getter private final String tabServerName;
+    @Getter private final String tabSectionColor;
+    @Getter private final String tabInfoColor;
 
     @Getter private final boolean squads;
 
@@ -131,6 +138,14 @@ public class ServerHandler {
             }
 
         }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 3000L, 6000L);
+
+        serverName = Foxtrot.getInstance().getConfig().getString("serverName");
+        networkWebsite = Foxtrot.getInstance().getConfig().getString("networkWebsite");
+        statsWebsiteRoot = Foxtrot.getInstance().getConfig().getString("statsRoot");
+
+        tabServerName = Foxtrot.getInstance().getConfig().getString("tab.serverName");
+        tabSectionColor = Foxtrot.getInstance().getConfig().getString("tab.sectionColor");
+        tabInfoColor = Foxtrot.getInstance().getConfig().getString("tab.infoColor");
 
         squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
     }

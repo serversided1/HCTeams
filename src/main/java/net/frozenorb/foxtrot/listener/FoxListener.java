@@ -68,8 +68,7 @@ public class FoxListener implements Listener {
     static {
         BookMeta bookMeta = (BookMeta) FIRST_SPAWN_BOOK.getItemMeta();
 
-        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
-                "HCSquads" : "HCTeams";
+        String serverName = Foxtrot.getInstance().getServerHandler().getServerName();
 
         bookMeta.setTitle(GOLD + "Welcome to " + serverName);
         bookMeta.setPages(
@@ -77,7 +76,7 @@ public class FoxListener implements Listener {
                 BLUE + "Welcome to " + serverName + "!"
 
         );
-        bookMeta.setAuthor("MineHQ");
+        bookMeta.setAuthor(Foxtrot.getInstance().getServerHandler().getServerName());
 
         FIRST_SPAWN_BOOK.setItemMeta(bookMeta);
         FIRST_SPAWN_FISHING_ROD.addEnchantment(Enchantment.LURE, 2);

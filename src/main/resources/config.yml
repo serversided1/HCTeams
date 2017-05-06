@@ -4,6 +4,13 @@ Queue:
 Mongo:
     Host: '127.0.0.1'
     DBName: 'HCTeams'
+serverName: HCTeams
+networkWebsite: minehq.com
+statsRoot: minehq.com/hcteams
+tab:
+  serverName: '&6&lHCTeams'
+  sectionColor: '&5'
+  infoColor: '&e'
 squads: false
 minerWorld:
   regen:

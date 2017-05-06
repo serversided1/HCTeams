@@ -198,7 +198,7 @@ public class TeamStuckCommand implements Listener {
 
     private static void kick(Player player){
         player.setMetadata("loggedout", new FixedMetadataValue(Foxtrot.getInstance(), true));
-        player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: TS.MineHQ.com");
+        player.kickPlayer(ChatColor.RED + "We couldn't find a safe location, so we safely logged you out for now. Contact a staff member before logging back on! " + ChatColor.BLUE + "TeamSpeak: ts." + Foxtrot.getInstance().getServerHandler().getNetworkWebsite());
     }
 
     /**

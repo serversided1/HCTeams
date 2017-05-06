@@ -18,8 +18,8 @@ public class HelpCommand {
         String prot = "Protection " + Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel();
         String bow = "Power " + Enchantment.ARROW_DAMAGE.getMaxLevel();
 
-        String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
-                "HCSquads" : "HCTeams";
+        String serverName = Foxtrot.getInstance().getServerHandler().getServerName();
+        String serverWebsite = Foxtrot.getInstance().getServerHandler().getNetworkWebsite();
 
         String proTime = TimeUtils.formatIntoDetailedString(PRO.inSeconds());
         String vipTime = TimeUtils.formatIntoDetailedString(VIP.inSeconds());
@@ -52,9 +52,9 @@ public class HelpCommand {
 
                 "",
                 "§9Other Information:",
-                "§eOfficial Teamspeak §7- §dts.minehq.com",
-                "§eMineHQ Rules §7- §dwww.minehq.com/rules",
-                "§eStore §7- §dwww.minehq.com/store",
+                "§eOfficial Teamspeak §7- §dts." + serverWebsite,
+                "§e" + serverName + " Rules §7- §dwww." + serverWebsite + "/rules",
+                "§eStore §7- §dwww." + serverWebsite + "/store",
                 "§6§m-----------------------------------------------------",
 
         });

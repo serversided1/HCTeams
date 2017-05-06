@@ -1049,7 +1049,7 @@ public class Team {
 
         FancyMessage teamLine = new FancyMessage();
 
-        teamLine.text(ChatColor.BLUE + getName()).link("http://www.minehq.com/hcteams/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the HCTeams website!");
+        teamLine.text(ChatColor.BLUE + getName()).link("http://www." + Foxtrot.getInstance().getServerHandler().getStatsWebsiteRoot() + "/teams/" + getName()).tooltip(ChatColor.GREEN + "Click to view team on the " + Foxtrot.getInstance().getServerHandler().getServerName() + " website!");
         teamLine.then().text(ChatColor.GRAY + " [" + onlineMembers + "/" + getSize() + "]" + ChatColor.DARK_AQUA + " - ");
         teamLine.then().text(ChatColor.YELLOW + "HQ: " + ChatColor.WHITE + (HQ == null ? "None" : HQ.getBlockX() + ", " + HQ.getBlockZ()));
 

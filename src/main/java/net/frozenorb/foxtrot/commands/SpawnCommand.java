@@ -13,8 +13,7 @@ public class SpawnCommand {
             sender.teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
         } else {
             // Make this pretty.
-            String serverName = Foxtrot.getInstance().getServerHandler().isSquads() ?
-                    "HCSquads" : "HCTeams";
+            String serverName = Foxtrot.getInstance().getServerHandler().getServerName();
 
             sender.sendMessage(ChatColor.RED + serverName + " does not have a spawn command! You must walk there!");
             sender.sendMessage(ChatColor.RED + "Spawn is located at 0,0.");
