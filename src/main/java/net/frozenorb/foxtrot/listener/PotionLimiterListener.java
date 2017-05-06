@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.Iterator;
@@ -22,8 +23,6 @@ public class PotionLimiterListener implements Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPotionSplash(PotionSplashEvent event) {
-        ItemStack potion = event.getPotion().getItem();
-
         for (LivingEntity livingEntity : event.getAffectedEntities()) {
             if (DTRBitmask.SAFE_ZONE.appliesAt(livingEntity.getLocation())) {
                 event.setIntensity(livingEntity, 0D);
@@ -31,11 +30,8 @@ public class PotionLimiterListener implements Listener {
         }
 
         if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            for (int i : ServerHandler.DISALLOWED_POTIONS) {
-                if (i == (int) potion.getDurability()) {
-                    event.setCancelled(true);
-                    return;
-                }
+            if (!Foxtrot.getInstance().getServerHandler().isSplashPotionAllowed(Potion.fromItemStack(event.getPotion().getItem()).getType())) {
+                event.setCancelled(true);
             }
         }
 
@@ -58,7 +54,7 @@ public class PotionLimiterListener implements Listener {
             return;
         }
 
-        if (ServerHandler.DISALLOWED_POTIONS.contains((int) event.getItem().getDurability())) {
+        if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(Potion.fromItemStack(event.getItem()).getType())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
         }

@@ -20,3 +20,40 @@ minerWorld:
     IRON_ORE: 60
     GOLD_ORE: 90
     DIAMOND_ORE: 120
+potions:
+  REGEN:
+    splash: false
+    drinkables: false
+  SPEED:
+    splash: true
+    drinkables: true
+  FIRE_RESISTANCE:
+    splash: true
+    drinkables: true
+  POISON:
+    splash: true
+    drinkables: false
+  INSTANT_HEAL:
+    splash: true
+    drinkables: true
+  NIGHT_VISION:
+    splash: true
+    drinkables: true
+  WEAKNESS:
+    splash: false
+    drinkables: false
+  STRENGTH:
+    splash: false
+    drinkables: false
+  SLOWNESS:
+    splash: true
+    drinkables: false
+  INSTANT_DAMAGE:
+    splash: false
+    drinkables: false
+  WATER_BREATHING:
+    splash: true
+    drinkables: true
+  INVISIBILITY:
+    splash: false
+    drinkables: false

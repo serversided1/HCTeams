@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.server;
 import com.google.common.collect.ImmutableSet;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -34,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -56,15 +58,7 @@ public class ServerHandler {
 
     // NEXT MAP //
     // http://minecraft.gamepedia.com/Potion#Data_value_table
-    public static final Set<Integer> DISALLOWED_POTIONS = ImmutableSet.of(
-            8193, 8225, 8257, 16385, 16417, 16449, // Regeneration Potions
-            8200, 8232, 8264, 16392, 16424, 16456, // Weakness Potions
-            8201, 8233, 8265, 16393, 16425, 16457, // Strength Potions
-            8204, 8236, 8268, 16396, 16428, 16460, // Harming Potions
-            8228, 8260, 16420, 16452, // Poison Potions
-            8234, 8266, 16426, 16458, // Slowness Potions
-            8238, 8270, 16430, 16462, 8206, 16398 // Invis potions
-    );
+    private final Map<PotionType, PotionStatus> potionStatus = new HashMap<>();
 
     @Getter private static Map<String, Logout> tasks = new HashMap<>();
 
@@ -152,6 +146,15 @@ public class ServerHandler {
         squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
         startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
         forceInvitesEnabled = Foxtrot.getInstance().getConfig().getBoolean("forceInvites");
+
+        for (PotionType type : PotionType.values()) {
+            if (type == PotionType.WATER) {
+                continue;
+            }
+
+            PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drikables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"));
+            potionStatus.put(type, status);
+        }
     }
 
     public void save() {
@@ -209,6 +212,14 @@ public class ServerHandler {
         }
 
         return (Math.abs(loc.getBlockX()) <= WARZONE_RADIUS && Math.abs(loc.getBlockZ()) <= WARZONE_RADIUS) || ((Math.abs(loc.getBlockX()) > WARZONE_BORDER || Math.abs(loc.getBlockZ()) > WARZONE_BORDER));
+    }
+
+    public boolean isSplashPotionAllowed(PotionType type) {
+        return (!potionStatus.containsKey(type) || potionStatus.get(type).splash);
+    }
+
+    public boolean isDrinkablePotionAllowed(PotionType type) {
+        return (!potionStatus.containsKey(type) || potionStatus.get(type).drinkables);
     }
 
     public void startLogoutSequence(final Player player) {
@@ -762,6 +773,14 @@ public class ServerHandler {
         }
 
         return (amount);
+    }
+
+    @AllArgsConstructor
+    private class PotionStatus {
+
+        private boolean drinkables;
+        private boolean splash;
+
     }
 
 }
