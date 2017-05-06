@@ -61,7 +61,11 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         }
 
         if (pvpTimerScore != null) {
-            scores.add("&a&lPvP Timer&7: &c" + pvpTimerScore);
+            if (Foxtrot.getInstance().getStartingPvPTimerMap().get(player.getUniqueId())) {
+                scores.add("&a&lStarting Timer&7: &c" + pvpTimerScore);
+            } else {
+                scores.add("&a&lPvP Timer&7: &c" + pvpTimerScore);
+            }
         }
 
         for (Map.Entry<String, Long> timer : CustomTimerCreateCommand.getCustomTimers().entrySet()) {

@@ -11,6 +11,7 @@ tab:
   serverName: '&6&lHCTeams'
   sectionColor: '&5'
   infoColor: '&e'
+startingTimer: false
 squads: false
 minerWorld:
   regen:

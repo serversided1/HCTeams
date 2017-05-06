@@ -34,9 +34,9 @@ public class PvPTimerMap extends PersistMap<Integer> {
                             int minutes = newValue / 60;
 
                             if (minutes <= 0) {
-                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your PvP Protection has expired!");
+                                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Your protection has expired!");
                             } else {
-                                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + minutes + ChatColor.RED + " minute" + (minutes == 1 ? "" : "s") + " of PvP Protection remaining.");
+                                player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + minutes + ChatColor.RED + " minute" + (minutes == 1 ? "" : "s") + " of protection remaining.");
                             }
                         }
 
@@ -65,10 +65,16 @@ public class PvPTimerMap extends PersistMap<Integer> {
 
     public void removeTimer(UUID update) {
         updateValueAsync(update, 0);
+        Foxtrot.getInstance().getStartingPvPTimerMap().set(update, false);
     }
 
     public void createTimer(UUID update, int seconds) {
         updateValueAsync(update, seconds);
+    }
+
+    public void createStartingTimer(UUID update, int seconds) {
+        createTimer(update, seconds);
+        Foxtrot.getInstance().getStartingPvPTimerMap().set(update, true);
     }
 
     public boolean hasTimer(UUID check) {

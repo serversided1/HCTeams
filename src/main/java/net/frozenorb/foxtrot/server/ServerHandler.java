@@ -77,6 +77,7 @@ public class ServerHandler {
     @Getter private final String tabInfoColor;
 
     @Getter private final boolean squads;
+    @Getter private final boolean startingTimerEnabled;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -148,6 +149,7 @@ public class ServerHandler {
         tabInfoColor = Foxtrot.getInstance().getConfig().getString("tab.infoColor");
 
         squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
+        startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
     }
 
     public void save() {

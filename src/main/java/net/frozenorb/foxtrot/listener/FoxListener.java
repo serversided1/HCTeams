@@ -48,6 +48,7 @@ import org.bukkit.util.BlockVector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.ChatColor.*;
 import static org.bukkit.Material.*;
@@ -168,13 +169,18 @@ public class FoxListener implements Listener {
         Foxtrot.getInstance().getLastJoinMap().setLastJoin(event.getPlayer().getUniqueId());
 
         if (!event.getPlayer().hasPlayedBefore()) {
-            Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), 30 * 60);
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             FrozenEconomyHandler.setBalance(event.getPlayer().getUniqueId(), 100D);
 
             if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
                 event.getPlayer().getInventory().addItem(FIRST_SPAWN_BOOK);
                 event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
+            }
+
+            if (Foxtrot.getInstance().getServerHandler().isStartingTimerEnabled()) {
+                Foxtrot.getInstance().getPvPTimerMap().createStartingTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.HOURS.toSeconds(1));
+            } else {
+                Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
             }
 
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
