@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.server.idle.IdleCheckRunnable;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -71,6 +72,7 @@ public class ServerHandler {
     @Getter private final String tabInfoColor;
 
     @Getter private final boolean squads;
+    @Getter private final boolean idleCheckEnabled;
     @Getter private final boolean startingTimerEnabled;
     @Getter private final boolean forceInvitesEnabled;
 
@@ -144,6 +146,7 @@ public class ServerHandler {
         tabInfoColor = Foxtrot.getInstance().getConfig().getString("tab.infoColor");
 
         squads = Foxtrot.getInstance().getConfig().getBoolean("squads");
+        idleCheckEnabled = Foxtrot.getInstance().getConfig().getBoolean("idleCheck");
         startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
         forceInvitesEnabled = Foxtrot.getInstance().getConfig().getBoolean("forceInvites");
 
@@ -154,6 +157,10 @@ public class ServerHandler {
 
             PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drikables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"));
             potionStatus.put(type, status);
+        }
+
+        if (idleCheckEnabled) {
+            new IdleCheckRunnable().runTaskTimer(Foxtrot.getInstance(), 60 * 20L, 60 * 20L);
         }
     }
 
