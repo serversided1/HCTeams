@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.glowmtn;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -11,20 +12,17 @@ import org.bukkit.util.BlockVector;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class GlowMountain {
 
-    @Getter private transient Claim claim;
     @Getter private final Set<BlockVector> glowstone = new HashSet<>();
-    @Getter private final Set<BlockVector> mined = new HashSet<>();
+    @Getter @Setter private int remaining = 0; // We don't need a whole set for numbers???
 
-    public GlowMountain(Claim claim) {
-        this.claim = claim;
-    }
 
     public void scan() {
         glowstone.clear(); // clean storage
 
-        this.claim = GlowHandler.getClaim(); // update claim
+        Claim claim = GlowHandler.getClaim();
 
         World world = Bukkit.getWorld(claim.getWorld());
         for(int x = claim.getX1(); x < claim.getX2(); x++) {
@@ -37,16 +35,14 @@ public class GlowMountain {
                 }
             }
         }
+        remaining = glowstone.size();
     }
 
     public void reset() {
-        mined.clear(); // erase mining history
+        // So we don't have to do any math later
+        remaining = glowstone.size();
 
-        if(this.claim == null) {
-            this.claim = GlowHandler.getClaim();
-        }
-
-        World world = Bukkit.getWorld(claim.getWorld());
+        World world = Bukkit.getWorld(GlowHandler.getClaim().getWorld());
 
         for(BlockVector vector : glowstone) {
             world.getBlockAt(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ()).setType(Material.GLOWSTONE);

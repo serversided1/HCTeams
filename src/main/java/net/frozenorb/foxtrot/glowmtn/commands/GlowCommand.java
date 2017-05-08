@@ -5,6 +5,8 @@ import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowMountain;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.command.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import static org.bukkit.ChatColor.*;
@@ -15,40 +17,43 @@ public class GlowCommand {
     public static void glowScan(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(GlowHandler.getGlowTeamName());
 
-        if (team != null) {
-            if (!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
-                if (team.getClaims().size() > 0) {
-                    Foxtrot.getInstance().getGlowHandler().setGlowMountain(new GlowMountain(team.getClaims().get(0)));
-                } else {
-                    sender.sendMessage(RED + "Error: Cannot scan for glowstone if no land is claimed!");
-                    return; // cannot scan a team with no claims..
-                }
-            }
-
-            Foxtrot.getInstance().getGlowHandler().getGlowMountain().scan();
-            Foxtrot.getInstance().getGlowHandler().save(); // save to file :D
-
-            sender.sendMessage(GREEN + "[GlowMtn]" + GREEN + " Scanned all glowstone and saved the glow mountain to file!");
-        } else {
-            sender.sendMessage(RED + "Create the team '" + GlowHandler.getGlowTeamName() + "' and make a claim first!");
+        // Make sure we have a team
+        if (team == null) {
+            sender.sendMessage(ChatColor.RED + "You must first create the team (" + GlowHandler.getGlowTeamName() + ") and claim it!");
+            return;
         }
+
+        // Make sure said team has a claim
+        if (team.getClaims().isEmpty()) {
+            sender.sendMessage(ChatColor.RED + "You must claim land for '" + GlowHandler.getGlowTeamName() + "' before scanning it!");
+            return;
+        }
+
+        // We have a claim, and a team, now do we have a glowstone?
+        if (!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
+            Foxtrot.getInstance().getGlowHandler().setGlowMountain(new GlowMountain());
+        }
+
+        // We have a glowstone now, we're gonna scan and save the area
+        Foxtrot.getInstance().getGlowHandler().getGlowMountain().scan();
+        Foxtrot.getInstance().getGlowHandler().save(); // save to file :D
+
+        sender.sendMessage(GREEN + "[Glowstone Mountain] Scanned all glowstone and saved glowstone mountain to file!");
     }
 
     @Command(names = "glow reset", permission = "op")
     public static void glowReset(Player sender) {
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(GlowHandler.getGlowTeamName());
 
-        if (team != null) {
-            if (!Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
-                sender.sendMessage(RED + "Error: You need to create the team, claim, and scan first!");
-                return;
-            }
-
-            Foxtrot.getInstance().getGlowHandler().getGlowMountain().reset();
-
-            sender.sendMessage(GOLD + "[GlowMtn]" + GREEN + " Reset all glowstone for the glow mountain!");
-        } else {
-            sender.sendMessage(RED + "Create the team '" + GlowHandler.getGlowTeamName() + "' and make a claim first!");
+        // Make sure we have a team, claims, and a mountain!
+        if (team == null || team.getClaims().isEmpty() || !Foxtrot.getInstance().getGlowHandler().hasGlowMountain()) {
+            sender.sendMessage(RED + "Create the team '" + GlowHandler.getGlowTeamName() + "', then make a claim for it, finally scan it! (/glow scan)");
+            return;
         }
+
+        // Check, check, check, LIFT OFF! (reset the mountain)
+        Foxtrot.getInstance().getGlowHandler().getGlowMountain().reset();
+
+        Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
     }
 }
