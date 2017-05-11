@@ -32,6 +32,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -75,6 +76,7 @@ public class ServerHandler {
     @Getter private final boolean idleCheckEnabled;
     @Getter private final boolean startingTimerEnabled;
     @Getter private final boolean forceInvitesEnabled;
+    @Getter private final boolean uhcHealing;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -149,6 +151,7 @@ public class ServerHandler {
         idleCheckEnabled = Foxtrot.getInstance().getConfig().getBoolean("idleCheck");
         startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
         forceInvitesEnabled = Foxtrot.getInstance().getConfig().getBoolean("forceInvites");
+        uhcHealing = Foxtrot.getInstance().getConfig().getBoolean("uhcHealing");
 
         for (PotionType type : PotionType.values()) {
             if (type == PotionType.WATER) {
@@ -161,6 +164,19 @@ public class ServerHandler {
 
         if (idleCheckEnabled) {
             new IdleCheckRunnable().runTaskTimer(Foxtrot.getInstance(), 60 * 20L, 60 * 20L);
+        }
+
+        if (uhcHealing) {
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+
+                @EventHandler
+                public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+                    if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED) {
+                        event.setCancelled(true);
+                    }
+                }
+
+            }, Foxtrot.getInstance());
         }
     }
 

@@ -15,6 +15,7 @@ startingTimer: false
 forceInvites: true
 squads: false
 idleCheck: true
+uhcHealing: false
 minerWorld:
   regen:
     COAL_ORE: 30
