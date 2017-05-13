@@ -1,6 +1,5 @@
 package net.frozenorb.foxtrot.server;
 
-import com.google.common.collect.ImmutableSet;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
-import net.frozenorb.foxtrot.util.HydrogenUtil;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
@@ -33,7 +31,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -51,7 +48,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
@@ -116,30 +112,6 @@ public class ServerHandler {
             e.printStackTrace();
         }
 
-        new BukkitRunnable() {
-
-            public void run() {
-                StringBuilder messageBuilder = new StringBuilder();
-
-                for (Player onlineHighRoller : getOnlineHighRollers()) {
-                    // shouldn't happen often but occasionally
-                    // staff members will have highroller "left over"
-                    // so we have to respect invisibility
-                    if (onlineHighRoller.hasMetadata("ModMode")) {
-                        continue;
-                    }
-
-                    messageBuilder.append(ChatColor.DARK_PURPLE).append(onlineHighRoller.getName()).append(ChatColor.GOLD).append(", ");
-                }
-
-                if (messageBuilder.length() > 2) {
-                    messageBuilder.setLength(messageBuilder.length() - 2);
-                    Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "Online HighRollers: " + messageBuilder.toString());
-                }
-            }
-
-        }.runTaskTimerAsynchronously(Foxtrot.getInstance(), 3000L, 6000L);
-
         serverName = Foxtrot.getInstance().getConfig().getString("serverName");
         networkWebsite = Foxtrot.getInstance().getConfig().getString("networkWebsite");
         statsWebsiteRoot = Foxtrot.getInstance().getConfig().getString("statsRoot");
@@ -194,23 +166,6 @@ public class ServerHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Set<UUID> getHighRollers() {
-        if (Foxtrot.getInstance().getServer().getPluginManager().getPlugin("Hydrogen") != null) {
-            return ImmutableSet.copyOf(HydrogenUtil.getHighRollers());
-        } else {
-            return ImmutableSet.of();
-        }
-    }
-
-    public Set<Player> getOnlineHighRollers() {
-        Set<Player> players = getHighRollers().stream()
-                .map(Bukkit::getPlayer)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        return ImmutableSet.copyOf(players);
     }
 
     public String getEnchants() {
@@ -387,15 +342,15 @@ public class ServerHandler {
         }
 
         // The default max.
-        int max = Deathban.DEFAULT.inSeconds();
+        int max = /*Deathban.DEFAULT.inSeconds()*/ (int) TimeUnit.HOURS.toSeconds(1);
 
-        if (player != null) {
+        /*if (player != null) {
             for (Deathban deathban : Deathban.values()) {
                 if (max > deathban.inSeconds() && player.hasPermission(deathban.getPermission())) {
                     max = deathban.inSeconds(); // sets max deathban lower if player has permission
                 }
             }
-        }
+        }*/
 
         long ban = Foxtrot.getInstance().getPlaytimeMap().getPlaytime(playerUUID);
 
