@@ -5,6 +5,7 @@ import net.frozenorb.qlib.util.PlayerUtils;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -15,7 +16,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerHealthChangeEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Criterias;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -141,6 +146,17 @@ public class UHCListener implements Listener {
     @EventHandler
     public void onHealthChange(PlayerHealthChangeEvent event) {
         updateToAll(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+        ItemStack item = event.getItem();
+
+        if (item.getType() != Material.GOLDEN_APPLE) {
+            return;
+        }
+
+        event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 8 * 25, 1), true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
