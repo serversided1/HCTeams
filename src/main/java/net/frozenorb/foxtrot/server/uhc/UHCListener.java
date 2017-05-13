@@ -8,11 +8,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerHealthChangeEvent;
@@ -178,6 +180,13 @@ public class UHCListener implements Listener {
 
                 }.runTask(Foxtrot.getInstance());
             }
+        }
+    }
+
+    @EventHandler
+    public void enderpearlDamage(EntityDamageByEntityEvent event) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.FALL && event.getDamager() instanceof EnderPearl) {
+            event.setCancelled(true);
         }
     }
 
