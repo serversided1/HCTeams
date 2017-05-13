@@ -9,6 +9,7 @@ import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.server.idle.IdleCheckRunnable;
+import net.frozenorb.foxtrot.server.uhc.UHCListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -167,16 +168,7 @@ public class ServerHandler {
         }
 
         if (uhcHealing) {
-            Bukkit.getPluginManager().registerEvents(new Listener() {
-
-                @EventHandler
-                public void onEntityRegainHealth(EntityRegainHealthEvent event) {
-                    if (event.getRegainReason() == EntityRegainHealthEvent.RegainReason.SATIATED) {
-                        event.setCancelled(true);
-                    }
-                }
-
-            }, Foxtrot.getInstance());
+            Bukkit.getPluginManager().registerEvents(new UHCListener(), Foxtrot.getInstance());
         }
     }
 
