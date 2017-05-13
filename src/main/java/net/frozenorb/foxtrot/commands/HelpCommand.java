@@ -21,10 +21,6 @@ public class HelpCommand {
         String serverName = Foxtrot.getInstance().getServerHandler().getServerName();
         String serverWebsite = Foxtrot.getInstance().getServerHandler().getNetworkWebsite();
 
-        String proTime = TimeUtils.formatIntoDetailedString(PRO.inSeconds());
-        String vipTime = TimeUtils.formatIntoDetailedString(VIP.inSeconds());
-        String defaultTime = TimeUtils.formatIntoDetailedString(DEFAULT.inSeconds());
-
         sender.sendMessage(new String[] {
 
                 "§6§m-----------------------------------------------------",
@@ -36,7 +32,7 @@ public class HelpCommand {
                 "§eWarzone Until: §7" +  ServerHandler.WARZONE_RADIUS,
                 "§eEnd Portals: §7" +  Foxtrot.getInstance().getMapHandler().getEndPortalLocation() + " in each quadrant",
                 "§eEnchant Limits: §7" + prot + ", " + sharp + ", " + bow,
-                "§eDeathban: §7" + "§6PRO§7: " + proTime + ", §aVIP§7: " + vipTime + ", §fDefault§7: " + defaultTime,
+                "§eDeathban: §71 hour",
 
                 "",
                 "§9Helpful Commands:",
