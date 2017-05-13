@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -194,6 +195,19 @@ public class UHCListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         deathTime.put(event.getEntity().getUniqueId(), System.currentTimeMillis());
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> deathTime.remove(event.getEntity().getUniqueId()), 20L);
+    }
+
+    @EventHandler
+    public void onLeafDecay(LeavesDecayEvent event) {
+        if (event.getBlock().getType() == Material.LEAVES && event.getBlock().getData() % 4 == 0) {
+            if ((Math.random() * 100) <= 3) {
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
+            }
+        } else if (event.getBlock().getType() == Material.LEAVES_2 && event.getBlock().getData() % 4 == 1) {
+            if ((Math.random() * 100) <= 3) {
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
+            }
+        }
     }
 
     private static String formatHearts(Player player, boolean heartChar) {
