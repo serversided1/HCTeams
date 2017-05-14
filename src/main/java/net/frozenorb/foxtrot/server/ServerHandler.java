@@ -131,7 +131,7 @@ public class ServerHandler {
                 continue;
             }
 
-            PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drikables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"));
+            PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drinkables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"));
             potionStatus.put(type, status);
         }
 
