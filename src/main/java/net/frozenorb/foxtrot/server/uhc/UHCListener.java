@@ -22,6 +22,8 @@ import org.bukkit.event.player.PlayerHealthChangeEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,6 +35,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,6 +69,29 @@ public class UHCListener implements Listener {
     }
 
     private Map<UUID, Long> deathTime = new HashMap<>();
+
+    public UHCListener() {
+        Iterator<Recipe> iterator = Bukkit.recipeIterator();
+
+        while (iterator.hasNext()) {
+            Recipe recipe = iterator.next();
+
+            if (recipe.getResult().getType() == Material.GOLDEN_APPLE && recipe.getResult().getDurability() != 1) {
+                iterator.remove();
+            }
+        }
+
+        ShapedRecipe recipe = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE));
+        recipe.shape(
+                "NNN",
+                "NAN",
+                "NNN"
+        );
+        recipe.setIngredient('N', Material.GOLD_NUGGET);
+        recipe.setIngredient('A', Material.APPLE);
+
+        Bukkit.addRecipe(recipe);
+    }
 
     private void init(Player player) {
         Scoreboard scoreboard = player.getScoreboard();
