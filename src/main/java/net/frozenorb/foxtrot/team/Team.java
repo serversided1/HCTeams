@@ -595,6 +595,25 @@ public class Team {
         return (DTRHandler.getMaxDTR(getSize()));
     }
 
+    public void load(BasicDBObject obj) {
+        setUniqueId(obj.getObjectId("_id"));
+        setOwner(obj.getString("Owner") == null ? null : UUID.fromString(obj.getString("Owner")));
+        for (Object coLeader : (BasicDBList) obj.get("CoLeaders")) addCoLeader(UUID.fromString((String) coLeader));
+        for (Object captain : (BasicDBList) obj.get("Captains")) addCaptain(UUID.fromString((String) captain));
+        for (Object member : (BasicDBList) obj.get("Members")) addMember(UUID.fromString((String) member));
+        for (Object invite : (BasicDBList) obj.get("Invitations")) getInvitations().add(UUID.fromString((String) invite));
+        setDTR(obj.getDouble("DTR"));
+        setDTRCooldown(obj.getDate("DTRCooldown").getTime());
+        setBalance(obj.getDouble("Balance"));
+        setMaxOnline(obj.getInt("MaxOnline"));
+        setHQ(LocationSerializer.deserialize((BasicDBObject) obj.get("HQ")));
+        setAnnouncement(obj.getString("Announcement"));
+        setPowerFaction(obj.getBoolean("PowerFaction"));
+        setLives(obj.getInt("Lives"));
+        for (Object claim : (BasicDBList) obj.get("Claims")) getClaims().add(Claim.fromJson((BasicDBObject) claim));
+        for (Object subclaim : (BasicDBList) obj.get("Subclaims")) getSubclaims().add(Subclaim.fromJson((BasicDBObject) subclaim));
+    }
+
     public void load(String str) {
         loading = true;
         String[] lines = str.split("\n");

@@ -20,6 +20,12 @@ public class Subclaim {
     @NonNull private String name;
     private List<UUID> members = new ArrayList<>();
 
+    public static Subclaim fromJson(BasicDBObject obj) {
+        Subclaim c = new Subclaim(LocationSerializer.deserialize((BasicDBObject) obj.get("Location1")), LocationSerializer.deserialize((BasicDBObject) obj.get("Location2")), obj.getString("Name"));
+        c.setMembers(new ArrayList<>());
+        return c;
+    }
+
     public void addMember(UUID member) {
         members.add(member);
     }

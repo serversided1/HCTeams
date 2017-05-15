@@ -29,6 +29,12 @@ public class Claim implements Iterable<Coordinate> {
     @Getter private int z2;
     @Getter private String name;
 
+    public static Claim fromJson(BasicDBObject obj) {
+        Claim c = new Claim(LocationSerializer.deserialize((BasicDBObject) obj.get("Location1")), LocationSerializer.deserialize((BasicDBObject) obj.get("Location2")));
+        c.setName(obj.getString("Name"));
+        return c;
+    }
+
     public Claim(Location corner1, Location corner2) {
         this(corner1.getWorld().getName(), corner1.getBlockX(), corner1.getBlockY(), corner1.getBlockZ(), corner2.getBlockX(), corner2.getBlockY(), corner2.getBlockZ());
     }
