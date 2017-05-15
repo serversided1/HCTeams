@@ -261,7 +261,7 @@ public class CombatLoggerListener implements Listener {
                 return;
             }
 
-            SpawnTagHandler.addSeconds(damager, SpawnTagHandler.MAX_SPAWN_TAG);
+            SpawnTagHandler.addOffensiveSeconds(damager, SpawnTagHandler.getMaxTagTime());
         }
     }
 

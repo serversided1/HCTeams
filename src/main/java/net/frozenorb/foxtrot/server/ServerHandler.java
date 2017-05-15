@@ -74,6 +74,7 @@ public class ServerHandler {
     @Getter private final boolean startingTimerEnabled;
     @Getter private final boolean forceInvitesEnabled;
     @Getter private final boolean uhcHealing;
+    @Getter private final boolean passiveTagEnabled;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -125,6 +126,7 @@ public class ServerHandler {
         startingTimerEnabled = Foxtrot.getInstance().getConfig().getBoolean("startingTimer");
         forceInvitesEnabled = Foxtrot.getInstance().getConfig().getBoolean("forceInvites");
         uhcHealing = Foxtrot.getInstance().getConfig().getBoolean("uhcHealing");
+        passiveTagEnabled = Foxtrot.getInstance().getConfig().getBoolean("passiveTag");
 
         for (PotionType type : PotionType.values()) {
             if (type == PotionType.WATER) {

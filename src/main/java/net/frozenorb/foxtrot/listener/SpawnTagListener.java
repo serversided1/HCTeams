@@ -20,8 +20,8 @@ public class SpawnTagListener implements Listener {
 
         /* Only tag player damagers, and deny tagging self */
         if (damager != null && damager != event.getEntity()) {
-            SpawnTagHandler.addSeconds(damager, SpawnTagHandler.MAX_SPAWN_TAG);
-            SpawnTagHandler.addSeconds((Player) event.getEntity(), SpawnTagHandler.MAX_SPAWN_TAG);
+            SpawnTagHandler.addOffensiveSeconds(damager, SpawnTagHandler.getMaxTagTime());
+            SpawnTagHandler.addPassiveSeconds((Player) event.getEntity(), SpawnTagHandler.getMaxTagTime());
         }
     }
 

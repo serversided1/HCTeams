@@ -234,7 +234,7 @@ public class ArcherClass extends PvPClass {
             lastJumpUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
             player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 4));
 
-            SpawnTagHandler.addSeconds(player, SpawnTagHandler.MAX_SPAWN_TAG);
+            SpawnTagHandler.addPassiveSeconds(player, SpawnTagHandler.getMaxTagTime());
             return (false);
         }
     }

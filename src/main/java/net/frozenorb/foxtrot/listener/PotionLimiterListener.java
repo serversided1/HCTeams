@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 
@@ -32,6 +30,7 @@ public class PotionLimiterListener implements Listener {
         if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
             if (!Foxtrot.getInstance().getServerHandler().isSplashPotionAllowed(Potion.fromItemStack(event.getPotion().getItem()).getType())) {
                 event.setCancelled(true);
+                return;
             }
         }
 
@@ -41,7 +40,7 @@ public class PotionLimiterListener implements Listener {
             if (iterator.hasNext()) {
                 if (FoxListener.DEBUFFS.contains(iterator.next().getType())) {
                     if (event.getAffectedEntities().size() > 1 || (event.getAffectedEntities().size() == 1 && !event.getAffectedEntities().contains(event.getPotion().getShooter()))) {
-                        SpawnTagHandler.addSeconds((Player) event.getPotion().getShooter(), SpawnTagHandler.MAX_SPAWN_TAG);
+                        SpawnTagHandler.addOffensiveSeconds((Player) event.getPotion().getShooter(), SpawnTagHandler.getMaxTagTime());
                     }
                 }
             }

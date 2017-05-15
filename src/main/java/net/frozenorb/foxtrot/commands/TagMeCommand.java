@@ -8,7 +8,7 @@ public class TagMeCommand {
 
     @Command(names={ "tagme" }, permission="op")
     public static void tagMe(Player sender) {
-        SpawnTagHandler.addSeconds(sender, SpawnTagHandler.MAX_SPAWN_TAG);
+        SpawnTagHandler.addOffensiveSeconds(sender, SpawnTagHandler.getMaxTagTime());
     }
 
 }
