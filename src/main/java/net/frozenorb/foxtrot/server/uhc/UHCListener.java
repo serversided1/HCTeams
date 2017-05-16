@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -225,6 +226,19 @@ public class UHCListener implements Listener {
 
     @EventHandler
     public void onLeafDecay(LeavesDecayEvent event) {
+        if (event.getBlock().getType() == Material.LEAVES && event.getBlock().getData() % 4 == 0) {
+            if ((Math.random() * 100) <= 3) {
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
+            }
+        } else if (event.getBlock().getType() == Material.LEAVES_2 && event.getBlock().getData() % 4 == 1) {
+            if ((Math.random() * 100) <= 3) {
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.LEAVES && event.getBlock().getData() % 4 == 0) {
             if ((Math.random() * 100) <= 3) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
