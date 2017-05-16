@@ -28,23 +28,25 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
-        if (event.getItem().getDurability() == 0 && !crappleCooldown.containsKey(player.getUniqueId())) {
-            crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
-            return;
-        }
-
-        if (event.getItem().getDurability() == 0 && crappleCooldown.containsKey(player.getUniqueId())) {
-            long millisRemaining = crappleCooldown.get(player.getUniqueId()) - System.currentTimeMillis();
-            double value = (millisRemaining / 1000D);
-            double sec = value > 0.1 ? Math.round(10.0 * value) / 10.0 : 0.1;
-
-            if (crappleCooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
-                player.sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
-                event.setCancelled(true);
-                return;
-            } else {
+        if (!Foxtrot.getInstance().getServerHandler().isUhcHealing()) {
+            if (event.getItem().getDurability() == 0 && !crappleCooldown.containsKey(player.getUniqueId())) {
                 crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
                 return;
+            }
+
+            if (event.getItem().getDurability() == 0 && crappleCooldown.containsKey(player.getUniqueId())) {
+                long millisRemaining = crappleCooldown.get(player.getUniqueId()) - System.currentTimeMillis();
+                double value = (millisRemaining / 1000D);
+                double sec = value > 0.1 ? Math.round(10.0 * value) / 10.0 : 0.1;
+
+                if (crappleCooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
+                    player.sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
+                    event.setCancelled(true);
+                    return;
+                } else {
+                    crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
+                    return;
+                }
             }
         }
 
