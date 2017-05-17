@@ -1,10 +1,12 @@
 package net.frozenorb.foxtrot.server.uhc;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.util.ItemBuilder;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
@@ -19,6 +21,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerHealthChangeEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -36,7 +40,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -72,16 +75,6 @@ public class UHCListener implements Listener {
     private Map<UUID, Long> deathTime = new HashMap<>();
 
     public UHCListener() {
-        Iterator<Recipe> iterator = Bukkit.recipeIterator();
-
-        while (iterator.hasNext()) {
-            Recipe recipe = iterator.next();
-
-            if (recipe.getResult().getType() == Material.GOLDEN_APPLE && recipe.getResult().getDurability() != 1) {
-                iterator.remove();
-            }
-        }
-
         ShapedRecipe recipe = new ShapedRecipe(new ItemStack(Material.GOLDEN_APPLE));
         recipe.shape(
                 "NNN",
@@ -159,6 +152,41 @@ public class UHCListener implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @EventHandler
+    public void onCraft(CraftItemEvent event) {
+        if (isOldCrappleRecipe(event.getRecipe())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPrepare(PrepareItemCraftEvent event) {
+        if (isOldCrappleRecipe(event.getRecipe())) {
+            ItemStack result = ItemBuilder.of(Material.WOOL).data(DyeColor.RED.getWoolData()).name("&cThis recipe is disabled.").addToLore("&eUse gold nuggets instead of ingots.").build();
+
+            event.getInventory().setResult(result);
+        }
+    }
+
+    private boolean isOldCrappleRecipe(Recipe r) {
+        if (!(r instanceof ShapedRecipe)) {
+            return false;
+        }
+
+        ShapedRecipe recipe = (ShapedRecipe) r;
+
+        char[] goldChars = ("abc" + "df" + "ghi").toCharArray();
+        char appleChar = 'e';
+
+        for (char c : goldChars) {
+            if (recipe.getIngredientMap().get(c).getType() != Material.GOLD_INGOT) {
+                return false;
+            }
+        }
+
+        return recipe.getIngredientMap().get(appleChar).getType() == Material.APPLE;
     }
 
     @EventHandler
