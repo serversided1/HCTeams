@@ -24,7 +24,7 @@ public class GoldenAppleListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (event.getItem() == null ||event.getItem().getType() != Material.GOLDEN_APPLE) {
+        if (event.getItem() == null || event.getItem().getType() != Material.GOLDEN_APPLE) {
             return;
         }
 
@@ -49,6 +49,8 @@ public class GoldenAppleListener implements Listener {
                 }
             }
         }
+
+        if (event.getItem().getType() == Material.GOLDEN_APPLE && event.getItem().getDurability() == 0) return;
 
         if (Foxtrot.getInstance().getMapHandler().getGoppleCooldown() == -1) {
             event.setCancelled(true);
