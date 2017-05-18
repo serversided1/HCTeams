@@ -181,6 +181,10 @@ public class UHCListener implements Listener {
         char appleChar = 'e';
 
         for (char c : goldChars) {
+            if (recipe.getIngredientMap().get(c) == null) {
+                return false;
+            }
+
             if (recipe.getIngredientMap().get(c).getType() != Material.GOLD_INGOT) {
                 return false;
             }
@@ -254,11 +258,11 @@ public class UHCListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onLeafDecay(LeavesDecayEvent event) {
-        if (event.getBlock().getType() == Material.LEAVES && event.getBlock().getData() % 4 == 0) {
+        if (event.getBlock().getType() == Material.LEAVES) {
             if ((Math.random() * 100) <= 3) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
-        } else if (event.getBlock().getType() == Material.LEAVES_2 && event.getBlock().getData() % 4 == 1) {
+        } else if (event.getBlock().getType() == Material.LEAVES_2) {
             if ((Math.random() * 100) <= 3) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
@@ -267,11 +271,11 @@ public class UHCListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getBlock().getType() == Material.LEAVES && event.getBlock().getData() % 4 == 0) {
+        if (event.getBlock().getType() == Material.LEAVES) {
             if ((Math.random() * 100) <= 3) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
-        } else if (event.getBlock().getType() == Material.LEAVES_2 && event.getBlock().getData() % 4 == 1) {
+        } else if (event.getBlock().getType() == Material.LEAVES_2) {
             if ((Math.random() * 100) <= 3) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
