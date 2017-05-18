@@ -17,6 +17,7 @@ squads: false
 idleCheck: true
 uhcHealing: false
 passiveTag: true
+allowBoosting: false
 minerWorld:
   regen:
     COAL_ORE: 30

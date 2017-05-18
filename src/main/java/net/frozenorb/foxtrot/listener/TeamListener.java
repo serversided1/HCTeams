@@ -16,10 +16,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -332,6 +330,17 @@ public class TeamListener implements Listener {
             Player victim = (Player) event.getEntity();
 
             if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+                if (Foxtrot.getInstance().getServerHandler().isAllowBoosting()) {
+                    if (event.getDamager() instanceof FishHook) {
+                        // allow fishing rod boosting
+                        return;
+                    } else if (event.getDamager() instanceof Player && !Enchantment.DURABILITY.canEnchantItem(damager.getItemInHand())) {
+                        // allow melee boosting
+                        event.setDamage(0.0D);
+                        return;
+                    }
+                }
+
                 if (team.isMember(victim.getUniqueId())) {
                     damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.YELLOW + ".");
                     event.setCancelled(true);
