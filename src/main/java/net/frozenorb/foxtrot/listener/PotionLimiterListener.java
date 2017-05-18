@@ -49,7 +49,7 @@ public class PotionLimiterListener implements Listener {
 
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (event.getItem().getType() != Material.POTION || event.getItem().getDurability() != (short) 0) {
+        if (event.getItem().getType() != Material.POTION) {
             return;
         }
 
