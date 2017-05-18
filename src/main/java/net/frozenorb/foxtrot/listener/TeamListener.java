@@ -330,18 +330,18 @@ public class TeamListener implements Listener {
             Player victim = (Player) event.getEntity();
 
             if (team != null && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
-                if (Foxtrot.getInstance().getServerHandler().isAllowBoosting()) {
-                    if (event.getDamager() instanceof FishHook) {
-                        // allow fishing rod boosting
-                        return;
-                    } else if (event.getDamager() instanceof Player && !Enchantment.DURABILITY.canEnchantItem(damager.getItemInHand())) {
-                        // allow melee boosting
-                        event.setDamage(0.0D);
-                        return;
-                    }
-                }
-
                 if (team.isMember(victim.getUniqueId())) {
+                    if (Foxtrot.getInstance().getServerHandler().isAllowBoosting()) {
+                        if (event.getDamager() instanceof FishHook) {
+                            // allow fishing rod boosting
+                            return;
+                        } else if (event.getDamager() instanceof Player && !Enchantment.DURABILITY.canEnchantItem(damager.getItemInHand())) {
+                            // allow melee boosting
+                            event.setDamage(0.0D);
+                            return;
+                        }
+                    }
+
                     damager.sendMessage(ChatColor.YELLOW + "You cannot hurt " + ChatColor.DARK_GREEN + victim.getName() + ChatColor.YELLOW + ".");
                     event.setCancelled(true);
                 } else if (team.isAlly(victim.getUniqueId())) {
