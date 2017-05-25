@@ -135,7 +135,7 @@ public class ServerHandler {
                 continue;
             }
 
-            PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drinkables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"));
+            PotionStatus status = new PotionStatus(Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".drinkables"), Foxtrot.getInstance().getConfig().getBoolean("potions." + type + ".splash"), Foxtrot.getInstance().getConfig().getInt("potions." + type + ".maxLevel", -1));
             potionStatus.put(type, status);
         }
 
@@ -194,6 +194,10 @@ public class ServerHandler {
 
     public boolean isDrinkablePotionAllowed(PotionType type) {
         return (!potionStatus.containsKey(type) || potionStatus.get(type).drinkables);
+    }
+
+    public boolean isPotionLevelAllowed(PotionType type, int amplifier) {
+        return (!potionStatus.containsKey(type) || potionStatus.get(type).maxLevel == -1 || potionStatus.get(type).maxLevel >= amplifier);
     }
 
     public void startLogoutSequence(final Player player) {
@@ -754,6 +758,7 @@ public class ServerHandler {
 
         private boolean drinkables;
         private boolean splash;
+        private int maxLevel;
 
     }
 

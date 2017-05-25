@@ -28,9 +28,10 @@ public class PotionLimiterListener implements Listener {
         }
 
         if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            if (!Foxtrot.getInstance().getServerHandler().isSplashPotionAllowed(Potion.fromItemStack(event.getPotion().getItem()).getType())) {
+            Potion potion = Potion.fromItemStack(event.getPotion().getItem());
+
+            if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
                 event.setCancelled(true);
-                return;
             }
         }
 
@@ -53,7 +54,9 @@ public class PotionLimiterListener implements Listener {
             return;
         }
 
-        if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(Potion.fromItemStack(event.getItem()).getType())) {
+        Potion potion = Potion.fromItemStack(event.getItem());
+
+        if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
         }
