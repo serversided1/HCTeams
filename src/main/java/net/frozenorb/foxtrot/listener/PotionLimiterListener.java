@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.server.event.DisallowedPotionDrinkEvent;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -57,8 +58,12 @@ public class PotionLimiterListener implements Listener {
         Potion potion = Potion.fromItemStack(event.getItem());
 
         if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
+            DisallowedPotionDrinkEvent potionDrinkEvent = new DisallowedPotionDrinkEvent(event.getPlayer(), potion);
+
+            if (!potionDrinkEvent.isAllowed()) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.RED + "This potion is not usable!");
+            }
         }
     }
 
