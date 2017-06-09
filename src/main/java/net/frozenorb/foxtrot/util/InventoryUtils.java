@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.util;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -33,6 +34,18 @@ public class InventoryUtils {
         meta.setLore(getCrowbarLore(CROWBAR_PORTALS, CROWBAR_SPAWNERS));
 
         CROWBAR.setItemMeta(meta);
+    }
+
+    public static void fillBucket(Player player) {
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            ItemStack item = player.getInventory().getItem(i);
+
+            if (item != null && item.getType() == Material.BUCKET) {
+                item.setType(Material.WATER_BUCKET);
+                player.updateInventory();
+                break;
+            }
+        }
     }
 
     public static boolean conformEnchants(ItemStack item) {

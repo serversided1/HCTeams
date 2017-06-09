@@ -18,6 +18,7 @@ idleCheck: true
 uhcHealing: false
 passiveTag: true
 allowBoosting: false
+waterPlacementInClaims: false
 minerWorld:
   regen:
     COAL_ORE: 30

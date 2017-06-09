@@ -2,9 +2,12 @@ package net.frozenorb.foxtrot.listener;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -21,6 +24,8 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.concurrent.TimeUnit;
 
 public class  SpawnListener implements Listener {
 
@@ -135,7 +140,13 @@ public class  SpawnListener implements Listener {
         }
 
         if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlockClicked().getLocation())) {
-            event.setCancelled(true);
+            if (!Foxtrot.getInstance().getServerHandler().isWaterPlacementInClaimsAllowed()) {
+                event.setCancelled(true);
+            } else {
+                final Block waterBlock = event.getBlockClicked().getRelative(event.getBlockFace());
+
+                RegenUtils.schedule(waterBlock, 30, TimeUnit.SECONDS, (block) -> InventoryUtils.fillBucket(event.getPlayer()));
+            }
         }
     }
 

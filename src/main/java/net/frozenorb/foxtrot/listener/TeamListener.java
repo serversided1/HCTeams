@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.listener;
 
 import com.google.common.collect.ImmutableMap;
-
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.team.Team;
@@ -10,8 +9,11 @@ import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,6 +32,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class TeamListener implements Listener {
 
@@ -381,9 +384,17 @@ public class TeamListener implements Listener {
 
         Team owner = LandBoard.getInstance().getTeam(checkLocation);
 
+        boolean canPlace = owner.hasDTRBitmask(DTRBitmask.KOTH) && Foxtrot.getInstance().getServerHandler().isWaterPlacementInClaimsAllowed();
+
         if (!owner.isMember(event.getPlayer().getUniqueId())) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+            if (!canPlace) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + owner.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+            } else {
+                final Block waterBlock = event.getBlockClicked().getRelative(event.getBlockFace());
+
+                RegenUtils.schedule(waterBlock, 30, TimeUnit.SECONDS, (block) -> InventoryUtils.fillBucket(event.getPlayer()));
+            }
         }
     }
 

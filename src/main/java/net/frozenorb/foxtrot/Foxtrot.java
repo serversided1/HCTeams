@@ -61,6 +61,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.commands.team.TeamClaimCommand;
 import net.frozenorb.foxtrot.team.commands.team.subclaim.TeamSubclaimCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -203,6 +204,8 @@ public class Foxtrot extends JavaPlugin {
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().save();
         }
+
+        RegenUtils.resetAll();
 
         qLib.getInstance().runRedisCommand((jedis) -> {
             jedis.save();
