@@ -145,7 +145,7 @@ public class  SpawnListener implements Listener {
             } else {
                 final Block waterBlock = event.getBlockClicked().getRelative(event.getBlockFace());
 
-                RegenUtils.schedule(waterBlock, 30, TimeUnit.SECONDS, (block) -> InventoryUtils.fillBucket(event.getPlayer()));
+                RegenUtils.schedule(waterBlock, 30, TimeUnit.SECONDS, (block) -> InventoryUtils.fillBucket(event.getPlayer()), (block) -> true);
             }
         }
     }

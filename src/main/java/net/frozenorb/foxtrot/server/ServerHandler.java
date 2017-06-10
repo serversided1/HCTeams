@@ -77,6 +77,7 @@ public class ServerHandler {
     @Getter private final boolean passiveTagEnabled;
     @Getter private final boolean allowBoosting;
     @Getter private final boolean waterPlacementInClaimsAllowed;
+    @Getter private final boolean blockRemovalEnabled;
 
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
@@ -131,6 +132,7 @@ public class ServerHandler {
         passiveTagEnabled = Foxtrot.getInstance().getConfig().getBoolean("passiveTag");
         allowBoosting = Foxtrot.getInstance().getConfig().getBoolean("allowBoosting");
         waterPlacementInClaimsAllowed = Foxtrot.getInstance().getConfig().getBoolean("waterPlacementInClaims");
+        blockRemovalEnabled = Foxtrot.getInstance().getConfig().getBoolean("blockRemoval");
 
         for (PotionType type : PotionType.values()) {
             if (type == PotionType.WATER) {

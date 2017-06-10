@@ -271,12 +271,18 @@ public class UHCListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
+        int multiplier = 1;
+
+        if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() == Material.SHEARS && event.getPlayer().getItemInHand().hasItemMeta() && event.getPlayer().getItemInHand().getItemMeta().hasDisplayName() && event.getPlayer().getItemInHand().getItemMeta().getDisplayName().contains(ChatColor.GOLD.toString() + ChatColor.BOLD)) {
+            multiplier = 3;
+        }
+
         if (event.getBlock().getType() == Material.LEAVES) {
-            if ((Math.random() * 100) <= 3) {
+            if ((Math.random() * 100) <= 3 * multiplier) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
         } else if (event.getBlock().getType() == Material.LEAVES_2) {
-            if ((Math.random() * 100) <= 3) {
+            if ((Math.random() * 100) <= 3 * multiplier) {
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), new ItemStack(Material.APPLE));
             }
         }

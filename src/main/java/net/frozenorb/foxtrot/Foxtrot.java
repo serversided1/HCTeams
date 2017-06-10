@@ -13,32 +13,7 @@ import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
 import net.frozenorb.foxtrot.idle.IdleCheckRunnable;
 import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
-import net.frozenorb.foxtrot.listener.AntiGlitchListener;
-import net.frozenorb.foxtrot.listener.BasicPreventionListener;
-import net.frozenorb.foxtrot.listener.BorderListener;
-import net.frozenorb.foxtrot.listener.CombatLoggerListener;
-import net.frozenorb.foxtrot.listener.CrowbarListener;
-import net.frozenorb.foxtrot.listener.DeathbanListener;
-import net.frozenorb.foxtrot.listener.EnchantmentLimiterListener;
-import net.frozenorb.foxtrot.listener.EndListener;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
-import net.frozenorb.foxtrot.listener.FoundDiamondsListener;
-import net.frozenorb.foxtrot.listener.FoxListener;
-import net.frozenorb.foxtrot.listener.GoldenAppleListener;
-import net.frozenorb.foxtrot.listener.KOTHRewardKeyListener;
-import net.frozenorb.foxtrot.listener.MapListener;
-import net.frozenorb.foxtrot.listener.NetherPortalListener;
-import net.frozenorb.foxtrot.listener.PortalTrapListener;
-import net.frozenorb.foxtrot.listener.PotionLimiterListener;
-import net.frozenorb.foxtrot.listener.PvPTimerListener;
-import net.frozenorb.foxtrot.listener.SignSubclaimListener;
-import net.frozenorb.foxtrot.listener.SpawnListener;
-import net.frozenorb.foxtrot.listener.SpawnTagListener;
-import net.frozenorb.foxtrot.listener.StaffUtilsListener;
-import net.frozenorb.foxtrot.listener.StatTrakListener;
-import net.frozenorb.foxtrot.listener.TeamListener;
-import net.frozenorb.foxtrot.listener.TeamRequestSpamListener;
-import net.frozenorb.foxtrot.listener.WebsiteListener;
+import net.frozenorb.foxtrot.listener.*;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
@@ -282,6 +257,9 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
+        if (getServerHandler().isBlockRemovalEnabled()) {
+            getServer().getPluginManager().registerEvents(new BlockRegenListener(), this);
+        }
     }
 
     private void setupPersistence() {

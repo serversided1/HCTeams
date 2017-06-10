@@ -83,20 +83,6 @@ public class FoxListener implements Listener {
         FIRST_SPAWN_FISHING_ROD.addEnchantment(Enchantment.LURE, 2);
     }
 
-    @EventHandler
-    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (Foxtrot.getInstance().getServerHandler().isAdminOverride(event.getPlayer()) || event.getBucket() != LAVA_BUCKET) {
-            return;
-        }
-
-        Team teamAt = LandBoard.getInstance().getTeam(event.getBlockClicked().getRelative(event.getBlockFace()).getLocation());
-
-        if (teamAt == null) {
-            event.getPlayer().sendMessage(RED + "You cannot place lava in the wilderness!");
-            event.setCancelled(true);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         processTerritoryInfo(event); // this only works because I'm lucky and PlayerTeleportEvent extends PlayerMoveEvent :0

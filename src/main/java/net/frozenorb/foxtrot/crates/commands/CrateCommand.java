@@ -13,7 +13,7 @@ import static org.bukkit.ChatColor.RED;
 
 public class CrateCommand {
 
-    @Command(names = "crate", permission = "op")
+    @Command(names = "hctcrate", permission = "op")
     public static void onCreateKit(Player sender, @Param(name = "kit") String kit) {
         ItemStack enderChest = new ItemStack(Material.ENDER_CHEST, 1);
         ItemMeta itemMeta = enderChest.getItemMeta();
