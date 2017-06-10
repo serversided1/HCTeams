@@ -1,35 +1,42 @@
 package net.frozenorb.foxtrot.server;
 
 import com.mongodb.BasicDBObject;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.bukkit.entity.Player;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@AllArgsConstructor
-public enum Deathban {
+public final class Deathban {
 
-    DEFAULT("", 240),
-    VIP("inherit.vip", 120),
-    PRO("inherit.pro", 90),
-    EPIC("inherit.epic", 45),
-    HIGHROLLER("inherit.highroller", 45);
+    private static Map<String, Integer> deathban = new LinkedHashMap<>();
 
-    @Getter private final String permission;
-    private int minutes;
-
-    public int inSeconds() {
-        return (int) TimeUnit.MINUTES.toSeconds(minutes); // hours -> seconds
-    }
-
-    private int toHours() {
-        return (int) TimeUnit.MINUTES.toHours(minutes);
+    static {
+        deathban.put("DEFAULT", 240);
+        deathban.put("VIP", 120);
+        deathban.put("PRO", 90);
+        deathban.put("EPIC", 45);
+        deathban.put("HIGHROLLER", 45);
     }
 
     public static void load(BasicDBObject object) {
+        deathban.clear();
+
         for (String key : object.keySet()) {
-            valueOf(key).minutes = object.getInt(key);
+            deathban.put(key, object.getInt(key));
         }
+    }
+
+    public static int getDeathbanSeconds(Player player) {
+        int minutes = 0;
+
+        for (Map.Entry<String, Integer> entry : deathban.entrySet()) {
+            if (entry.getKey().equals("DEAULT") || player.hasPermission("inherit." + entry.getKey().toLowerCase())) {
+                minutes = entry.getValue();
+            }
+        }
+
+        return (int) TimeUnit.MINUTES.toSeconds(minutes);
     }
 
 }

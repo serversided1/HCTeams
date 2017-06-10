@@ -353,16 +353,7 @@ public class ServerHandler {
             }
         }
 
-        // The default max.
-        int max = /*Deathban.DEFAULT.inSeconds()*/ (int) TimeUnit.HOURS.toSeconds(1);
-
-        /*if (player != null) {
-            for (Deathban deathban : Deathban.values()) {
-                if (max > deathban.inSeconds() && player.hasPermission(deathban.getPermission())) {
-                    max = deathban.inSeconds(); // sets max deathban lower if player has permission
-                }
-            }
-        }*/
+        int max = Deathban.getDeathbanSeconds(player);
 
         long ban = Foxtrot.getInstance().getPlaytimeMap().getPlaytime(playerUUID);
 
