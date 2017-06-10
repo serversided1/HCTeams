@@ -1,6 +1,9 @@
 package net.frozenorb.foxtrot.server.uhc;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.util.ItemBuilder;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.minecraft.server.v1_7_R4.PacketPlayOutScoreboardScore;
@@ -240,6 +243,20 @@ public class UHCListener implements Listener {
 
                 }.runTask(Foxtrot.getInstance());
             }
+        }
+    }
+
+    @EventHandler
+    public void onRegen(EntityRegainHealthEvent event) {
+        if (!(event.getEntity() instanceof Player) || event.getRegainReason() != EntityRegainHealthEvent.RegainReason.SATIATED) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+        Team team = LandBoard.getInstance().getTeam(player.getLocation());
+
+        if (team == null || !team.isMember(player.getUniqueId()) || SpawnTagHandler.isTagged(player)) {
+            event.setCancelled(true);
         }
     }
 
