@@ -273,7 +273,7 @@ public class UHCListener implements Listener {
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> deathTime.remove(event.getEntity().getUniqueId()), 20L);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLeafDecay(LeavesDecayEvent event) {
         if (event.getBlock().getType() == Material.LEAVES) {
             if ((Math.random() * 100) <= 3) {
@@ -286,7 +286,7 @@ public class UHCListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         int multiplier = 1;
 
