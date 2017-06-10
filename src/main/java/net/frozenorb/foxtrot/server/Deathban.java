@@ -32,7 +32,9 @@ public final class Deathban {
 
         for (Map.Entry<String, Integer> entry : deathban.entrySet()) {
             if (entry.getKey().equals("DEAULT") || player.hasPermission("inherit." + entry.getKey().toLowerCase())) {
-                minutes = entry.getValue();
+                if (minutes == 0 || minutes > entry.getValue()) {
+                    minutes = entry.getValue();
+                }
             }
         }
 
