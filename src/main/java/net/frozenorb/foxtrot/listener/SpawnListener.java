@@ -8,6 +8,7 @@ import net.frozenorb.qlib.util.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -144,6 +145,11 @@ public class  SpawnListener implements Listener {
                 event.setCancelled(true);
             } else {
                 final Block waterBlock = event.getBlockClicked().getRelative(event.getBlockFace());
+
+                if (waterBlock.getRelative(BlockFace.NORTH).isLiquid() || waterBlock.getRelative(BlockFace.SOUTH).isLiquid() || waterBlock.getRelative(BlockFace.EAST).isLiquid() || waterBlock.getRelative(BlockFace.WEST).isLiquid()) {
+                    event.setCancelled(true);
+                    return;
+                }
 
                 RegenUtils.schedule(waterBlock, 30, TimeUnit.SECONDS, (block) -> InventoryUtils.fillBucket(event.getPlayer()), (block) -> true);
             }
