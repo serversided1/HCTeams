@@ -7,6 +7,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.team.event.PlayerBuildInOthersClaim;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
@@ -177,6 +178,12 @@ public class TeamListener implements Listener {
         }
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
+            PlayerBuildInOthersClaim buildEvent = new PlayerBuildInOthersClaim(event.getPlayer());
+
+            if (!buildEvent.isWillIgnore()) {
+                return;
+            }
+
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
             event.setCancelled(true);
 
