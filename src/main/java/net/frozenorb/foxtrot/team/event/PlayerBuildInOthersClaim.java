@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.team.event;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.frozenorb.foxtrot.team.Team;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -13,10 +14,12 @@ public class PlayerBuildInOthersClaim extends PlayerEvent {
 
     @Getter @Setter private boolean willIgnore;
     @Getter private final Block block;
+    @Getter private final Team team;
 
-    public PlayerBuildInOthersClaim(Player who, Block block) {
+    public PlayerBuildInOthersClaim(Player who, Block block, Team team) {
         super(who);
         this.block = block;
+        this.team = team;
     }
 
     @Override
