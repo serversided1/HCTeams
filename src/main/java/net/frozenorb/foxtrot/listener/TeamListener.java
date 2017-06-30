@@ -7,14 +7,13 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.team.event.PlayerBuildInOthersClaim;
+import net.frozenorb.foxtrot.team.event.PlayerBuildInOthersClaimEvent;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -178,7 +177,7 @@ public class TeamListener implements Listener {
         }
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
-            PlayerBuildInOthersClaim buildEvent = new PlayerBuildInOthersClaim(event.getPlayer(), event.getBlock());
+            PlayerBuildInOthersClaimEvent buildEvent = new PlayerBuildInOthersClaimEvent(event.getPlayer(), event.getBlock(), team);
 
             if (!buildEvent.isWillIgnore()) {
                 return;

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
-public class PlayerBuildInOthersClaim extends PlayerEvent {
+public class PlayerBuildInOthersClaimEvent extends PlayerEvent {
 
     @Getter private static HandlerList handlerList = new HandlerList();
 
@@ -16,7 +16,7 @@ public class PlayerBuildInOthersClaim extends PlayerEvent {
     @Getter private final Block block;
     @Getter private final Team team;
 
-    public PlayerBuildInOthersClaim(Player who, Block block, Team team) {
+    public PlayerBuildInOthersClaimEvent(Player who, Block block, Team team) {
         super(who);
         this.block = block;
         this.team = team;
