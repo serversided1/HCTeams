@@ -179,7 +179,7 @@ public class TeamListener implements Listener {
         if (!team.isMember(event.getPlayer().getUniqueId())) {
             PlayerBuildInOthersClaimEvent buildEvent = new PlayerBuildInOthersClaimEvent(event.getPlayer(), event.getBlock(), team);
 
-            if (!buildEvent.isWillIgnore()) {
+            if (buildEvent.isWillIgnore()) {
                 return;
             }
 
