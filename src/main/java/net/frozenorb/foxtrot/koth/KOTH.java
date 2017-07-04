@@ -23,8 +23,8 @@ public class KOTH {
     @Getter private int capDistance;
     @Getter private int capTime;
     @Getter private boolean hidden = false;
+    @Getter private boolean active;
 
-    @Getter private transient boolean active;
     @Getter private transient String currentCapper;
     @Getter private transient int remainingCapTime;
     @Getter @Setter private transient boolean terminate;
