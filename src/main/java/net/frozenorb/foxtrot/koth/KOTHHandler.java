@@ -94,9 +94,12 @@ public class KOTHHandler {
             e.printStackTrace();
         }
 
-        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () ->
-            KOTHs.stream().filter(KOTH::isActive).forEach((koth) -> koth.activate(true))
-        );
+        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
+            KOTHs.stream().filter(KOTH::isActive).forEach((koth) -> {
+                koth.active = false;
+                Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), koth::activate, 200L);
+            });
+        });
     }
 
     public void loadSchedules() {

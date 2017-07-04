@@ -23,7 +23,7 @@ public class KOTH {
     @Getter private int capDistance;
     @Getter private int capTime;
     @Getter private boolean hidden = false;
-    @Getter private boolean active;
+    @Getter boolean active;
 
     @Getter private transient String currentCapper;
     @Getter private transient int remainingCapTime;
@@ -71,11 +71,7 @@ public class KOTH {
     }
 
     public boolean activate() {
-        return activate(false);
-    }
-
-    public boolean activate(boolean force) {
-        if (active && !force) {
+        if (active) {
             return (false);
         }
 
