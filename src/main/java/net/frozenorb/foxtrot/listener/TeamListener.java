@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.util.PlayerUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -178,6 +179,7 @@ public class TeamListener implements Listener {
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
             PlayerBuildInOthersClaimEvent buildEvent = new PlayerBuildInOthersClaimEvent(event.getPlayer(), event.getBlock(), team);
+            Bukkit.getPluginManager().callEvent(buildEvent);
 
             if (buildEvent.isWillIgnore()) {
                 return;
