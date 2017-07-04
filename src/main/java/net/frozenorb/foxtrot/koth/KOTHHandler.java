@@ -94,11 +94,16 @@ public class KOTHHandler {
             e.printStackTrace();
         }
 
-        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
-            KOTHs.stream().filter(KOTH::isActive).forEach((koth) -> {
-                koth.active = false;
-                Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), koth::activate, 200L);
-            });
+        // look for a previously active KOTH, if present deactivate and start it after 10 minutes
+        KOTHs.stream().filter(KOTH::isActive).findFirst().ifPresent((koth) -> {
+            koth.active = false;
+            Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+                // if anyone had started a KOTH within the last 10 minutes,
+                // don't activate previously active one
+                if (KOTHs.stream().anyMatch(KOTH::isActive)) {
+                    koth.activate();
+                }
+            }, 1200L);
         });
     }
 
