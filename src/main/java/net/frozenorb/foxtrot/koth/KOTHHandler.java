@@ -13,6 +13,7 @@ import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.serialization.LocationSerializer;
 import net.frozenorb.qlib.util.TimeUtils;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
@@ -92,6 +93,10 @@ public class KOTHHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () ->
+            KOTHs.stream().filter(KOTH::isActive).forEach((koth) -> koth.activate(true))
+        );
     }
 
     public void loadSchedules() {

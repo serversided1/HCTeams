@@ -71,7 +71,11 @@ public class KOTH {
     }
 
     public boolean activate() {
-        if (active) {
+        return activate(false);
+    }
+
+    public boolean activate(boolean force) {
+        if (active && !force) {
             return (false);
         }
 
