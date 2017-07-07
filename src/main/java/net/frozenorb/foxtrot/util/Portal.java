@@ -34,49 +34,32 @@ public class Portal {
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // z++
                 Block next = block.getRelative(BlockFace.SOUTH, i);
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     maxZ = next.getRelative(BlockFace.SOUTH).getRelative(BlockFace.DOWN).getZ();
                     maxZ = maxZ < 0 ? maxZ + 1 : maxZ - 1;
                     break;
                 }
-
-                break;
             }
 
             int minZ = Integer.MAX_VALUE;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // z--
                 Block next = block.getRelative(BlockFace.NORTH, i);
-
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     minZ = next.getRelative(BlockFace.NORTH).getRelative(BlockFace.DOWN).getZ();
                     minZ = minZ < 0 ? minZ - 1 : minZ + 1;
                     break;
                 }
-
-                break;
             }
 
             int maxY = Integer.MIN_VALUE;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // y++
                 Block next = block.getRelative(BlockFace.UP, i);
-
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     maxY = next.getY();
                     break;
                 }
-
-                break;
             }
 
             this.portal = new Cuboid(block.getWorld(), minX, minY, minZ, maxX, maxY, maxZ);
@@ -89,26 +72,18 @@ public class Portal {
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // x++
                 Block next = block.getRelative(BlockFace.EAST, i);
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     maxX = next.getRelative(BlockFace.EAST).getRelative(BlockFace.DOWN).getX();
                     maxX = maxX < 0 ? maxX + 1 : maxX - 1;
                     break;
                 }
-
-                break;
             }
 
             int minX = Integer.MAX_VALUE;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // x--
                 Block next = block.getRelative(BlockFace.WEST, i);
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     minX = next.getRelative(BlockFace.WEST).getRelative(BlockFace.DOWN).getX();
                     minX = minX < 0 ? minX - 1 : minX + 1;
                     break;
@@ -119,16 +94,10 @@ public class Portal {
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 // y++
                 Block next = block.getRelative(BlockFace.UP, i);
-
-                if (next.getType() == Material.PORTAL) {
-                    continue;
-                }
-                if (next.getType() == Material.OBSIDIAN) {
+                if (next.getType() != Material.PORTAL) {
                     maxY = next.getY();
                     break;
                 }
-
-                break;
             }
 
             this.portal = new Cuboid(block.getWorld(), minX, minY, minZ, maxX, maxY, maxZ);

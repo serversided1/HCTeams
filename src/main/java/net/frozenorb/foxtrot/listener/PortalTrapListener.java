@@ -32,13 +32,11 @@ public class PortalTrapListener implements Listener {
 
     @EventHandler
     public void onPortal(final PlayerPortalEvent event) {
-        // Calculating blocks async from now on
-        
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) return;
+
         new BukkitRunnable() {
             public void run() {
-                if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) return;
-
-                final Player player = event.getPlayer();
+                Player player = event.getPlayer();
                 Location center = player.getLocation();
 
                 Block block = null;
@@ -63,25 +61,19 @@ public class PortalTrapListener implements Listener {
                     dir = PortalDirection.EAST_WEST;
                 }
 
-                final Portal portal = new Portal(block, dir);
+                Portal portal = new Portal(block, dir);
 
-                // Setting blocks sync because of the op catch
-                new BukkitRunnable() {
-                    public void run() {
-                        if (player.getWorld().getEnvironment() == World.Environment.NETHER) {
-                            if (Math.abs(player.getLocation().getX()) <= 10 && Math.abs(player.getLocation().getZ()) <= 10) {
-                                return;
-                            }
-
-                            portal.patchNether();
-                        } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
-                            portal.patchOverworld();
-                        }
+                if (player.getWorld().getEnvironment() == World.Environment.NETHER) {
+                    if (Math.abs(player.getLocation().getX()) <= 10 && Math.abs(player.getLocation().getZ()) <= 10) {
+                        return;
                     }
-                }.runTask(Foxtrot.getInstance());
+
+                    portal.patchNether();
+                } else if (player.getWorld().getEnvironment() == World.Environment.NORMAL) {
+                    portal.patchOverworld();
+                }
             }
-        }.runTaskLaterAsynchronously
-                (Foxtrot.getInstance(), 1L);
+        }.runTaskLater(Foxtrot.getInstance(), 1L);
     }
 
     @EventHandler
