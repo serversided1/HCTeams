@@ -61,7 +61,6 @@ public class Foxtrot extends JavaPlugin {
     @Getter private static Foxtrot instance;
 
     @Getter private MongoClient mongoPool;
-    @Getter private JedisPool queuePool;
 
     @Getter private ChatHandler chatHandler;
     @Getter private PvPClassHandler pvpClassHandler;
@@ -119,7 +118,6 @@ public class Foxtrot extends JavaPlugin {
         try {
             mongoPool = new MongoClient(getConfig().getString("Mongo.Host", "127.0.0.1"));
             MONGO_DB_NAME = getConfig().getString("Mongo.DBName", MONGO_DB_NAME);
-            queuePool = new JedisPool(getConfig().getString("Queue.Redis.Host"));
         } catch (Exception e) {
             e.printStackTrace();
         }
