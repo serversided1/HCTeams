@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.pvpclasses;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import org.bukkit.Material;
@@ -99,9 +100,8 @@ public abstract class PvPClass implements Listener {
                     continue;
                 }
 
-                if( activePotionEffect.getDuration() < 1_000_000L ) {
-                   PvPClassHandler.getSavedPotions().put( player.getUniqueId(), new SavedPotion(activePotionEffect, System.currentTimeMillis() + ((potionEffect.getDuration() ) * 50) + 50));
-                }
+                PvPClassHandler.getSavedPotions().put( player.getUniqueId(), new SavedPotion(activePotionEffect, (System.currentTimeMillis() + ((potionEffect.getDuration() ) * 50) + 50), activePotionEffect.getDuration() >= 1_000_000L));
+
 
                 /*new BukkitRunnable() {
 
@@ -121,15 +121,12 @@ public abstract class PvPClass implements Listener {
         player.addPotionEffect(potionEffect, true);
     }
 
-    static class SavedPotion {
+    @AllArgsConstructor
+    public static class SavedPotion {
 
         @Getter PotionEffect potionEffect;
         @Getter long time;
-
-        public SavedPotion( PotionEffect potionEffect, long time ) {
-            this.potionEffect = potionEffect;
-            this.time = time;
-        }
+        @Getter private boolean perm;
 
     }
 

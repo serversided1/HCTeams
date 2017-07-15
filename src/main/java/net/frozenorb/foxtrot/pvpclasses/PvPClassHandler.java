@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.pvpclasses;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.pvpclasses.event.BardRestoreEvent;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
@@ -85,6 +86,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
             Map.Entry<UUID, PvPClass.SavedPotion> id = idIterator.next();
             Player player = Bukkit.getPlayer(id.getKey());
             if( player != null && player.isOnline() ) {
+                Bukkit.getPluginManager().callEvent(new BardRestoreEvent(player, id.getValue()));
                 if( id.getValue().getTime() < System.currentTimeMillis() ) {
                     if(player.addPotionEffect(id.getValue().getPotionEffect())) {
                         idIterator.remove();
