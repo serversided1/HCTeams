@@ -17,6 +17,10 @@ passiveTag: true
 allowBoosting: false
 waterPlacementInClaims: false
 blockRemoval: false
+pvpClasses:
+  archer: true
+  bard: true
+  rogue: true
 minerWorld:
   regen:
     COAL_ORE: 30
