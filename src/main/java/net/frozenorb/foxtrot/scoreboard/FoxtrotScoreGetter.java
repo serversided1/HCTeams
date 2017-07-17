@@ -13,8 +13,10 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
 import net.frozenorb.foxtrot.util.Logout;
+import net.frozenorb.qlib.autoreboot.AutoRebootHandler;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
 import net.frozenorb.qlib.scoreboard.ScoreGetter;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -140,6 +142,10 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             if (displayed == 0) {
                 scores.add("  &7No scores yet");
             }
+        }
+
+        if (AutoRebootHandler.isRebooting()) {
+            scores.add("&4&lRebooting: " + TimeUtils.formatIntoMMSS(AutoRebootHandler.getRebootSecondsRemaining()));
         }
 
         if (!scores.isEmpty()) {
