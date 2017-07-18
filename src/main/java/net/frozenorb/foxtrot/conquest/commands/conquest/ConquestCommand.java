@@ -41,7 +41,7 @@ public class ConquestCommand {
         }
 
         sender.sendMessage("");
-        sender.sendMessage(ChatColor.YELLOW.toString() + ConquestHandler.POINTS_TO_WIN + " points are required to win.");
+        sender.sendMessage(ChatColor.YELLOW.toString() + ConquestHandler.getPointsToWin() + " points are required to win.");
     }
 
 }

@@ -83,9 +83,10 @@ public class ConquestGame implements Listener {
         }
 
         teamPoints = sortByValues(teamPoints);
-        Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + team.getName() + ChatColor.GOLD + " captured " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + " and earned a point!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
+        Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD + team.getName() + ChatColor.GOLD + " captured " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + " and earned a point!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) +
+                "/" + ConquestHandler.getPointsToWin() + ")");
 
-        if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.POINTS_TO_WIN) {
+        if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.getPointsToWin()) {
             endGame(team);
         } else {
             new BukkitRunnable() {
@@ -140,7 +141,7 @@ public class ConquestGame implements Listener {
 
         teamPoints.put(team.getUniqueId(), Math.max(0, teamPoints.get(team.getUniqueId()) - ConquestHandler.POINTS_DEATH_PENALTY));
         teamPoints = sortByValues(teamPoints);
-        team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.POINTS_TO_WIN + ")");
+        team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " Your team has lost " + ConquestHandler.POINTS_DEATH_PENALTY + " points because of " + event.getEntity().getName() + "'s death!" + ChatColor.AQUA + " (" + teamPoints.get(team.getUniqueId()) + "/" + ConquestHandler.getPointsToWin() + ")");
     }
 
     private static LinkedHashMap<ObjectId, Integer> sortByValues(Map<ObjectId, Integer> map) {
