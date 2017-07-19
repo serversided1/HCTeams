@@ -87,7 +87,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
             Player player = Bukkit.getPlayer(id.getKey());
             if( player != null && player.isOnline() ) {
                 Bukkit.getPluginManager().callEvent(new BardRestoreEvent(player, id.getValue()));
-                if( id.getValue().getTime() < System.currentTimeMillis() ) {
+                if( id.getValue().getTime() < System.currentTimeMillis() && !id.getValue().isPerm() ) {
                     if(player.addPotionEffect(id.getValue().getPotionEffect())) {
                         idIterator.remove();
                     }
