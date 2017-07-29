@@ -17,6 +17,8 @@ passiveTag: true
 allowBoosting: false
 waterPlacementInClaims: false
 blockRemoval: false
+rodPrevention: false
+skybridgePrevention: false
 pvpClasses:
   archer: true
   bard: true

@@ -140,15 +140,19 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        if (Foxtrot.getInstance().getMapHandler().isSkybridgePrevention() && 70 <= event.getBlock().getLocation().getY() && Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You can't build higher than 70 blocks in the Warzone!");
+        if (Foxtrot.getInstance().getServerHandler().isSkybridgePrevention() && 80 <= event.getBlock().getLocation().getY() && Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't build higher than 80 blocks in the Warzone!");
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onFish(PlayerFishEvent event) {
-        if (Foxtrot.getInstance().getMapHandler().isRodPrevention() && event.getCaught() instanceof Player) {
+    public void onFish(PlayerInteractEvent event) {
+        if (!Foxtrot.getInstance().getServerHandler().isRodPrevention() || (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)) {
+            return;
+        }
+
+        if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() == Material.FISHING_ROD) {
             event.setCancelled(true);
         }
     }

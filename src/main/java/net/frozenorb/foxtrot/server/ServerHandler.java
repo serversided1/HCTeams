@@ -79,6 +79,9 @@ public class ServerHandler {
     @Getter private final boolean waterPlacementInClaimsAllowed;
     @Getter private final boolean blockRemovalEnabled;
 
+    @Getter private final boolean rodPrevention;
+    @Getter private final boolean skybridgePrevention;
+
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
     @Getter private static Map<String, Long> homeTimer = new ConcurrentHashMap<>();
@@ -133,6 +136,9 @@ public class ServerHandler {
         allowBoosting = Foxtrot.getInstance().getConfig().getBoolean("allowBoosting");
         waterPlacementInClaimsAllowed = Foxtrot.getInstance().getConfig().getBoolean("waterPlacementInClaims");
         blockRemovalEnabled = Foxtrot.getInstance().getConfig().getBoolean("blockRemoval");
+
+        rodPrevention = Foxtrot.getInstance().getConfig().getBoolean("rodPrevention", true);
+        skybridgePrevention = Foxtrot.getInstance().getConfig().getBoolean("skybridgePrevention", true);
 
         for (PotionType type : PotionType.values()) {
             if (type == PotionType.WATER) {
