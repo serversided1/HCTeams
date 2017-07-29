@@ -55,6 +55,8 @@ public class MapHandler {
     @Getter private boolean fastSmeltEnabled;
     @Getter @Setter private int netherBuffer;
     @Getter @Setter private int worldBuffer;
+    @Getter @Setter private boolean rodPrevention;
+    @Getter @Setter private boolean skybridgePrevention;
 
     // Kit-Map only stuff:
     @Getter private StatsHandler statsHandler;
@@ -76,6 +78,10 @@ public class MapHandler {
 
             // Remove vanilla glistering melon recipe
             if (craftingReducedMelon && recipe.getResult().getType() == Material.SPECKLED_MELON) {
+                recipeIterator.remove();
+            }
+
+            if (rodPrevention && recipe.getResult().getType() == Material.FISHING_ROD) {
                 recipeIterator.remove();
             }
         }
@@ -197,6 +203,14 @@ public class MapHandler {
                 if (dbObject.containsKey("minForceInviteMembers")) {
                     minForceInviteMembers = dbObject.getInt("minForceInviteMembers");
                 }
+
+                if (dbObject.containsKey("rodPrevention")) {
+                    this.rodPrevention = dbObject.getBoolean("rodPrevention");
+                }
+
+                if (dbObject.containsKey("skybridgePrevention")) {
+                    this.skybridgePrevention = dbObject.getBoolean("skybridgePrevention");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,6 +260,9 @@ public class MapHandler {
         dbObject.put("deathban", deathban);
 
         dbObject.put("minForceInviteMembers", 10);
+
+        dbObject.put("rodPrevention", false);
+        dbObject.put("skybridgePrevention", false);
 
         return dbObject;
     }

@@ -1,12 +1,15 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.qLib;
-import org.bukkit.*;
-import org.bukkit.entity.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -14,11 +17,26 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.qLib;
 
 public class BasicPreventionListener implements Listener {
 
@@ -116,6 +134,21 @@ public class BasicPreventionListener implements Listener {
     @EventHandler
     public void onBlockBurn(BlockBurnEvent event) {
         if (Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlace(BlockPlaceEvent event) {
+        if (Foxtrot.getInstance().getMapHandler().isSkybridgePrevention() && 70 <= event.getBlock().getLocation().getY() && Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't build higher than 70 blocks in the Warzone!");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onFish(PlayerFishEvent event) {
+        if (Foxtrot.getInstance().getMapHandler().isRodPrevention() && event.getCaught() instanceof Player) {
             event.setCancelled(true);
         }
     }
