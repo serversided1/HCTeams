@@ -13,6 +13,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
@@ -48,6 +49,7 @@ import org.bukkit.util.BlockVector;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.ChatColor.*;
@@ -65,6 +67,7 @@ public class FoxListener implements Listener {
     public static final Set<Material> NO_INTERACT = ImmutableSet.of(
             FENCE_GATE, FURNACE, BURNING_FURNACE, BREWING_STAND, CHEST, HOPPER, DISPENSER, WOODEN_DOOR,
             STONE_BUTTON, WOOD_BUTTON, TRAPPED_CHEST, TRAP_DOOR, LEVER, DROPPER, ENCHANTMENT_TABLE, BED_BLOCK, ANVIL, BEACON);
+    private static final List<UUID> processingTeleportPlayers = new CopyOnWriteArrayList<>();
 
     static {
         BookMeta bookMeta = (BookMeta) FIRST_SPAWN_BOOK.getItemMeta();
@@ -555,8 +558,16 @@ public class FoxListener implements Listener {
 
                         for (Claim claim : ownerTo.getClaims()) {
                             if (claim.contains(event.getFrom()) && !ownerTo.isMember(event.getPlayer().getUniqueId())) {
-                                event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
-                                event.getPlayer().sendMessage(ChatColor.RED + "Moved you to spawn because you were in land that was claimed.");
+                                Location nearest = TeamStuckCommand.nearestSafeLocation(event.getPlayer().getLocation());
+                                boolean spawn = false;
+
+                                if (nearest == null) {
+                                    nearest = Foxtrot.getInstance().getServerHandler().getSpawnLocation();
+                                    spawn = true;
+                                }
+
+                                event.getPlayer().teleport(nearest);
+                                event.getPlayer().sendMessage(ChatColor.RED + "Moved you to " + (spawn ? "spawn" : "nearest unclaimed territory") + " because you were in land that was claimed.");
                                 return;
                             }
                         }

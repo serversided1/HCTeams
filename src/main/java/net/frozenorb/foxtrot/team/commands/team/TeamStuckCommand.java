@@ -146,7 +146,7 @@ public class TeamStuckCommand implements Listener {
         return "{x=" + loc.getBlockX() + ", y=" + loc.getBlockY() + ", z=" + loc.getBlockZ() + "}";
     }
 
-    private static Location nearestSafeLocation(Location origin) {
+    public static Location nearestSafeLocation(Location origin) {
         LandBoard landBoard = LandBoard.getInstance();
 
         if (landBoard.getClaim(origin) == null) {
