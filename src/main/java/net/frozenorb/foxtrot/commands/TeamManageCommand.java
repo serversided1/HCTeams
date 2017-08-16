@@ -14,29 +14,29 @@ import org.bukkit.entity.Player;
 
 public class TeamManageCommand {
 
-    @Command(names = {"manageteam leader"}, permission = "basic.staff")
+    @Command(names = {"manageteam leader"}, permission = "foxtrot.manage")
     public static void teamLeader(Player sender, @Param(name = "team") Team team) {
         new SelectNewLeaderMenu(team).openMenu(sender);
     }
 
-    @Command(names = {"manageteam promote"}, permission = "basic.staff")
+    @Command(names = {"manageteam promote"}, permission = "foxtrot.manage")
     public static void promoteTeam(Player sender, @Param(name = "team") Team team) {
         new PromoteMembersMenu(team).openMenu(sender);
     }
 
-    @Command(names = {"manageteam demote"}, permission = "basic.staff")
+    @Command(names = {"manageteam demote"}, permission = "foxtrot.manage")
     public static void demoteTeam(Player sender, @Param(name = "team") Team team) {
         new DemoteMembersMenu(team).openMenu(sender);
     }
 
 
-    @Command(names = {"manageteam kick"}, permission = "basic.staff")
+    @Command(names = {"manageteam kick"}, permission = "foxtrot.manage")
     public static void kickTeam(Player sender, @Param(name = "team") Team team) {
         new KickPlayersMenu(team).openMenu(sender);
     }
 
 
-    @Command(names = {"manageteam balance"}, permission = "basic.staff")
+    @Command(names = {"manageteam balance"}, permission = "foxtrot.manage")
     public static void balanceTeam(Player sender, @Param(name = "team") Team team) {
         conversationDouble(sender, "§bEnter a new balance for " + team.getName() + ".", (d) -> {
             SetTeamBalanceCommand.setTeamBalance(sender, team, d.floatValue());
@@ -44,7 +44,7 @@ public class TeamManageCommand {
         });
     }
 
-    @Command(names = {"manageteam dtr"}, permission = "basic.staff")
+    @Command(names = {"manageteam dtr"}, permission = "foxtrot.manage")
     public static void dtrTeam(Player sender, @Param(name = "team") Team team) {
         conversationDouble(sender, "§eEnter a new DTR for " + team.getName() + ".", (d) -> {
             team.setDTR(d.floatValue());
@@ -52,7 +52,7 @@ public class TeamManageCommand {
         });
     }
 
-    @Command(names = {"manageteam rename"}, permission = "basic.staff")
+    @Command(names = {"manageteam rename"}, permission = "fotrot.manage")
     public static void renameTeam(Player sender, @Param(name = "team") Team team) {
         conversationString(sender, "§aEnter a new name for " + team.getName() + ".", (name) -> {
             String oldName = team.getName();
@@ -62,14 +62,14 @@ public class TeamManageCommand {
     }
 
 
-    @Command(names = {"manageteam mute"}, permission = "basic.staff")
+    @Command(names = {"manageteam mute"}, permission = "foxtrot.manage")
     public static void muteTeam(Player sender, @Param(name = "team") Team team) {
         new MuteMenu(team).openMenu(sender);
 
     }
 
 
-    @Command(names = {"manageteam manage"}, permission = "basic.staff")
+    @Command(names = {"manageteam manage"}, permission = "foxtrot.manage")
     public static void manageTeam(Player sender, @Param(name = "team") Team team) {
         new TeamManageMenu(team).openMenu(sender);
     }

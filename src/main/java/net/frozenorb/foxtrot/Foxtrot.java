@@ -156,6 +156,8 @@ public class Foxtrot extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getKOTHHandler().saveKOTHs();
+
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerQuit(player.getUniqueId(), false);
             player.setMetadata("loggedout", new FixedMetadataValue(this, true));

@@ -977,13 +977,13 @@ public class Team {
 
         FancyMessage captainsJson = new FancyMessage("Captains: ").color(ChatColor.YELLOW);
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             captainsJson.command("/manageteam demote " + getName()).tooltip("§bClick to demote captains");
         }
 
         FancyMessage membersJson = new FancyMessage("Members: ").color(ChatColor.YELLOW);
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             membersJson.command("/manageteam promote " + getName()).tooltip("§bClick to promote members");
         }
 
@@ -1058,7 +1058,7 @@ public class Team {
             teamLine.tooltip("§aClick to warp to HQ");
         }
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             teamLine.then().text("§3 - §e[Manage]").color(ChatColor.YELLOW).command("/manageteam manage " + getName()).tooltip("§bClick to manage team");
         }
 
@@ -1072,7 +1072,7 @@ public class Team {
         FancyMessage leader = new FancyMessage(ChatColor.YELLOW + "Leader: " + (owner == null || owner.hasMetadata("invisible") ? (deathbanMap.isDeathbanned(getOwner()) ? ChatColor.RED : ChatColor.GRAY) : ChatColor.GREEN) + UUIDUtils.name(getOwner()) + ChatColor.YELLOW + "[" + ChatColor.GREEN + killsMap.getKills(getOwner()) + ChatColor.YELLOW + "]");
 
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             leader.command("/manageteam leader " + getName()).tooltip("§bClick to change leader");
         }
 
@@ -1094,7 +1094,7 @@ public class Team {
 
         FancyMessage balance = new FancyMessage(ChatColor.YELLOW + "Balance: " + ChatColor.BLUE + "$" + Math.round(getBalance()));
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             balance.command("/manageteam balance " + getName()).tooltip("§bClick to modify team balance");
         }
 
@@ -1104,13 +1104,13 @@ public class Team {
         FancyMessage dtrMessage = new FancyMessage(ChatColor.YELLOW + "Deaths until Raidable: " + getDTRColor() + DTR_FORMAT.format(getDTR()) + getDTRSuffix());
 
 
-        if (player.hasPermission("basic.staff")) {
+        if (player.hasPermission("foxtrot.manage")) {
             dtrMessage.command("/manageteam dtr " + getName()).tooltip("§bClick to modify team DTR");
         }
 
         dtrMessage.send(player);
 
-        if (isMember(player.getUniqueId()) || player.hasPermission("basic.staff")) {
+        if (isMember(player.getUniqueId()) || player.hasPermission("foxtrot.manage")) {
             if (Foxtrot.getInstance().getServerHandler().isForceInvitesEnabled()) {
                 player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
             }
