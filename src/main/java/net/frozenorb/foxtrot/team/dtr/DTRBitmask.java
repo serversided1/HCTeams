@@ -41,7 +41,9 @@ public enum DTRBitmask {
     ROAD(1024, "Road", "Determines if a region is a road."),
 
     // Used in Conquest.
-    CONQUEST(2048, "Conquest", "Determines if a region is part of Conquest.");
+    CONQUEST(2048, "Conquest", "Determines if a region is part of Conquest."),
+
+    DUEL(4096, "Duel", "Determines if a region is part of a duel");
 
     @Getter private int bitmask;
     @Getter private String name;
