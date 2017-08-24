@@ -38,6 +38,11 @@ public class TeamHQCommand {
             return;
         }
 
+        if (Foxtrot.getInstance().getInDuelPredicate().test(sender)) {
+            sender.sendMessage(ChatColor.RED + "You cannot teleport to HQ during a duel!");
+            return;
+        }
+
         if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(sender.getUniqueId())) {
             sender.sendMessage(ChatColor.RED + "Use /pvp enable to toggle your PvP Timer off!");
             return;

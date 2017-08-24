@@ -1,8 +1,10 @@
 package net.frozenorb.foxtrot.deathmessage.trackers;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.MobUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,7 +46,11 @@ public class PVPTracker implements Listener {
         }
 
         public String getDeathMessage() {
-            return (wrapName(getDamaged()) + " was slain by " + wrapName(getDamager()) + " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".");
+            String extension = (Foxtrot.getInstance().getInDuelPredicate().test(Bukkit.getPlayer(getDamaged()))) ?
+                    " during a duel."
+                    :
+                    " using " + ChatColor.RED + itemString + ChatColor.YELLOW + ".";
+            return (wrapName(getDamaged()) + " was slain by " + wrapName(getDamager()) + extension);
         }
 
     }

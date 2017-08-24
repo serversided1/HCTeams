@@ -59,7 +59,7 @@ public class DamageListener implements Listener {
                 String killerName = ((PlayerDamage) deathCause).getDamager();
                 Player killer = Foxtrot.getInstance().getServer().getPlayerExact(killerName);
 
-                if (killer != null) {
+                if (killer != null && !Foxtrot.getInstance().getInDuelPredicate().test(event.getEntity())) {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
 
                     // kit-map death handling

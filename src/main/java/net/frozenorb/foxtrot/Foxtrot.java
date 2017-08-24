@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.mongodb.MongoClient;
 
+import lombok.Setter;
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -53,6 +54,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
 import redis.clients.jedis.JedisPool;
+
+import java.util.function.Predicate;
 
 public class Foxtrot extends JavaPlugin {
 
@@ -109,6 +112,11 @@ public class Foxtrot extends JavaPlugin {
     @Getter private P3S3AckMap p3S3AckMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
+    @Getter @Setter
+    // for the case of some commands in the plugin,
+    // a player shouldn't be able to do them in a duel
+    // thus this predicate exists to test that to avoid dep. issues
+    private Predicate<Player> inDuelPredicate = (player) -> false;
 
     @Override
     public void onEnable() {

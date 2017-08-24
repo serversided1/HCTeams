@@ -446,6 +446,10 @@ public class FoxListener implements Listener {
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity());
         Player killer = event.getEntity().getKiller();
 
+        if (Foxtrot.getInstance().getInDuelPredicate().test(event.getEntity())) {
+            return;
+        }
+
         if (killer != null) {
             Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(killer);
             Location deathLoc = event.getEntity().getLocation();
