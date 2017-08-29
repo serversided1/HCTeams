@@ -57,7 +57,7 @@ public class GlowListener implements Listener {
             Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + RED + "  All Glowstone has been mined!");
         }
     }
-
+/*
     @EventHandler
     public void onHour(HourEvent event) {
         // Every hour(event) -- Since you want it every two hours lets do it this way
@@ -75,5 +75,5 @@ public class GlowListener implements Listener {
             // Broadcast the reset
             Bukkit.broadcastMessage(GOLD + "[Glowstone Mountain]" + GREEN + " All glowstone has been reset!");
         }
-    }
+    }*/
 }

@@ -19,7 +19,7 @@ public class StatTrakListener implements Listener {
     private static String axeLine = ChatColor.RED + "------" + ChatColor.YELLOW + " Axe Stats " + ChatColor.RED + "------";
     private static String spadeLine = ChatColor.RED + "------" + ChatColor.YELLOW + " Shovel Stats " + ChatColor.RED + "------";
 
-    @EventHandler( ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler( ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void blockBreak(BlockBreakEvent event) {
         Material type = event.getBlock().getType();
         ItemStack held = event.getPlayer().getItemInHand();

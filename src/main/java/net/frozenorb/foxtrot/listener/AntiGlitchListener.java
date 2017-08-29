@@ -1,9 +1,15 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import org.bukkit.*;
+import java.util.Iterator;
+
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
@@ -13,11 +19,14 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Iterator;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 public class AntiGlitchListener implements Listener {
 
@@ -25,6 +34,39 @@ public class AntiGlitchListener implements Listener {
     public void onVerticalBlockPlaceGlitch(BlockPlaceEvent event) {
         if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null && event.isCancelled()) {
             event.getPlayer().teleport(event.getPlayer().getLocation());
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onBoatMove(VehicleMoveEvent event) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        if (from.getBlockX() == to.getBlockX() && from.getBlockZ() == to.getBlockZ()) return;
+
+        Block block = to.getBlock();
+        if (block.getType() == Material.FENCE_GATE) {
+            event.getVehicle().teleport(from);
+            Entity passenger = event.getVehicle().getPassenger();
+            if (passenger != null && passenger instanceof Player) {
+                ((Player) passenger).sendMessage(ChatColor.RED + "You can't move your boat into a fence gate.");
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerBoatMove(PlayerMoveEvent event) {
+        Location from = event.getFrom();
+        Location to = event.getTo();
+
+        if (from.getBlockX() == to.getBlockX() && from.getBlockZ() == to.getBlockZ()) return;
+
+        Player player = event.getPlayer();
+        if (player.getVehicle() != null && player.getVehicle() instanceof Boat) {
+            if (to.getBlock().getType() == Material.FENCE_GATE) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You can't move your boat into a fence gate.");
+            }
         }
     }
 

@@ -1,20 +1,16 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.minecraft.server.v1_7_R4.AttributeInstance;
-import net.minecraft.server.v1_7_R4.GenericAttributes;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftHorse;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
+
+import net.frozenorb.foxtrot.Foxtrot;
 
 public class MapListener implements Listener {
 

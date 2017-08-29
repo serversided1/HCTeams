@@ -1,14 +1,17 @@
 package net.frozenorb.foxtrot.glowmtn;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.qlib.qLib;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class GlowHandler {
 
@@ -33,6 +36,13 @@ public class GlowHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
+            getGlowMountain().reset();
+
+            // Broadcast the reset
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Glowstone Mountain]" + ChatColor.GREEN + " All glowstone has been reset!");
+        }, 12000, 12000);
     }
 
     public void save() {

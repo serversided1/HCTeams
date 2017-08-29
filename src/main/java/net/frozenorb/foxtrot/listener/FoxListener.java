@@ -1,24 +1,62 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import mkremins.fanciful.FancyMessage;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.server.RegionData;
-import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.claims.Subclaim;
-import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
-import net.frozenorb.foxtrot.util.InventoryUtils;
-import net.frozenorb.qlib.economy.FrozenEconomyHandler;
+import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.BLUE;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.RESET;
+import static org.bukkit.ChatColor.YELLOW;
+import static org.bukkit.ChatColor.stripColor;
+import static org.bukkit.Material.AIR;
+import static org.bukkit.Material.ANVIL;
+import static org.bukkit.Material.BEACON;
+import static org.bukkit.Material.BED_BLOCK;
+import static org.bukkit.Material.BOOK;
+import static org.bukkit.Material.BOW;
+import static org.bukkit.Material.BREWING_STAND;
+import static org.bukkit.Material.BUCKET;
+import static org.bukkit.Material.BURNING_FURNACE;
+import static org.bukkit.Material.CHEST;
+import static org.bukkit.Material.DISPENSER;
+import static org.bukkit.Material.DROPPER;
+import static org.bukkit.Material.ENCHANTED_BOOK;
+import static org.bukkit.Material.ENCHANTMENT_TABLE;
+import static org.bukkit.Material.FENCE_GATE;
+import static org.bukkit.Material.FISHING_ROD;
+import static org.bukkit.Material.FURNACE;
+import static org.bukkit.Material.GLASS;
+import static org.bukkit.Material.GOLD_PICKAXE;
+import static org.bukkit.Material.HOPPER;
+import static org.bukkit.Material.IRON_DOOR;
+import static org.bukkit.Material.LAVA_BUCKET;
+import static org.bukkit.Material.LEVER;
+import static org.bukkit.Material.MOB_SPAWNER;
+import static org.bukkit.Material.POTION;
+import static org.bukkit.Material.SIGN;
+import static org.bukkit.Material.SIGN_POST;
+import static org.bukkit.Material.STONE_BUTTON;
+import static org.bukkit.Material.TRAPPED_CHEST;
+import static org.bukkit.Material.TRAP_DOOR;
+import static org.bukkit.Material.WALL_SIGN;
+import static org.bukkit.Material.WATER_BUCKET;
+import static org.bukkit.Material.WOODEN_DOOR;
+import static org.bukkit.Material.WOOD_BUTTON;
+import static org.bukkit.Material.WOOD_DOOR;
+import static org.bukkit.Material.WRITTEN_BOOK;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -37,7 +75,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -47,13 +91,27 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockVector;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
-import static org.bukkit.ChatColor.*;
-import static org.bukkit.Material.*;
+import mkremins.fanciful.FancyMessage;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
+import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.server.RegionData;
+import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.claims.Subclaim;
+import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 
 @SuppressWarnings("deprecation")
 public class FoxListener implements Listener {
@@ -64,9 +122,7 @@ public class FoxListener implements Listener {
     public static final Set<PotionEffectType> DEBUFFS = ImmutableSet.of(PotionEffectType.POISON, PotionEffectType.SLOW, PotionEffectType.WEAKNESS, PotionEffectType.HARM, PotionEffectType.WITHER);
     public static final Set<Material> NO_INTERACT_WITH = ImmutableSet.of(LAVA_BUCKET, WATER_BUCKET, BUCKET);
     public static final Set<Material> ATTACK_DISABLING_BLOCKS = ImmutableSet.of(GLASS, WOOD_DOOR, IRON_DOOR, FENCE_GATE);
-    public static final Set<Material> NO_INTERACT = ImmutableSet.of(
-            FENCE_GATE, FURNACE, BURNING_FURNACE, BREWING_STAND, CHEST, HOPPER, DISPENSER, WOODEN_DOOR,
-            STONE_BUTTON, WOOD_BUTTON, TRAPPED_CHEST, TRAP_DOOR, LEVER, DROPPER, ENCHANTMENT_TABLE, BED_BLOCK, ANVIL, BEACON);
+    public static final Set<Material> NO_INTERACT = ImmutableSet.of(FENCE_GATE, FURNACE, BURNING_FURNACE, BREWING_STAND, CHEST, HOPPER, DISPENSER, WOODEN_DOOR, STONE_BUTTON, WOOD_BUTTON, TRAPPED_CHEST, TRAP_DOOR, LEVER, DROPPER, ENCHANTMENT_TABLE, BED_BLOCK, ANVIL, BEACON);
     private static final List<UUID> processingTeleportPlayers = new CopyOnWriteArrayList<>();
 
     static {
@@ -110,28 +166,28 @@ public class FoxListener implements Listener {
     public void onPlayerPressurePlate(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() == Material.STONE_PLATE) {
             BlockVector vector = event.getClickedBlock().getLocation().toVector().toBlockVector();
-
+    
             if (!pressurePlates.containsKey(vector)) {
                 pressurePlates.put(vector, event.getPlayer().getUniqueId()); // when this person steps off the plate, it will be depressed
             }
         }
     }
-
+    
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerMoveOffPressurePlate(PlayerMoveEvent event) {
         if (event.getFrom().getBlockX() == event.getTo().getBlockX() && event.getFrom().getBlockY() == event.getTo().getBlockY() && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
-
+    
         if (event.getFrom().getBlock().getType() == Material.STONE_PLATE) {
             BlockVector vector = event.getFrom().toVector().toBlockVector();
-
+    
             if (pressurePlates.containsKey(vector) && event.getPlayer().getUniqueId().equals(pressurePlates.get(vector))) {
                 final Block block = event.getFrom().getBlock();
                 pressurePlates.remove(vector);
-
+    
                 new BukkitRunnable() {
-
+    
                     @Override
                     public void run() {
                         // pop pressure plate up
@@ -166,10 +222,12 @@ public class FoxListener implements Listener {
                 event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
             }
 
-            if (Foxtrot.getInstance().getServerHandler().isStartingTimerEnabled()) {
-                Foxtrot.getInstance().getPvPTimerMap().createStartingTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.HOURS.toSeconds(1));
-            } else {
-                Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
+            if (CustomTimerCreateCommand.getCustomTimers().get("&a&lSOTW") == null) {
+                if (Foxtrot.getInstance().getServerHandler().isStartingTimerEnabled()) {
+                    Foxtrot.getInstance().getPvPTimerMap().createStartingTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.HOURS.toSeconds(1));
+                } else {
+                    Foxtrot.getInstance().getPvPTimerMap().createTimer(event.getPlayer().getUniqueId(), (int) TimeUnit.MINUTES.toSeconds(30));
+                }
             }
 
             event.getPlayer().teleport(Foxtrot.getInstance().getServerHandler().getSpawnLocation());
@@ -458,23 +516,11 @@ public class FoxListener implements Listener {
             int deathZ = deathLoc.getBlockZ();
 
             if (killerTeam != null) {
-                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.MEMBER_KILLED_ENEMY_IN_PVP, ImmutableMap.of(
-                        "playerId", killer.getUniqueId(),
-                        "playerName", killer.getName(),
-                        "killedId", event.getEntity().getUniqueId(),
-                        "killedName", event.getEntity().getName(),
-                        "coordinates", deathX + ", " + deathY + ", " + deathZ
-                ));
+                TeamActionTracker.logActionAsync(killerTeam, TeamActionType.MEMBER_KILLED_ENEMY_IN_PVP, ImmutableMap.of("playerId", killer.getUniqueId(), "playerName", killer.getName(), "killedId", event.getEntity().getUniqueId(), "killedName", event.getEntity().getName(), "coordinates", deathX + ", " + deathY + ", " + deathZ));
             }
 
             if (playerTeam != null) {
-                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.MEMBER_KILLED_BY_ENEMY_IN_PVP, ImmutableMap.of(
-                        "playerId", event.getEntity().getUniqueId(),
-                        "playerName", event.getEntity().getName(),
-                        "killerId", killer.getUniqueId(),
-                        "killerName", killer.getName(),
-                        "coordinates", deathX + ", " + deathY + ", " + deathZ
-                ));
+                TeamActionTracker.logActionAsync(playerTeam, TeamActionType.MEMBER_KILLED_BY_ENEMY_IN_PVP, ImmutableMap.of("playerId", event.getEntity().getUniqueId(), "playerName", event.getEntity().getName(), "killerId", killer.getUniqueId(), "killerName", killer.getName(), "coordinates", deathX + ", " + deathY + ", " + deathZ));
             }
         }
 
@@ -504,7 +550,7 @@ public class FoxListener implements Listener {
             if (killer.hasPermission("foxtrot.skulldrop")) {
                 ItemStack skull = new ItemStack(SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
-
+            
                 meta.setOwner(event.getEntity().getName());
                 meta.setDisplayName(YELLOW + "Head of " + event.getEntity().getName());
                 meta.setLore(Arrays.asList("", deathMsg));
@@ -513,11 +559,11 @@ public class FoxListener implements Listener {
             }
             */
 
-//            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-//                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
-//                    event.getDrops().add(it);
-//                }
-//            }
+            //            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            //                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
+            //                    event.getDrops().add(it);
+            //                }
+            //            }
         }
 
         event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
@@ -543,7 +589,7 @@ public class FoxListener implements Listener {
             if (ownerTo != null && ownerTo.getName().equalsIgnoreCase("spawn")) {
                 return;
             }
-
+            
             //prevent staff from being teleported during the claiming process
             if (event.getPlayer().getGameMode() == GameMode.CREATIVE) {
                 return;
@@ -557,8 +603,8 @@ public class FoxListener implements Listener {
 
                     event.getPlayer().sendMessage(ChatColor.RED + "Your PvP Protection has been removed for entering claimed land.");
                 } else if (ownerTo != null && ownerTo.getOwner() != null) {
-                        if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
-                            event.setCancelled(true);
+                    if (!ownerTo.getMembers().contains(event.getPlayer().getUniqueId())) {
+                        event.setCancelled(true);
 
                         for (Claim claim : ownerTo.getClaims()) {
                             if (claim.contains(event.getFrom()) && !ownerTo.isMember(event.getPlayer().getUniqueId())) {

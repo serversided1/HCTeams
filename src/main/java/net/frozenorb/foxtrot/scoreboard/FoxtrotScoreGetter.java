@@ -1,5 +1,14 @@
 package net.frozenorb.foxtrot.scoreboard;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
@@ -17,13 +26,6 @@ import net.frozenorb.qlib.autoreboot.AutoRebootHandler;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
 import net.frozenorb.qlib.scoreboard.ScoreGetter;
 import net.frozenorb.qlib.util.TimeUtils;
-import org.bson.types.ObjectId;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class FoxtrotScoreGetter implements ScoreGetter {
 
@@ -70,8 +72,19 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             }
         }
 
-        for (Map.Entry<String, Long> timer : CustomTimerCreateCommand.getCustomTimers().entrySet()) {
-            scores.add(ChatColor.translateAlternateColorCodes('&', timer.getKey()) + "&7: &c" + getTimerScore(timer));
+        Iterator<Map.Entry<String, Long>> iterator = CustomTimerCreateCommand.getCustomTimers().entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Long> timer = iterator.next();
+            if (timer.getValue() < System.currentTimeMillis())  {
+                iterator.remove();
+                continue;
+            }
+
+            if (timer.getKey().equals("&a&lSOTW")) {
+                scores.add(ChatColor.translateAlternateColorCodes('&', "&a&lSOTW &aends in &a&l" + getTimerScore(timer)));
+            } else {
+                scores.add(ChatColor.translateAlternateColorCodes('&', timer.getKey()) + "&7: &c" + getTimerScore(timer));
+            }
         }
 
         for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {

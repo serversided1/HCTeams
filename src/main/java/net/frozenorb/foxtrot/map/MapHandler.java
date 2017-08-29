@@ -251,9 +251,6 @@ public class MapHandler {
 
         dbObject.put("minForceInviteMembers", 10);
 
-        dbObject.put("rodPrevention", false);
-        dbObject.put("skybridgePrevention", false);
-
         return dbObject;
     }
 

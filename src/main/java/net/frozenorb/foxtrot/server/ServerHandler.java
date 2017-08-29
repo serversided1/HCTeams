@@ -82,6 +82,8 @@ public class ServerHandler {
     @Getter private final boolean rodPrevention;
     @Getter private final boolean skybridgePrevention;
 
+    @Getter private final boolean teamHQInEnemyClaims;
+
     @Getter private Set<Betrayer> betrayers = new HashSet<>();
 
     @Getter private static Map<String, Long> homeTimer = new ConcurrentHashMap<>();
@@ -139,6 +141,8 @@ public class ServerHandler {
 
         rodPrevention = Foxtrot.getInstance().getConfig().getBoolean("rodPrevention", true);
         skybridgePrevention = Foxtrot.getInstance().getConfig().getBoolean("skybridgePrevention", true);
+
+        teamHQInEnemyClaims = Foxtrot.getInstance().getConfig().getBoolean("teamHQInEnemyClaims", true);
 
         for (PotionType type : PotionType.values()) {
             if (type == PotionType.WATER) {
@@ -370,13 +374,17 @@ public class ServerHandler {
         return (Math.min(max, ban));
     }
 
-    public void beginHQWarp(final Player player, final Team team, final int warmup) {
+    public void beginHQWarp(final Player player, final Team team, int warmup) {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (inClaim != null) {
             if (inClaim.getOwner() != null && !inClaim.isMember(player.getUniqueId())) {
-                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
-                return;
+                if (this.isTeamHQInEnemyClaims()) {
+                    warmup = 20;
+                } else {
+                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
+                    return;
+                }
             }
 
             if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmask.KOTH) || inClaim.hasDTRBitmask(DTRBitmask.CITADEL))) {
@@ -387,7 +395,7 @@ public class ServerHandler {
             if (inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 if (player.getWorld().getEnvironment() != Environment.THE_END) {
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
-                    player.teleport(team.getHQ().add(0, 0.5, 0));
+                    player.teleport(team.getHQ());
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot teleport to your end headquarters while you're in end spawn!");
                 }
@@ -411,9 +419,11 @@ public class ServerHandler {
 
         homeTimer.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(warmup));
 
+        final int finalWarmup = warmup;
+
         new BukkitRunnable() {
 
-            int time = warmup;
+            int time = finalWarmup;
             Location startLocation = player.getLocation();
             double startHealth = player.getHealth();
 
@@ -444,7 +454,7 @@ public class ServerHandler {
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + "'s HQ.");
-                    player.teleport(team.getHQ().add(0, 0.5, 0));
+                    player.teleport(team.getHQ());
                     homeTimer.remove(player.getName());
                     cancel();
                     return;
@@ -464,7 +474,7 @@ public class ServerHandler {
                     }
 
                     player.sendMessage(ChatColor.YELLOW + "Warping to " + ChatColor.RED + team.getName() + ChatColor.YELLOW + "'s HQ.");
-                    player.teleport(team.getHQ().add(0, 0.5, 0));
+                    player.teleport(team.getHQ());
                     homeTimer.remove(player.getName());
                     cancel();
                 }

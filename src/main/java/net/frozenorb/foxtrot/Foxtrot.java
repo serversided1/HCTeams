@@ -133,7 +133,6 @@ public class Foxtrot extends JavaPlugin {
         (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
         (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
         (new PacketBorderThread()).start();
-        (new IdleCheckRunnable()).runTaskTimer(this, 10L, 10L);
 
         setupHandlers();
         setupPersistence();

@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import lombok.Getter;
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.commands.LastInvCommand;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
@@ -310,6 +311,10 @@ public class CombatLoggerListener implements Listener {
 
         // If the player is below Y = 0 (aka in the void)
         if (event.getPlayer().getLocation().getBlockY() <= 0) {
+            return;
+        }
+
+        if (CustomTimerCreateCommand.getCustomTimers().get("&a&lSOTW") != null) {
             return;
         }
 
