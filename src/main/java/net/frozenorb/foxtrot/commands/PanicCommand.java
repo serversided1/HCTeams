@@ -17,7 +17,7 @@ public class PanicCommand {
             new BukkitRunnable() {
 
                 public void run() {
-                    if (!sender.hasMetadata("frozen")) {
+                    if (!sender.isOnline() || !sender.hasMetadata("frozen")) {
                         cancel();
                         return;
                     }

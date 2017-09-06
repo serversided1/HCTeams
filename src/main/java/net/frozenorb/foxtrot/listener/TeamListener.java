@@ -133,7 +133,7 @@ public class TeamListener implements Listener {
         Team team = LandBoard.getInstance().getTeam(event.getBlock().getLocation());
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
-            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap())) {
                 new BukkitRunnable() {
 
                     @Override
@@ -173,7 +173,7 @@ public class TeamListener implements Listener {
             return; // don't concern ourselves with glowstone breaks in glowstone mountains
         }
 
-        if (team.getDTR() == DTRBitmask.ROAD.getBitmask() && event.getBlock().getY() <= 40) {
+        if (team.hasDTRBitmask(DTRBitmask.ROAD) && event.getBlock().getY() <= 40) {
             return; // allow players to mine under roads
         }
 

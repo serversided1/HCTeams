@@ -30,7 +30,7 @@ public class CobblePickupMap extends PersistMap<Boolean> {
     }
 
     public boolean isCobblePickup(UUID check) {
-        return (contains(check) ? getValue(check) : true);
+        return (contains(check) ? getValue(check) : false);
     }
 
 }

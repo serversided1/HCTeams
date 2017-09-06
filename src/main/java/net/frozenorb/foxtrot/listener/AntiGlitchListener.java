@@ -152,5 +152,4 @@ public class AntiGlitchListener implements Listener {
             player.sendMessage(ChatColor.RED + "You aren't allowed to place mob spawners in the nether.");
         }
     }
-
 }

@@ -19,6 +19,10 @@ waterPlacementInClaims: false
 blockRemoval: false
 rodPrevention: false
 skybridgePrevention: false
+reduceArmorDamage: true
+blockEntitiesThroughPortals: true
+archerTagColor: YELLOW
+defaultRelationColor: RED
 pvpClasses:
   archer: true
   bard: true

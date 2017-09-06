@@ -1,9 +1,8 @@
 package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.persist.PersistMap;
-import net.frozenorb.foxtrot.queue.PlayerInfoPacket;
-
 import java.util.UUID;
+
+import net.frozenorb.foxtrot.persist.PersistMap;
 
 public class FriendLivesMap extends PersistMap<Integer> {
 
@@ -32,7 +31,6 @@ public class FriendLivesMap extends PersistMap<Integer> {
 
     public void setLives(UUID update, int lives) {
         updateValueSync(update, lives);
-        PlayerInfoPacket.sendResponse(update);
     }
 
 }

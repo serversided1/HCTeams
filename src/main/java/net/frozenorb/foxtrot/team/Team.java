@@ -126,7 +126,7 @@ public class Team {
             } else if (hasDTRBitmask(DTRBitmask.CITADEL)) {
                 return (ChatColor.DARK_PURPLE + "Citadel");
             } else if (hasDTRBitmask(DTRBitmask.ROAD)) {
-                return (ChatColor.RED + getName().replace("Road", " Road"));
+                return (ChatColor.GOLD + getName().replace("Road", " Road"));
             } else if (hasDTRBitmask(DTRBitmask.CONQUEST)) {
                 return (ChatColor.YELLOW + "Conquest");
             }

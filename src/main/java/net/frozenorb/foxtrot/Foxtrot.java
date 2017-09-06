@@ -183,7 +183,7 @@ public class Foxtrot extends JavaPlugin {
         RedisSaveTask.save(null, false);
         Foxtrot.getInstance().getServerHandler().save();
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().save();
         }
 
@@ -264,9 +264,16 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
+        if (getServerHandler().isReduceArmorDamage()) {
+            getServer().getPluginManager().registerEvents(new ArmorDamageListener(), this);
+        }
+        if (getServerHandler().isBlockEntitiesThroughPortals()) {
+            getServer().getPluginManager().registerEvents(new EntityPortalListener(), this);
+        }
         if (getServerHandler().isBlockRemovalEnabled()) {
             getServer().getPluginManager().registerEvents(new BlockRegenListener(), this);
         }
+        getServer().getPluginManager().registerEvents(new BlockConvenienceListener(), this);
     }
 
     private void setupPersistence() {

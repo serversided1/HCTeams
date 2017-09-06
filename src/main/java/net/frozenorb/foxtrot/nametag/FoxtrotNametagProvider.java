@@ -30,7 +30,7 @@ public class FoxtrotNametagProvider extends NametagProvider {
         // If we already found something above they override these, otherwise we can do these checks.
         if (nametagInfo == null) {
             if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
-                nametagInfo = createNametag(ChatColor.RED.toString(), "");
+                nametagInfo = createNametag(Foxtrot.getInstance().getServerHandler().getArcherTagColor().toString(), "");
             } else if (viewerTeam != null && viewerTeam.getFocused() != null && viewerTeam.getFocused().equals(toRefresh.getUniqueId())) {
                 nametagInfo = createNametag(ChatColor.LIGHT_PURPLE.toString(), "");
             }
@@ -42,7 +42,7 @@ public class FoxtrotNametagProvider extends NametagProvider {
         }
 
         // If nothing custom was set, fall back on yellow.
-        return (nametagInfo == null ? createNametag(ChatColor.YELLOW.toString(), "") : nametagInfo);
+        return (nametagInfo == null ? createNametag(Foxtrot.getInstance().getServerHandler().getDefaultRelationColor().toString(), "") : nametagInfo);
     }
 
 }

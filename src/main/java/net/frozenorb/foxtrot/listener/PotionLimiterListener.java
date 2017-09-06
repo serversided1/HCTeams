@@ -28,7 +28,7 @@ public class PotionLimiterListener implements Listener {
             }
         }
 
-        if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             Potion potion = Potion.fromItemStack(event.getPotion().getItem());
 
             if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
@@ -51,7 +51,7 @@ public class PotionLimiterListener implements Listener {
 
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (event.getItem().getType() != Material.POTION) {
+        if (event.getItem().getType() != Material.POTION || event.getItem().getDurability() == 0) {
             return;
         }
 

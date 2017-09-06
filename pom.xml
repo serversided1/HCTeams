@@ -14,6 +14,27 @@
         <minehq.mavenLevel>minehq-low</minehq.mavenLevel>
     </properties>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.16.16</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 	<repositories>
 		<repository>
 			<id>minehq-repo</id>
@@ -25,13 +46,13 @@
 		<!-- Spigot Jars -->
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>powerspigot-api</artifactId>
-			<version>LATEST</version>
+			<artifactId>sourspigot-api</artifactId>
+			<version>1.7.10-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>
-			<artifactId>powerspigot-server</artifactId>
-			<version>LATEST</version>
+			<artifactId>sourspigot-server</artifactId>
+			<version>1.7.10-R0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- MineHQ Jars -->
@@ -44,11 +65,6 @@
 			<groupId>net.frozenorb</groupId>
 			<artifactId>qLib</artifactId>
 			<version>LATEST</version>
-		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
-			<artifactId>qQueue</artifactId>
-			<version>2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.frozenorb</groupId>

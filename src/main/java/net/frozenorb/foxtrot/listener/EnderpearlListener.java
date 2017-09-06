@@ -114,5 +114,4 @@ public class EnderpearlListener implements Listener {
     public boolean clippingThrough(Location target, Location from, double thickness) {
         return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));
     }
-
 }

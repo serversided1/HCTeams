@@ -49,7 +49,7 @@ public class DTRHandler extends BukkitRunnable {
     // We're using this instead of changing the array incase we need to change this value
     // In the future.
     public static double getBaseDTRIncrement(int teamsize) {
-        return (teamsize == 0 ? 0 : BASE_DTR_INCREMENT[teamsize - 1] * 4.5F);
+        return (teamsize == 0 ? 0 : BASE_DTR_INCREMENT[teamsize - 1] * Foxtrot.getInstance().getMapHandler().getDtrIncrementMultiplier());
     }
 
     public static double getMaxDTR(int teamsize) {

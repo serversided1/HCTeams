@@ -82,7 +82,7 @@ public class PvPTimerMap extends PersistMap<Integer> {
     }
 
     public int getSecondsRemaining(UUID check) {
-        if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getServerHandler().isPreEOTW() || Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             return (0);
         }
 

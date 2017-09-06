@@ -34,7 +34,7 @@ public final class FoxConstants {
                 rankPrefix = "";
             }
 
-            starting = ChatColor.GOLD + "[" + ChatColor.YELLOW + team.getName() + ChatColor.GOLD + "]";
+            starting = ChatColor.GOLD + "[" + ChatColor.RED + team.getName() + ChatColor.GOLD + "]";
         }
 
         return starting + customPrefixString + rankPrefix + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s";

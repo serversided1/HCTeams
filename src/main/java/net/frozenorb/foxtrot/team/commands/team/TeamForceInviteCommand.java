@@ -27,7 +27,7 @@ public class TeamForceInviteCommand {
 
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(sender);
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             sender.sendMessage(ChatColor.RED + "You don't need to use this during kit maps.");
             return;
         }

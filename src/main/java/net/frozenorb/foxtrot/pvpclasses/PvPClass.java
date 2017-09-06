@@ -28,7 +28,7 @@ public abstract class PvPClass implements Listener {
         this.consumables = consumables;
 
         // Reduce warmup on kit maps
-        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             this.warmup = 5;
         }
     }
@@ -101,20 +101,6 @@ public abstract class PvPClass implements Listener {
                 }
 
                 PvPClassHandler.getSavedPotions().put( player.getUniqueId(), new SavedPotion(activePotionEffect, (System.currentTimeMillis() + ((potionEffect.getDuration() ) * 50) + 50), activePotionEffect.getDuration() >= 1_000_000L));
-
-
-                /*new BukkitRunnable() {
-
-                    public void run() {
-                        // Don't give back infinite potions.
-                        if (activePotionEffect.getDuration() > 1_000_000L) {
-                            return;
-                        }
-
-                        player.addPotionEffect(activePotionEffect);
-                    }
-
-                }.runTaskLater(Foxtrot.getInstance(), potionEffect.getDuration() + 1);*/
             }
         }
 

@@ -43,7 +43,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String homeScore = getHomeScore(player);
         String appleScore = getAppleScore(player);
 
-        if( Foxtrot.getInstance().getMapHandler().isKitMap() ) {
+        if( Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             scores.add("&4&lKills&7: &c" + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
             scores.add("&4&lDeaths&7: &c" + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
         }

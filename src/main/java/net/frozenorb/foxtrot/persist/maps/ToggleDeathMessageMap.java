@@ -31,7 +31,7 @@ public class ToggleDeathMessageMap extends PersistMap<Boolean> {
     }
 
     public boolean areDeathMessagesEnabled(UUID check) {
-        return (contains(check) ? getValue(check) : !Foxtrot.getInstance().getMapHandler().isKitMap());
+        return (contains(check) ? getValue(check) : (!Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()));
     }
 
 }

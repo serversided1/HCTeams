@@ -1,7 +1,49 @@
 package net.frozenorb.foxtrot.server;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World.Environment;
+import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
+
+import com.google.common.collect.Maps;
 import com.mongodb.BasicDBObject;
 import com.mongodb.util.JSON;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,39 +57,11 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
-import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.util.ItemUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.io.FileUtils;
-import org.bukkit.*;
-import org.bukkit.World.Environment;
-import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class ServerHandler {
@@ -90,6 +104,14 @@ public class ServerHandler {
 
     @Getter @Setter private boolean EOTW = false;
     @Getter @Setter private boolean PreEOTW = false;
+
+    @Getter private final boolean reduceArmorDamage;
+    @Getter private final boolean blockEntitiesThroughPortals;
+
+    @Getter private final ChatColor archerTagColor;
+    @Getter private final ChatColor defaultRelationColor;
+
+    @Getter private final boolean veltKitMap;
 
     public ServerHandler() {
         try {
@@ -160,6 +182,15 @@ public class ServerHandler {
         if (uhcHealing) {
             Bukkit.getPluginManager().registerEvents(new UHCListener(), Foxtrot.getInstance());
         }
+
+        this.reduceArmorDamage = Foxtrot.getInstance().getConfig().getBoolean("reduceArmorDamage", true);
+        this.blockEntitiesThroughPortals = Foxtrot.getInstance().getConfig().getBoolean("blockEntitiesThroughPortals", true);
+
+        this.archerTagColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("archerTagColor", "YELLOW"));
+        this.defaultRelationColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("defaultRelationColor", "RED"));
+
+        this.veltKitMap = Foxtrot.getInstance().getConfig().getBoolean("veltKitMap", false);
+        registerPlayerDamageRestrictionListener();
     }
 
     public void save() {
@@ -295,7 +326,7 @@ public class ServerHandler {
     public double getDTRLoss(Location location) {
         double dtrLoss = 1.00D;
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             dtrLoss = Math.min(dtrLoss, 0.01D);
         }
 
@@ -335,8 +366,8 @@ public class ServerHandler {
         // Things we already know and can easily eliminate.
         if (isPreEOTW()) {
             return (TimeUnit.DAYS.toSeconds(1000));
-        } else if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            return (TimeUnit.SECONDS.toSeconds(10));
+        } else if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+            return (TimeUnit.SECONDS.toSeconds(5));
         } else if (getBetrayer(playerUUID) != null) {
             return (TimeUnit.DAYS.toSeconds(1));
         }
@@ -442,7 +473,7 @@ public class ServerHandler {
                 startHealth = player.getHealth();
 
                 // Prevent server lag from making the home time inaccurate.
-                if (homeTimer.get(player.getName()) <= System.currentTimeMillis()) {
+                if (homeTimer.containsKey(player.getName()) && homeTimer.get(player.getName()) <= System.currentTimeMillis()) {
                     if (Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                         Foxtrot.getInstance().getPvPTimerMap().removeTimer(player.getUniqueId());
                     }
@@ -483,33 +514,31 @@ public class ServerHandler {
         }.runTaskTimer(Foxtrot.getInstance(), 20L, 20L);
     }
 
+    private Map<UUID, Long> playerDamageRestrictMap = Maps.newHashMap();
+
     public void disablePlayerAttacking(final Player player, int seconds) {
         if (seconds == 10) {
             player.sendMessage(ChatColor.GRAY + "You cannot attack for " + seconds + " seconds.");
         }
 
-        final Listener listener = new Listener() {
+        playerDamageRestrictMap.put(player.getUniqueId(), System.currentTimeMillis() + (seconds * 1000));
+    }
 
-            @EventHandler
-            public void onPlayerDamage(EntityDamageByEntityEvent event) {
-                if (event.getDamager() instanceof Player) {
-                    if (((Player) event.getDamager()).getName().equals(player.getName())) {
-                        event.setCancelled(true);
-                    }
-                }
-            }
+    private void registerPlayerDamageRestrictionListener() {
+    		Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new Listener() {
+    			@EventHandler(ignoreCancelled = true)
+    			public void onDamage(EntityDamageByEntityEvent event) {
+    				Long expiry = playerDamageRestrictMap.get(event.getDamager().getUniqueId());
+    				if (expiry != null && System.currentTimeMillis() < expiry) {
+    					event.setCancelled(true);
+    				}
+    			}
 
-        };
-
-        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(listener, Foxtrot.getInstance());
-
-        new BukkitRunnable() {
-
-            public void run() {
-                HandlerList.unregisterAll(listener);
-            }
-
-        }.runTaskLater(Foxtrot.getInstance(), seconds * 20L);
+    			@EventHandler
+    			public void onQuit(PlayerQuitEvent event) {
+    				playerDamageRestrictMap.remove(event.getPlayer().getUniqueId());
+    			}
+    		}, Foxtrot.getInstance());
     }
 
     public boolean isSpawnBufferZone(Location loc) {

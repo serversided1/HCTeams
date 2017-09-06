@@ -217,7 +217,7 @@ public class FoxListener implements Listener {
             Foxtrot.getInstance().getFirstJoinMap().setFirstJoin(event.getPlayer().getUniqueId());
             FrozenEconomyHandler.setBalance(event.getPlayer().getUniqueId(), 100D);
 
-            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            if (!Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                 event.getPlayer().getInventory().addItem(FIRST_SPAWN_BOOK);
                 event.getPlayer().getInventory().addItem(FIRST_SPAWN_FISHING_ROD);
             }

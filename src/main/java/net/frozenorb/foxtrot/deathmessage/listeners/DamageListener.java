@@ -63,7 +63,7 @@ public class DamageListener implements Listener {
                     ((CraftPlayer) event.getEntity()).getHandle().killer = ((CraftPlayer) killer).getHandle();
 
                     // kit-map death handling
-                    if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                    if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                         Player victim = event.getEntity();
 
                         if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {

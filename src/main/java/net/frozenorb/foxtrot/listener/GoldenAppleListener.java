@@ -71,7 +71,7 @@ public class GoldenAppleListener implements Listener {
 
         Foxtrot.getInstance().getOppleMap().useGoldenApple(
             event.getPlayer().getUniqueId(),
-            Foxtrot.getInstance().getMapHandler().isKitMap() ?
+            Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap() ?
                 TimeUnit.MINUTES.toSeconds(5) :
                 (Foxtrot.getInstance().getMapHandler().getGoppleCooldown() * 60) // minutes to seconds
         );

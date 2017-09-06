@@ -20,7 +20,7 @@ public abstract class Damage {
     public abstract String getDeathMessage();
 
     public String wrapName(String player) {
-        int kills = Foxtrot.getInstance().getMapHandler().isKitMap() ? Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player).getKills() : Foxtrot.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player));
+        int kills = Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap() ? Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player).getKills() : Foxtrot.getInstance().getKillsMap().getKills(UUIDUtils.uuid(player));
 
         return (ChatColor.RED + player + ChatColor.DARK_RED + "[" + kills + "]" + ChatColor.YELLOW);
     }

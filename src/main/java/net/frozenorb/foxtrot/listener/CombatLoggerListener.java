@@ -47,6 +47,7 @@ public class CombatLoggerListener implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().hasMetadata(COMBAT_LOGGER_METADATA)) {
+        		boolean isKitMap = Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap();
             combatLoggers.remove(event.getEntity());
             CombatLoggerMetadata metadata = (CombatLoggerMetadata) event.getEntity().getMetadata(COMBAT_LOGGER_METADATA).get(0).value();
 
@@ -79,7 +80,7 @@ public class CombatLoggerListener implements Listener {
             }
 
             // give them a death
-            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            if (isKitMap) {
                 Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
             }
             Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
@@ -87,7 +88,7 @@ public class CombatLoggerListener implements Listener {
             // store the death amount -- we'll use this later on.
             int victimKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getUniqueId());
 
-            if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            if (isKitMap) {
                 victimKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getUniqueId()).getKills();
             }
 
@@ -98,7 +99,7 @@ public class CombatLoggerListener implements Listener {
                 // store the kill amount -- we'll use this later on.
                 int killerKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getKiller().getUniqueId());
 
-                if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                if (isKitMap) {
                     Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).addKill();
 
                     killerKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getEntity().getKiller()).getKills();
@@ -188,12 +189,12 @@ public class CombatLoggerListener implements Listener {
         }
     }
 
-    // Don't let the chunk holding a logger unload.
+    // Kill loggers when their chunk unloads
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
         for (Entity entity : event.getChunk().getEntities()) {
             if (entity.hasMetadata(COMBAT_LOGGER_METADATA) && !entity.isDead()) {
-                event.setCancelled(true);
+                entity.remove();
             }
         }
     }
@@ -427,14 +428,14 @@ public class CombatLoggerListener implements Listener {
                         // store the death amount -- we'll use this later on.
                         int victimKills = Foxtrot.getInstance().getKillsMap().getKills(metadata.playerUUID);
 
-                        if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
+                        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                             victimKills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).getKills();
                         }
 
                         String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" +  ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
 
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())){
+                            if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                                 player.sendMessage(deathMessage);
                             } else {
                                 if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {

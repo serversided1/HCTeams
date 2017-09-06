@@ -26,6 +26,10 @@ public class DeathbanListener implements Listener {
             return;
         }
 
+        if (Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+        		return;
+        }
+
         int seconds = (int) Foxtrot.getInstance().getServerHandler().getDeathban(event.getEntity());
         Foxtrot.getInstance().getDeathbanMap().deathban(event.getEntity().getUniqueId(), seconds);
 

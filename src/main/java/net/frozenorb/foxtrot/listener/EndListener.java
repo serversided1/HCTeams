@@ -204,7 +204,7 @@ public class EndListener implements Listener {
                 event.setCancelled(true);
 
                 if (!(msgCooldown.containsKey(player.getName())) || msgCooldown.get(player.getName()) < System.currentTimeMillis()) {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you have pvp protection.");
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter the end while you have PvP protection.");
                     msgCooldown.put(player.getName(), System.currentTimeMillis() + 3000L);
                 }
             }

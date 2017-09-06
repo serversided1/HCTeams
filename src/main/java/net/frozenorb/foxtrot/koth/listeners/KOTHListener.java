@@ -243,7 +243,7 @@ public class KOTHListener implements Listener {
     @EventHandler
     public void onKOTHDeactivated(KOTHDeactivatedEvent event) {
         // activate koths every 10m on the kitmap
-        if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+        if (!Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             return;
         }
 

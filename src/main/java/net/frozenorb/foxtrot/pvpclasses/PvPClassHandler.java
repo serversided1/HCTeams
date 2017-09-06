@@ -35,9 +35,11 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
         if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.archer")) {
             pvpClasses.add(new ArcherClass());
-        } if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.bard")) {
+        }
+        if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.bard")) {
             pvpClasses.add(new BardClass());
-        } if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.rogue")) {
+        }
+        if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.rogue")) {
             pvpClasses.add(new RogueClass());
         }
 
@@ -58,10 +60,10 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
                 if (!equippedPvPClass.qualifies(player.getInventory())) {
                     equippedKits.remove(player.getName());
-                    player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.RED + "Disabled!");
+                    player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + equippedPvPClass.getName() + ChatColor.GRAY + " --> " + ChatColor.RED + "Disabled!");
                     equippedPvPClass.remove(player);
                     PvPClass.removeInfiniteEffects(player);
-                } else if(!player.hasMetadata("frozen")){
+                } else if (!player.hasMetadata("frozen")) {
                     equippedPvPClass.tick(player);
                 }
             } else {
@@ -71,7 +73,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                         pvpClass.apply(player);
                         PvPClassHandler.getEquippedKits().put(player.getName(), pvpClass);
 
-                        player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY+ " --> " + ChatColor.GREEN + "Enabled!");
+                        player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY + " --> " + ChatColor.GREEN + "Enabled!");
                         player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
                     }
                 }
@@ -82,13 +84,13 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     public void checkSavedPotions() {
         Iterator<Map.Entry<UUID, PvPClass.SavedPotion>> idIterator = savedPotions.entrySet().iterator();
-        while( idIterator.hasNext() ) {
+        while (idIterator.hasNext()) {
             Map.Entry<UUID, PvPClass.SavedPotion> id = idIterator.next();
             Player player = Bukkit.getPlayer(id.getKey());
-            if( player != null && player.isOnline() ) {
+            if (player != null && player.isOnline()) {
                 Bukkit.getPluginManager().callEvent(new BardRestoreEvent(player, id.getValue()));
-                if( id.getValue().getTime() < System.currentTimeMillis() && !id.getValue().isPerm() ) {
-                    if(player.addPotionEffect(id.getValue().getPotionEffect())) {
+                if (id.getValue().getTime() < System.currentTimeMillis() && !id.getValue().isPerm()) {
+                    if (player.addPotionEffect(id.getValue().getPotionEffect())) {
                         idIterator.remove();
                     }
                 }
@@ -98,7 +100,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getPlayer().getItemInHand() == null) {
             return;

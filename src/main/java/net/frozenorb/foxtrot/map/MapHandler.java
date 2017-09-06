@@ -55,6 +55,7 @@ public class MapHandler {
     @Getter private boolean fastSmeltEnabled;
     @Getter @Setter private int netherBuffer;
     @Getter @Setter private int worldBuffer;
+    @Getter private float dtrIncrementMultiplier;
 
     // Kit-Map only stuff:
     @Getter private StatsHandler statsHandler;
@@ -118,7 +119,7 @@ public class MapHandler {
         Foxtrot.getInstance().getServer().addRecipe(saddleRecipe);
         Foxtrot.getInstance().getServer().addRecipe(horseArmorRecipe);
 
-        if (isKitMap()) {
+        if (isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             statsHandler = new StatsHandler();
             killstreakHandler = new KillstreakHandler();
             kitManager = new KitManager();
@@ -201,6 +202,8 @@ public class MapHandler {
                 if (dbObject.containsKey("minForceInviteMembers")) {
                     minForceInviteMembers = dbObject.getInt("minForceInviteMembers");
                 }
+
+                this.dtrIncrementMultiplier = (float) dbObject.getDouble("dtrIncrementMultiplier", 4.5F);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -226,7 +229,7 @@ public class MapHandler {
         dbObject.put("worldBuffer", 300);
         dbObject.put("endPortalLocation", "2500, 2500");
         dbObject.put("border", 3000);
-        dbObject.put("goppleCooldown", TimeUnit.HOURS.toSeconds(4));
+        dbObject.put("goppleCooldown", TimeUnit.HOURS.toMinutes(4));
         dbObject.put("fastSmeltEnabled", true);
 
         looting.put("base", 1D);
@@ -251,6 +254,7 @@ public class MapHandler {
 
         dbObject.put("minForceInviteMembers", 10);
 
+        dbObject.put("dtrIncrementMultiplier", 4.5F);
         return dbObject;
     }
 
