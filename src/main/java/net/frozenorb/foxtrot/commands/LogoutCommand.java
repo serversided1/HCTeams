@@ -1,10 +1,11 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class LogoutCommand {
 

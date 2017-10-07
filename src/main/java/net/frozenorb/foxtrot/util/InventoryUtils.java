@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.frozenorb.foxtrot.Foxtrot;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ public class InventoryUtils {
     }
 
     public static boolean conformEnchants(ItemStack item) {
+        if (Boolean.TRUE) return false; // temp disable
         if (item == null) {
             return (false);
         }

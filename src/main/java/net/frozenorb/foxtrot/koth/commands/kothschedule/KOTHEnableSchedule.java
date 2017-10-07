@@ -11,7 +11,7 @@ public class KOTHEnableSchedule {
     public static void kothScheduleEnable(CommandSender sender) {
         Foxtrot.getInstance().getKOTHHandler().setScheduleEnabled(true);
 
-        sender.sendMessage(ChatColor.YELLOW + "The KOTH schedule has been " + ChatColor.GREEN + "disabled" + ChatColor.YELLOW + ".");
+        sender.sendMessage(ChatColor.YELLOW + "The KOTH schedule has been " + ChatColor.GREEN + "enabled" + ChatColor.YELLOW + ".");
     }
 
 }

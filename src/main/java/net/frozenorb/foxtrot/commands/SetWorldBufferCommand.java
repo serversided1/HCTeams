@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Param;
 
 public class SetWorldBufferCommand {
 

@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 public enum TabListMode {
 
     DETAILED("Detailed"),
-    DETAILED_WITH_FACTION_INFO("Detailed w/ Team List"),
-    VANILLA("Vanilla");
+    DETAILED_WITH_FACTION_INFO("Detailed w/ Team List");
 
     private final String name;
 

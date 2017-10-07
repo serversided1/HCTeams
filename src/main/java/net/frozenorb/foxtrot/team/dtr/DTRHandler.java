@@ -19,9 +19,9 @@ public class DTRHandler extends BukkitRunnable {
             .164, .162, .16, .158, .156, .154, .152, .15, .148, .146, .144,
             .142, .142, .142, .142, .142, .142,
             .142, .142, .142, .142, .142 };
-    private static double[] MAX_DTR = { 1.01, 2.25, 2.65, 2.85, 3.35, // 1 to 5
-            3.65, 3.85, 4.25, 4.65, 4.95, // 6 to 10
-            5.05, 5.25, 5.50, 5.80, 6.05, // 11 to 15
+    private static double[] MAX_DTR = { 1.01, 2.01, 3.25, 3.75, 4.50, // 1 to 5
+            5.25, 5.50, 5.50, 5.50, // 6 to 10
+            5.50, 5.50, 5.50, 5.80, 6.05, // 11 to 15
             6.15, 6.25, 6.35, 6.45, 6.55, // 16 to 20
 
             6.65, 6.75, 6.85, 6.95, 7.00, // 21 to 25
@@ -80,8 +80,7 @@ public class DTRHandler extends BukkitRunnable {
             Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
             if (playerTeam != null && playerTeam.getOwner() != null) {
-                playerOnlineMap.putIfAbsent(playerTeam, 0);
-                playerOnlineMap.put(playerTeam, playerOnlineMap.get(playerTeam) + 1);
+                playerOnlineMap.put(playerTeam, playerOnlineMap.getOrDefault(playerTeam, 0) + 1);
             }
         }
 
@@ -93,8 +92,7 @@ public class DTRHandler extends BukkitRunnable {
                     return;
                 }
 
-                if (wasOnCooldown.contains(team.getUniqueId())) {
-                    wasOnCooldown.remove(team.getUniqueId());
+                if (wasOnCooldown.remove(team.getUniqueId())) {
                     team.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "Your team is now regenerating DTR!");
                 }
 

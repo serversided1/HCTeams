@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 public class BitmaskCommand {
 

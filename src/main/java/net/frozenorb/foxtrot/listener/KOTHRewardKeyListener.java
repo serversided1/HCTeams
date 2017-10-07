@@ -49,7 +49,13 @@ public class KOTHRewardKeyListener implements Listener {
             return;
         }
 
-        event.getPlayer().setItemInHand(null);
+        ItemStack stack = event.getPlayer().getItemInHand();
+        if (stack.getAmount() == 1) {
+            event.getPlayer().setItemInHand(null);
+        } else {
+            stack.setAmount(stack.getAmount() - 1);
+            event.getPlayer().setItemInHand(stack);
+        }
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.FIREWORK_BLAST, 1F, 1F);
 
         Chest chest = (Chest) block.getState();

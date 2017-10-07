@@ -71,14 +71,12 @@ public class SettingButton extends Button {
 
     public static TabListMode next(TabListMode current) {
         switch (current) {
-            case VANILLA:
-                return TabListMode.DETAILED;
             case DETAILED:
                 return TabListMode.DETAILED_WITH_FACTION_INFO;
             case DETAILED_WITH_FACTION_INFO:
-                return TabListMode.VANILLA;
+                return TabListMode.DETAILED;
             default:
-                return TabListMode.VANILLA;
+                return TabListMode.DETAILED;
         }
     }
 

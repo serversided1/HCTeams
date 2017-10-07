@@ -2,14 +2,17 @@ package net.frozenorb.foxtrot.listener;
 
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
@@ -18,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -25,8 +29,13 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.common.collect.ImmutableSet;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.util.MaterialUtils;
+
+import static org.bukkit.block.BlockFace.*;
 
 public class AntiGlitchListener implements Listener {
 
@@ -150,6 +159,53 @@ public class AntiGlitchListener implements Listener {
         if (event.getBlock().getType() == Material.MOB_SPAWNER) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You aren't allowed to place mob spawners in the nether.");
+        }
+    }
+
+    private static final ImmutableSet<BlockFace> SURROUNDING = ImmutableSet.of(
+            SELF, NORTH, NORTH_EAST, NORTH_WEST, SOUTH, SOUTH_EAST, SOUTH_WEST, EAST, WEST, UP
+    );
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void denyDismountClipping(VehicleExitEvent event) {
+        // Do nothing if exited was not a player.
+        if (!(event.getExited() instanceof Player)) return;
+
+        // Do nothing if player has permission.
+        Player player = (Player) event.getExited();
+
+        // Locate a safe position to teleport the player.
+        Location pLoc = player.getLocation();
+        Location vLoc = event.getVehicle().getLocation();
+        if (player.getLocation().getY() > 250.0D) {
+            pLoc.add(0, 10, 0);
+        } else if (!MaterialUtils.isFullBlock(vLoc.add(0.0D, 1.0D, 0.0D).getBlock().getType())) {
+            // If the vehicles' position is safe, teleport the player into the center of the block, otherwise below.
+            if (!MaterialUtils.isFullBlock(vLoc.getBlock().getType())) {
+                pLoc = new Location(vLoc.getWorld(), vLoc.getBlockX() + 0.5, vLoc.getBlockY(), vLoc.getBlockZ() + 0.5,
+                        pLoc.getYaw(), pLoc.getPitch());
+            } else {
+                pLoc.subtract(0, 1, 0);
+            }
+        }
+
+        final Location finalLocation = pLoc;
+        // Teleport player to the safe location on the next tick.
+        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> player.teleport(finalLocation));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void denyDismountClipping(CreatureSpawnEvent event) {
+        // Do nothing if entity is not a horse.
+        if (event.getEntityType() != EntityType.HORSE) return;
+
+        // Cancel event if any surrounding blocks to the spawned horse are solid.
+        Block block = event.getEntity().getLocation().getBlock();
+        for (BlockFace blockFace : SURROUNDING) {
+            if (MaterialUtils.isFullBlock(block.getRelative(blockFace).getType())) {
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 }

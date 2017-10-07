@@ -190,6 +190,9 @@ public class ServerHandler {
         this.defaultRelationColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("defaultRelationColor", "RED"));
 
         this.veltKitMap = Foxtrot.getInstance().getConfig().getBoolean("veltKitMap", false);
+        if (this.veltKitMap) {
+        	    Bukkit.getLogger().info("Velt KitMap mode enabled!");
+        }
         registerPlayerDamageRestrictionListener();
     }
 

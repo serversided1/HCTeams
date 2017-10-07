@@ -1,8 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.command.CommandSender;
+
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.qlib.command.Command;
-import org.bukkit.command.CommandSender;
 
 public class SaveRedisCommand {
 

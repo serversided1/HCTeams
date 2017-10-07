@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.cavern.CavernHandler;
 import net.frozenorb.foxtrot.chat.enums.ChatMode;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
@@ -111,6 +112,8 @@ public class Team {
     public String getName(Player player) {
         if (name.equals(GlowHandler.getGlowTeamName())) {
             return ChatColor.GOLD + "Glowstone Mountain"; // override team name
+        } else if (name.equals(CavernHandler.getCavernTeamName())) {
+            return ChatColor.AQUA + "Cavern";
         } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
                 switch (player.getWorld().getEnvironment()) {
@@ -381,33 +384,15 @@ public class Team {
     }
 
     public boolean isMember(UUID check) {
-        for (UUID member : members) {
-            if (check.equals(member)) {
-                return (true);
-            }
-        }
-
-        return (false);
+        return members.contains(check);
     }
 
     public boolean isCaptain(UUID check) {
-        for(UUID co : captains) {
-            if (co.equals(check)) {
-                return true;
-            }
-        }
-
-        return false;
+        return captains.contains(check);
     }
 
     public boolean isCoLeader(UUID check) {
-        for(UUID co : coleaders) {
-            if (co.equals(check)) {
-                return true;
-            }
-        }
-
-        return false;
+        return coleaders.contains(check);
     }
 
     public void validateAllies() {

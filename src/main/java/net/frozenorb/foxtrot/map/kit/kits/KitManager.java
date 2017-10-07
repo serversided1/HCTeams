@@ -28,9 +28,11 @@ public class KitManager {
         kits.sort((first, second) -> first.getName().compareToIgnoreCase(second.getName()));
         Foxtrot.getInstance().getLogger().info("- Kit Manager - Loaded " + kits.size() + " kits.");
 
-        FrozenCommandHandler.registerPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.kits.commands");
-        FrozenCommandHandler.registerParameterType(Kit.class, new Kit.Type());
-
+        // We have to do this later to 'steal' priority
+        Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+            FrozenCommandHandler.registerPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.commands");
+            FrozenCommandHandler.registerParameterType(Kit.class, new Kit.Type());
+        }, 5L);
         Bukkit.getPluginManager().registerEvents(new KitListener(), Foxtrot.getInstance());
     }
 

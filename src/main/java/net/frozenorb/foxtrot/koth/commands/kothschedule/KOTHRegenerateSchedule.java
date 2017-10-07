@@ -22,4 +22,9 @@ public class KOTHRegenerateSchedule {
         }
     }
 
+    @Command(names = {"KOTHSchedule debug"}, permission = "op")
+    public static void kothScheduleDebug(CommandSender sender) {
+        Foxtrot.getInstance().getKOTHHandler().fillSchedule();
+        sender.sendMessage(ChatColor.GREEN + "The KOTH schedule has been filled.");
+    }
 }

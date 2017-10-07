@@ -1,18 +1,20 @@
 package net.frozenorb.foxtrot.commands;
 
-import com.google.common.io.Files;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Param;
-import net.frozenorb.qlib.util.UUIDUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import com.google.common.io.Files;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Param;
+import net.frozenorb.qlib.util.UUIDUtils;
 
 public class ReviveCommand {
 

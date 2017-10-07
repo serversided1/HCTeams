@@ -1,12 +1,17 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.command.Command;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
 
 public class RecachePlayerTeamsCommand {
 

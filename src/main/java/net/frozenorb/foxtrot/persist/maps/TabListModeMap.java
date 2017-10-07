@@ -18,6 +18,7 @@ public class TabListModeMap extends PersistMap<TabListMode> {
 
     @Override
     public TabListMode getJavaObject(String str){
+        if (str.equals("VANILLA")) return TabListMode.DETAILED;
         return (TabListMode.valueOf(str));
     }
 

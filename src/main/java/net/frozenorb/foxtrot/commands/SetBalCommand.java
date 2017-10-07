@@ -1,13 +1,14 @@
 package net.frozenorb.foxtrot.commands;
 
+import java.util.UUID;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class SetBalCommand {
 

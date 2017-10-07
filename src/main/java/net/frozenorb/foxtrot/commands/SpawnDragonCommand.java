@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
+import net.frozenorb.qlib.command.Command;
 
 public class SpawnDragonCommand {
     @Command(names={ "spawndragon", "spawnenderdragon" }, permission="op")

@@ -631,11 +631,14 @@ public class FoxListener implements Listener {
         }
 
         Team ownerFrom = LandBoard.getInstance().getTeam(event.getFrom());
-        ServerHandler sm = Foxtrot.getInstance().getServerHandler();
-        RegionData from = sm.getRegion(ownerFrom, event.getFrom());
-        RegionData to = sm.getRegion(ownerTo, event.getTo());
 
-        if (!from.equals(to)) {
+        if (ownerFrom != ownerTo) {
+            ServerHandler sm = Foxtrot.getInstance().getServerHandler();
+            RegionData from = sm.getRegion(ownerFrom, event.getFrom());
+            RegionData to = sm.getRegion(ownerTo, event.getTo());
+
+            if (from.equals(to)) return;
+
             if (!to.getRegionType().getMoveHandler().handleMove(event)) {
                 return;
             }

@@ -1,10 +1,11 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.listener.EndListener;
-import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import net.frozenorb.foxtrot.listener.EndListener;
+import net.frozenorb.qlib.command.Command;
 
 public class SetEndExitCommand {
 

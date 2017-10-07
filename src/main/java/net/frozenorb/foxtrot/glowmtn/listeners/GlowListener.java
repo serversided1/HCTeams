@@ -1,11 +1,9 @@
 package net.frozenorb.foxtrot.glowmtn.listeners;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.glowmtn.GlowHandler;
-import net.frozenorb.foxtrot.glowmtn.GlowMountain;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.qlib.event.HourEvent;
+import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.GOLD;
+import static org.bukkit.ChatColor.RED;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +12,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import static org.bukkit.ChatColor.*;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.glowmtn.GlowHandler;
+import net.frozenorb.foxtrot.glowmtn.GlowMountain;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 
 public class GlowListener implements Listener {
 

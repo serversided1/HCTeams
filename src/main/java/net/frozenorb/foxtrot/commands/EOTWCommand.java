@@ -1,12 +1,13 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.listener.EndListener;
-import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.listener.EndListener;
+import net.frozenorb.qlib.command.Command;
 
 public class EOTWCommand {
 

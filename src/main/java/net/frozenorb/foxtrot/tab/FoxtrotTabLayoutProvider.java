@@ -1,8 +1,23 @@
 package net.frozenorb.foxtrot.tab;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import javafx.util.Pair;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.koth.KOTH;
 import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
@@ -14,14 +29,6 @@ import net.frozenorb.foxtrot.util.PlayerDirection;
 import net.frozenorb.qlib.tab.LayoutProvider;
 import net.frozenorb.qlib.tab.TabLayout;
 import net.frozenorb.qlib.util.TimeUtils;
-import org.bson.types.ObjectId;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
-import org.bukkit.entity.Player;
-
-import java.util.*;
 
 public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
@@ -31,10 +38,6 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
     @Override
     public TabLayout provide(Player player) {
         TabListMode mode = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
-
-        if (mode == TabListMode.VANILLA) {
-            return null;
-        }
 
         TabLayout layout = TabLayout.create(player);
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
@@ -116,26 +119,28 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         if (activeKOTH == null) {
             Date now = new Date();
 
-            Pair<String, Date> nextKOTH = null;
+            String nextKothName = null;
+            Date nextKothDate = null;
 
             for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
                 if (entry.getKey().toDate().after(now)) {
-                    if (nextKOTH == null || nextKOTH.getValue().getTime() > entry.getKey().toDate().getTime()) {
-                        nextKOTH = new Pair<>(entry.getValue(), entry.getKey().toDate());
+                    if (nextKothDate == null || nextKothDate.getTime() > entry.getKey().toDate().getTime()) {
+                        nextKothName = entry.getValue();
+                        nextKothDate = entry.getKey().toDate();
                     }
                 }
             }
 
-            if (nextKOTH != null) {
+            if (nextKothName != null) {
                 layout.set(0, ++y, titleColor + "Next KOTH:");
-                layout.set(0, ++y, infoColor + nextKOTH.getKey());
+                layout.set(0, ++y, infoColor + nextKothName);
 
-                KOTH koth = Foxtrot.getInstance().getKOTHHandler().getKOTH(nextKOTH.getKey());
+                KOTH koth = Foxtrot.getInstance().getKOTHHandler().getKOTH(nextKothName);
 
                 if (koth != null) {
                     layout.set(0, ++y, infoColor.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ()); // location
 
-                    int seconds = (int) ((nextKOTH.getValue().getTime() - System.currentTimeMillis()) / 1000);
+                    int seconds = (int) ((nextKothDate.getTime() - System.currentTimeMillis()) / 1000);
                     layout.set(0, ++y, titleColor + "Goes active in:");
 
                     String time = formatIntoDetailedString(seconds)

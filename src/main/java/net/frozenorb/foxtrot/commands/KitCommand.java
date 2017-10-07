@@ -1,8 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.qlib.command.Command;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+
+import net.frozenorb.qlib.command.Command;
 
 public class KitCommand {
 

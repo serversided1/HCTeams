@@ -1,18 +1,19 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Param;
-import net.frozenorb.qlib.qLib;
-import net.frozenorb.qlib.uuid.FrozenUUIDCache;
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
-import java.util.UUID;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Param;
+import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 
 public class LastInvCommand {
 

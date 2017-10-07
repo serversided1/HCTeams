@@ -1,10 +1,5 @@
 package net.frozenorb.foxtrot.commands;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.command.Param;
-import net.frozenorb.qlib.qLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,6 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.Param;
 
 public class CannonCommand {
 

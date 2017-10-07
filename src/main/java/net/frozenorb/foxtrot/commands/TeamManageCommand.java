@@ -1,16 +1,27 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.NullConversationPrefix;
+import org.bukkit.conversations.Prompt;
+import org.bukkit.conversations.StringPrompt;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.gui.menu.*;
+import net.frozenorb.foxtrot.gui.menu.DemoteMembersMenu;
+import net.frozenorb.foxtrot.gui.menu.KickPlayersMenu;
+import net.frozenorb.foxtrot.gui.menu.MuteMenu;
+import net.frozenorb.foxtrot.gui.menu.PromoteMembersMenu;
+import net.frozenorb.foxtrot.gui.menu.SelectNewLeaderMenu;
+import net.frozenorb.foxtrot.gui.menu.TeamManageMenu;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.commands.SetTeamBalanceCommand;
 import net.frozenorb.foxtrot.team.commands.team.TeamCreateCommand;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.util.Callback;
-import org.bukkit.ChatColor;
-import org.bukkit.conversations.*;
-import org.bukkit.entity.Player;
 
 public class TeamManageCommand {
 

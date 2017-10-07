@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.koth;
 import com.google.common.primitives.Ints;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.minecraft.util.com.google.common.base.Objects;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -63,7 +64,7 @@ public class KOTHScheduledTime implements Comparable<KOTHScheduledTime> {
 
     @Override
     public int hashCode() {
-        return (day ^ hour ^ minutes);
+        return Objects.hashCode(day, hour, minutes);
     }
 
     @Override

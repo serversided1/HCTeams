@@ -23,11 +23,6 @@ public class TeamWithdrawCommand {
             return;
         }
 
-        if (team.getBalance() > 250000) {
-            sender.sendMessage("§cYour team has too much money to withdraw right now. Please contact an admin.");
-            return;
-        }
-
         if (team.isCaptain(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isOwner(sender.getUniqueId())) {
             if (team.getBalance() < amount) {
                 sender.sendMessage(ChatColor.RED + "The team doesn't have enough money to do this!");

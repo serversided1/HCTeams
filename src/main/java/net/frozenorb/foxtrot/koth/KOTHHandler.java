@@ -107,6 +107,24 @@ public class KOTHHandler {
         });
     }
 
+    public void fillSchedule() {
+        List<String> allKOTHs = new ArrayList<>();
+
+        for (KOTH koth : getKOTHs()) {
+            if (koth.isHidden() || koth.getName().equalsIgnoreCase("EOTW") || koth.getName().equalsIgnoreCase("Citadel")) {
+                continue;
+            }
+
+            allKOTHs.add(koth.getName());
+        }
+        
+        for (int minute = 0; minute < 60; minute++) {
+            for (int hour = 0; hour < 24; hour++) {
+                this.KOTHSchedule.put(new KOTHScheduledTime(Calendar.getInstance().get(Calendar.DAY_OF_YEAR), (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + hour) % 24, minute), allKOTHs.get(0));
+            }
+        }
+    }
+
     public void loadSchedules() {
         KOTHSchedule.clear();
 
@@ -127,11 +145,12 @@ public class KOTHHandler {
                     allKOTHs.add(koth.getName());
                 }
 
-                for (int dayOffset = 0; dayOffset < 100; dayOffset++) {
+                for (int dayOffset = 0; dayOffset < 21; dayOffset++) {
                     int day = (currentDay + dayOffset) % 365;
                     KOTHScheduledTime[] times = new KOTHScheduledTime[] {
 
                             new KOTHScheduledTime(day, 1, 30), // 1:30am EST
+                            new KOTHScheduledTime(day, 3, 30), // 3:30am EST
                             new KOTHScheduledTime(day, 12, 30), // 12:30pm EST
                             new KOTHScheduledTime(day, 15, 30), // 03:30pm EST
                             new KOTHScheduledTime(day, 18, 30), // 6:30pm EST
@@ -149,7 +168,7 @@ public class KOTHHandler {
                         KOTHScheduledTime kothTime = times[kothTimeIndex];
                         String kothName = allKOTHs.get(kothTimeIndex);
 
-                        schedule.put(kothTime.toString(), kothName);
+                        schedule.put(kothTime.toString(), kothTime.getHour() == 15 && kothTime.getMinutes() == 30 ? (day & 1) == 0 ? "Conquest" : "Citadel" : kothName);
                     }
                 }
 

@@ -29,12 +29,6 @@ public class TeamDepositCommand {
             return;
         }
 
-        if (FrozenEconomyHandler.getBalance(sender.getUniqueId()) > 100000) {
-            sender.sendMessage("§cYour balance is too high to deposit money. Please contact an admin to do this.");
-            Bukkit.getLogger().severe("[ECONOMY] " + sender.getName() + " tried to deposit " + amount + "to " + team);
-            return;
-        }
-
         if (Float.isNaN(amount)) {
             sender.sendMessage(ChatColor.RED + "Nope.");
             return;

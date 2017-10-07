@@ -1,14 +1,12 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.qlib.command.Command;
-import net.frozenorb.qlib.util.TimeUtils;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-
-import static net.frozenorb.foxtrot.server.Deathban.*;
 
 public class HelpCommand {
 

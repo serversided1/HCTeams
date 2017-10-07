@@ -1,10 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.util.InventoryUtils;
-import net.frozenorb.foxtrot.util.RegenUtils;
-import net.frozenorb.qlib.util.PlayerUtils;
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,10 +20,18 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.concurrent.TimeUnit;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.foxtrot.util.RegenUtils;
+import net.frozenorb.qlib.util.PlayerUtils;
 
 public class  SpawnListener implements Listener {
 
@@ -180,4 +185,13 @@ public class  SpawnListener implements Listener {
         }
     }
 
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event) {
+        Team team = LandBoard.getInstance().getTeam(event.getPlayer().getLocation());
+        if (team != null && team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && (Foxtrot.getInstance().getServerHandler().isVeltKitMap() || CustomTimerCreateCommand.isSOTWTimer())) {
+            event.getItemDrop().remove();
+        }
+        
+    }
 }

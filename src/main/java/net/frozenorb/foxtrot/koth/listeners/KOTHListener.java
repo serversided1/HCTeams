@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -323,6 +324,11 @@ public class KOTHListener implements Listener {
             String resolvedName = Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().get(scheduledTime);
             KOTH resolved = Foxtrot.getInstance().getKOTHHandler().getKOTH(resolvedName);
 
+            if (scheduledTime.getHour() == 15 && scheduledTime.getMinutes() == 30 && resolvedName.equals("Conquest")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "conquestadmin start");
+                return;
+            }
+
             if (resolved == null) {
                 Foxtrot.getInstance().getLogger().warning("The KOTH Scheduler has a schedule for a KOTH named " + resolvedName + ", but the KOTH does not exist.");
                 return;
@@ -334,7 +340,7 @@ public class KOTHListener implements Listener {
 
     private void terminateKOTHs() {
         KOTHScheduledTime nextScheduledTime = KOTHScheduledTime.parse(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30)));
-
+ 
         if (Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().containsKey(nextScheduledTime)) {
             // We have a KOTH about to start. Prepare for it.
             for (KOTH activeKoth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
@@ -351,10 +357,11 @@ public class KOTHListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onHalfHour(HalfHourEvent event) {
-        terminateKOTHs();
-        activateKOTHs();
+    public KOTHListener() {
+        Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
+            terminateKOTHs();
+            activateKOTHs();
+        }, 20L, 20L);
     }
 
 }

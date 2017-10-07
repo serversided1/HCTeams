@@ -9,6 +9,7 @@ import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
 import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -88,6 +90,12 @@ public class ConquestGame implements Listener {
 
         if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.getPointsToWin()) {
             endGame(team);
+            ItemStack conquestKey = InventoryUtils.generateKOTHRewardKey("Conquest");
+            conquestKey.setAmount(5);
+            event.getPlayer().getInventory().addItem(conquestKey);
+            if (!event.getPlayer().getInventory().contains(conquestKey)) {
+                event.getPlayer().getWorld().dropItemNaturally(event.getPlayer().getLocation(), conquestKey);
+            }
         } else {
             new BukkitRunnable() {
 

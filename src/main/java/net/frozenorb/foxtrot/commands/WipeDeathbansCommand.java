@@ -1,10 +1,16 @@
 package net.frozenorb.foxtrot.commands;
 
+import org.bukkit.ChatColor;
+import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
+import org.bukkit.conversations.NullConversationPrefix;
+import org.bukkit.conversations.Prompt;
+import org.bukkit.conversations.StringPrompt;
+import org.bukkit.entity.Player;
+
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.command.Command;
-import org.bukkit.ChatColor;
-import org.bukkit.conversations.*;
-import org.bukkit.entity.Player;
 
 public class WipeDeathbansCommand {
 
