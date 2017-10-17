@@ -55,6 +55,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.Betrayer;
+import net.frozenorb.foxtrot.util.CheatBreakerKey;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.foxtrot.util.Logout;
 import net.frozenorb.qlib.qLib;
@@ -259,6 +260,7 @@ public class ServerHandler {
             public void run() {
                 if (player.hasMetadata("frozen")) {
                     player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "LOGOUT " + ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED!");
+                    CheatBreakerKey.LOGOUT.clear(player);
                     cancel();
                     return;
                 }
@@ -279,6 +281,7 @@ public class ServerHandler {
         }.runTaskTimer(Foxtrot.getInstance(), 20L, 20L);
 
         tasks.put(player.getName(), new Logout(taskid.getTaskId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30)));
+        CheatBreakerKey.LOGOUT.send(player, tasks.get(player.getName()).getLogoutTime() - System.currentTimeMillis());
     }
 
     public RegionData getRegion(Team ownerTo, Location location) {
@@ -333,7 +336,7 @@ public class ServerHandler {
             dtrLoss = Math.min(dtrLoss, 0.01D);
         }
 
-        if (Foxtrot.getInstance().getConquestHandler().getGame() != null) {
+        if (Foxtrot.getInstance().getConquestHandler().getGame() != null && location.getWorld().getEnvironment() == Environment.THE_END) {
             dtrLoss = Math.min(dtrLoss, 0.50D);
         }
 
@@ -452,6 +455,7 @@ public class ServerHandler {
         }
 
         homeTimer.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(warmup));
+        CheatBreakerKey.HOME.send(player, homeTimer.get(player.getName()) - System.currentTimeMillis());
 
         final int finalWarmup = warmup;
 
@@ -467,6 +471,7 @@ public class ServerHandler {
 
                 if (!player.getLocation().getWorld().equals(startLocation.getWorld()) || player.getLocation().distanceSquared(startLocation) >= 0.1 || player.getHealth() < startHealth) {
                     player.sendMessage(ChatColor.YELLOW + "Teleport cancelled.");
+                    CheatBreakerKey.HOME.clear(player);
                     homeTimer.remove(player.getName());
                     cancel();
                     return;

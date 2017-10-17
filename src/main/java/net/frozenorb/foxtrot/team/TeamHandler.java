@@ -117,11 +117,15 @@ public class TeamHandler {
     }
 
     public void setupTeam(Team team) {
+        setupTeam(team, false);
+    }
+
+    public void setupTeam(Team team, boolean update) {
         teamNameMap.put(team.getName().toLowerCase(), team);
         teamUniqueIdMap.put(team.getUniqueId(), team);
 
         for (UUID member : team.getMembers()) {
-            setTeam(member, team, false); // no need to update mongo!
+            setTeam(member, team, update); // no need to update mongo!
         }
     }
 

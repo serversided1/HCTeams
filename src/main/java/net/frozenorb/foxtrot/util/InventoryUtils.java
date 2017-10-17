@@ -230,7 +230,7 @@ public class InventoryUtils {
     public static String getLoreData(ItemStack item, int index) {
         List<String> lore = item.getItemMeta().getLore();
 
-        if (index < lore.size()) {
+        if (lore != null && index < lore.size()) {
             String str = ChatColor.stripColor(lore.get(index));
             return (str.split("\\{")[1].replace("}", ""));
         }

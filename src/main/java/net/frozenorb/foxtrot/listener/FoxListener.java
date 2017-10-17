@@ -110,6 +110,7 @@ import net.frozenorb.foxtrot.team.commands.team.TeamStuckCommand;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+import net.frozenorb.foxtrot.util.CheatBreakerKey;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 
@@ -154,6 +155,7 @@ public class FoxListener implements Listener {
         }
 
         if (ServerHandler.getTasks().containsKey(event.getPlayer().getName())) {
+            CheatBreakerKey.LOGOUT.clear(event.getPlayer());
             Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(event.getPlayer().getName()).getTaskId());
             ServerHandler.getTasks().remove(event.getPlayer().getName());
             event.getPlayer().sendMessage(YELLOW.toString() + BOLD + "LOGOUT " + RED.toString() + BOLD + "CANCELLED!");
@@ -281,6 +283,7 @@ public class FoxListener implements Listener {
             Player player = (Player) event.getEntity();
 
             if (ServerHandler.getTasks().containsKey(player.getName())) {
+                CheatBreakerKey.LOGOUT.clear(player);
                 Foxtrot.getInstance().getServer().getScheduler().cancelTask(ServerHandler.getTasks().get(player.getName()).getTaskId());
                 ServerHandler.getTasks().remove(player.getName());
                 player.sendMessage(YELLOW.toString() + BOLD + "LOGOUT " + RED.toString() + BOLD + "CANCELLED!");

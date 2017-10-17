@@ -73,8 +73,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
         layout.set(0, ++y, titleColor + "Player Info:");
         layout.set(0, ++y, infoColor + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
-
-//        layout.set(0, ++y, TabEntry.of(infoColor + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId())));
+        layout.set(0, ++y, infoColor + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
 
         ++y; // blank
 
@@ -190,7 +189,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             y = mode == TabListMode.DETAILED ? 4 : 7;
 
             // then the owner
-            if (owner != null && !owner.equals(player)) {
+            if (owner != null && owner != player) {
                 layout.set(x, y, ChatColor.DARK_GREEN + owner.getName() + ChatColor.GRAY + "**", ((CraftPlayer) owner).getHandle().ping);
 
                 y++;
@@ -203,7 +202,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
             // then the coleaders
             for (Player coleader : coleaders) {
-                if (coleader.equals(player)) continue;
+                if (coleader == player) continue;
 
                 layout.set(x, y, ChatColor.DARK_GREEN + coleader.getName() + ChatColor.GRAY + "**", ((CraftPlayer) coleader).getHandle().ping);
 
@@ -218,7 +217,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
             // then the captains
             for (Player captain : captains) {
-                if (captain.equals(player)) continue;
+                if (captain == player) continue;
 
                 layout.set(x, y, ChatColor.DARK_GREEN + captain.getName() + ChatColor.GRAY + "*", ((CraftPlayer) captain).getHandle().ping);
 
@@ -232,11 +231,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
             // and only then, normal members.
             for (Player member : members) {
-                if (member.equals(player)) continue;
-
-                if (member.equals(player)) {
-                    continue;
-                }
+                if (member == player) continue;
 
                 layout.set(x, y, ChatColor.DARK_GREEN + member.getName(), ((CraftPlayer) member).getHandle().ping);
 
@@ -395,11 +390,9 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             int days = secs / 86400;
             int hours = remainder / 3600;
             int minutes = remainder / 60 - hours * 60;
-            int seconds = remainder % 3600 - minutes * 60;
             String fDays = days > 0 ? " " + days + " day" + (days > 1 ? "s" : "") : "";
             String fHours = hours > 0 ? " " + hours + " hour" + (hours > 1 ? "s" : "") : "";
             String fMinutes = minutes > 0 ? " " + minutes + " minute" + (minutes > 1 ? "s" : "") : "";
-            String fSeconds = (seconds > 0 && hours <= 0) ? " " + seconds + " second" + (seconds > 1 ? "s" : "") : "";
             return (fDays + fHours + fMinutes).trim();
         }
 

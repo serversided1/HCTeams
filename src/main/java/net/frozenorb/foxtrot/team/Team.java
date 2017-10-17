@@ -600,9 +600,12 @@ public class Team {
     }
 
     public void load(String str) {
+        load(str, false);
+    }
+
+    public void load(String str, boolean forceSave) {
         loading = true;
         String[] lines = str.split("\n");
-        //System.out.println(str);
 
         for (String line : lines) {
             if (line.indexOf(':') == -1) {
@@ -768,7 +771,7 @@ public class Team {
         }
 
         loading = false;
-        needsSave = false;
+        needsSave = forceSave;
     }
 
     public String saveString(boolean toJedis) {

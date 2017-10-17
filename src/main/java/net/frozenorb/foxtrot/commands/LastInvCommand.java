@@ -19,83 +19,58 @@ public class LastInvCommand {
 
     @Command(names={ "lastinv" }, permission="foxtrot.lastinv")
     public static void lastInv(Player sender, @Param(name="player") UUID player) {
-        new BukkitRunnable() {
+        Foxtrot.getInstance().getServer().getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
+            qLib.getInstance().runRedisCommand((redis) -> {
+                if (!redis.exists("lastInv:contents:" + player.toString())) {
+                    sender.sendMessage(ChatColor.RED + "No last inventory recorded for " + FrozenUUIDCache.name(player));
+                    return null;
+                }
 
-            public void run() {
-                qLib.getInstance().runRedisCommand((redis) -> {
-                    if (!redis.exists("lastInv:contents:" + player.toString())) {
-                        sender.sendMessage(ChatColor.RED + "No last inventory recorded for " + FrozenUUIDCache.name(player));
-                        return null;
-                    }
+                ItemStack[] contents = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:contents:" + player.toString()), ItemStack[].class);
+                ItemStack[] armor = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:armorContents:" + player.toString()), ItemStack[].class);
 
-                    ItemStack[] contents = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:contents:" + player.toString()), ItemStack[].class);
-                    for (ItemStack item : contents) {
-                        if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
-                            ItemMeta meta = item.getItemMeta();
+                cleanLoot(contents);
+                cleanLoot(armor);
 
-                            List<String> lore = item.getItemMeta().getLore();
-                            lore.remove(ChatColor.DARK_GRAY + "PVP Loot");
-                            meta.setLore(lore);
-
-                            item.setItemMeta(meta);
-                        }
-                    }
-
-                    ItemStack[] armor = qLib.PLAIN_GSON.fromJson(redis.get("lastInv:armorContents:" + player.toString()), ItemStack[].class);
-                    for (ItemStack item : armor) {
-                        if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
-                            ItemMeta meta = item.getItemMeta();
-
-                            List<String> lore = item.getItemMeta().getLore();
-                            lore.remove(ChatColor.DARK_GRAY + "PVP Loot");
-                            meta.setLore(lore);
-
-                            item.setItemMeta(meta);
-                        }
-                    }
-
+                Foxtrot.getInstance().getServer().getScheduler().runTask(Foxtrot.getInstance(), () -> {
                     sender.getInventory().setContents(contents);
                     sender.getInventory().setArmorContents(armor);
                     sender.updateInventory();
 
                     sender.sendMessage(ChatColor.GREEN + "Loaded " + FrozenUUIDCache.name(player) + "'s last inventory.");
-
-                    return null;
                 });
-            }
 
-        }.runTaskAsynchronously(Foxtrot.getInstance());
+                return null;
+            });
+        });
+    }
+
+    private static void cleanLoot(ItemStack[] stack) {
+        for (ItemStack item : stack) {
+            if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
+                ItemMeta meta = item.getItemMeta();
+
+                List<String> lore = item.getItemMeta().getLore();
+                lore.remove(ChatColor.DARK_GRAY + "PVP Loot");
+                meta.setLore(lore);
+
+                item.setItemMeta(meta);
+            }
+        }
     }
 
     public static void recordInventory(Player player) {
-        ItemStack[] contents = player.getInventory().getContents();
-        ItemStack[] armor = player.getInventory().getArmorContents();
-
-        new BukkitRunnable() {
-
-            public void run() {
-                qLib.getInstance().runRedisCommand((redis) -> {
-                    redis.set("lastInv:contents:" + player.getUniqueId().toString(), qLib.PLAIN_GSON.toJson(contents));
-                    redis.set("lastInv:armorContents:" + player.getUniqueId().toString(), qLib.PLAIN_GSON.toJson(armor));
-                    return null;
-                });
-            }
-
-        }.runTaskAsynchronously(Foxtrot.getInstance());
+        recordInventory(player.getUniqueId(), player.getInventory().getContents(), player.getInventory().getArmorContents());
     }
 
     public static void recordInventory(UUID player, ItemStack[] contents, ItemStack[] armor) {
-        new BukkitRunnable() {
-
-            public void run() {
-                qLib.getInstance().runRedisCommand((redis) -> {
-                    redis.set("lastInv:contents:" + player.toString(), qLib.PLAIN_GSON.toJson(contents));
-                    redis.set("lastInv:armorContents:" + player.toString(), qLib.PLAIN_GSON.toJson(armor));
-                    return null;
-                });
-            }
-
-        }.runTaskAsynchronously(Foxtrot.getInstance());
+        Foxtrot.getInstance().getServer().getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
+            qLib.getInstance().runRedisCommand((redis) -> {
+                redis.set("lastInv:contents:" + player.toString(), qLib.PLAIN_GSON.toJson(contents));
+                redis.set("lastInv:armorContents:" + player.toString(), qLib.PLAIN_GSON.toJson(armor));
+                return null;
+            });
+        });
     }
 
 }

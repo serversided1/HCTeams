@@ -1,14 +1,22 @@
 package net.frozenorb.foxtrot.listener;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.commands.LastInvCommand;
-import net.frozenorb.qlib.util.TimeUtils;
+import java.util.Optional;
+
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.LastInvCommand;
+import net.frozenorb.foxtrot.util.CheatBreakerKey;
+import net.frozenorb.hydrogen.Hydrogen;
+import net.frozenorb.hydrogen.profile.Profile;
+import net.frozenorb.hydrogen.rank.Rank;
+import net.frozenorb.qlib.util.TimeUtils;
 
 public class DeathbanListener implements Listener {
 
@@ -17,6 +25,7 @@ public class DeathbanListener implements Listener {
         LastInvCommand.recordInventory(event.getEntity());
 
         EnderpearlListener.getEnderpearlCooldown().remove(event.getEntity().getName()); // cancel enderpearls
+        CheatBreakerKey.ENDER_PEARL.clear(event.getEntity());
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
             return;
@@ -54,7 +63,18 @@ public class DeathbanListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Foxtrot.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        boolean shouldBypass = event.getPlayer().isOp();
+        
+        if (!shouldBypass) {
+            Optional<Profile> highestRank = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
+            Rank playersRank = highestRank.isPresent() ? highestRank.get().getBestGeneralRank() : null;
+            shouldBypass = playersRank != null && playersRank.isStaffRank();
+        }
+        
+        if (shouldBypass) {
+            Foxtrot.getInstance().getDeathbanMap().revive(event.getPlayer().getUniqueId());
+        }
     }
 
 }

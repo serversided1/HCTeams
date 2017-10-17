@@ -128,6 +128,6 @@ public class PortalTrapListener implements Listener {
     }
 
     private List<Entity> getNearbyEntities(Location l, int radius) {
-        return l.getWorld().getEntities().stream().filter(e -> l.distance(e.getLocation()) <= radius).collect(Collectors.toList());
+        return l.getWorld().getPlayers().stream().filter(e -> l.distance(e.getLocation()) <= radius).collect(Collectors.toList());
     }
 }

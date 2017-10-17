@@ -1,11 +1,18 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
-import com.google.common.collect.Lists;
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.qlib.command.Command;
-import org.bukkit.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -13,12 +20,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import com.google.common.collect.Lists;
+
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.util.CheatBreakerKey;
+import net.frozenorb.qlib.command.Command;
 
 public class TeamStuckCommand implements Listener {
 
@@ -64,6 +76,7 @@ public class TeamStuckCommand implements Listener {
 
         int seconds = sender.isOp() && sender.getGameMode() == GameMode.CREATIVE ? 5 : 300;
         warping.put(sender.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds));
+        CheatBreakerKey.STUCK.send(sender, warping.get(sender.getName()) - System.currentTimeMillis());
 
         new BukkitRunnable() {
 
@@ -81,6 +94,7 @@ public class TeamStuckCommand implements Listener {
             public void run() {
                 if (damaged.contains(sender.getName())) {
                     sender.sendMessage(ChatColor.RED + "You took damage, teleportation cancelled!");
+                    CheatBreakerKey.STUCK.clear(sender);
                     damaged.remove(sender.getName());
                     warping.remove(sender.getName());
                     cancel();
@@ -89,6 +103,7 @@ public class TeamStuckCommand implements Listener {
 
                 if (!sender.isOnline()) {
                     warping.remove(sender.getName());
+                    CheatBreakerKey.STUCK.clear(sender);
                     cancel();
                     return;
                 }
@@ -118,6 +133,7 @@ public class TeamStuckCommand implements Listener {
                     }
 
                     warping.remove(sender.getName());
+                    CheatBreakerKey.STUCK.clear(sender);
                     cancel();
                     return;
                 }
@@ -126,6 +142,7 @@ public class TeamStuckCommand implements Listener {
                 if ((loc.getX() >= xStart + MAX_DISTANCE || loc.getX() <= xStart - MAX_DISTANCE) || (loc.getY() >= yStart + MAX_DISTANCE || loc.getY() <= yStart - MAX_DISTANCE) || (loc.getZ() >= zStart + MAX_DISTANCE || loc.getZ() <= zStart - MAX_DISTANCE)) {
                     sender.sendMessage(ChatColor.RED + "You moved more than " + MAX_DISTANCE + " blocks, teleport cancelled!");
                     warping.remove(sender.getName());
+                    CheatBreakerKey.STUCK.clear(sender);
                     cancel();
                     return;
                 }
@@ -231,5 +248,10 @@ public class TeamStuckCommand implements Listener {
         }
 
         return false;
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        CheatBreakerKey.STUCK.clear(event.getPlayer());
     }
 }

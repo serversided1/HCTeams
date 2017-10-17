@@ -1,14 +1,16 @@
 package net.frozenorb.foxtrot.server;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import net.frozenorb.foxtrot.util.CheatBreakerKey;
 
 @RequiredArgsConstructor
 public class SpawnTagHandler {
@@ -45,6 +47,8 @@ public class SpawnTagHandler {
             player.sendMessage(ChatColor.YELLOW + "You have been spawn-tagged for §c" + seconds + " §eseconds!");
             spawnTags.put(player.getName(), System.currentTimeMillis() + (seconds * 1000L));
         }
+
+        CheatBreakerKey.SPAWN_TAG.send(player, getTag(player));
     }
 
     public static long getTag(Player player) {

@@ -433,17 +433,11 @@ public class CombatLoggerListener implements Listener {
                         }
 
                         String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" +  ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";
-
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             if (Foxtrot.getInstance().getToggleDeathMessageMap().areDeathMessagesEnabled(player.getUniqueId())) {
                                 player.sendMessage(deathMessage);
                             } else {
-                                if (Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()) == null) {
-                                    continue;
-                                }
-
-                                if (Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID) != null
-                                        && Foxtrot.getInstance().getTeamHandler().getTeam(metadata.playerUUID).equals(Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId()))) {
+                                if (team != null && team == Foxtrot.getInstance().getTeamHandler().getTeam(player.getUniqueId())) {
                                     player.sendMessage(deathMessage);
                                 }
                             }

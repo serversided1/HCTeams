@@ -15,6 +15,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 
 import java.util.Iterator;
 
@@ -32,6 +33,8 @@ public class PotionLimiterListener implements Listener {
             Potion potion = Potion.fromItemStack(event.getPotion().getItem());
 
             if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
+                event.setCancelled(true);
+            } else if (potion.hasExtendedDuration() && (potion.getType() == PotionType.SLOWNESS || potion.getType() == PotionType.POISON)) {
                 event.setCancelled(true);
             }
         }

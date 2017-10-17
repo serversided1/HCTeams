@@ -116,10 +116,10 @@ public class ChatListener implements Listener {
                     } else {
                         if (playerTeam.isMember(player.getUniqueId())) {
                             // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.RED, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
+                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + Foxtrot.getInstance().getServerHandler().getDefaultRelationColor(), ChatColor.GOLD + "[" + ChatColor.DARK_GREEN));
                         } else if (playerTeam.isAlly(player.getUniqueId())) {
                             // Gypsie way to get a custom color if they're allies/teammates
-                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + ChatColor.RED, ChatColor.GOLD + "[" + Team.ALLY_COLOR));
+                            player.sendMessage(finalMessage.replace(ChatColor.GOLD + "[" + Foxtrot.getInstance().getServerHandler().getDefaultRelationColor(), ChatColor.GOLD + "[" + Team.ALLY_COLOR));
                         } else {
                             // We only check this here as...
                             // Team members always see their team's messages
