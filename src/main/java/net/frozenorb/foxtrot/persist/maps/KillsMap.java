@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.persist.maps;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.persist.PersistMap;
 
 import java.util.UUID;
@@ -31,6 +32,7 @@ public class KillsMap extends PersistMap<Integer> {
 
     public void setKills(UUID update, int kills) {
         updateValueAsync(update, kills);
+        Foxtrot.getInstance().getKdrMap().updateKDR(update);
     }
 
 }

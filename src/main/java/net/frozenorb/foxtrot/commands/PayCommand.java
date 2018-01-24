@@ -58,6 +58,9 @@ public class PayCommand {
 
         FrozenEconomyHandler.deposit(player, amount);
         FrozenEconomyHandler.withdraw(sender.getUniqueId(), amount);
+ 
+        Foxtrot.getInstance().getWrappedBalanceMap().setBalance(player, FrozenEconomyHandler.getBalance(player));
+        Foxtrot.getInstance().getWrappedBalanceMap().setBalance(sender.getUniqueId(), FrozenEconomyHandler.getBalance(sender.getUniqueId()));
 
         sender.sendMessage(ChatColor.YELLOW + "You sent " + ChatColor.LIGHT_PURPLE + NumberFormat.getCurrencyInstance().format(amount) + ChatColor.YELLOW + " to " + ChatColor.LIGHT_PURPLE + UUIDUtils.name(player) + ChatColor.YELLOW + ".");
 

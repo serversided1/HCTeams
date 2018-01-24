@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.mongodb.BasicDBObject;
@@ -60,6 +62,21 @@ public class EddyIsADumbassCommand {
 
         sender.sendMessage("reinstated all teams");
 
+    }
+
+    @Command(names = {"fixkitmap_fuck"}, permission = "op")
+    public static void fixKitmap(CommandSender sender) {
+        DBCollection coll = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Teams");
+        DBCursor cursor = coll.find();
+
+        cursor.forEach(document -> {
+            if (!document.containsKey("Name")) return;
+
+            Team team = new Team((String) document.get("Name"));
+            team.load((BasicDBObject) document);
+
+            Foxtrot.getInstance().getTeamHandler().setupTeam(team);
+        });
     }
 
 }

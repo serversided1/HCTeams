@@ -48,6 +48,11 @@ public class TeamHQCommand {
             return;
         }
 
+        if (team.getBalance() < 50) {
+            sender.sendMessage(ChatColor.RED + "Your team needs at least $50 to teleport to your team headquarters.");
+            return;
+        }
+
         Foxtrot.getInstance().getServerHandler().beginHQWarp(sender, team, 10);
     }
 }

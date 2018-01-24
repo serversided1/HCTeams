@@ -64,6 +64,10 @@ public class SpawnTagHandler {
     }
 
     public static int getMaxTagTime() {
+        if (Foxtrot.getInstance().getServerHandler().isHardcore()) {
+            return 60;
+        }
+
         return Foxtrot.getInstance().getServerHandler().isPassiveTagEnabled() ? 30 : 60;
     }
 

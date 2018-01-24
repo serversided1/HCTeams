@@ -83,6 +83,10 @@ public class MapHandler {
             if (Foxtrot.getInstance().getConfig().getBoolean("rodPrevention") && recipe.getResult().getType() == Material.FISHING_ROD) {
                 recipeIterator.remove();
             }
+
+            if (recipe.getResult().getType() == Material.EXPLOSIVE_MINECART) {
+                recipeIterator.remove();
+            }
         }
 
         // add our glistering melon recipe

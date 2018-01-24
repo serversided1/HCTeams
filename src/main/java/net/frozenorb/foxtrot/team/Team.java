@@ -148,6 +148,7 @@ public class Team {
         if (members.add(member)) {
             historicalMembers.add(member);
 
+            if (this.loading) return;
             TeamActionTracker.logActionAsync(this, TeamActionType.PLAYER_JOINED, ImmutableMap.of(
                     "playerId", member
             ));
@@ -157,7 +158,7 @@ public class Team {
     }
 
     public void addCaptain(UUID captain) {
-        if (captains.add(captain)) {
+        if (captains.add(captain) && !this.isLoading()) {
             TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CAPTAIN, ImmutableMap.of(
                     "playerId", captain
             ));
@@ -167,7 +168,7 @@ public class Team {
     }
 
     public void addCoLeader(UUID co) {
-        if (coleaders.add(co)) {
+        if (coleaders.add(co) && !this.isLoading()) {
             TeamActionTracker.logActionAsync(this, TeamActionType.PROMOTED_TO_CO_LEADER, ImmutableMap.of(
                     "playerId", co
             ));
@@ -215,6 +216,7 @@ public class Team {
             captains.remove(owner);
         }
 
+        if (this.loading) return;
         TeamActionTracker.logActionAsync(this, TeamActionType.LEADER_CHANGED, ImmutableMap.of(
                 "playerId", owner
         ));
@@ -230,6 +232,7 @@ public class Team {
     public void setAnnouncement(String announcement) {
         this.announcement = announcement;
 
+        if (this.loading) return;
         TeamActionTracker.logActionAsync(this, TeamActionType.ANNOUNCEMENT_CHANGED, ImmutableMap.of(
                 "newAnnouncement", announcement
         ));
@@ -242,6 +245,7 @@ public class Team {
         String newHQ = hq == null ? "None" : (hq.getBlockX() + ", " + hq.getBlockY() + ", " + hq.getBlockZ());
         this.HQ = hq;
 
+        if (this.loading) return;
         TeamActionTracker.logActionAsync(this, TeamActionType.HEADQUARTERS_CHANGED, ImmutableMap.of(
                 "oldHq", oldHQ,
                 "newHq", newHQ
@@ -258,6 +262,7 @@ public class Team {
             TeamHandler.removePowerFaction(this);
         }
 
+        if (this.loading) return;
         TeamActionTracker.logActionAsync(this, TeamActionType.POWER_FAC_STATUS_CHANGED, ImmutableMap.of(
                 "powerFaction", bool
         ));
@@ -298,6 +303,7 @@ public class Team {
                 }
 
                 FrozenEconomyHandler.deposit(owner, refund);
+                Foxtrot.getInstance().getWrappedBalanceMap().setBalance(owner, FrozenEconomyHandler.getBalance(owner));
                 Foxtrot.getInstance().getLogger().info("Economy Logger: Depositing " + refund + " into " + UUIDUtils.name(owner) + "'s account: Disbanded team");
             }
         } catch (Exception e) {
@@ -450,6 +456,7 @@ public class Team {
             DTR = getMaxDTR();
         }
 
+        if (this.loading) return false;
         TeamActionTracker.logActionAsync(this, TeamActionType.MEMBER_REMOVED, ImmutableMap.of(
                 "playerId", member
         ));
@@ -581,22 +588,24 @@ public class Team {
     }
 
     public void load(BasicDBObject obj) {
+        loading = true;
         setUniqueId(obj.getObjectId("_id"));
         setOwner(obj.getString("Owner") == null ? null : UUID.fromString(obj.getString("Owner")));
-        for (Object coLeader : (BasicDBList) obj.get("CoLeaders")) addCoLeader(UUID.fromString((String) coLeader));
-        for (Object captain : (BasicDBList) obj.get("Captains")) addCaptain(UUID.fromString((String) captain));
-        for (Object member : (BasicDBList) obj.get("Members")) addMember(UUID.fromString((String) member));
-        for (Object invite : (BasicDBList) obj.get("Invitations")) getInvitations().add(UUID.fromString((String) invite));
-        setDTR(obj.getDouble("DTR"));
-        setDTRCooldown(obj.getDate("DTRCooldown").getTime());
-        setBalance(obj.getDouble("Balance"));
-        setMaxOnline(obj.getInt("MaxOnline"));
-        setHQ(LocationSerializer.deserialize((BasicDBObject) obj.get("HQ")));
-        setAnnouncement(obj.getString("Announcement"));
-        setPowerFaction(obj.getBoolean("PowerFaction"));
-        setLives(obj.getInt("Lives"));
-        for (Object claim : (BasicDBList) obj.get("Claims")) getClaims().add(Claim.fromJson((BasicDBObject) claim));
-        for (Object subclaim : (BasicDBList) obj.get("Subclaims")) getSubclaims().add(Subclaim.fromJson((BasicDBObject) subclaim));
+        if (obj.containsKey("CoLeaders")) for (Object coLeader : (BasicDBList) obj.get("CoLeaders")) addCoLeader(UUID.fromString((String) coLeader));
+        if (obj.containsKey("Captains")) for (Object captain : (BasicDBList) obj.get("Captains")) addCaptain(UUID.fromString((String) captain));
+        if (obj.containsKey("Members")) for (Object member : (BasicDBList) obj.get("Members")) addMember(UUID.fromString((String) member));
+        if (obj.containsKey("Invitations")) for (Object invite : (BasicDBList) obj.get("Invitations")) getInvitations().add(UUID.fromString((String) invite));
+        if (obj.containsKey("DTR")) setDTR(obj.getDouble("DTR"));
+        if (obj.containsKey("DTRCooldown")) setDTRCooldown(obj.getDate("DTRCooldown").getTime());
+        if (obj.containsKey("Balance")) setBalance(obj.getDouble("Balance"));
+        if (obj.containsKey("MaxOnline")) setMaxOnline(obj.getInt("MaxOnline"));
+        if (obj.containsKey("HQ")) setHQ(LocationSerializer.deserialize((BasicDBObject) obj.get("HQ")));
+        if (obj.containsKey("Announcement")) setAnnouncement(obj.getString("Announcement"));
+        if (obj.containsKey("PowerFaction")) setPowerFaction(obj.getBoolean("PowerFaction"));
+        if (obj.containsKey("Lives")) setLives(obj.getInt("Lives"));
+        if (obj.containsKey("Claims")) for (Object claim : (BasicDBList) obj.get("Claims")) getClaims().add(Claim.fromJson((BasicDBObject) claim));
+        if (obj.containsKey("Subclaims")) for (Object subclaim : (BasicDBList) obj.get("Subclaims")) getSubclaims().add(Subclaim.fromJson((BasicDBObject) subclaim));
+        loading = false;
     }
 
     public void load(String str) {

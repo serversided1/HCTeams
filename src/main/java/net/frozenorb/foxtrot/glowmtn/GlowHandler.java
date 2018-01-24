@@ -37,12 +37,13 @@ public class GlowHandler {
             e.printStackTrace();
         }
 
+        int secs = Foxtrot.getInstance().getServerHandler().isHardcore() ? (90 * 60 * 20) : 12000;
         Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
             getGlowMountain().reset();
 
             // Broadcast the reset
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Glowstone Mountain]" + ChatColor.GREEN + " All glowstone has been reset!");
-        }, 12000, 12000);
+        }, secs, secs);
     }
 
     public void save() {

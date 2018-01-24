@@ -43,6 +43,8 @@ public class SetBalCommand {
         } else if (targetPlayer != null) {
             targetPlayer.sendMessage("§aYour balance has been set to §6$" + amount + "§a by §4CONSOLE§a.");
         }
+
+        Foxtrot.getInstance().getWrappedBalanceMap().setBalance(player, amount);
     }
 
 }

@@ -75,6 +75,7 @@ import net.frozenorb.foxtrot.persist.maps.FriendLivesMap;
 import net.frozenorb.foxtrot.persist.maps.GoldMinedMap;
 import net.frozenorb.foxtrot.persist.maps.IPMap;
 import net.frozenorb.foxtrot.persist.maps.IronMinedMap;
+import net.frozenorb.foxtrot.persist.maps.KDRMap;
 import net.frozenorb.foxtrot.persist.maps.KillsMap;
 import net.frozenorb.foxtrot.persist.maps.LapisMinedMap;
 import net.frozenorb.foxtrot.persist.maps.LastJoinMap;
@@ -168,6 +169,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private IPMap ipMap;
     @Getter private WhitelistedIPMap whitelistedIPMap;
     @Getter private CobblePickupMap cobblePickupMap;
+    @Getter private KDRMap kdrMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
     @Getter @Setter
@@ -370,6 +372,7 @@ public class Foxtrot extends JavaPlugin {
         (ipMap = new IPMap()).loadFromRedis();
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
         (cobblePickupMap = new CobblePickupMap()).loadFromRedis();
+        (kdrMap = new KDRMap()).loadFromRedis();
     }
 
 }

@@ -69,7 +69,7 @@ public class EnderpearlListener implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             return;
-        } else if(!enderpearlCooldown.containsKey(event.getPlayer().getName())) {
+        } else if (!enderpearlCooldown.containsKey(event.getPlayer().getName())) {
             event.setCancelled(true); // only reason for this would be player died before pearl landed, so cancel it!
             return;
         }
@@ -102,6 +102,8 @@ public class EnderpearlListener implements Listener {
                 return;
             }
         }
+    }
+    /*
 
         Material mat = event.getTo().getBlock().getType();
 
@@ -114,6 +116,7 @@ public class EnderpearlListener implements Listener {
         target.setZ(target.getBlockZ() + 0.5);
         event.setTo(target);
     }
+    */
 
     public boolean clippingThrough(Location target, Location from, double thickness) {
         return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));

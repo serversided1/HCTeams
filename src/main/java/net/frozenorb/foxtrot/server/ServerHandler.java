@@ -112,7 +112,10 @@ public class ServerHandler {
     @Getter private final ChatColor archerTagColor;
     @Getter private final ChatColor defaultRelationColor;
 
+    @Getter private final boolean velt;
     @Getter private final boolean veltKitMap;
+
+    @Getter private final boolean hardcore;
 
     public ServerHandler() {
         try {
@@ -190,10 +193,16 @@ public class ServerHandler {
         this.archerTagColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("archerTagColor", "YELLOW"));
         this.defaultRelationColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("defaultRelationColor", "RED"));
 
+        this.velt = Foxtrot.getInstance().getConfig().getBoolean("velt", false);
+        if (this.velt) {
+            Bukkit.getLogger().info("Velt mode enabled!");
+        }
         this.veltKitMap = Foxtrot.getInstance().getConfig().getBoolean("veltKitMap", false);
         if (this.veltKitMap) {
         	    Bukkit.getLogger().info("Velt KitMap mode enabled!");
         }
+
+        this.hardcore = Foxtrot.getInstance().getConfig().getBoolean("hardcore", false);
         registerPlayerDamageRestrictionListener();
     }
 
@@ -415,13 +424,9 @@ public class ServerHandler {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (inClaim != null) {
-            if (inClaim.getOwner() != null && !inClaim.isMember(player.getUniqueId())) {
-                if (this.isTeamHQInEnemyClaims()) {
-                    warmup = 20;
-                } else {
-                    player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
-                    return;
-                }
+            if (Foxtrot.getInstance().getServerHandler().isHardcore() && inClaim.getOwner() != null && !inClaim.isMember(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "You may not go to your team headquarters from an enemy's claim! Use '/team stuck' first.");
+                return;
             }
 
             if (inClaim.getOwner() == null && (inClaim.hasDTRBitmask(DTRBitmask.KOTH) || inClaim.hasDTRBitmask(DTRBitmask.CITADEL))) {
@@ -440,11 +445,13 @@ public class ServerHandler {
             }
         }
 
+
         if (SpawnTagHandler.isTagged(player)) {
             player.sendMessage(ChatColor.RED + "You may not go to your team headquarters while spawn tagged!");
             return;
         }
 
+        team.setBalance(team.getBalance() - 50);
         player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
 
         /**

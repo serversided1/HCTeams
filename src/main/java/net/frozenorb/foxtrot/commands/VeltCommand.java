@@ -43,7 +43,7 @@ public class VeltCommand {
 
         UUID target = player;
 
-        if (!Hydrogen.getInstance().getProfileHandler().getProfile(sender.getUniqueId()).get().getBestDisplayRank().getDisplayName().equals("Velt")) return;
+        if (!Hydrogen.getInstance().getProfileHandler().getProfile(sender.getUniqueId()).get().getBestDisplayRank().getDisplayName().startsWith("Velt")) return;
 
         long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(target);
         if (deathbannedUntil < System.currentTimeMillis()) {

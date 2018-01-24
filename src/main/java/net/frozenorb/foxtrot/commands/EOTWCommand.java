@@ -11,7 +11,7 @@ import net.frozenorb.qlib.command.Command;
 
 public class EOTWCommand {
 
-    @Command(names={ "EOTW" }, permission="op")
+    @Command(names={ "EOTW" }, permission="foxtrot.eotw")
     public static void eotw(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
@@ -39,7 +39,7 @@ public class EOTWCommand {
         }
     }
 
-    @Command(names={ "EOTW TpAll" }, permission="op")
+    @Command(names={ "EOTW TpAll" }, permission="foxtrot.eotw")
     public static void eotwTpAll(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
@@ -58,7 +58,7 @@ public class EOTWCommand {
         sender.sendMessage(ChatColor.RED + "Players teleported.");
     }
 
-    @Command(names={ "PreEOTW" }, permission="op")
+    @Command(names={ "PreEOTW" }, permission="foxtrot.eotw")
     public static void preeotw(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");

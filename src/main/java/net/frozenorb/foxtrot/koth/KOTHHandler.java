@@ -168,7 +168,7 @@ public class KOTHHandler {
                         KOTHScheduledTime kothTime = times[kothTimeIndex];
                         String kothName = allKOTHs.get(kothTimeIndex);
 
-                        schedule.put(kothTime.toString(), kothTime.getHour() == 15 && kothTime.getMinutes() == 30 ? (day & 1) != 0 ? "Conquest" : "Citadel" : kothName);
+                        schedule.put(kothTime.toString(), !Foxtrot.getInstance().getServerHandler().isVelt() && kothTime.getHour() == 15 && kothTime.getMinutes() == 30 ? (day & 1) != 0 ? "Conquest" : "Citadel" : kothName);
                     }
                 }
 

@@ -4,6 +4,8 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.server.event.DisallowedPotionDrinkEvent;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -36,10 +38,12 @@ public class PotionLimiterListener implements Listener {
                 event.setCancelled(true);
             } else if (potion.hasExtendedDuration() && (potion.getType() == PotionType.SLOWNESS || potion.getType() == PotionType.POISON)) {
                 event.setCancelled(true);
+            } else if (potion.getType() == PotionType.POISON && 1 < potion.getLevel()) {
+                event.setCancelled(true);
             }
         }
 
-        if (event.getPotion().getShooter() instanceof Player) {
+        if (event.getPotion().getShooter() instanceof Player && !event.isCancelled()) {
             Iterator<PotionEffect> iterator = event.getPotion().getEffects().iterator();
 
             if (iterator.hasNext()) {

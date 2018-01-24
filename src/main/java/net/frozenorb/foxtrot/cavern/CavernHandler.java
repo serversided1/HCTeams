@@ -20,6 +20,7 @@ public class CavernHandler {
     @Getter @Setter private Cavern cavern;
 
     public CavernHandler() {
+        if (Foxtrot.getInstance().getServerHandler().isVelt()) return;
         try {
             file = new File(Foxtrot.getInstance().getDataFolder(), "cavern.json");
 
@@ -38,8 +39,8 @@ public class CavernHandler {
         }
 
         Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
+            if (Foxtrot.getInstance().getServerHandler().isVelt()) return;
             getCavern().reset();
-
             // Broadcast the reset
             Bukkit.broadcastMessage(ChatColor.AQUA + "[Cavern]" + ChatColor.GREEN + " All ores have been reset!");
         }, 5 * 20 * 60, 5 * 20 * 60);

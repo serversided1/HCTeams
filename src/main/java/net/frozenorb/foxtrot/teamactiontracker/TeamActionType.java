@@ -33,7 +33,7 @@ public enum TeamActionType {
     MEMBER_DISCONNECTED(false),
 
     // Basic
-    ANNOUNCEMENT_CHANGED(false),
+    ANNOUNCEMENT_CHANGED(true),
     HEADQUARTERS_CHANGED(true),
     POWER_FAC_STATUS_CHANGED(true),
 
@@ -52,8 +52,8 @@ public enum TeamActionType {
     DEMOTED_FROM_CO_LEADER(true),
 
     // PvP Deaths
-    MEMBER_KILLED_ENEMY_IN_PVP(false),
-    MEMBER_KILLED_BY_ENEMY_IN_PVP(false),
+    MEMBER_KILLED_ENEMY_IN_PVP(true),
+    MEMBER_KILLED_BY_ENEMY_IN_PVP(true),
 
     // DTR
     MEMBER_DEATH(true),
