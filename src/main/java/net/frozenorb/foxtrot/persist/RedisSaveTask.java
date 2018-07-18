@@ -19,6 +19,7 @@ public class RedisSaveTask extends BukkitRunnable {
         int teamsSaved = qLib.getInstance().runRedisCommand(redis -> {
 
             DBCollection teamsCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Teams");
+            
             int changed = 0;
 
             for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {

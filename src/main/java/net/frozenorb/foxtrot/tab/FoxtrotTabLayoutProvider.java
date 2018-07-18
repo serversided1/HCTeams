@@ -19,8 +19,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHScheduledTime;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.EventScheduledTime;
+import net.frozenorb.foxtrot.events.koth.KOTH;
 import net.frozenorb.foxtrot.listener.BorderListener;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -73,7 +74,6 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
 
         layout.set(0, ++y, titleColor + "Player Info:");
         layout.set(0, ++y, infoColor + "Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
-        layout.set(0, ++y, infoColor + "Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
 
         ++y; // blank
 
@@ -108,7 +108,9 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         ++y; // blank
 
         KOTH activeKOTH = null;
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+        for (Event event : Foxtrot.getInstance().getEventHandler().getEvents()) {
+            if (!(event instanceof KOTH)) continue;
+            KOTH koth = (KOTH) event;
             if (koth.isActive() && !koth.isHidden()) {
                 activeKOTH = koth;
                 break;
@@ -121,7 +123,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
             String nextKothName = null;
             Date nextKothDate = null;
 
-            for (Map.Entry<KOTHScheduledTime, String> entry : Foxtrot.getInstance().getKOTHHandler().getKOTHSchedule().entrySet()) {
+            for (Map.Entry<EventScheduledTime, String> entry : Foxtrot.getInstance().getEventHandler().getEventSchedule().entrySet()) {
                 if (entry.getKey().toDate().after(now)) {
                     if (nextKothDate == null || nextKothDate.getTime() > entry.getKey().toDate().getTime()) {
                         nextKothName = entry.getValue();
@@ -134,9 +136,10 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 layout.set(0, ++y, titleColor + "Next KOTH:");
                 layout.set(0, ++y, infoColor + nextKothName);
 
-                KOTH koth = Foxtrot.getInstance().getKOTHHandler().getKOTH(nextKothName);
+                Event event = Foxtrot.getInstance().getEventHandler().getEvent(nextKothName);
 
-                if (koth != null) {
+                if (event != null && event instanceof KOTH) {
+                    KOTH koth = (KOTH) event;
                     layout.set(0, ++y, infoColor.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ()); // location
 
                     int seconds = (int) ((nextKothDate.getTime() - System.currentTimeMillis()) / 1000);

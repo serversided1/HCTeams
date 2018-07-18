@@ -31,9 +31,8 @@ public class PotionLimiterListener implements Listener {
             }
         }
 
+        Potion potion = Potion.fromItemStack(event.getPotion().getItem());
         if (!Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-            Potion potion = Potion.fromItemStack(event.getPotion().getItem());
-
             if (!Foxtrot.getInstance().getServerHandler().isDrinkablePotionAllowed(potion.getType()) || !Foxtrot.getInstance().getServerHandler().isPotionLevelAllowed(potion.getType(), potion.getLevel())) {
                 event.setCancelled(true);
             } else if (potion.hasExtendedDuration() && (potion.getType() == PotionType.SLOWNESS || potion.getType() == PotionType.POISON)) {
@@ -41,6 +40,14 @@ public class PotionLimiterListener implements Listener {
             } else if (potion.getType() == PotionType.POISON && 1 < potion.getLevel()) {
                 event.setCancelled(true);
             }
+        }
+
+        if (potion.getType() == PotionType.INSTANT_DAMAGE) {
+            event.setCancelled(true);
+            return;
+        } else if (potion.getType() == PotionType.STRENGTH) {
+            event.setCancelled(true);
+            return;
         }
 
         if (event.getPotion().getShooter() instanceof Player && !event.isCancelled()) {

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.map.kit.stats.command;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand.StatsObjective;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
@@ -14,8 +15,16 @@ import org.bukkit.entity.Player;
 public class LeaderboardAddCommand {
 
     @Command(names = {"leaderboard add"}, permission = "op")
-    public static void leaderboardAdd(Player sender, @Param(name = "place") int place) {
+    public static void leaderboardAdd(Player sender, @Param(name = "objective") String objectiveName, @Param(name = "place") int place) {
         Block block = sender.getTargetBlock(null, 10);
+        StatsObjective objective;
+        
+        try {
+            objective = StatsObjective.valueOf(objectiveName);
+        } catch (Exception ex) {
+            sender.sendMessage(ChatColor.RED + "Invalid objective!");
+            return;
+        }
 
         if (block == null || !(block.getState() instanceof Skull || block.getState() instanceof Sign)) {
             sender.sendMessage(ChatColor.RED + "You must be looking at a head or a sign.");
@@ -40,6 +49,8 @@ public class LeaderboardAddCommand {
             Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
             sender.sendMessage(ChatColor.GREEN + "This sign will now display the number " + ChatColor.WHITE + place + ChatColor.GREEN + " player's stats.");
         }
+        
+        Foxtrot.getInstance().getMapHandler().getStatsHandler().getObjectives().put(block.getLocation(), objective);
     }
 
     @Command(names = {"clearleaderboards"}, permission = "op")

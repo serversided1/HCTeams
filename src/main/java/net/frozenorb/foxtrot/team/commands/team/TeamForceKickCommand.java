@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.qlib.command.Command;
@@ -72,6 +73,16 @@ public class TeamForceKickCommand {
         if (SpawnTagHandler.isTagged(bukkitPlayer)) {
             team.setDTR(team.getDTR() - 1);
             team.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " was force kicked by " + sender.getName() + " and your team lost 1 DTR!");
+            long dtrCooldown;
+            if (team.isRaidable()) {
+                TeamActionTracker.logActionAsync(team, TeamActionType.TEAM_NOW_RAIDABLE, ImmutableMap.of());
+                dtrCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeRaidable();
+            } else {
+                dtrCooldown = System.currentTimeMillis() + Foxtrot.getInstance().getMapHandler().getRegenTimeDeath();
+            }
+
+            team.setDTRCooldown(dtrCooldown);
+            DTRHandler.markOnDTRCooldown(team);
         } else {
             team.sendMessage(ChatColor.RED + UUIDUtils.name(player) + " was force kicked by " + sender.getName() + "!");
         }

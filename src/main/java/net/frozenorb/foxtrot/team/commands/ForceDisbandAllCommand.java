@@ -16,11 +16,6 @@ public class ForceDisbandAllCommand {
 
     @Command(names={ "forcedisbandall" }, permission="op")
     public static void forceDisbandAll(CommandSender sender) {
-        if (!(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(ChatColor.RED + "No permission.");
-            return;
-        }
-
         confirmRunnable = () -> {
             List<Team> teams = new ArrayList<>();
 
@@ -40,11 +35,6 @@ public class ForceDisbandAllCommand {
 
     @Command(names = {"forcedisbandall confirm"}, permission = "op")
     public static void confirm(CommandSender sender) {
-        if (!(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(ChatColor.RED + "No permission.");
-            return;
-        }
-
         if (confirmRunnable == null) {
             sender.sendMessage(ChatColor.RED + "Nothing to confirm.");
             return;
@@ -56,11 +46,6 @@ public class ForceDisbandAllCommand {
 
     @Command(names = {"forcedisbandall cancel"}, permission = "op")
     public static void cancel(CommandSender sender) {
-        if (!(sender instanceof ConsoleCommandSender)) {
-            sender.sendMessage(ChatColor.RED + "No permission.");
-            return;
-        }
-
         if (confirmRunnable == null) {
             sender.sendMessage(ChatColor.RED + "Nothing to cancel.");
             return;

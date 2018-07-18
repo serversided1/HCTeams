@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.team.commands.team;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.qlib.command.Command;
@@ -31,6 +32,11 @@ public class TeamAcceptCommand {
 
             if (team.getMembers().size() >= 15 && Foxtrot.getInstance().getTeamHandler().isRostersLocked()) {
                 sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team rosters are locked server-wide!");
+                return;
+            }
+
+            if (SpawnTagHandler.isTagged(sender)) {
+                sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: You are combat tagged!");
                 return;
             }
 

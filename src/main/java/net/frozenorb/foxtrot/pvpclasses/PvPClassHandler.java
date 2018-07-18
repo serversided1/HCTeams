@@ -1,12 +1,11 @@
 package net.frozenorb.foxtrot.pvpclasses;
 
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.pvpclasses.event.BardRestoreEvent;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,14 +13,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.pvpclasses.event.BardRestoreEvent;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.MinerClass;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RogueClass;
 
 @SuppressWarnings("deprecation")
 public class PvPClassHandler extends BukkitRunnable implements Listener {
@@ -90,7 +97,21 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
             if (player != null && player.isOnline()) {
                 Bukkit.getPluginManager().callEvent(new BardRestoreEvent(player, id.getValue()));
                 if (id.getValue().getTime() < System.currentTimeMillis() && !id.getValue().isPerm()) {
-                    if (player.addPotionEffect(id.getValue().getPotionEffect())) {
+                    if (player.hasPotionEffect(id.getValue().getPotionEffect().getType())) {
+                        Bukkit.getLogger().info("player already has potion effect.");
+                        player.getActivePotionEffects().forEach(potion -> {
+                            PotionEffect restore = id.getValue().getPotionEffect();
+                            if (potion.getType() == restore.getType() && potion.getDuration() < restore.getDuration() && potion.getAmplifier() <= restore.getAmplifier()) {
+                                player.removePotionEffect(restore.getType());
+                            }
+                        });
+                    }
+                    
+                    Bukkit.getLogger().info(player.getName() + " has speed? " + Boolean.valueOf(player.hasPotionEffect(PotionEffectType.SPEED)));
+                    
+                    if (player.addPotionEffect(id.getValue().getPotionEffect(), true)) {
+                        Bukkit.getLogger().info("restoring potion for player: " + player.getName());
+                        Bukkit.getLogger().info(id.getValue().getPotionEffect().getType() + ", " + id.getValue().getPotionEffect().getDuration() + ", " + id.getValue().getPotionEffect().getAmplifier());
                         idIterator.remove();
                     }
                 }
@@ -102,7 +123,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getPlayer().getItemInHand() == null) {
+        if (event.getPlayer().getItemInHand() == null || (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)) {
             return;
         }
 

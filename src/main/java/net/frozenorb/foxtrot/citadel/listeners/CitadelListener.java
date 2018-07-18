@@ -4,8 +4,8 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.citadel.events.CitadelActivatedEvent;
 import net.frozenorb.foxtrot.citadel.events.CitadelCapturedEvent;
-import net.frozenorb.foxtrot.koth.events.KOTHActivatedEvent;
-import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
+import net.frozenorb.foxtrot.events.events.EventActivatedEvent;
+import net.frozenorb.foxtrot.events.events.EventCapturedEvent;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.qlib.event.HourEvent;
 import org.bukkit.ChatColor;
@@ -19,19 +19,20 @@ import java.text.SimpleDateFormat;
 public class CitadelListener implements Listener {
 
     @EventHandler
-    public void onKOTHActivated(KOTHActivatedEvent event) {
-        if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
+    public void onKOTHActivated(EventActivatedEvent event) {
+        if (event.getEvent().getName().equalsIgnoreCase("Citadel")) {
             Foxtrot.getInstance().getServer().getPluginManager().callEvent(new CitadelActivatedEvent());
         }
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
-    public void onKOTHCaptured(KOTHCapturedEvent event) {
-        if (event.getKOTH().getName().equalsIgnoreCase("Citadel")) {
+    public void onKOTHCaptured(EventCapturedEvent event) {
+        if (event.getEvent().getName().equalsIgnoreCase("Citadel")) {
             Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
             if (playerTeam != null) {
                 Foxtrot.getInstance().getCitadelHandler().addCapper(playerTeam.getUniqueId());
+                playerTeam.setCitadelsCapped(playerTeam.getCitadelsCapped() + 1);
             }
         }
     }

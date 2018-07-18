@@ -1,10 +1,15 @@
 package net.frozenorb.foxtrot.librato;
 
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.ServerFakeFreezeTask;
 import net.frozenorb.foxtrot.chat.ChatHandler;
-import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.events.Event;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
@@ -14,10 +19,6 @@ import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.librato.FastLibratoPostEvent;
 import net.frozenorb.qlib.librato.LibratoPostEvent;
 import net.minecraft.server.v1_7_R4.MinecraftServer;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 
 public class FoxtrotLibratoListener implements Listener {
 
@@ -37,7 +38,7 @@ public class FoxtrotLibratoListener implements Listener {
         int serverMaxWorth = 0;
         int chatMessagesSent = ChatHandler.getPublicMessagesSent().getAndSet(0);
 
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+        for (Event koth : Foxtrot.getInstance().getEventHandler().getEvents()) {
             if (koth.isActive()) {
                 kothsActive++;
             }

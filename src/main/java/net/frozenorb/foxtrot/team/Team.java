@@ -75,6 +75,12 @@ public class Team {
     @Getter private int maxOnline = -1;
     @Getter private boolean powerFaction = false;
     @Getter private int lives = 0;
+    @Getter private int points = 0;
+    @Getter private int kills = 0;
+    @Getter private int kothCaptures = 0;
+    @Getter private int diamondsMined = 0;
+    @Getter private int deaths = 0;
+    @Getter private int citadelsCapped = 0;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -83,11 +89,16 @@ public class Team {
     @Getter @Setter private UUID focused;
     @Getter @Setter private long lastRequestReport;
 
+
     public Team(String name) {
         this.name = name;
     }
 
     public void setDTR(double newDTR) {
+        setDTR(newDTR, null);
+    }
+
+    public void setDTR(double newDTR, Player actor) {
         if (DTR == newDTR) {
             return;
         }
@@ -96,8 +107,16 @@ public class Team {
             TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NO_LONGER_RAIDABLE, ImmutableMap.of());
         }
 
+        if (0 < DTR && newDTR <= 0) {
+            TeamActionTracker.logActionAsync(this, TeamActionType.TEAM_NOW_RAIDABLE, actor == null ? ImmutableMap.of() : ImmutableMap.of("actor", actor.getName()));
+        }
+
         if (!isLoading()) {
-            Foxtrot.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR);
+            if (actor != null) {
+                Foxtrot.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR + ". Actor: " + actor.getName());
+            } else {
+                Foxtrot.getInstance().getLogger().info("[DTR Change] " + getName() + ": " + DTR + " --> " + newDTR);
+            }
         }
 
         this.DTR = newDTR;
@@ -110,9 +129,9 @@ public class Team {
     }
 
     public String getName(Player player) {
-        if (name.equals(GlowHandler.getGlowTeamName())) {
+        if (name.equals(GlowHandler.getGlowTeamName()) && this.getMembers().size() == 0) {
             return ChatColor.GOLD + "Glowstone Mountain"; // override team name
-        } else if (name.equals(CavernHandler.getCavernTeamName())) {
+        } else if (name.equals(CavernHandler.getCavernTeamName()) && this.getMembers().size() == 0) {
             return ChatColor.AQUA + "Cavern";
         } else if (owner == null) {
             if (hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
@@ -379,6 +398,53 @@ public class Team {
     public void setForceInvites(int forceInvites) {
         this.forceInvites = forceInvites;
         flagForSave();
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+        flagForSave();
+    }
+
+    public void setKills(int kills) {
+        this.kills = kills;
+        recalculatePoints();
+        flagForSave();
+    }
+    
+    public void setDeaths(int deaths) {
+        this.deaths = deaths;
+        recalculatePoints();
+        flagForSave();
+    }
+    
+    public void setKothCaptures(int kothCaptures) {
+        this.kothCaptures = kothCaptures;
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void setDiamondsMined(int diamondsMined) {
+        this.diamondsMined = diamondsMined;
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void setCitadelsCapped(int citadels) {
+        this.citadelsCapped = citadels;
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void recalculatePoints() {
+        int basePoints = 0;
+
+        basePoints += (Math.floor(kills / 5.0D)) * 5;
+        basePoints += kothCaptures * 20;
+        basePoints += (diamondsMined / 350) * 5;
+        basePoints += citadelsCapped * 60;
+        basePoints = basePoints - (int) ((Math.floor(deaths / 5.0D)) * 10);
+
+        this.points = basePoints;
     }
 
     public void flagForSave() {
@@ -767,6 +833,18 @@ public class Team {
                 setPowerFaction(Boolean.valueOf(lineParts[0]));
             } else if(identifier.equalsIgnoreCase("Lives")) {
                 setLives(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Points")) {
+                setPoints(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Kills")) {
+                setKills(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Deaths")) {
+                setDeaths(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("KothCaptures")) {
+                setKothCaptures(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("DiamondsMined")) {
+                setDiamondsMined(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("CitadelsCapped")) {
+                setCitadelsCapped(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -856,6 +934,12 @@ public class Team {
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
         teamString.append("PowerFaction:").append(String.valueOf(isPowerFaction())).append("\n");
         teamString.append("Lives:").append(String.valueOf(getLives())).append("\n");
+        teamString.append("Points:").append(String.valueOf(getPoints())).append("\n");
+        teamString.append("Kills:").append(String.valueOf(getKills())).append("\n");
+        teamString.append("Deaths:").append(String.valueOf(getDeaths())).append("\n");
+        teamString.append("DiamondsMined:").append(String.valueOf(getDiamondsMined())).append("\n");
+        teamString.append("KothCaptures:").append(String.valueOf(getKothCaptures())).append("\n");
+        teamString.append("CitadelsCapped:").append(String.valueOf(getCitadelsCapped())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -1111,6 +1195,8 @@ public class Team {
             if (Foxtrot.getInstance().getServerHandler().isForceInvitesEnabled()) {
                 player.sendMessage(ChatColor.YELLOW + "Force Invites: " + ChatColor.RED + getForceInvites());
             }
+            player.sendMessage(ChatColor.YELLOW + "Points: " + ChatColor.RED + getPoints());
+            player.sendMessage(ChatColor.YELLOW + "KOTH Captures: " + ChatColor.RED + getKothCaptures());
             player.sendMessage(ChatColor.YELLOW + "Lives: " + ChatColor.RED + getLives());
         }
 

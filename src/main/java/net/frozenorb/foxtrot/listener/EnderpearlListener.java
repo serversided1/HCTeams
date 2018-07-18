@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.player.PlayerPearlRefundEvent;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
@@ -47,21 +47,27 @@ public class EnderpearlListener implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getItem() == null || !(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) || event.getItem().getType() != Material.ENDER_PEARL) {
+    @EventHandler(priority=EventPriority.HIGH, ignoreCancelled = true)
+    public void onPlayerInteract(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof EnderPearl)) {
             return;
         }
 
-        if (enderpearlCooldown.containsKey(event.getPlayer().getName()) && enderpearlCooldown.get(event.getPlayer().getName()) > System.currentTimeMillis()) {
-            long millisLeft = enderpearlCooldown.get(event.getPlayer().getName()) - System.currentTimeMillis();
+        if (!(event.getEntity().getShooter() instanceof Player)) {
+            return;
+        }
+
+        Player thrower = (Player) event.getEntity().getShooter();
+
+        if (enderpearlCooldown.containsKey(thrower.getName()) && enderpearlCooldown.get(thrower.getName()) > System.currentTimeMillis()) {
+            long millisLeft = enderpearlCooldown.get(thrower.getName()) - System.currentTimeMillis();
 
             double value = (millisLeft / 1000D);
             double sec = value > 0.1 ? Math.round(10.0 * value) / 10.0 : 0.1; // don't tell user 0.0
 
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
-            event.getPlayer().updateInventory();
+            thrower.sendMessage(ChatColor.RED + "You cannot use this for another " + ChatColor.BOLD + sec + ChatColor.RED + " seconds!");
+            thrower.updateInventory();
         }
     }
 
@@ -102,12 +108,11 @@ public class EnderpearlListener implements Listener {
                 return;
             }
         }
-    }
-    /*
 
+        /*
         Material mat = event.getTo().getBlock().getType();
 
-        if (((mat == Material.THIN_GLASS || mat == Material.IRON_FENCE) && clippingThrough(target, from, 0.65)) || ((mat == Material.FENCE || mat == Material.NETHER_FENCE) && clippingThrough(target, from, 0.45))) {
+        if (((mat == Material.THIN_GLASS || mat == Material.IRON_FENCE) && clippingThrough(target, from, 0.65)) || ((mat == Material.FENCE || mat == Material.NETHER_FENCE || mat == Material.FENCE_GATE) && clippingThrough(target, from, 0.45))) {
             event.setTo(from);
             return;
         }
@@ -115,8 +120,25 @@ public class EnderpearlListener implements Listener {
         target.setX(target.getBlockX() + 0.5);
         target.setZ(target.getBlockZ() + 0.5);
         event.setTo(target);
+        */
     }
-    */
+
+    @EventHandler
+    public void onRefund(PlayerPearlRefundEvent event) {
+        Player player = event.getPlayer();
+
+        if (!player.isOnline()) {
+            return;
+        }
+
+        ItemStack inPlayerHand = player.getItemInHand();
+        if (inPlayerHand != null && inPlayerHand.getType() == Material.ENDER_PEARL && inPlayerHand.getAmount() < 16) {
+            inPlayerHand.setAmount(inPlayerHand.getAmount() + 1);
+            player.updateInventory();
+        }
+
+        enderpearlCooldown.remove(player.getName());
+    }
 
     public boolean clippingThrough(Location target, Location from, double thickness) {
         return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));

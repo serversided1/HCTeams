@@ -98,7 +98,7 @@ import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
-import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.events.Event;
 import net.frozenorb.foxtrot.server.RegionData;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -650,7 +650,7 @@ public class FoxListener implements Listener {
             boolean toReduceDeathban = to.getData() != null && (to.getData().hasDTRBitmask(DTRBitmask.FIVE_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.FIFTEEN_MINUTE_DEATHBAN) || to.getData().hasDTRBitmask(DTRBitmask.SAFE_ZONE));
 
             if (fromReduceDeathban && from.getData() != null) {
-                KOTH fromLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(from.getData().getName());
+                Event fromLinkedKOTH = Foxtrot.getInstance().getEventHandler().getEvent(from.getData().getName());
 
                 if (fromLinkedKOTH != null && !fromLinkedKOTH.isActive()) {
                     fromReduceDeathban = false;
@@ -658,7 +658,7 @@ public class FoxListener implements Listener {
             }
 
             if (toReduceDeathban && to.getData() != null) {
-                KOTH toLinkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(to.getData().getName());
+                Event toLinkedKOTH = Foxtrot.getInstance().getEventHandler().getEvent(to.getData().getName());
 
                 if (toLinkedKOTH != null && !toLinkedKOTH.isActive()) {
                     toReduceDeathban = false;

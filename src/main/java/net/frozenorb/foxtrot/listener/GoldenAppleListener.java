@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.EOTWCommand;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,9 +29,18 @@ public class GoldenAppleListener implements Listener {
             return;
         }
 
+        if (event.getItem().getDurability() == 0 && EOTWCommand.realFFAStarted()) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Crapples are disabled during FFA.");
+            return;
+        }
+        
+        
+        long cooldown = Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("Arcane") ? 10900 : Foxtrot.getInstance().getMapHandler().getTeamSize() == 8 ? 30900 : 10900;
+        
         if (!Foxtrot.getInstance().getServerHandler().isUhcHealing()) {
             if (event.getItem().getDurability() == 0 && !crappleCooldown.containsKey(player.getUniqueId())) {
-                crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
+                crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + (cooldown));
                 return;
             }
 
@@ -44,7 +54,7 @@ public class GoldenAppleListener implements Listener {
                     event.setCancelled(true);
                     return;
                 } else {
-                    crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(5));
+                    crappleCooldown.put(player.getUniqueId(), System.currentTimeMillis() + cooldown);
                     return;
                 }
             }

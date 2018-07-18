@@ -1,19 +1,25 @@
 package net.frozenorb.foxtrot.packetborder;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.claims.Claim;
-import net.frozenorb.foxtrot.team.claims.Coordinate;
-import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.bounty.BountyHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
+import net.frozenorb.foxtrot.team.claims.Coordinate;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 
 public class PacketBorderThread extends Thread {
 
@@ -38,7 +44,7 @@ public class PacketBorderThread extends Thread {
             }
 
             try {
-                Thread.sleep(100L);
+                Thread.sleep(250L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -47,9 +53,17 @@ public class PacketBorderThread extends Thread {
 
     private void checkPlayer(Player player) {
         try {
-            List<Claim> claims = new ArrayList<>();
+            List<Claim> claims = new LinkedList<>();
 
             if (player.getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+            
+            boolean tagged = SpawnTagHandler.isTagged(player);
+            boolean hasPvPTimer = Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId());
+            boolean isBounty = player.getUniqueId().equals(BountyHandler.getCurrentBountyPlayer());
+            
+            if (!tagged && !hasPvPTimer && !isBounty) {
                 return;
             }
 
@@ -66,13 +80,10 @@ public class PacketBorderThread extends Thread {
                 }
 
                 if (team.getOwner() == null) {
-                    if (team.hasDTRBitmask(DTRBitmask.DENY_REENTRY)) {
-                        // If the team is a DENY_REENTRY claim (IE the End Spawn) and they're not inside of the claim
-                        claims.add(claim);
-                    } else if (team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && SpawnTagHandler.isTagged(player)) {
+                    if (team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && (tagged || isBounty)) {
                         // If the team is a SAFE_ZONE (IE spawn), they're not inside of it, and they're spawn tagged
                         claims.add(claim);
-                    } else if ((team.hasDTRBitmask(DTRBitmask.KOTH) || team.hasDTRBitmask(DTRBitmask.CITADEL)) && Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                    } else if ((team.hasDTRBitmask(DTRBitmask.KOTH) || team.hasDTRBitmask(DTRBitmask.CITADEL)) && hasPvPTimer) {
                         // If it's an event zone (KOTH or Citadel) and they have a PvP Timer
                         claims.add(claim);
                     }

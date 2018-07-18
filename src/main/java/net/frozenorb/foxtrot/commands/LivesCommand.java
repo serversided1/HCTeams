@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.Foxtrot;
@@ -14,7 +15,15 @@ import net.frozenorb.qlib.command.Command;
 public class LivesCommand {
 
     @Command(names={ "lives" }, permission="")
-    public static void lives(Player sender) {
+    public static void lives(CommandSender commandSender) {
+        
+        if (!(commandSender instanceof Player)) {
+            commandSender.sendMessage(ChatColor.RED + "Bad console.");
+            return;
+        }
+
+        Player sender = (Player) commandSender;
+        
         int shared = Foxtrot.getInstance().getFriendLivesMap().getLives(sender.getUniqueId());
         int soulbound = Foxtrot.getInstance().getSoulboundLivesMap().getLives(sender.getUniqueId());
         sender.sendMessage(ChatColor.YELLOW + "Lives are used to revive you instantly upon death. You can purchase more lives at: " + ChatColor.RED + "http://" + Foxtrot.getInstance().getServerHandler().getNetworkWebsite() + "/store");

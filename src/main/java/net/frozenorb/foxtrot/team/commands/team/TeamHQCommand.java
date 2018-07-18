@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.team.commands.team;
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -48,11 +49,13 @@ public class TeamHQCommand {
             return;
         }
 
-        if (team.getBalance() < 50) {
-            sender.sendMessage(ChatColor.RED + "Your team needs at least $50 to teleport to your team headquarters.");
+        boolean charge = team != LandBoard.getInstance().getTeam(sender.getLocation());
+        
+        if (charge && team.getBalance() < (Foxtrot.getInstance().getServerHandler().isHardcore() ? 20 : 50)) {
+            sender.sendMessage(ChatColor.RED + "Your team needs at least $" + (Foxtrot.getInstance().getServerHandler().isHardcore() ? 20 : 50) + " to teleport to your team headquarters.");
             return;
         }
 
-        Foxtrot.getInstance().getServerHandler().beginHQWarp(sender, team, 10);
+        Foxtrot.getInstance().getServerHandler().beginHQWarp(sender, team, 10, charge);
     }
 }

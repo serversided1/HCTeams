@@ -2,12 +2,19 @@ package net.frozenorb.foxtrot.team.claims;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
+import org.bukkit.craftbukkit.v1_7_R4.util.LongHash;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,12 +91,25 @@ public class LandBoard {
         return (regionData == null ? null : regionData.getKey());
     }
 
+    private Location lastLocation = null;
+    private Team lastTeam = null;
+
     public Team getTeam(Location location) {
+        if (lastLocation != null) {
+            if (location.getWorld() == lastLocation.getWorld() && lastLocation.getBlockX() == location.getBlockX() && lastLocation.getBlockZ() == location.getBlockZ()) {
+                return lastTeam;
+            }
+        }
+
         Map.Entry<Claim, Team> regionData = getRegionData(location);
-        return (regionData == null ? null : regionData.getValue());
+        Team toReturn = regionData == null ? null : regionData.getValue();
+        this.lastLocation = location;
+        this.lastTeam = toReturn;
+        return toReturn;
     }
 
     public void setTeamAt(Claim claim, Team team) {
+
         Map.Entry<Claim, Team> regionData = new AbstractMap.SimpleEntry<>(claim, team);
         int step = 1 << CoordinateSet.BITS;
 

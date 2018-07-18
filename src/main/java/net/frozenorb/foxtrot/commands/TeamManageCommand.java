@@ -10,6 +10,7 @@ import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.gui.menu.DTRMenu;
 import net.frozenorb.foxtrot.gui.menu.DemoteMembersMenu;
 import net.frozenorb.foxtrot.gui.menu.KickPlayersMenu;
 import net.frozenorb.foxtrot.gui.menu.MuteMenu;
@@ -57,10 +58,14 @@ public class TeamManageCommand {
 
     @Command(names = {"manageteam dtr"}, permission = "foxtrot.manage")
     public static void dtrTeam(Player sender, @Param(name = "team") Team team) {
-        conversationDouble(sender, "§eEnter a new DTR for " + team.getName() + ".", (d) -> {
-            team.setDTR(d.floatValue());
-            sender.sendRawMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + " has a new DTR of " + ChatColor.LIGHT_PURPLE + d.floatValue() + ChatColor.YELLOW + ".");
-        });
+        if (sender.hasPermission("foxtrot.manage.setdtr")) {
+            conversationDouble(sender, "§eEnter a new DTR for " + team.getName() + ".", (d) -> {
+                team.setDTR(d.floatValue());
+                sender.sendRawMessage(ChatColor.LIGHT_PURPLE + team.getName() + ChatColor.YELLOW + " has a new DTR of " + ChatColor.LIGHT_PURPLE + d.floatValue() + ChatColor.YELLOW + ".");
+            });
+        } else {
+            new DTRMenu(team).openMenu(sender);
+        }
     }
 
     @Command(names = {"manageteam rename"}, permission = "fotrot.manage")

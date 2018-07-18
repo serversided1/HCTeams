@@ -15,6 +15,8 @@ import com.mongodb.MongoClient;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.frozenorb.foxtrot.bounty.BountyHandler;
+import net.frozenorb.foxtrot.carepackage.CarePackageHandler;
 import net.frozenorb.foxtrot.cavern.CavernHandler;
 import net.frozenorb.foxtrot.cavern.listeners.CavernListener;
 import net.frozenorb.foxtrot.chat.ChatHandler;
@@ -22,9 +24,9 @@ import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
 import net.frozenorb.foxtrot.crates.CrateListener;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.events.EventHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
 import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.AntiGlitchListener;
 import net.frozenorb.foxtrot.listener.ArmorDamageListener;
@@ -130,7 +132,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private ServerHandler serverHandler;
     @Getter private MapHandler mapHandler;
     @Getter private CitadelHandler citadelHandler;
-    @Getter private KOTHHandler KOTHHandler;
+    @Getter private EventHandler eventHandler;
     @Getter private ConquestHandler conquestHandler;
     @Getter private CavernHandler cavernHandler;
     @Getter private GlowHandler glowHandler;
@@ -194,14 +196,11 @@ public class Foxtrot extends JavaPlugin {
         (new DTRHandler()).runTaskTimer(this, 20L, 1200L);
         (new RedisSaveTask()).runTaskTimerAsynchronously(this, 1200L, 1200L);
         (new PacketBorderThread()).start();
-
+        
         setupHandlers();
         setupPersistence();
         setupListeners();
 
-        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
-        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
-        FrozenEconomyHandler.init();
 
         FrozenTabHandler.setLayoutProvider(new FoxtrotTabLayoutProvider());
 
@@ -223,7 +222,7 @@ public class Foxtrot extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getKOTHHandler().saveKOTHs();
+        getEventHandler().saveEvents();
 
         for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
             getPlaytimeMap().playerQuit(player.getUniqueId(), false);
@@ -258,6 +257,7 @@ public class Foxtrot extends JavaPlugin {
     private void setupHandlers() {
         serverHandler = new ServerHandler();
         mapHandler = new MapHandler();
+        mapHandler.load();
 
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
@@ -265,21 +265,12 @@ public class Foxtrot extends JavaPlugin {
         chatHandler = new ChatHandler();
         citadelHandler = new CitadelHandler();
         pvpClassHandler = new PvPClassHandler();
-        KOTHHandler = new KOTHHandler();
+        eventHandler = new EventHandler();
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
         cavernHandler = new CavernHandler();
-
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.citadel");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.commands");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.cavern.commands");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.glowmtn.commands");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.crates.commands");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.conquest");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.koth");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.server");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.team");
-        FrozenCommandHandler.registerPackage(this, "net.frozenorb.foxtrot.settings.commands");
+        
+        FrozenCommandHandler.registerAll(this);
 
         DeathMessageHandler.init();
         DTRHandler.loadDTR();
@@ -320,6 +311,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CrateListener(), this);
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
+
         //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
         //getServer().getPluginManager().registerEvents(new IPListener(), this );
         if (getServerHandler().isReduceArmorDamage()) {
@@ -334,7 +326,13 @@ public class Foxtrot extends JavaPlugin {
         if (getServerHandler().isVeltKitMap()) {
             getServer().getPluginManager().registerEvents(new KitMapListener(), this);
         }
+        
+        if (getMapHandler().getScoreboardTitle().contains("Arcane") && (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap())) {
+            getServer().getPluginManager().registerEvents(new BountyHandler(), this);
+        }
+        
         getServer().getPluginManager().registerEvents(new BlockConvenienceListener(), this);
+        getServer().getPluginManager().registerEvents(new CarePackageHandler(), this);
     }
 
     private void setupPersistence() {

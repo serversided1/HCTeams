@@ -1,20 +1,14 @@
 package net.frozenorb.foxtrot.map.kit.stats;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.command.FrozenCommandHandler;
-import net.frozenorb.qlib.command.ParameterType;
-import net.frozenorb.qlib.qLib;
-import net.frozenorb.qlib.serialization.LocationSerializer;
-import net.frozenorb.qlib.util.UUIDUtils;
-import net.minecraft.util.com.google.common.collect.Iterables;
-import net.minecraft.util.com.google.common.reflect.TypeToken;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,8 +22,23 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
+import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand.StatsObjective;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.command.ParameterType;
+import net.frozenorb.qlib.serialization.LocationSerializer;
+import net.frozenorb.qlib.util.UUIDUtils;
+import net.minecraft.util.com.google.common.collect.Iterables;
+import net.minecraft.util.com.google.common.reflect.TypeToken;
 
 public class StatsHandler implements Listener {
 
@@ -37,11 +46,17 @@ public class StatsHandler implements Listener {
 
     @Getter private Map<Location, Integer> leaderboardSigns = Maps.newHashMap();
     @Getter private Map<Location, Integer> leaderboardHeads = Maps.newHashMap();
+    
+    @Getter private Map<Location, StatsObjective> objectives = Maps.newHashMap();
 
+    @Getter private Map<Integer, UUID> topKills = Maps.newConcurrentMap();
+
+    private boolean firstUpdateComplete = false;
+    
     public StatsHandler() {
         qLib.getInstance().runRedisCommand(redis -> {
-            for (String key : redis.keys("stats:*")) {
-                UUID uuid = UUID.fromString(key.split(":")[1]);
+            for (String key : redis.keys(Bukkit.getServerName() + ":" + "stats:*")) {
+                UUID uuid = UUID.fromString(key.split(":")[2]);
                 StatsEntry entry = qLib.PLAIN_GSON.fromJson(redis.get(key), StatsEntry.class);
 
                 stats.put(uuid, entry);
@@ -49,8 +64,8 @@ public class StatsHandler implements Listener {
 
             Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + stats.size() + " stats.");
 
-            if (redis.exists("leaderboardSigns")) {
-                List<String> serializedSigns = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardSigns"), new TypeToken<List<String>>() {}.getType());
+            if (redis.exists(Bukkit.getServerName() + ":" + "leaderboardSigns")) {
+                List<String> serializedSigns = qLib.PLAIN_GSON.fromJson(redis.get(Bukkit.getServerName() + ":" + "leaderboardSigns"), new TypeToken<List<String>>() {}.getType());
 
                 for (String sign : serializedSigns) {
                     Location location = LocationSerializer.deserialize((BasicDBObject) JSON.parse(sign.split("----")[0]));
@@ -62,8 +77,8 @@ public class StatsHandler implements Listener {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardSigns.size() + " leaderboard signs.");
             }
 
-            if (redis.exists("leaderboardHeads")) {
-                List<String> serializedHeads = qLib.PLAIN_GSON.fromJson(redis.get("leaderboardHeads"), new TypeToken<List<String>>() {}.getType());
+            if (redis.exists(Bukkit.getServerName() + ":" + "leaderboardHeads")) {
+                List<String> serializedHeads = qLib.PLAIN_GSON.fromJson(redis.get(Bukkit.getServerName() + ":" + "leaderboardHeads"), new TypeToken<List<String>>() {}.getType());
 
                 for (String sign : serializedHeads) {
                     Location location = LocationSerializer.deserialize((BasicDBObject) JSON.parse(sign.split("----")[0]));
@@ -73,6 +88,19 @@ public class StatsHandler implements Listener {
                 }
 
                 Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + leaderboardHeads.size() + " leaderboard heads.");
+            }
+            
+            if (redis.exists(Bukkit.getServerName() + ":" + "objectives")) {
+                List<String> serializedObjectives = qLib.PLAIN_GSON.fromJson(redis.get(Bukkit.getServerName() + ":" + "objectives"), new TypeToken<List<String>>() {}.getType());
+
+                for (String objective : serializedObjectives) {
+                    Location location = LocationSerializer.deserialize((BasicDBObject) JSON.parse(objective.split("----")[0]));
+                    StatsObjective obj = StatsObjective.valueOf(objective.split("----")[1]);
+
+                    objectives.put(location, obj);
+                }
+
+                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[Kit Map] Loaded " + objectives.size() + " objectives.");
             }
 
             return null;
@@ -127,6 +155,7 @@ public class StatsHandler implements Listener {
         });
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(Foxtrot.getInstance(), this::save, 30 * 20L, 30 * 20L);
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(Foxtrot.getInstance(), this::updateTopKillsMap, 30 * 20L, 30 * 20L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(Foxtrot.getInstance(), this::updatePhysicalLeaderboards, 60 * 20L, 60 * 20L);
     }
 
@@ -134,13 +163,15 @@ public class StatsHandler implements Listener {
         qLib.getInstance().runRedisCommand(redis -> {
             List<String> serializedSigns = leaderboardSigns.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
             List<String> serializedHeads = leaderboardHeads.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue()).collect(Collectors.toList());
+            List<String> serializedObjectives = objectives.entrySet().stream().map(entry -> LocationSerializer.serialize(entry.getKey()).toString() + "----" + entry.getValue().name()).collect(Collectors.toList());
 
-            redis.set("leaderboardSigns", qLib.PLAIN_GSON.toJson(serializedSigns));
-            redis.set("leaderboardHeads", qLib.PLAIN_GSON.toJson(serializedHeads));
+            redis.set(Bukkit.getServerName() + ":" + "leaderboardSigns", qLib.PLAIN_GSON.toJson(serializedSigns));
+            redis.set(Bukkit.getServerName() + ":" + "leaderboardHeads", qLib.PLAIN_GSON.toJson(serializedHeads));
+            redis.set(Bukkit.getServerName() + ":" + "objectives", qLib.PLAIN_GSON.toJson(serializedObjectives));
 
             // stats
             for (StatsEntry entry : stats.values()) {
-                redis.set("stats:" + entry.getOwner().toString(), qLib.PLAIN_GSON.toJson(entry));
+                redis.set(Bukkit.getServerName() + ":" + "stats:" + entry.getOwner().toString(), qLib.PLAIN_GSON.toJson(entry));
             }
             return null;
         });
@@ -159,13 +190,43 @@ public class StatsHandler implements Listener {
         return stats.get(uuid);
     }
 
+    private void updateTopKillsMap() {
+        UUID oldFirstPlace = this.topKills.get(1);
+        UUID oldSecondPlace = this.topKills.get(2);
+        UUID oldThirdPlace = this.topKills.get(3);
+        
+        UUID newFirstPlace = get(StatsObjective.KILLS, 1).getOwner();
+        UUID newSecondPlace = get(StatsObjective.KILLS, 2).getOwner();
+        UUID newThirdPlace = get(StatsObjective.KILLS, 3).getOwner();
+        
+        if (firstUpdateComplete) {
+            if (newFirstPlace != oldFirstPlace) {
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newFirstPlace) + "&f has surpassed &6" + UUIDUtils.name(oldFirstPlace) + "&f for &6#1&f in kills!"));
+            }
+
+            if (newSecondPlace != oldSecondPlace) {
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newSecondPlace) + "&f has surpassed &6" + UUIDUtils.name(oldSecondPlace) + "&f for &6#2&f in kills!"));
+            }
+            
+            if (newThirdPlace != oldThirdPlace) {
+                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newThirdPlace) + "&f has surpassed &6" + UUIDUtils.name(oldThirdPlace) + "&f for &6#3&f in kills!"));
+            }
+        }
+        
+        this.topKills.put(1, newFirstPlace);
+        this.topKills.put(2, newSecondPlace);
+        this.topKills.put(3, newThirdPlace);
+        
+        this.firstUpdateComplete = true;
+    }
+    
     public void updatePhysicalLeaderboards() {
         Iterator<Map.Entry<Location, Integer>> iterator = leaderboardSigns.entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry<Location, Integer> entry = iterator.next();
 
-            StatsEntry stats = get(entry.getValue());
+            StatsEntry stats = get(objectives.get(entry.getKey()), entry.getValue());
 
             if (stats == null) {
                 continue;
@@ -178,10 +239,10 @@ public class StatsHandler implements Listener {
 
             Sign sign = (Sign) entry.getKey().getBlock().getState();
 
-            sign.setLine(0, trim(UUIDUtils.name(stats.getOwner())));
-            sign.setLine(1, ChatColor.DARK_GRAY + "#" + entry.getValue());
-            sign.setLine(2, ChatColor.GREEN + "K " + ChatColor.BLACK + stats.getKills());
-            sign.setLine(3, ChatColor.RED + "D " + ChatColor.BLACK + stats.getDeaths());
+            sign.setLine(0, trim(ChatColor.RED.toString() + ChatColor.BOLD + (beautify(entry.getKey()))));
+            sign.setLine(1, trim(ChatColor.AQUA.toString() + ChatColor.UNDERLINE + UUIDUtils.name(stats.getOwner())));
+
+            sign.setLine(3, ChatColor.DARK_GRAY.toString() + stats.get(objectives.get(entry.getKey())));
 
             sign.update();
         }
@@ -191,7 +252,7 @@ public class StatsHandler implements Listener {
         while (headIterator.hasNext()) {
             Map.Entry<Location, Integer> entry = headIterator.next();
 
-            StatsEntry stats = get(entry.getValue());
+            StatsEntry stats = get(objectives.get(entry.getKey()), entry.getValue());
 
             if (stats == null) {
                 continue;
@@ -208,20 +269,38 @@ public class StatsHandler implements Listener {
             skull.update();
         }
     }
+    
+    private String beautify(Location location) {
+        StatsObjective objective = objectives.get(location);
+        
+        switch (objective) {
+        case DEATHS:
+            return "Top Deaths";
+        case HIGHEST_KILLSTREAK:
+            return "Top KillStrk";
+        case KD:
+            return "Top KDR";
+        case KILLS:
+            return "Top Kills";
+        default:
+            return "Error";
+        
+        }
+    }
 
     private String trim(String name) {
         return name.length() <= 15 ? name : name.substring(0, 15);
     }
 
-    private StatsEntry get(int place) {
+    private StatsEntry get(StatsObjective objective, int place) {
         Map<StatsEntry, Integer> base = Maps.newHashMap();
 
         for (StatsEntry entry : stats.values()) {
-            base.put(entry, entry.getKills());
+            base.put(entry, entry.get(objective));
         }
 
         TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
-            if (first.getKills() >= second.getKills()) {
+            if (first.get(objective) >= second.get(objective)) {
                 return -1;
             }
             return 1;
@@ -257,6 +336,7 @@ public class StatsHandler implements Listener {
     public void clearLeaderboards() {
         leaderboardHeads.clear();
         leaderboardSigns.clear();
+        objectives.clear();
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), this::save);
     }

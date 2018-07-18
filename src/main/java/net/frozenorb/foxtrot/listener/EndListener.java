@@ -267,7 +267,7 @@ public class EndListener implements Listener {
         Location to = event.getTo();
 
         if (from.getWorld().getEnvironment() != Environment.THE_END || to.getWorld().getEnvironment() != Environment.THE_END) return;
-        if (!CustomTimerCreateCommand.isSOTWTimer()) return;
+        if (!CustomTimerCreateCommand.isSOTWTimer() || CustomTimerCreateCommand.hasSOTWEnabled(event.getPlayer().getUniqueId())) return;
 
         if (to.getBlockY() < -128) {
             event.getPlayer().teleport(Bukkit.getWorld("world").getSpawnLocation());

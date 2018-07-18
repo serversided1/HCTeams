@@ -37,7 +37,7 @@ public class GlowHandler {
             e.printStackTrace();
         }
 
-        int secs = Foxtrot.getInstance().getServerHandler().isHardcore() ? (90 * 60 * 20) : 12000;
+        int secs = Foxtrot.getInstance().getServerHandler().isHardcore() ? (90 * 60 * 20) : Foxtrot.getInstance().getServerHandler().getTabServerName().contains("cane") ? Foxtrot.getInstance().getMapHandler().getTeamSize() == 8 ? 20 * 25 * 60 : 20 * 45 * 60 : 12000;
         Foxtrot.getInstance().getServer().getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
             getGlowMountain().reset();
 

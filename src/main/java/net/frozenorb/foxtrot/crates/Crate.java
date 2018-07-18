@@ -75,8 +75,8 @@ public enum Crate {
             ItemMeta meta = itemStack.getItemMeta();
 
             if (InventoryUtils.isArmor(itemStack)) {
-                meta.addEnchant(PROTECTION_ENVIRONMENTAL, PROTECTION_ENVIRONMENTAL.getMaxLevel(), true);
-                meta.addEnchant(DURABILITY, DURABILITY.getMaxLevel(), true);
+                meta.addEnchant(PROTECTION_ENVIRONMENTAL, 3, true);
+                meta.addEnchant(DURABILITY, 3, true);
 
                 if (InventoryUtils.isBoots(itemStack)) {
                     meta.addEnchant(PROTECTION_FALL, PROTECTION_FALL.getMaxLevel(), true);
@@ -95,7 +95,7 @@ public enum Crate {
 
                 meta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.RED + ChatColor.ITALIC.toString() + "Koth Bow"); // &b&c&o
             } else if (itemStack.getType() == DIAMOND_SWORD) {
-                meta.addEnchant(DAMAGE_ALL, DAMAGE_ALL.getMaxLevel(), true);
+                meta.addEnchant(DAMAGE_ALL, 3, true);
                 meta.addEnchant(DURABILITY, 5, true);
                 meta.addEnchant(FIRE_ASPECT, 1, true);
 

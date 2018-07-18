@@ -1,8 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
-import com.google.common.collect.ImmutableSet;
-import net.frozenorb.basic.Basic;
-import net.frozenorb.foxtrot.Foxtrot;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,7 +14,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
+
+import net.frozenorb.basic.Basic;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.Team;
 
 public class FoundDiamondsListener implements Listener {
 
@@ -42,6 +45,11 @@ public class FoundDiamondsListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getBlock().getType() == Material.DIAMOND_ORE && !event.getBlock().hasMetadata("DiamondPlaced")) {
             int diamonds = countRelative(event.getBlock());
+
+            Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+            if (playerTeam != null) {
+                playerTeam.setDiamondsMined(playerTeam.getDiamondsMined() + diamonds);
+            }
 
             // no point checking if the server is frozen because
             // players won't be able to break blocks anyways

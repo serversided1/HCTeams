@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
@@ -26,7 +28,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -38,6 +39,7 @@ import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.util.PlayerUtils;
 
 public class BasicPreventionListener implements Listener {
 
@@ -82,14 +84,6 @@ public class BasicPreventionListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "No permission.");
             }
-        }
-    }
-
-    @EventHandler
-    public void onEntityInteract(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked().getType() == EntityType.HORSE) {
-            event.getPlayer().sendMessage(ChatColor.RED.toString() + "It appears that this horse doesn't like you.");
-            event.setCancelled(true);
         }
     }
 
@@ -143,8 +137,8 @@ public class BasicPreventionListener implements Listener {
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        if (Foxtrot.getInstance().getServerHandler().isSkybridgePrevention() && 80 <= event.getBlock().getLocation().getY() && Foxtrot.getInstance().getServerHandler().isWarzone(event.getBlock().getLocation())) {
-            event.getPlayer().sendMessage(ChatColor.RED + "You can't build higher than 80 blocks in the Warzone!");
+        if (Foxtrot.getInstance().getServerHandler().isSkybridgePrevention() && 110 < event.getBlock().getLocation().getY() && event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+            event.getPlayer().sendMessage(ChatColor.RED + "You can't build higher than 110 blocks.");
             event.setCancelled(true);
         }
     }
@@ -207,14 +201,33 @@ public class BasicPreventionListener implements Listener {
     public void onEntitySpawn(EntitySpawnEvent event) {
         EntityType type = event.getEntityType();
 
-        if (type == EntityType.HORSE || type == EntityType.MINECART_TNT) {
+        if (type == EntityType.MINECART_TNT) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH) 
+    public void onDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!CustomTimerCreateCommand.isSOTWTimer()) {
+            return;
+        }
+
+        Player damager = PlayerUtils.getDamageSource(event.getDamager());
+        Entity damaged = event.getEntity();
+
+        if (!(damaged instanceof Player)) {
+            return;
+        }
+
+        if (!CustomTimerCreateCommand.hasSOTWEnabled(damager.getUniqueId())) {
+            event.setCancelled(true);
+            return;
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && CustomTimerCreateCommand.getCustomTimers().containsKey("&a&lSOTW") && System.currentTimeMillis() < CustomTimerCreateCommand.getCustomTimers().get("&a&lSOTW")) {
+        if (event.getEntity() instanceof Player && CustomTimerCreateCommand.isSOTWTimer() && !CustomTimerCreateCommand.hasSOTWEnabled(((Player) event.getEntity()).getUniqueId())) {
             event.setCancelled(true);
         }
     }

@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.scoreboard;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
@@ -10,8 +9,12 @@ import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
+import net.frozenorb.foxtrot.commands.EOTWCommand;
 import net.frozenorb.foxtrot.conquest.game.ConquestGame;
-import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.EventType;
+import net.frozenorb.foxtrot.events.dtc.DTC;
+import net.frozenorb.foxtrot.events.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.listener.GoldenAppleListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
@@ -79,20 +82,24 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             }
             
             if (timer.getKey().equals("&a&lSOTW")) {
-                scores.add(ChatColor.translateAlternateColorCodes('&', "&a&lSOTW &aends in &a&l" + getTimerScore(timer)));
+                if (CustomTimerCreateCommand.hasSOTWEnabled(player.getUniqueId())) {
+                    scores.add(ChatColor.translateAlternateColorCodes('&', "&a&l&mSOTW &a&mends in &a&l&m" + getTimerScore(timer)));
+                } else {
+                    scores.add(ChatColor.translateAlternateColorCodes('&', "&a&lSOTW &aends in &a&l" + getTimerScore(timer)));
+                }
             } else {
                 scores.add(ChatColor.translateAlternateColorCodes('&', timer.getKey()) + "&7: &c" + getTimerScore(timer));
             }
         }
         
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
-            if (!koth.isActive() || koth.isHidden()) {
+        for (Event event : Foxtrot.getInstance().getEventHandler().getEvents()) {
+            if (!event.isActive() || event.isHidden()) {
                 continue;
             }
             
             String displayName;
             
-            switch (koth.getName()) {
+            switch (event.getName()) {
             case "EOTW":
                 displayName = ChatColor.DARK_RED.toString() + ChatColor.BOLD + "EOTW";
                 break;
@@ -100,11 +107,23 @@ public class FoxtrotScoreGetter implements ScoreGetter {
                 displayName = ChatColor.DARK_PURPLE.toString() + ChatColor.BOLD + "Citadel";
                 break;
             default:
-                displayName = ChatColor.BLUE.toString() + ChatColor.BOLD + koth.getName();
+                displayName = ChatColor.BLUE.toString() + ChatColor.BOLD + event.getName();
                 break;
             }
             
-            scores.add(displayName + "&7: &c" + ScoreFunction.TIME_SIMPLE.apply((float) koth.getRemainingCapTime()));
+            if (event.getType() == EventType.DTC) {
+                scores.add(displayName + "&7: &c" + ((DTC) event).getCurrentPoints());
+            } else {
+                scores.add(displayName + "&7: &c" + ScoreFunction.TIME_SIMPLE.apply((float) ((KOTH) event).getRemainingCapTime()));
+            }
+        }
+
+        if (EOTWCommand.isFfaEnabled()) {
+            long ffaEnabledAt = EOTWCommand.getFfaActiveAt();
+            if (System.currentTimeMillis() < ffaEnabledAt) {
+                long difference = ffaEnabledAt - System.currentTimeMillis();
+                scores.add("&4&lFFA&7: &c" + ScoreFunction.TIME_SIMPLE.apply(difference / 1000F));
+            }
         }
         
         if (archerMarkScore != null) {
@@ -298,5 +317,4 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         
         return (null);
     }
-    
 }

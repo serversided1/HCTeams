@@ -29,8 +29,8 @@ public enum TeamActionType {
     TEAM_MUTE_EXPIRED(false),
 
     // Connections
-    MEMBER_CONNECTED(false),
-    MEMBER_DISCONNECTED(false),
+    MEMBER_CONNECTED(true),
+    MEMBER_DISCONNECTED(true),
 
     // Basic
     ANNOUNCEMENT_CHANGED(true),

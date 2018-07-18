@@ -5,6 +5,8 @@ import com.mongodb.DBCollection;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.redis.RedisCommand;
+import net.frozenorb.qlib.util.UUIDUtils;
+
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
 
@@ -83,7 +85,10 @@ public abstract class PersistMap<T> {
                         DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
                         BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
                         
-                        playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                        BasicDBObject toSet = new BasicDBObject(mongoName, getMongoValue(getValue(key)));
+                        toSet.put("lastUsername", UUIDUtils.name(key));
+                        
+                        playersCollection.update(player, new BasicDBObject("$set", toSet), true, false);
                         succeeded = true;
                     } catch (Exception e) {
                         succeeded = false;
@@ -118,7 +123,10 @@ public abstract class PersistMap<T> {
                                 DBCollection playersCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("Players");
                                 BasicDBObject player = new BasicDBObject("_id", key.toString().replace("-", ""));
                                 
-                                playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject(mongoName, getMongoValue(getValue(key)))), true, false);
+                                BasicDBObject toSet = new BasicDBObject(mongoName, getMongoValue(getValue(key)));
+                                toSet.put("lastUsername", UUIDUtils.name(key));
+                                
+                                playersCollection.update(player, new BasicDBObject("$set", toSet), true, false);
                                 succeeded = true;
                             } catch (Exception e) {
                                 succeeded = false;

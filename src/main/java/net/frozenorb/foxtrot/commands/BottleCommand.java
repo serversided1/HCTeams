@@ -3,18 +3,25 @@ package net.frozenorb.foxtrot.commands;
 import java.text.NumberFormat;
 import java.util.Collections;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.util.ExperienceManager;
 import net.frozenorb.qlib.command.Command;
 
-public final class BottleCommand {
+public final class BottleCommand implements Listener {
 
+    public BottleCommand() {
+        Bukkit.getPluginManager().registerEvents(this, Foxtrot.getInstance());
+    }
+    
     @Command(names = {"bottle"}, permission = "foxtrot.bottle")
     public static void bottle(Player sender) {
         ItemStack item = sender.getItemInHand();

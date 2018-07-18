@@ -85,7 +85,7 @@ public class  SpawnListener implements Listener {
         if (DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
-        } else if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
+        } else if (!DTRBitmask.DTC.appliesAt(event.getBlock().getLocation()) && (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation()))) {
             event.setCancelled(true);
 
             if (event.getBlock().getType() != Material.LONG_GRASS && event.getBlock().getType() != Material.GRASS) {
@@ -192,6 +192,5 @@ public class  SpawnListener implements Listener {
         if (team != null && team.hasDTRBitmask(DTRBitmask.SAFE_ZONE) && (Foxtrot.getInstance().getServerHandler().isVeltKitMap() || CustomTimerCreateCommand.isSOTWTimer())) {
             event.getItemDrop().remove();
         }
-        
     }
 }

@@ -1,13 +1,10 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
-import net.frozenorb.foxtrot.pvpclasses.PvPClass;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.qlib.util.TimeUtils;
-import net.frozenorb.qlib.util.UUIDUtils;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -21,9 +18,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.server.event.BackstabKillEvent;
+import net.frozenorb.qlib.util.TimeUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
 
 public class RogueClass extends PvPClass {
 
@@ -129,6 +131,9 @@ public class RogueClass extends PvPClass {
 
                     DeathMessageHandler.addDamage(victim, new BackstabDamage(victim.getName(), 7D, damager.getName()));
                     victim.setHealth(Math.max(0D, victim.getHealth() - 7D));
+                    if (victim.getHealth() <= 0.0D) {
+                        Bukkit.getPluginManager().callEvent(new BackstabKillEvent(damager, victim));
+                    }
 
                     damager.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2 * 20, 2));
                 } else {

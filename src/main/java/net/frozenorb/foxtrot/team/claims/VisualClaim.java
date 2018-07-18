@@ -1,7 +1,39 @@
 package net.frozenorb.foxtrot.team.claims;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -17,19 +49,6 @@ import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.util.ItemUtils;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.*;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -58,7 +77,53 @@ public class VisualClaim implements Listener {
     @Getter @Setter private Location corner1;
     @Getter @Setter private Location corner2;
 
+    private static boolean taskSetup = false;
+    private static Map<UUID, Queue<QueuedBlockChange>> queuedBlockChanges = Maps.newHashMap();
+    private static void checkTaskSetup() {
+        if (taskSetup) {
+            return;
+        }
+
+        taskSetup = true;
+        Bukkit.getScheduler().runTaskTimer(Foxtrot.getInstance(), () -> {
+            Iterator<Entry<UUID, Queue<QueuedBlockChange>>> entryIterator = queuedBlockChanges.entrySet().iterator();
+            while (entryIterator.hasNext()) {
+                Entry<UUID, Queue<QueuedBlockChange>> entry = entryIterator.next();
+
+                Player bukkitPlayer = Bukkit.getPlayer(entry.getKey());
+                if (bukkitPlayer == null) {
+                    entryIterator.remove();
+                    continue;
+                }
+
+                Queue<QueuedBlockChange> queue = entry.getValue();
+                QueuedBlockChange queuedBlockChange = queue.poll();
+                if (queuedBlockChange == null) {
+                    entryIterator.remove();
+                    continue;
+                }
+
+                bukkitPlayer.sendBlockChange(queuedBlockChange.getLocation(), queuedBlockChange.getType(), queuedBlockChange.getData());
+            }
+        }, 1L, 1L);
+    }
+
+    private static void sendBlockChange(Player player, Location location, Material type, byte data) {
+        
+        if (true) {
+            player.sendBlockChange(location, type, data);
+            return;
+        }
+        
+        if (!queuedBlockChanges.containsKey(player.getUniqueId())) {
+            queuedBlockChanges.put(player.getUniqueId(), new ConcurrentLinkedQueue<>());
+        }
+
+        queuedBlockChanges.get(player.getUniqueId()).add(new QueuedBlockChange(location, type, data));
+    }
+
     public void draw(boolean silent) {
+        checkTaskSetup();
         // If they already have a map open and they're opening another
         if (currentMaps.containsKey(player.getName()) && (type == VisualClaimType.MAP || type == VisualClaimType.SURFACE_MAP)) {
             currentMaps.get(player.getName()).cancel();
@@ -203,8 +268,8 @@ public class VisualClaim implements Listener {
                             carpetColor = DyeColor.BLUE;
                         }
 
-                        player.sendBlockChange(block.getLocation(), Material.WOOL, carpetColor.getWoolData());
-                        player.sendBlockChange(block.getRelative(BlockFace.UP).getLocation(), Material.CARPET, carpetColor.getWoolData());
+                        sendBlockChange(player, block.getLocation(), Material.WOOL, carpetColor.getWoolData());
+                        sendBlockChange(player, block.getRelative(BlockFace.UP).getLocation(), Material.CARPET, carpetColor.getWoolData());
                         blockChanges.add(block.getLocation());
                         blockChanges.add(block.getRelative(BlockFace.UP).getLocation());
                     }
@@ -465,7 +530,7 @@ public class VisualClaim implements Listener {
 
     public void clearAllBlocks() {
         for (Location location : blockChanges) {
-            player.sendBlockChange(location, location.getBlock().getType(), location.getBlock().getData());
+            sendBlockChange(player, location, location.getBlock().getType(), location.getBlock().getData());
         }
     }
 
@@ -522,7 +587,7 @@ public class VisualClaim implements Listener {
 
             if (!bypass) {
                 playerTeam.setBalance(playerTeam.getBalance() - price);
-                Foxtrot.getInstance().getLogger().info("Economy Logger: Withdrawing " + price + " into " + playerTeam.getBalance() + "'s account: Claimed land");
+                Foxtrot.getInstance().getLogger().info("Economy Logger: Withdrawing " + price + " from " + playerTeam.getBalance() + "'s account: Claimed land");
                 player.sendMessage(ChatColor.YELLOW + "Your team's new balance is " + ChatColor.WHITE + "$" + (int) playerTeam.getBalance() + ChatColor.LIGHT_PURPLE + " (Price: $" + price + ")");
             }
 
@@ -674,9 +739,9 @@ public class VisualClaim implements Listener {
 
             if (matches >= 2) {
                 if (glassIteration++ % 3 == 0) {
-                    player.sendBlockChange(location, material, (byte) 0);
+                    sendBlockChange(player, location, material, (byte) 0);
                 } else {
-                    player.sendBlockChange(location, Material.GLASS, (byte) 0);
+                    sendBlockChange(player, location, Material.GLASS, (byte) 0);
                 }
 
                 blockChanges.add(location.clone());
@@ -692,9 +757,9 @@ public class VisualClaim implements Listener {
 
             if (set.getBlock().getType() == Material.AIR || set.getBlock().getType().isTransparent() || set.getBlock().getType() == Material.WATER || set.getBlock().getType() == Material.STATIONARY_WATER) {
                 if (y % 5 == 0) {
-                    player.sendBlockChange(set, mat, (byte) 0);
+                    sendBlockChange(player, set, mat, (byte) 0);
                 } else {
-                    player.sendBlockChange(set, Material.GLASS, (byte) 0);
+                    sendBlockChange(player, set, Material.GLASS, (byte) 0);
                 }
 
                 blockChanges.add(set.clone());
@@ -713,7 +778,7 @@ public class VisualClaim implements Listener {
           Location blockChange = blockChangeIterator.next();
 
             if (blockChange.getBlockX() == location.getBlockX() && blockChange.getBlockZ() == location.getBlockZ()) {
-                player.sendBlockChange(blockChange, blockChange.getBlock().getType(), blockChange.getBlock().getData());
+                sendBlockChange(player, blockChange, blockChange.getBlock().getType(), blockChange.getBlock().getData());
                 blockChangeIterator.remove();
             }
         }
@@ -877,6 +942,13 @@ public class VisualClaim implements Listener {
 
     public static VisualClaim getVisualClaim(String name) {
         return (visualClaims.get(name));
+    }
+
+    @AllArgsConstructor @Getter
+    private static class QueuedBlockChange {
+        private Location location;
+        private Material type;
+        private byte data;
     }
 
 }

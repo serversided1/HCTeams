@@ -80,7 +80,8 @@ public class KitCommand {
             sender.sendMessage(ChatColor.RED + "You're ineligible to use this kit for " + ScoreFunction.TIME_SIMPLE.apply(difference / 1000F));
             return;
         } else {
-            cooldownMap.put(sender.getUniqueId(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30));
+            String lowerCaseName = kitName.toLowerCase();
+            cooldownMap.put(sender.getUniqueId(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis((lowerCaseName.contains("velt") && (lowerCaseName.endsWith("+") || lowerCaseName.endsWith("plus"))) ? 15 : 30));
         }
 
         targetKit.apply(sender);

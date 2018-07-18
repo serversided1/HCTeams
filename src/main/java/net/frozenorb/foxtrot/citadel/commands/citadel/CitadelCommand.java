@@ -1,19 +1,21 @@
 package net.frozenorb.foxtrot.citadel.commands.citadel;
 
-import com.google.common.base.Joiner;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.citadel.CitadelHandler;
-import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.command.Command;
-import org.bson.types.ObjectId;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import com.google.common.base.Joiner;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.citadel.CitadelHandler;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.command.Command;
 
 public class CitadelCommand {
 
@@ -34,7 +36,7 @@ public class CitadelCommand {
         if (!capperNames.isEmpty()) {
             sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel was captured by " + ChatColor.GREEN + Joiner.on(", ").join(capperNames) + ChatColor.YELLOW + ".");
         } else {
-            KOTH citadel = Foxtrot.getInstance().getKOTHHandler().getKOTH("Citadel");
+            Event citadel = Foxtrot.getInstance().getEventHandler().getEvent("Citadel");
 
             if (citadel != null && citadel.isActive()) {
                 sender.sendMessage(CitadelHandler.PREFIX + " " + ChatColor.YELLOW + "Citadel can be captured now.");

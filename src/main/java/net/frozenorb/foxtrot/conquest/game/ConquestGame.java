@@ -1,16 +1,11 @@
 package net.frozenorb.foxtrot.conquest.game;
 
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.conquest.ConquestHandler;
-import net.frozenorb.foxtrot.conquest.enums.ConquestCapzone;
-import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.events.KOTHCapturedEvent;
-import net.frozenorb.foxtrot.koth.events.KOTHControlLostEvent;
-import net.frozenorb.foxtrot.koth.events.KOTHControlTickEvent;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.util.InventoryUtils;
-import net.frozenorb.qlib.util.UUIDUtils;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,7 +16,19 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.conquest.ConquestHandler;
+import net.frozenorb.foxtrot.conquest.enums.ConquestCapzone;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.EventType;
+import net.frozenorb.foxtrot.events.events.EventCapturedEvent;
+import net.frozenorb.foxtrot.events.koth.KOTH;
+import net.frozenorb.foxtrot.events.koth.events.EventControlTickEvent;
+import net.frozenorb.foxtrot.events.koth.events.KOTHControlLostEvent;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.util.InventoryUtils;
+import net.frozenorb.qlib.util.UUIDUtils;
 
 public class ConquestGame implements Listener {
 
@@ -30,7 +37,9 @@ public class ConquestGame implements Listener {
     public ConquestGame() {
         Foxtrot.getInstance().getServer().getPluginManager().registerEvents(this, Foxtrot.getInstance());
 
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+        for (Event event : Foxtrot.getInstance().getEventHandler().getEvents()) {
+            if (event.getType() != EventType.KOTH) continue;
+            KOTH koth = (KOTH) event;
             if (koth.getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
                 if (!koth.isHidden()) {
                     koth.setHidden(true);
@@ -55,7 +64,7 @@ public class ConquestGame implements Listener {
             Foxtrot.getInstance().getServer().broadcastMessage(ConquestHandler.PREFIX + " " + ChatColor.GOLD.toString() + ChatColor.BOLD + winner.getName() + ChatColor.GOLD + " has won Conquest!");
         }
 
-        for (KOTH koth : Foxtrot.getInstance().getKOTHHandler().getKOTHs()) {
+        for (Event koth : Foxtrot.getInstance().getEventHandler().getEvents()) {
             if (koth.getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
                 koth.deactivate();
             }
@@ -66,13 +75,13 @@ public class ConquestGame implements Listener {
     }
 
     @EventHandler
-    public void onKOTHCaptured(final KOTHCapturedEvent event) {
-        if (!event.getKOTH().getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
+    public void onKOTHCaptured(final EventCapturedEvent event) {
+        if (!event.getEvent().getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX)) {
             return;
         }
 
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        ConquestCapzone capzone = ConquestCapzone.valueOf(event.getKOTH().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
+        ConquestCapzone capzone = ConquestCapzone.valueOf(event.getEvent().getName().replace(ConquestHandler.KOTH_NAME_PREFIX, "").toUpperCase());
 
         if (team == null) {
             return;
@@ -101,7 +110,7 @@ public class ConquestGame implements Listener {
 
                 public void run() {
                     if (Foxtrot.getInstance().getConquestHandler().getGame() != null) {
-                        event.getKOTH().activate();
+                        event.getEvent().activate();
                     }
                 }
 
@@ -125,7 +134,8 @@ public class ConquestGame implements Listener {
         team.sendMessage(ConquestHandler.PREFIX + ChatColor.GOLD + " " + event.getKOTH().getCurrentCapper() + " was knocked off of " + capzone.getColor() + capzone.getName() + ChatColor.GOLD + "!");
     }
     @EventHandler
-    public void onKOTHControlTick(KOTHControlTickEvent event) {
+    public void onKOTHControlTick(EventControlTickEvent event) {
+        
         if (!event.getKOTH().getName().startsWith(ConquestHandler.KOTH_NAME_PREFIX) || event.getKOTH().getRemainingCapTime() % 5 != 0) {
             return;
         }

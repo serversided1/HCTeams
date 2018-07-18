@@ -1,15 +1,8 @@
 package net.frozenorb.foxtrot.chat.listeners;
 
-import com.google.common.collect.ImmutableMap;
-import net.frozenorb.foxtrot.FoxConstants;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.chat.ChatHandler;
-import net.frozenorb.foxtrot.chat.enums.ChatMode;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
-import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,9 +12,35 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.google.common.collect.ImmutableMap;
+
+import net.frozenorb.foxtrot.FoxConstants;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.chat.ChatHandler;
+import net.frozenorb.foxtrot.chat.enums.ChatMode;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.commands.team.TeamMuteCommand;
+import net.frozenorb.foxtrot.team.commands.team.TeamShadowMuteCommand;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+
 public class ChatListener implements Listener {
 
-    @EventHandler // this handler prevents people from getting banned for spam in faction (or ally) chat
+    private String getCustomPrefix(UUID uuid) {
+        Map<Integer, UUID> placesMap = Foxtrot.getInstance().getMapHandler().getStatsHandler() != null ? Foxtrot.getInstance().getMapHandler().getStatsHandler().getTopKills() : null;
+        if (placesMap == null) {
+            return Foxtrot.getInstance().getChatHandler().getCustomPrefix(uuid);
+        }
+        
+        Integer place = placesMap.size() == 3 ? placesMap.get(1).equals(uuid) ? 1 : placesMap.get(2).equals(uuid) ? 2 : placesMap.get(3).equals(uuid) ? 3 : 99 : 99;
+        if (place == 99) {
+            return Foxtrot.getInstance().getChatHandler().getCustomPrefix(uuid);
+        }
+        
+        return ChatColor.translateAlternateColorCodes('&', place == 1 ? "&8[&6#1&8]" : place == 2 ? "&8[&7#2&8]" : "&8[&f#3&8]");
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST) // this handler prevents people from getting banned for spam in faction (or ally) chat
     public void onAsyncPlayerChatEarly(AsyncPlayerChatEvent event) {
         ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
         ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
@@ -44,7 +63,7 @@ public class ChatListener implements Listener {
 
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
         String rankPrefix = event.getPlayer().hasMetadata("HydrogenPrefix") ? event.getPlayer().getMetadata("HydrogenPrefix").get(0).asString() : "";
-        String customPrefix = Foxtrot.getInstance().getChatHandler().getCustomPrefix(event.getPlayer().getUniqueId());
+        String customPrefix = getCustomPrefix(event.getPlayer().getUniqueId());
         ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
         ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));
         ChatMode finalChatMode;

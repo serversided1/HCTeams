@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.frozenorb.basic.Basic;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.EOTWCommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
@@ -56,7 +57,12 @@ public class TeamCreateCommand {
             return;
         }
 
-        sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
+        if (EOTWCommand.realFFAStarted()) {
+            sender.sendMessage(ChatColor.RED + "You can't create teams during FFA.");
+            return;
+        }
+
+        // sender.sendMessage(ChatColor.DARK_AQUA + "Team Created!");
         sender.sendMessage(ChatColor.GRAY + "To learn more about teams, do /team");
 
         Team createdTeam = new Team(team);
@@ -74,7 +80,7 @@ public class TeamCreateCommand {
         Foxtrot.getInstance().getTeamHandler().setupTeam(createdTeam);
 
         if (!Basic.getInstance().getServerManager().isFrozen() && !Basic.getInstance().getChatManager().isMuted()) {
-            Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
+            sender.sendMessage(ChatColor.YELLOW + "Team " + ChatColor.BLUE + createdTeam.getName() + ChatColor.YELLOW + " has been " + ChatColor.GREEN + "created" + ChatColor.YELLOW + " by " + sender.getDisplayName());
         }
     }
 

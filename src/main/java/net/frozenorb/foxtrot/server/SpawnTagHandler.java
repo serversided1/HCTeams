@@ -22,7 +22,7 @@ public class SpawnTagHandler {
     }
 
     public static void addOffensiveSeconds(Player player, int seconds) {
-        addPassiveSeconds(player, seconds);
+        addSeconds(player, seconds);
     }
 
     public static void addPassiveSeconds(Player player, int seconds) {
@@ -65,7 +65,7 @@ public class SpawnTagHandler {
 
     public static int getMaxTagTime() {
         if (Foxtrot.getInstance().getServerHandler().isHardcore()) {
-            return 60;
+            return 45;
         }
 
         return Foxtrot.getInstance().getServerHandler().isPassiveTagEnabled() ? 30 : 60;

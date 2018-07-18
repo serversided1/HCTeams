@@ -315,7 +315,7 @@ public class CombatLoggerListener implements Listener {
             return;
         }
 
-        if (CustomTimerCreateCommand.getCustomTimers().get("&a&lSOTW") != null) {
+        if (CustomTimerCreateCommand.isSOTWTimer() && !CustomTimerCreateCommand.hasSOTWEnabled(event.getPlayer().getUniqueId())) {
             return;
         }
 

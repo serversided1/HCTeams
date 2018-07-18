@@ -48,7 +48,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.koth.KOTH;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.EventType;
 import net.frozenorb.foxtrot.server.idle.IdleCheckRunnable;
 import net.frozenorb.foxtrot.server.uhc.UHCListener;
 import net.frozenorb.foxtrot.team.Team;
@@ -116,6 +117,7 @@ public class ServerHandler {
     @Getter private final boolean veltKitMap;
 
     @Getter private final boolean hardcore;
+    @Getter private final boolean placeBlocksInCombat;
 
     public ServerHandler() {
         try {
@@ -203,6 +205,9 @@ public class ServerHandler {
         }
 
         this.hardcore = Foxtrot.getInstance().getConfig().getBoolean("hardcore", false);
+        
+        this.placeBlocksInCombat = Foxtrot.getInstance().getConfig().getBoolean("placeBlocksInCombat", true);
+        
         registerPlayerDamageRestrictionListener();
     }
 
@@ -345,11 +350,10 @@ public class ServerHandler {
             dtrLoss = Math.min(dtrLoss, 0.01D);
         }
 
-        if (Foxtrot.getInstance().getConquestHandler().getGame() != null && location.getWorld().getEnvironment() == Environment.THE_END) {
+        Team ownerTo = LandBoard.getInstance().getTeam(location);
+        if (Foxtrot.getInstance().getConquestHandler().getGame() != null && location.getWorld().getEnvironment() == Environment.THE_END && ownerTo != null && ownerTo.hasDTRBitmask(DTRBitmask.CONQUEST)) {
             dtrLoss = Math.min(dtrLoss, 0.50D);
         }
-
-        Team ownerTo = LandBoard.getInstance().getTeam(location);
 
         if (ownerTo != null) {
             if (ownerTo.hasDTRBitmask(DTRBitmask.QUARTER_DTR_LOSS)) {
@@ -392,7 +396,7 @@ public class ServerHandler {
 
         // Check DTR flags, which will also take priority over playtime.
         if (ownerTo != null && ownerTo.getOwner() == null) {
-            KOTH linkedKOTH = Foxtrot.getInstance().getKOTHHandler().getKOTH(ownerTo.getName());
+            Event linkedKOTH = Foxtrot.getInstance().getEventHandler().getEvent(ownerTo.getName());
 
             // Only respect the reduced deathban if
             // The KOTH is non-existant (in which case we're probably
@@ -420,7 +424,7 @@ public class ServerHandler {
         return (Math.min(max, ban));
     }
 
-    public void beginHQWarp(final Player player, final Team team, int warmup) {
+    public void beginHQWarp(final Player player, final Team team, int warmup, boolean charge) {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
 
         if (inClaim != null) {
@@ -450,8 +454,13 @@ public class ServerHandler {
             player.sendMessage(ChatColor.RED + "You may not go to your team headquarters while spawn tagged!");
             return;
         }
+        
+        boolean isSpawn = inClaim != null && inClaim.hasDTRBitmask(DTRBitmask.SAFE_ZONE);
+        
+        if (charge && !isSpawn) {
+            team.setBalance(team.getBalance() - (Foxtrot.getInstance().getServerHandler().isHardcore() ? 20 : 50));
+        }
 
-        team.setBalance(team.getBalance() - 50);
         player.sendMessage(ChatColor.YELLOW + "Teleporting to your team's HQ in " + ChatColor.LIGHT_PURPLE + warmup + " seconds" + ChatColor.YELLOW + "... Stay still and do not take damage.");
 
         /**
@@ -746,7 +755,7 @@ public class ServerHandler {
         return (deathsign);
     }
 
-    public ItemStack generateKOTHSign(String koth, String capper) {
+    public ItemStack generateKOTHSign(String koth, String capper, EventType eventType) {
         ItemStack kothsign = new ItemStack(Material.SIGN);
         ItemMeta meta = kothsign.getItemMeta();
 
@@ -761,7 +770,7 @@ public class ServerHandler {
         lore.add(sdf.format(new Date()).replace(" AM", "").replace(" PM", ""));
 
         meta.setLore(lore);
-        meta.setDisplayName("§dKOTH Capture Sign");
+        meta.setDisplayName("§d" + eventType.name() + "Capture Sign");
         kothsign.setItemMeta(meta);
 
         return (kothsign);

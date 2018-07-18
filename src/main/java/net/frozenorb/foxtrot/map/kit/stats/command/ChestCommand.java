@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.map.kit.stats.command;
 
 import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.command.Command;
 import org.bukkit.ChatColor;
@@ -16,6 +17,11 @@ public class ChestCommand {
 
     @Command(names = {"chest"}, permission = "")
     public static void chest(Player sender) {
+        if (!Foxtrot.getInstance().getServerHandler().isVeltKitMap() && !Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            sender.sendMessage(ChatColor.RED + "This is a KitMap only command.");
+            return;
+        }
+        
         if (!DTRBitmask.SAFE_ZONE.appliesAt(sender.getLocation())) {
             sender.sendMessage(ChatColor.RED + "You can only do this at spawn.");
             return;

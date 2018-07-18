@@ -15,6 +15,7 @@ import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +25,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
@@ -38,8 +41,10 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -55,6 +60,7 @@ public class AntiGlitchListener implements Listener {
     public void onVerticalBlockPlaceGlitch(BlockPlaceEvent event) {
         if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null && event.isCancelled()) {
             event.getPlayer().teleport(event.getPlayer().getLocation());
+            event.getPlayer().setNoDamageTicks(0);
         }
     }
     
@@ -105,10 +111,11 @@ public class AntiGlitchListener implements Listener {
         for (Block block : event.getBlocks()) {
             if (block.getType().name().contains("RAIL")) {
                 event.setCancelled(true);
+                return;
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVehicleExit(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) {
@@ -141,6 +148,16 @@ public class AntiGlitchListener implements Listener {
             }
             
         }.runTaskLater(Foxtrot.getInstance(), 1L);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onVehicleEnter(VehicleEnterEvent event) {
+        
+        if (event.getVehicle() instanceof Horse) {
+            return;
+        }
+        
+        event.setCancelled(true);
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -213,14 +230,11 @@ public class AntiGlitchListener implements Listener {
         if (event.getEntityType() != EntityType.HORSE)
             return;
         
-        // Cancel event if any surrounding blocks to the spawned horse are solid.
-        Block block = event.getEntity().getLocation().getBlock();
-        for (BlockFace blockFace : SURROUNDING) {
-            if (MaterialUtils.isFullBlock(block.getRelative(blockFace).getType())) {
-                event.setCancelled(true);
-                return;
-            }
+        if (Foxtrot.getInstance().getServerHandler().isHardcore()) {
+            return;
         }
+
+        event.setCancelled(true);
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -237,9 +251,19 @@ public class AntiGlitchListener implements Listener {
     }
 
     @EventHandler
-    public void denyExplodingMinecartSpawn(EntitySpawnEvent event) {
-        if (event.getEntityType() == EntityType.MINECART_TNT || event.getEntityType() == EntityType.MINECART_HOPPER) {
+    public void denyMinecartSpawns(EntitySpawnEvent event) {
+        if (event.getEntityType() == EntityType.MINECART_TNT || event.getEntityType() == EntityType.MINECART_HOPPER || event.getEntityType() == EntityType.MINECART_CHEST) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        Chunk chunk = event.getChunk();
+        for (Entity entity : chunk.getEntities()) {
+            if (entity.getType() == EntityType.MINECART_CHEST) {
+                entity.remove();
+            }
         }
     }
 }

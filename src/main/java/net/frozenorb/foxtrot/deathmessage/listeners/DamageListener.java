@@ -1,16 +1,13 @@
 package net.frozenorb.foxtrot.deathmessage.listeners;
 
-import com.google.common.collect.Maps;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
-import net.frozenorb.foxtrot.deathmessage.objects.Damage;
-import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
-import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
-import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
-import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,11 +15,24 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.google.common.collect.Maps;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
+import net.frozenorb.foxtrot.deathmessage.objects.Damage;
+import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
+import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
+import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
+import net.frozenorb.foxtrot.map.kit.killstreaks.PersistentKillstreak;
+import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import net.frozenorb.foxtrot.team.Team;
 
 public class DamageListener implements Listener {
 
@@ -40,8 +50,13 @@ public class DamageListener implements Listener {
             DeathMessageHandler.addDamage(player, customEvent.getTrackerDamage());
         }
     }
+    
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        DeathMessageHandler.clearDamage(event.getPlayer());
+    }
 
-    @EventHandler(priority=EventPriority.HIGH)
+    @EventHandler(priority=EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         List<Damage> record = DeathMessageHandler.getDamage(event.getEntity());
 
@@ -100,11 +115,25 @@ public class DamageListener implements Listener {
                                 Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
                             }
 
+                            List<PersistentKillstreak> persistent = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getPersistentKillstreaks(killer, killerStats.getKillstreak());
+                            
+                            for (PersistentKillstreak persistentStreak : persistent) {
+                                if (persistentStreak.matchesExactly(killerStats.getKillstreak())) {
+                                    Bukkit.broadcastMessage(killer.getDisguisedName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+                                }
+                                
+                                persistentStreak.apply(killer);
+                            }
+                            
                             Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
                             Foxtrot.getInstance().getDeathsMap().setDeaths(victim.getUniqueId(), victimStats.getDeaths());
                         }
                     } else {
                         Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
+
+                        if (Foxtrot.getInstance().getServerHandler().isHardcore()) {
+                            event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), killer.getName()));
+                        }
                     }
                 }
             }
@@ -115,6 +144,17 @@ public class DamageListener implements Listener {
         }
 
         Player killer = event.getEntity().getKiller();
+        
+        Team killerTeam = killer == null ? null : Foxtrot.getInstance().getTeamHandler().getTeam(killer);
+        Team deadTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getEntity());
+
+        if (killerTeam != null) {
+            killerTeam.setKills(killerTeam.getKills() + 1);
+        }
+        
+        if (deadTeam != null) {
+            deadTeam.setDeaths(deadTeam.getDeaths() + 1);
+        }
         
         Bukkit.getScheduler().scheduleAsyncDelayedTask(Foxtrot.getInstance(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -145,6 +185,53 @@ public class DamageListener implements Listener {
         //DeathTracker.logDeath(event.getEntity(), event.getEntity().getKiller());
         DeathMessageHandler.clearDamage(event.getEntity());
         Foxtrot.getInstance().getDeathsMap().setDeaths(event.getEntity().getUniqueId(), Foxtrot.getInstance().getDeathsMap().getDeaths(event.getEntity().getUniqueId()) + 1);
+    }
+    
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        checkKillstreaks(event.getPlayer());
+    }
+    
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        checkKillstreaks(event.getPlayer());
+    }
+    
+    private void checkKillstreaks(Player player) {
+        Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
+            int killstreak = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player).getKillstreak();
+            List<PersistentKillstreak> persistent = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getPersistentKillstreaks(player, killstreak);
+            
+            for (PersistentKillstreak persistentStreak : persistent) {
+                persistentStreak.apply(player);
+            }
+            
+        }, 5L);
+    }
+    
+    @EventHandler(ignoreCancelled = false)
+    public void onRightClick(PlayerInteractEvent event) {
+        if (!event.getAction().name().startsWith("RIGHT_CLICK")) {
+            return;
+        }
+        
+        ItemStack inHand = event.getPlayer().getItemInHand();
+        if (inHand == null) {
+            return;
+        }
+        
+        if (inHand.getType() != Material.NETHER_STAR) {
+            return;
+        }
+        
+        if (!inHand.hasItemMeta() || !inHand.getItemMeta().hasDisplayName() || !inHand.getItemMeta().getDisplayName().startsWith(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "Potion Refill Token")) {
+            return;
+        }
+        
+        event.getPlayer().setItemInHand(null);
+        
+        ItemStack pot = new ItemStack(Material.POTION, 1, (short) 16421);
+        while (event.getPlayer().getInventory().addItem(pot).isEmpty()) {}
     }
 
     private boolean isNaked(Player player) {

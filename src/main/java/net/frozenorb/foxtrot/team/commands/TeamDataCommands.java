@@ -1,12 +1,14 @@
 package net.frozenorb.foxtrot.team.commands;
 
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.DataInputStream;
@@ -19,7 +21,7 @@ import java.util.Date;
 public class TeamDataCommands {
 
     @Command(names={ "exportteamdata" }, permission="op")
-    public static void exportTeamData(Player sender, @Param(name="file") String fileName) {
+    public static void exportTeamData(CommandSender sender, @Param(name="file") String fileName) {
         File file = new File(fileName);
 
         if (file.exists()) {
@@ -48,7 +50,7 @@ public class TeamDataCommands {
     }
 
     @Command(names={ "importteamdata" }, permission="op")
-    public static void importTeamData(Player sender, @Param(name="file") String fileName) {
+    public static void importTeamData(CommandSender sender, @Param(name="file") String fileName) {
         long startTime = System.currentTimeMillis();
         File file = new File(fileName);
 
@@ -59,7 +61,7 @@ public class TeamDataCommands {
 
         try {
             qLib.getInstance().runRedisCommand((jedis) -> {
-                jedis.flushDB();
+                jedis.flushAll();
                 return null;
             });
 
@@ -80,6 +82,7 @@ public class TeamDataCommands {
 
             LandBoard.getInstance().loadFromTeams(); // to update land board shit
             Foxtrot.getInstance().getTeamHandler().recachePlayerTeams();
+            RedisSaveTask.save(sender, true);
             sender.sendMessage(ChatColor.GOLD + "Loaded " + teamsToRead + " teams from an export created by " + ChatColor.GREEN + author + ChatColor.GOLD + " at " + ChatColor.GREEN + created + ChatColor.GOLD + " and recached claims in " + ChatColor.GREEN.toString() +  (System.currentTimeMillis() - startTime) + "ms.");
             in.close();
         } catch (Exception e) {

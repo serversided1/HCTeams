@@ -1,21 +1,12 @@
 package net.frozenorb.foxtrot.map;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
-import lombok.Getter;
-import lombok.Setter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.koth.KOTH;
-import net.frozenorb.foxtrot.koth.KOTHHandler;
-import net.frozenorb.foxtrot.listener.BorderListener;
-import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
-import net.frozenorb.foxtrot.map.kit.kits.KitManager;
-import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
-import net.frozenorb.foxtrot.server.Deathban;
-import net.frozenorb.foxtrot.server.ServerHandler;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.qlib.qLib;
-import net.minecraft.util.org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,12 +17,28 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.events.EventHandler;
+import net.frozenorb.foxtrot.events.koth.KOTH;
+import net.frozenorb.foxtrot.listener.BorderListener;
+import net.frozenorb.foxtrot.map.kit.killstreaks.KillstreakHandler;
+import net.frozenorb.foxtrot.map.kit.kits.KitManager;
+import net.frozenorb.foxtrot.map.kit.stats.StatsHandler;
+import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
+import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
+import net.frozenorb.foxtrot.server.Deathban;
+import net.frozenorb.foxtrot.server.ServerHandler;
+import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
+import net.frozenorb.qlib.qLib;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
+import net.minecraft.util.org.apache.commons.io.FileUtils;
 
 public class MapHandler {
 
@@ -62,9 +69,15 @@ public class MapHandler {
     @Getter private KillstreakHandler killstreakHandler;
     @Getter private KitManager kitManager;
 
-    public MapHandler() {
+    public MapHandler() {}
+    
+    public void load() {
         reloadConfig();
 
+        FrozenNametagHandler.registerProvider(new FoxtrotNametagProvider());
+        FrozenScoreboardHandler.setConfiguration(FoxtrotScoreboardConfiguration.create());
+        FrozenEconomyHandler.init();
+        
         Iterator<Recipe> recipeIterator = Foxtrot.getInstance().getServer().recipeIterator();
 
         while (recipeIterator.hasNext()) {
@@ -130,8 +143,8 @@ public class MapHandler {
 
             // start a KOTH after 5 minutes of uptime
             Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
-                KOTHHandler kothHandler = Foxtrot.getInstance().getKOTHHandler();
-                List<KOTH> koths = new ArrayList<>(kothHandler.getKOTHs());
+                EventHandler kothHandler = Foxtrot.getInstance().getEventHandler();
+                List<KOTH> koths = new ArrayList<>(kothHandler.getEvents().stream().filter(e -> e instanceof KOTH).map(e -> (KOTH) e).collect(Collectors.toList()));
 
                 if (koths.isEmpty()) {
                     return;

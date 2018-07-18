@@ -1,14 +1,11 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.listener.FoxListener;
-import net.frozenorb.foxtrot.pvpclasses.PvPClass;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -22,11 +19,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.listener.FoxListener;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.bard.BardEffect;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 
 public class BardClass extends PvPClass implements Listener {
 
