@@ -1,11 +1,12 @@
 package net.frozenorb.foxtrot.persist.maps;
 
-import net.frozenorb.foxtrot.persist.PersistMap;
-import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.bson.types.ObjectId;
+
+import net.frozenorb.foxtrot.persist.PersistMap;
 
 public class ChatSpyMap extends PersistMap<List<ObjectId>> {
 

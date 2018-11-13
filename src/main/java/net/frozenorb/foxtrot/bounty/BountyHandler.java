@@ -23,14 +23,17 @@ import com.google.common.collect.Lists;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.hydrogen.profile.Profile;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.command.Param;
+import net.frozenorb.qlib.economy.FrozenEconomyHandler;
 import net.frozenorb.qlib.redis.RedisCommand;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -44,8 +47,9 @@ public class BountyHandler implements Listener {
     private long lastPositionBroadcastMessage = -1L;
     private long lastSuitablePositionTime = -1L;
     private int secondsUnsuitable = 0;
+    private int reward;
     
-    private static String bountyPrefix = "&6[Bounty] ";
+    private static String bountyPrefix = "&7[&6Bounty&7] ";
     
     public BountyHandler() {
         FrozenCommandHandler.registerClass(this.getClass());
@@ -70,6 +74,12 @@ public class BountyHandler implements Listener {
     }
 
     private void checkBounty() {
+        
+        if (CustomTimerCreateCommand.isSOTWTimer()) {
+            currentBountyPlayer = null;
+            return;
+        }
+        
         Player targetBountyPlayer = currentBountyPlayer == null ? null : Bukkit.getPlayer(currentBountyPlayer);
         
         if ((targetBountyPlayer == null || !targetBountyPlayer.isOnline()) && !pickingNewBounty) {
@@ -94,9 +104,15 @@ public class BountyHandler implements Listener {
     }
 
     private void newBounty() {
+        
+        if (CustomTimerCreateCommand.isSOTWTimer()) {
+            currentBountyPlayer = null;
+            return;
+        }
+        
         this.pickingNewBounty = true;
         
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6[Bounty] &eA &9Bounty &ewill be placed on a random player in &c30 seconds&e."));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] &eA &9Bounty &ewill be placed on a random player in &c30 seconds&e."));
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
             pickNewBounty();
         }, 30 * 20);
@@ -116,6 +132,7 @@ public class BountyHandler implements Listener {
         Player bountyPlayer = suitablePlayers.get(qLib.RANDOM.nextInt(suitablePlayers.size()));
         pickingNewBounty = false;
         set(bountyPlayer);
+        this.reward = qLib.RANDOM.nextInt(3) + 1;
     }
     
     private void checkBroadcast() {
@@ -126,7 +143,8 @@ public class BountyHandler implements Listener {
         }
         
         if (15000 <= System.currentTimeMillis() - lastPositionBroadcastMessage) {
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6[Bounty] " + formatName(currentBountyPlayer) + " &ehas been spotted at &c" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()  + "&e."));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] " + formatName(currentBountyPlayer) + " &ehas been spotted @ &c" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()  + "&e."));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&aKill Reward&7: &f$" + (reward * 250) + ", " + reward + " Bounty Key" + (reward == 1 ? "" : "s")));
             lastPositionBroadcastMessage = System.currentTimeMillis();
         }
     }
@@ -155,11 +173,16 @@ public class BountyHandler implements Listener {
         
         Team teamAt = LandBoard.getInstance().getTeam(player.getLocation());
         
-        if (teamAt != null) {
+        if (teamAt != null && !teamAt.hasDTRBitmask(DTRBitmask.ROAD)) {
             return false;
         }
 
+
         if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+            return false;
+        }
+        
+        if (500 < Math.abs(player.getLocation().getX()) || 500 < Math.abs(player.getLocation().getZ())) {
             return false;
         }
         
@@ -197,12 +220,18 @@ public class BountyHandler implements Listener {
         
         currentBountyPlayer = null;
         
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6[Bounty] &f" + formatName(died.getUniqueId()) + " &ehas been slain by &f" + formatName(killer.getUniqueId()) + "&e."));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] &f" + formatName(died.getUniqueId()) + " &ehas been slain by &f" + formatName(killer.getUniqueId()) + "&e."));
         if (loot == null || loot.isEmpty()) {
             return;
         }
         
         killer.getInventory().addItem(loot.get(qLib.RANDOM.nextInt(loot.size())).clone());
+        
+        for (int i = 0; i < reward; i++) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + killer.getName() + " bounty");
+        }
+
+        FrozenEconomyHandler.deposit(killer.getUniqueId(), reward * 250);
     }
     
     @Command(names = "bounty set", permission = "bounty.set", async = true)
@@ -233,7 +262,7 @@ public class BountyHandler implements Listener {
             return;
         }
         
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Bounty] " + formatName(currentBountyPlayer) + " &ehas been spotted at &c" + player.getLocation().getBlockX() + "," + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()  + "&e."));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] " + formatName(currentBountyPlayer) + " &ehas been spotted at &c" + player.getLocation().getBlockX() + "," + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()  + "&e."));
     }
 
     private static String formatName(UUID uuid) {

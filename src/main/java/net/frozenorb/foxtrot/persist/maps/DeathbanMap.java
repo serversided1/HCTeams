@@ -26,7 +26,7 @@ public class DeathbanMap extends PersistMap<Long> {
 
     @Override
     public Object getMongoValue(Long time) {
-        return (new Date(time));
+        return Long.toString(time);
     }
 
     public boolean isDeathbanned(UUID check) {

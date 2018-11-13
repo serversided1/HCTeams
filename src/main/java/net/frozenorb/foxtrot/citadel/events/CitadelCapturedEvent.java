@@ -1,9 +1,10 @@
 package net.frozenorb.foxtrot.citadel.events;
 
-import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+
+import lombok.Getter;
 
 public class CitadelCapturedEvent extends Event {
 

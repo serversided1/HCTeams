@@ -40,7 +40,7 @@ public class EnderpearlListener implements Listener {
             if (DTRBitmask.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
-                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(16));
+                enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("Staging") ? 1 : 16));
             }
 
             CheatBreakerKey.ENDER_PEARL.send(shooter, enderpearlCooldown.get(shooter.getPlayer().getName()) - System.currentTimeMillis());

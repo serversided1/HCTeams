@@ -17,6 +17,7 @@ import net.frozenorb.foxtrot.events.dtc.DTC;
 import net.frozenorb.foxtrot.events.koth.KOTH;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.listener.GoldenAppleListener;
+import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.BardClass;
 import net.frozenorb.foxtrot.server.ServerHandler;
@@ -45,8 +46,10 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String appleScore = getAppleScore(player);
         
         if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-            scores.add("&4&lKills&7: &c" + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
-            scores.add("&4&lDeaths&7: &c" + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
+            StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player.getUniqueId());
+            
+            scores.add("&4&lKills&7: &f" + stats.getKills());
+            scores.add("&4&lDeaths&7: &f" + stats.getDeaths());
         }
         
         if (spawnTagScore != null) {

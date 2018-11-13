@@ -40,12 +40,14 @@ public class LeaderboardAddCommand {
             }
 
             Foxtrot.getInstance().getMapHandler().getStatsHandler().getLeaderboardHeads().put(skull.getLocation(), place);
+            Foxtrot.getInstance().getMapHandler().getStatsHandler().getObjectives().put(skull.getLocation(), objective);
             Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
             sender.sendMessage(ChatColor.GREEN + "This skull will now display the number " + ChatColor.WHITE + place + ChatColor.GREEN + " player's head.");
         } else {
             Sign sign = (Sign) block.getState();
 
             Foxtrot.getInstance().getMapHandler().getStatsHandler().getLeaderboardSigns().put(sign.getLocation(), place);
+            Foxtrot.getInstance().getMapHandler().getStatsHandler().getObjectives().put(sign.getLocation(), objective);
             Foxtrot.getInstance().getMapHandler().getStatsHandler().updatePhysicalLeaderboards();
             sender.sendMessage(ChatColor.GREEN + "This sign will now display the number " + ChatColor.WHITE + place + ChatColor.GREEN + " player's stats.");
         }

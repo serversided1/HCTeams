@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import net.frozenorb.qlib.serialization.LocationSerializer;
+import net.frozenorb.qlib.util.UUIDUtils;
+
 import org.bukkit.Location;
 
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class Subclaim {
         BasicDBObject dbObject = new BasicDBObject();
 
         dbObject.put("Name", name);
-        dbObject.put("Members", members);
+        dbObject.put("Members", UUIDUtils.uuidsToStrings(members));
         dbObject.put("Location1", LocationSerializer.serialize(loc1));
         dbObject.put("Location2", LocationSerializer.serialize(loc2));
 

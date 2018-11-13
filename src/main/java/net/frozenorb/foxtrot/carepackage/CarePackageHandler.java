@@ -40,6 +40,10 @@ public class CarePackageHandler implements Listener {
     private static List<ItemStack> loot;
     
     public CarePackageHandler() {
+        if (true) {
+            return;
+        }
+        
         FrozenCommandHandler.registerClass(this.getClass());
         this.world = Bukkit.getWorlds().get(0);
         Bukkit.getScheduler().runTaskTimer(Foxtrot.getInstance(), this::spawnCarePackage, 1 * 60 * 20, Bukkit.getServerName().equalsIgnoreCase("Kitmap") ? 15 * 60 * 20 : 60 * 60 * 20);
@@ -56,6 +60,7 @@ public class CarePackageHandler implements Listener {
 
             }), ItemStack[].class));
         } catch (Exception e) {
+            loot = Lists.newArrayList();
             Bukkit.getLogger().info("No care package loot is set up.");
         }
     }
@@ -106,7 +111,7 @@ public class CarePackageHandler implements Listener {
     }
 
     private void removeCarePackage() {
-        if (lastCarePackage.getBlock() != null && lastCarePackage.getBlock().getType() == Material.ENDER_CHEST) {
+        if (lastCarePackage != null && lastCarePackage.getBlock() != null && lastCarePackage.getBlock().getType() == Material.ENDER_CHEST) {
             lastCarePackage.getBlock().setType(Material.AIR);
             lastCarePackage.getBlock().removeMetadata("CarePackage", Foxtrot.getInstance());
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6[Crate] &eThe &dCrate &eat &d" + lastCarePackage.getBlockX() + " " + lastCarePackage.getBlockZ() + " &ehas despawned."));

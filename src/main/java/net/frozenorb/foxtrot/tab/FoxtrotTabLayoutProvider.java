@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -41,6 +42,13 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         TabListMode mode = Foxtrot.getInstance().getTabListModeMap().getTabListMode(player.getUniqueId());
 
         TabLayout layout = TabLayout.create(player);
+        
+        
+        if (Foxtrot.getInstance().getServerHandler().isVeltKitMap() || Foxtrot.getInstance().getMapHandler().isKitMap()) {
+            kitmap(player, layout);
+            return layout;
+        }
+        
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
         String serverName = Foxtrot.getInstance().getServerHandler().getTabServerName();
@@ -383,6 +391,134 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
         */
 
         return layout;
+    }
+    
+    private void kitmap(Player player, TabLayout layout) {
+        boolean velt = Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("Velt");
+        String dominantColor = velt ? "&d" : "&5";
+        
+        if (velt) {
+            layout.set(1, 1, "&d&lKitMap");
+        } else {
+            layout.set(1, 1, "&5&lArcane KitMap");
+        }
+        
+        layout.set(0, 4, dominantColor + "&lMap Info");
+        layout.set(0, 5, "&7Map Kit: P" + Integer.toString(Enchantment.PROTECTION_ENVIRONMENTAL.getMaxLevel()) + " S" + Integer.toString(Enchantment.DAMAGE_ALL.getMaxLevel()));
+        layout.set(0, 6, "&7Faction Size: " + Foxtrot.getInstance().getMapHandler().getTeamSize());
+        layout.set(0, 7, "&7Border: 3000");
+        
+        int y = 8;
+        String titleColor = dominantColor + "&l";
+        String infoColor = "&7";
+        
+        KOTH activeKOTH = null;
+        for (Event event : Foxtrot.getInstance().getEventHandler().getEvents()) {
+            if (!(event instanceof KOTH)) continue;
+            KOTH koth = (KOTH) event;
+            if (koth.isActive() && !koth.isHidden()) {
+                activeKOTH = koth;
+                break;
+            }
+        }
+
+        if (activeKOTH == null) {
+            Date now = new Date();
+
+            String nextKothName = null;
+            Date nextKothDate = null;
+
+            for (Map.Entry<EventScheduledTime, String> entry : Foxtrot.getInstance().getEventHandler().getEventSchedule().entrySet()) {
+                if (entry.getKey().toDate().after(now)) {
+                    if (nextKothDate == null || nextKothDate.getTime() > entry.getKey().toDate().getTime()) {
+                        nextKothName = entry.getValue();
+                        nextKothDate = entry.getKey().toDate();
+                    }
+                }
+            }
+
+            if (nextKothName != null) {
+                layout.set(0, ++y, titleColor + "Next KOTH:");
+                layout.set(0, ++y, infoColor + nextKothName);
+
+                Event event = Foxtrot.getInstance().getEventHandler().getEvent(nextKothName);
+
+                if (event != null && event instanceof KOTH) {
+                    KOTH koth = (KOTH) event;
+                    layout.set(0, ++y, infoColor.toString() + koth.getCapLocation().getBlockX() + ", " + koth.getCapLocation().getBlockY() + ", " + koth.getCapLocation().getBlockZ()); // location
+
+                    int seconds = (int) ((nextKothDate.getTime() - System.currentTimeMillis()) / 1000);
+                    layout.set(0, ++y, titleColor + "Goes active in:");
+
+                    String time = formatIntoDetailedString(seconds)
+                            .replace("minutes", "min").replace("minute", "min")
+                            .replace("seconds", "sec").replace("second", "sec");
+
+                    layout.set(0, ++y, infoColor + time);
+                }
+            }
+        } else {
+            layout.set(0, ++y, titleColor + activeKOTH.getName());
+            layout.set(0, ++y, infoColor + TimeUtils.formatIntoHHMMSS(activeKOTH.getRemainingCapTime()));
+            layout.set(0, ++y, infoColor.toString() + activeKOTH.getCapLocation().getBlockX() + ", " + activeKOTH.getCapLocation().getBlockY() + ", " + activeKOTH.getCapLocation().getBlockZ()); // location
+        }
+        
+        if (velt) {
+            layout.set(1, 2, "&dOnline&7: " + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
+        } else {
+            layout.set(1, 2, "&5Online&7: " + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
+        }
+        
+        layout.set(1, 4, titleColor + "Faction Info");
+        Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
+        if (team != null) {
+            layout.set(1, 5, "&7Name: " + team.getName());
+            if (team.getHQ() != null) {
+                String homeLocation = infoColor.toString() + "Home: " + team.getHQ().getBlockX() + ", " + team.getHQ().getBlockY() + ", " + team.getHQ().getBlockZ();
+                layout.set(1, 6, homeLocation);
+            } else {
+                layout.set(1, 6, infoColor + "Home: Not Set");
+            }
+            
+            layout.set(1, 7, "&7Balance: $" + (int) team.getBalance());
+        } else {
+            layout.set(1, 5, "&7None");
+        }
+        
+        layout.set(2, 4, titleColor + "Player Info");
+        layout.set(2, 5, "&7Kills: " + Foxtrot.getInstance().getKillsMap().getKills(player.getUniqueId()));
+        layout.set(2, 6, "&7Deaths: " + Foxtrot.getInstance().getDeathsMap().getDeaths(player.getUniqueId()));
+        layout.set(2, 7, "&7Balance: $" + (int) Foxtrot.getInstance().getWrappedBalanceMap().getBalance(player.getUniqueId()));
+        
+        layout.set(2, 9, titleColor + "Location");
+        
+        String location;
+
+        Location loc = player.getLocation();
+        Team ownerTeam = LandBoard.getInstance().getTeam(loc);
+
+        if (ownerTeam != null) {
+            location = ownerTeam.getName(player.getPlayer());
+        } else if (!Foxtrot.getInstance().getServerHandler().isWarzone(loc)) {
+            location = ChatColor.GRAY + "The Wilderness";
+        } else if (LandBoard.getInstance().getTeam(loc) != null && LandBoard.getInstance().getTeam(loc).getName().equalsIgnoreCase("citadel")) {
+            location = titleColor + "Citadel";
+        } else {
+            location = ChatColor.RED + "Warzone";
+        }
+
+        layout.set(2, 11, location);
+
+        /* Getting the direction 4 times a second for each player on the server may be intensive.
+        We may want to cache the entire location so it is accessed no more than 1 time per second.
+        FIXME, WIP */
+        String direction = PlayerDirection.getCardinalDirection(player);
+        if (direction != null) {
+            layout.set(2, 10, ChatColor.GRAY + "(" + loc.getBlockX() + ", " + loc.getBlockZ() + ") [" + direction + "]");
+        } else {
+            layout.set(2, 10, ChatColor.GRAY + "(" + loc.getBlockX() + ", " + loc.getBlockZ() + ")");
+        }
+        
     }
 
     public static String formatIntoDetailedString(int secs) {

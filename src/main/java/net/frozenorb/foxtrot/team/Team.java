@@ -88,7 +88,10 @@ public class Team {
     // Not persisted //
     @Getter @Setter private UUID focused;
     @Getter @Setter private long lastRequestReport;
-
+    
+    @Getter @Setter private int bards;
+    @Getter @Setter private int archers;
+    @Getter @Setter private int rogues;
 
     public Team(String name) {
         this.name = name;
@@ -441,7 +444,7 @@ public class Team {
         basePoints += (Math.floor(kills / 5.0D)) * 5;
         basePoints += kothCaptures * 20;
         basePoints += (diamondsMined / 350) * 5;
-        basePoints += citadelsCapped * 60;
+        basePoints += citadelsCapped * 200;
         basePoints = basePoints - (int) ((Math.floor(deaths / 5.0D)) * 10);
 
         this.points = basePoints;
@@ -951,8 +954,7 @@ public class Team {
 
     public BasicDBObject toJSON() {
         BasicDBObject dbObject = new BasicDBObject();
-
-        dbObject.put("_id", getUniqueId());
+        
         dbObject.put("Owner", getOwner() == null ? null : getOwner().toString());
         dbObject.put("CoLeaders", UUIDUtils.uuidsToStrings(getColeaders()));
         dbObject.put("Captains", UUIDUtils.uuidsToStrings(getCaptains()));
@@ -983,12 +985,19 @@ public class Team {
 
         dbObject.put("Claims", claims);
         dbObject.put("Subclaims", subclaims);
+        dbObject.put("Kills", this.kills);
+        dbObject.put("Deaths", this.deaths);
+        dbObject.put("DiamondsMined", this.diamondsMined);
+        dbObject.put("CitadelsCaptured", this.citadelsCapped);
+        dbObject.put("KothCaptures", this.kothCaptures);
+        dbObject.put("Points", this.points);
+        dbObject.put("Lives", this.kills);
 
         return (dbObject);
     }
 
     public BasicDBObject getJSONIdentifier() {
-        return (new BasicDBObject("_id", getUniqueId()));
+        return (new BasicDBObject("_id", getUniqueId().toHexString()));
     }
 
     private Location parseLocation(String[] args) {

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.listener;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
@@ -18,6 +19,7 @@ import com.mongodb.DBCollection;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.serialization.PlayerInventorySerializer;
+import net.frozenorb.qlib.util.PlayerUtils;
 
 public class WebsiteListener implements Listener {
 
@@ -35,11 +37,15 @@ public class WebsiteListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         final BasicDBObject playerDeath = new BasicDBObject();
 
+        playerDeath.put("_id", UUID.randomUUID().toString().substring(0, 7));
+        
         if (event.getEntity().getKiller() != null) {
             playerDeath.append("healthLeft", (int) event.getEntity().getKiller().getHealth());
             playerDeath.append("killerUUID", event.getEntity().getKiller().getUniqueId().toString().replace("-", ""));
             playerDeath.append("killerLastUsername", event.getEntity().getKiller().getName());
             playerDeath.append("killerInventory", PlayerInventorySerializer.getInsertableObject(event.getEntity().getKiller()));
+            playerDeath.append("killerPing", PlayerUtils.getPing(event.getEntity().getKiller()));
+            playerDeath.append("killerHunger", event.getEntity().getKiller().getFoodLevel());
         } else {
             try{
                 playerDeath.append("reason", event.getEntity().getLastDamageCause().getCause().toString());
@@ -50,6 +56,8 @@ public class WebsiteListener implements Listener {
         playerDeath.append("ip", event.getEntity().getAddress().toString().split(":")[0].replace("/", ""));
         playerDeath.append("uuid", event.getEntity().getUniqueId().toString().replace("-", ""));
         playerDeath.append("lastUsername", event.getEntity().getName());
+        playerDeath.append("hunger", event.getEntity().getFoodLevel());
+        playerDeath.append("ping", PlayerUtils.getPing(event.getEntity()));
         playerDeath.append("when", new Date());
 
         new BukkitRunnable() {

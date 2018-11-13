@@ -26,6 +26,7 @@ public class ClientCommandPacketAdaper extends PacketAdapter {
             long unbannedOn = Foxtrot.getInstance().getDeathbanMap().getDeathban(event.getPlayer().getUniqueId());
             long left = unbannedOn - System.currentTimeMillis();
             final String time = TimeUtils.formatIntoDetailedString((int) left / 1000);
+            event.setCancelled(true);
 
             new BukkitRunnable() {
 

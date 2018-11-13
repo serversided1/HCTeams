@@ -58,7 +58,7 @@ public class AntiGlitchListener implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void onVerticalBlockPlaceGlitch(BlockPlaceEvent event) {
-        if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null && event.isCancelled()) {
+        if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) != null && event.isCancelled() && !event.getPlayer().hasMetadata("ImmuneFromGlitchCheck")) {
             event.getPlayer().teleport(event.getPlayer().getLocation());
             event.getPlayer().setNoDamageTicks(0);
         }
@@ -153,7 +153,7 @@ public class AntiGlitchListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onVehicleEnter(VehicleEnterEvent event) {
         
-        if (event.getVehicle() instanceof Horse) {
+        if (event.getVehicle() instanceof Horse || event.getVehicle() instanceof Minecart) {
             return;
         }
         

@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,10 +23,13 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.koth.KOTH;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
@@ -59,6 +63,28 @@ public class  SpawnListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in spawn!");
         } else if (Foxtrot.getInstance().getServerHandler().isSpawnBufferZone(event.getBlock().getLocation()) || Foxtrot.getInstance().getServerHandler().isNetherBufferZone(event.getBlock().getLocation())) {
             if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap())) {
+                for (Event playableEvent : Foxtrot.getInstance().getEventHandler().getEvents()) {
+                    if (!playableEvent.isActive() || !(playableEvent instanceof KOTH)) {
+                        continue;
+                    }
+                    
+                    KOTH koth = (KOTH) playableEvent;
+                    
+                    if (koth.onCap(event.getBlockPlaced().getLocation())) {
+                        event.setCancelled(true);
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "You can't place web on cap!");
+                        event.getPlayer().setItemInHand(null);
+                        
+                        event.getPlayer().setMetadata("ImmuneFromGlitchCheck", new FixedMetadataValue(Foxtrot.getInstance(), new Object()));
+                        
+                        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
+                            event.getPlayer().removeMetadata("ImmuneFromGlitchCheck", Foxtrot.getInstance());
+                        });
+                        
+                        return;
+                    }
+                }
+                
                 new BukkitRunnable() {
 
                     @Override

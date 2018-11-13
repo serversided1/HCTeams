@@ -1,15 +1,12 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
-import net.frozenorb.foxtrot.pvpclasses.PvPClass;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.nametag.FrozenNametagHandler;
-import net.frozenorb.qlib.util.TimeUtils;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -27,15 +24,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
 import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.util.TimeUtils;
 
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {

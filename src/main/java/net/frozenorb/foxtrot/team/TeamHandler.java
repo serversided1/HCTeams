@@ -124,7 +124,7 @@ public class TeamHandler {
                 BasicDBObject player = new BasicDBObject("_id", playerUUID.toString().replace("-", ""));
                 
                 if (team != null) {
-                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId())));
+                    playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", team.getUniqueId().toHexString())));
                 } else {
                     playersCollection.update(player, new BasicDBObject("$set", new BasicDBObject("Team", null)));
                 }

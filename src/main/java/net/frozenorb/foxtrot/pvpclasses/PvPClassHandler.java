@@ -82,6 +82,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
 
                         player.sendMessage(ChatColor.AQUA + "Class: " + ChatColor.BOLD + pvpClass.getName() + ChatColor.GRAY + " --> " + ChatColor.GREEN + "Enabled!");
                         player.sendMessage(ChatColor.AQUA + "Class Info: " + ChatColor.GREEN + pvpClass.getSiteLink());
+                        break;
                     }
                 }
             }
@@ -98,7 +99,6 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                 Bukkit.getPluginManager().callEvent(new BardRestoreEvent(player, id.getValue()));
                 if (id.getValue().getTime() < System.currentTimeMillis() && !id.getValue().isPerm()) {
                     if (player.hasPotionEffect(id.getValue().getPotionEffect().getType())) {
-                        Bukkit.getLogger().info("player already has potion effect.");
                         player.getActivePotionEffects().forEach(potion -> {
                             PotionEffect restore = id.getValue().getPotionEffect();
                             if (potion.getType() == restore.getType() && potion.getDuration() < restore.getDuration() && potion.getAmplifier() <= restore.getAmplifier()) {
@@ -107,10 +107,7 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
                         });
                     }
                     
-                    Bukkit.getLogger().info(player.getName() + " has speed? " + Boolean.valueOf(player.hasPotionEffect(PotionEffectType.SPEED)));
-                    
                     if (player.addPotionEffect(id.getValue().getPotionEffect(), true)) {
-                        Bukkit.getLogger().info("restoring potion for player: " + player.getName());
                         Bukkit.getLogger().info(id.getValue().getPotionEffect().getType() + ", " + id.getValue().getPotionEffect().getDuration() + ", " + id.getValue().getPotionEffect().getAmplifier());
                         idIterator.remove();
                     }

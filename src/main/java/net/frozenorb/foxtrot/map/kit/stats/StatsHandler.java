@@ -29,6 +29,7 @@ import com.mongodb.util.JSON;
 
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand.StatsObjective;
 import net.frozenorb.foxtrot.team.Team;
@@ -199,17 +200,19 @@ public class StatsHandler implements Listener {
         UUID newSecondPlace = get(StatsObjective.KILLS, 2).getOwner();
         UUID newThirdPlace = get(StatsObjective.KILLS, 3).getOwner();
         
-        if (firstUpdateComplete) {
-            if (newFirstPlace != oldFirstPlace) {
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newFirstPlace) + "&f has surpassed &6" + UUIDUtils.name(oldFirstPlace) + "&f for &6#1&f in kills!"));
-            }
+        if (!CustomTimerCreateCommand.isSOTWTimer()) {
+            if (firstUpdateComplete) {
+                if (newFirstPlace != oldFirstPlace) {
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newFirstPlace) + "&f has surpassed &6" + UUIDUtils.name(oldFirstPlace) + "&f for &6#1&f in kills!"));
+                }
 
-            if (newSecondPlace != oldSecondPlace) {
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newSecondPlace) + "&f has surpassed &6" + UUIDUtils.name(oldSecondPlace) + "&f for &6#2&f in kills!"));
-            }
-            
-            if (newThirdPlace != oldThirdPlace) {
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newThirdPlace) + "&f has surpassed &6" + UUIDUtils.name(oldThirdPlace) + "&f for &6#3&f in kills!"));
+                if (newSecondPlace != oldSecondPlace) {
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newSecondPlace) + "&f has surpassed &6" + UUIDUtils.name(oldSecondPlace) + "&f for &6#2&f in kills!"));
+                }
+                
+                if (newThirdPlace != oldThirdPlace) {
+                    Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6" + UUIDUtils.name(newThirdPlace) + "&f has surpassed &6" + UUIDUtils.name(oldThirdPlace) + "&f for &6#3&f in kills!"));
+                }
             }
         }
         
@@ -293,14 +296,14 @@ public class StatsHandler implements Listener {
     }
 
     private StatsEntry get(StatsObjective objective, int place) {
-        Map<StatsEntry, Integer> base = Maps.newHashMap();
+        Map<StatsEntry, Number> base = Maps.newHashMap();
 
         for (StatsEntry entry : stats.values()) {
             base.put(entry, entry.get(objective));
         }
 
-        TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
-            if (first.get(objective) >= second.get(objective)) {
+        TreeMap<StatsEntry, Number> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
+            if (first.get(objective).doubleValue() >= second.get(objective).doubleValue()) {
                 return -1;
             }
             return 1;
@@ -311,7 +314,12 @@ public class StatsHandler implements Listener {
         Map<StatsEntry, String> leaderboards = Maps.newLinkedHashMap();
 
         int index = 0;
-        for (Map.Entry<StatsEntry, Integer> entry : ordered.entrySet()) {
+        for (Map.Entry<StatsEntry, Number> entry : ordered.entrySet()) {
+            
+            if (entry.getKey().getDeaths() < 10 && objective == StatsObjective.KD) {
+                continue;
+            }
+            
             leaderboards.put(entry.getKey(), entry.getValue() + "");
 
             index++;
@@ -343,14 +351,14 @@ public class StatsHandler implements Listener {
 
     public Map<StatsEntry, String> getLeaderboards(StatsTopCommand.StatsObjective objective, int range) {
         if (objective != StatsTopCommand.StatsObjective.KD) {
-            Map<StatsEntry, Integer> base = Maps.newHashMap();
+            Map<StatsEntry, Number> base = Maps.newHashMap();
 
             for (StatsEntry entry : stats.values()) {
                 base.put(entry, entry.get(objective));
             }
 
-            TreeMap<StatsEntry, Integer> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
-                if (first.get(objective) >= second.get(objective)) {
+            TreeMap<StatsEntry, Number> ordered = new TreeMap<>((Comparator<StatsEntry>) (first, second) -> {
+                if (first.get(objective).doubleValue() >= second.get(objective).doubleValue()) {
                     return -1;
                 }
 
@@ -361,7 +369,7 @@ public class StatsHandler implements Listener {
             Map<StatsEntry, String> leaderboards = Maps.newLinkedHashMap();
 
             int index = 0;
-            for (Map.Entry<StatsEntry, Integer> entry : ordered.entrySet()) {
+            for (Map.Entry<StatsEntry, Number> entry : ordered.entrySet()) {
                 leaderboards.put(entry.getKey(), entry.getValue() + "");
 
                 index++;

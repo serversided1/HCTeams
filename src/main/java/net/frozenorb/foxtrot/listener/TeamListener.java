@@ -2,6 +2,9 @@ package net.frozenorb.foxtrot.listener;
 
 import com.google.common.collect.ImmutableMap;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.cavern.CavernHandler;
+import net.frozenorb.foxtrot.events.Event;
+import net.frozenorb.foxtrot.events.koth.KOTH;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
@@ -31,6 +34,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
@@ -134,6 +138,27 @@ public class TeamListener implements Listener {
 
         if (!team.isMember(event.getPlayer().getUniqueId())) {
             if (!DTRBitmask.SAFE_ZONE.appliesAt(event.getBlock().getLocation()) && event.getItemInHand() != null && event.getItemInHand().getType() == Material.WEB && (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap())) {
+                for (Event playableEvent : Foxtrot.getInstance().getEventHandler().getEvents()) {
+                    if (!playableEvent.isActive() || !(playableEvent instanceof KOTH)) {
+                        continue;
+                    }
+                    
+                    KOTH koth = (KOTH) playableEvent;
+                    
+                    if (koth.onCap(event.getBlockPlaced().getLocation())) {
+                        event.setCancelled(true);
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "You can't place web on cap!");
+                        event.getPlayer().setItemInHand(null);
+                        event.getPlayer().setMetadata("ImmuneFromGlitchCheck", new FixedMetadataValue(Foxtrot.getInstance(), new Object()));
+                        
+                        Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
+                            event.getPlayer().removeMetadata("ImmuneFromGlitchCheck", Foxtrot.getInstance());
+                        });
+                        
+                        return;
+                    }
+                }
+
                 new BukkitRunnable() {
 
                     @Override
@@ -185,7 +210,10 @@ public class TeamListener implements Listener {
                 return;
             }
 
-            event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+            if (!team.getName().equals(CavernHandler.getCavernTeamName())) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "You cannot build in " + team.getName(event.getPlayer()) + ChatColor.YELLOW + "'s territory!");
+            }
+            
             event.setCancelled(true);
 
             if (!FoxListener.ATTACK_DISABLING_BLOCKS.contains(event.getBlock().getType())) {

@@ -1,12 +1,17 @@
 package net.frozenorb.foxtrot.persist;
 
-import com.mongodb.DBCollection;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.qlib.qLib;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.qlib.qLib;
 
 public class RedisSaveTask extends BukkitRunnable {
 
@@ -28,6 +33,12 @@ public class RedisSaveTask extends BukkitRunnable {
 
                     redis.set("fox_teams." + team.getName().toLowerCase(), team.saveString(true));
                     teamsCollection.update(team.getJSONIdentifier(), team.toJSON(), true, false);
+                }
+                
+                if (forceAll) {
+                    for (UUID member : team.getMembers()) {
+                        Foxtrot.getInstance().getTeamHandler().setTeam(member, team, true);
+                    }
                 }
             }
 

@@ -57,14 +57,14 @@ public class StatsEntry {
         return (double) getKills() / (double) getDeaths();
     }
 
-    public int get(StatsTopCommand.StatsObjective objective) {
+    public Number get(StatsTopCommand.StatsObjective objective) {
         switch (objective) {
             case KILLS:
                 return getKills();
             case DEATHS:
                 return getDeaths();
             case KD:
-                return 0;
+                return getKD();
             case HIGHEST_KILLSTREAK:
                 return getHighestKillstreak();
             default:

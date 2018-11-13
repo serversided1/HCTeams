@@ -83,7 +83,7 @@ public class CombatLoggerListener implements Listener {
             if (isKitMap) {
                 Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(metadata.playerUUID).addDeath();
             }
-            Foxtrot.getInstance().getDeathsMap().setDeaths(metadata.playerUUID, Foxtrot.getInstance().getDeathsMap().getDeaths(metadata.playerUUID) + 1);
+            
 
             // store the death amount -- we'll use this later on.
             int victimKills = Foxtrot.getInstance().getKillsMap().getKills(event.getEntity().getUniqueId());
@@ -526,6 +526,7 @@ public class CombatLoggerListener implements Listener {
         playerDeath.append("uuid", killed.getUniqueId().toString().replace("-", ""));
         playerDeath.append("player", killed.getName());
         playerDeath.append("when", new Date());
+        playerDeath.put("_id", UUID.randomUUID().toString().replaceAll("-", ""));
 
         new BukkitRunnable() {
 

@@ -156,7 +156,7 @@ public class KOTH implements Event {
         if (currentCapper != null) {
             Player capper = Foxtrot.getInstance().getServer().getPlayerExact(currentCapper);
 
-            if (capper == null || !onCap(capper) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasMetadata("invisible")) {
+            if (capper == null || !onCap(capper.getLocation()) || capper.isDead() || capper.getGameMode() != GameMode.SURVIVAL || capper.hasMetadata("invisible")) {
                 resetCapTime();
             } else {
                 if (remainingCapTime % 60 == 0 && remainingCapTime > 1 && !isHidden()) {
@@ -187,7 +187,7 @@ public class KOTH implements Event {
             List<Player> onCap = new ArrayList<>();
 
             for (Player player : Foxtrot.getInstance().getServer().getOnlinePlayers()) {
-                if (onCap(player) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL && !player.hasMetadata("invisible") && !Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
+                if (onCap(player.getLocation()) && !player.isDead() && player.getGameMode() == GameMode.SURVIVAL && !player.hasMetadata("invisible") && !Foxtrot.getInstance().getPvPTimerMap().hasTimer(player.getUniqueId())) {
                     onCap.add(player);
                 }
             }
@@ -200,14 +200,14 @@ public class KOTH implements Event {
         }
     }
 
-    public boolean onCap(Player player) {
-        if (!player.getWorld().getName().equalsIgnoreCase(world)) {
+    public boolean onCap(Location location) {
+        if (!location.getWorld().getName().equalsIgnoreCase(world)) {
             return (false);
         }
 
-        int xDistance = Math.abs(player.getLocation().getBlockX() - capLocation.getBlockX());
-        int yDistance = Math.abs(player.getLocation().getBlockY() - capLocation.getBlockY());
-        int zDistance = Math.abs(player.getLocation().getBlockZ() - capLocation.getBlockZ());
+        int xDistance = Math.abs(location.getBlockX() - capLocation.getBlockX());
+        int yDistance = Math.abs(location.getBlockY() - capLocation.getBlockY());
+        int zDistance = Math.abs(location.getBlockZ() - capLocation.getBlockZ());
 
         return xDistance <= capDistance && yDistance <= 5 && zDistance <= capDistance;
     }

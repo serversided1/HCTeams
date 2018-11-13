@@ -13,16 +13,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 @Getter
+@Setter
 @RequiredArgsConstructor
 public class Kit {
 
     private final String name;
 
-    @Setter private ItemStack icon;
+    private ItemStack icon;
 
     private ItemStack[] inventoryContents;
     private ItemStack[] armorContents;
@@ -37,6 +39,14 @@ public class Kit {
     public void update(PlayerInventory inventory) {
         inventoryContents = inventory.getContents();
         armorContents = inventory.getArmorContents();
+    }
+    
+    public Kit clone() {
+        Kit kit = new Kit(this.getName());
+        kit.setIcon(this.icon);
+        kit.setArmorContents(Arrays.copyOf(this.armorContents, this.armorContents.length));
+        kit.setInventoryContents(Arrays.copyOf(this.inventoryContents, this.inventoryContents.length));
+        return kit;
     }
 
     public static class Type implements ParameterType<Kit> {

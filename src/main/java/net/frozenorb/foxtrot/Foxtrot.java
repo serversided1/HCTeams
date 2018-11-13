@@ -19,6 +19,7 @@ import net.frozenorb.foxtrot.bounty.BountyHandler;
 import net.frozenorb.foxtrot.carepackage.CarePackageHandler;
 import net.frozenorb.foxtrot.cavern.CavernHandler;
 import net.frozenorb.foxtrot.cavern.listeners.CavernListener;
+import net.frozenorb.foxtrot.challenges.ChallengeHandler;
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
@@ -60,7 +61,6 @@ import net.frozenorb.foxtrot.listener.TeamListener;
 import net.frozenorb.foxtrot.listener.TeamRequestSpamListener;
 import net.frozenorb.foxtrot.listener.WebsiteListener;
 import net.frozenorb.foxtrot.map.MapHandler;
-import net.frozenorb.foxtrot.nametag.FoxtrotNametagProvider;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
 import net.frozenorb.foxtrot.persist.maps.ChatModeMap;
@@ -102,7 +102,6 @@ import net.frozenorb.foxtrot.persist.maps.statistics.SplashPotionsUsedMap;
 import net.frozenorb.foxtrot.protocol.ClientCommandPacketAdaper;
 import net.frozenorb.foxtrot.protocol.SignGUIPacketAdaper;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.scoreboard.FoxtrotScoreboardConfiguration;
 import net.frozenorb.foxtrot.server.ServerHandler;
 import net.frozenorb.foxtrot.tab.FoxtrotTabLayoutProvider;
 import net.frozenorb.foxtrot.team.TeamHandler;
@@ -113,9 +112,6 @@ import net.frozenorb.foxtrot.team.dtr.DTRHandler;
 import net.frozenorb.foxtrot.util.RegenUtils;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
-import net.frozenorb.qlib.economy.FrozenEconomyHandler;
-import net.frozenorb.qlib.nametag.FrozenNametagHandler;
-import net.frozenorb.qlib.scoreboard.FrozenScoreboardHandler;
 import net.frozenorb.qlib.tab.FrozenTabHandler;
 
 public class Foxtrot extends JavaPlugin {
@@ -136,6 +132,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private ConquestHandler conquestHandler;
     @Getter private CavernHandler cavernHandler;
     @Getter private GlowHandler glowHandler;
+    @Getter private ChallengeHandler challengeHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -247,6 +244,10 @@ public class Foxtrot extends JavaPlugin {
         }
 
         RegenUtils.resetAll();
+        
+        if (challengeHandler != null) {
+            challengeHandler.save();
+        }
 
         qLib.getInstance().runRedisCommand((jedis) -> {
             jedis.save();
@@ -269,6 +270,10 @@ public class Foxtrot extends JavaPlugin {
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
         cavernHandler = new CavernHandler();
+        
+        if (mapHandler.isKitMap() || serverHandler.isVeltKitMap()) {
+            challengeHandler = new ChallengeHandler();
+        }
         
         FrozenCommandHandler.registerAll(this);
 

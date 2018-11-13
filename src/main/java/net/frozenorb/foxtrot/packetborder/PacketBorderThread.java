@@ -64,6 +64,7 @@ public class PacketBorderThread extends Thread {
             boolean isBounty = player.getUniqueId().equals(BountyHandler.getCurrentBountyPlayer());
             
             if (!tagged && !hasPvPTimer && !isBounty) {
+                clearPlayer(player);
                 return;
             }
 
