@@ -68,6 +68,7 @@ public class ChatHandler {
             Foxtrot.getInstance().getLogger().warning("Saved " + loaded + " custom chat prefix" + (loaded == 1 ? "" : "es") + " in " + timeElapsed + "ms");
         } catch (Exception e) {
             Foxtrot.getInstance().getLogger().warning("Failed to save custom chat prefixes: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

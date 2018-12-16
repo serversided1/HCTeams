@@ -173,7 +173,7 @@ public class KitMapListener implements Listener {
         }
         
         Team team = LandBoard.getInstance().getTeam(player.getLocation());
-        if (team != null && team.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
+        if (team == null || !team.hasDTRBitmask(DTRBitmask.SAFE_ZONE)) {
             player.sendMessage(ChatColor.RED + "You can only edit a kit from inside spawn!");
             return;
         }
