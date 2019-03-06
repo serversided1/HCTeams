@@ -115,16 +115,16 @@ public class DamageListener implements Listener {
                                 killstreak.apply(killer);
                                 
                                 Bukkit.broadcastMessage(killer.getDisplayName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
-                            }
-                            
-                            List<PersistentKillstreak> persistent = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getPersistentKillstreaks(killer, killerStats.getKillstreak());
-                            
-                            for (PersistentKillstreak persistentStreak : persistent) {
-                                if (persistentStreak.matchesExactly(killerStats.getKillstreak())) {
-                                    Bukkit.broadcastMessage(killer.getDisguisedName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+
+                                List<PersistentKillstreak> persistent = Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getPersistentKillstreaks(killer, killerStats.getKillstreak());
+
+                                for (PersistentKillstreak persistentStreak : persistent) {
+                                    if (persistentStreak.matchesExactly(killerStats.getKillstreak())) {
+                                        Bukkit.broadcastMessage(killer.getDisguisedName() + ChatColor.YELLOW + " has gotten the " + ChatColor.RED + killstreak.getName() + ChatColor.YELLOW + " killstreak!");
+                                    }
+
+                                    persistentStreak.apply(killer);
                                 }
-                                
-                                persistentStreak.apply(killer);
                             }
                             
                             Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
