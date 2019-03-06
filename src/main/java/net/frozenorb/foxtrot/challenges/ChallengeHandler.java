@@ -3,11 +3,15 @@ package net.frozenorb.foxtrot.challenges;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Getter;
+import net.frozenorb.foxtrot.challenges.impl.KillBasedChallenge;
+import net.frozenorb.foxtrot.challenges.impl.KillKitBasedChallenge;
+import net.frozenorb.foxtrot.challenges.impl.util.KitBasedChallengeData;
+import net.frozenorb.foxtrot.challenges.menu.ChallengesMenu;
 import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -30,38 +34,33 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
-import net.frozenorb.qlib.redis.RedisCommand;
 import net.frozenorb.qlib.util.ClassUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
 import net.md_5.bungee.api.ChatColor;
-import redis.clients.jedis.Jedis;
+import org.bukkit.inventory.ItemStack;
 
 public class ChallengeHandler implements Listener {
+
     private static Map<String, Challenge> allChallenges = Maps.newHashMap();
     private static Map<String, KillBasedChallenge> killBasedChallenges = Maps.newHashMap();
+    private static UpdateOptions UPSERT = new UpdateOptions().upsert(true);
     
     private Map<UUID, Map<Challenge, Integer>> challengeCounts = Maps.newConcurrentMap();
     private Map<UUID, Long> pendingTokens = Maps.newConcurrentMap();
-    
-    private Challenge firstChallenge = null;
-    private Challenge secondChallenge = null;
-    
-    private int lastDateAsInt = 0;
-    
-    private static UpdateOptions UPSERT = new UpdateOptions().upsert(true);
-    
-    private static ChallengeHandler instance;
+    @Getter
+    private List<Challenge> dailyChallenges = new ArrayList<>();
+    private int lastDateAsInt;
     
     public ChallengeHandler() {
-        instance = this;
         DBCollection mongoCollection = Foxtrot.getInstance().getMongoPool().getDB(Foxtrot.MONGO_DB_NAME).getCollection("challengeProgress");
-        
+
         mongoCollection.createIndex(new BasicDBObject("user", 1));
         mongoCollection.createIndex(new BasicDBObject("date", 1));
         mongoCollection.createIndex(new BasicDBObject("lastUsername", 1));
         
         Bukkit.getLogger().info("Creating indexes done for challenges.");
-        
+
+        // Dynamically load challenges
         ClassUtils.getClassesInPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.challenges.challenges").forEach(clazz -> {
             if (KillBasedChallenge.class.isAssignableFrom(clazz)) {
                 try {
@@ -82,19 +81,48 @@ public class ChallengeHandler implements Listener {
                 }
             }
         });
-        
-        lastDateAsInt = qLib.getInstance().runRedisCommand(new RedisCommand<Integer>() {
-            
-            @Override
-            public Integer execute(Jedis redis) {
-                int currentDate = getDateAsInt();
-                if (redis.exists("lastChallengeUpdateTime")) {
-                    currentDate = Integer.valueOf(redis.get("lastChallengeUpdateTime"));
+
+        // Programmatically load challenges with a repetitive objective
+        final KitBasedChallengeData[] challengeDataArray = new KitBasedChallengeData[]{
+                new KitBasedChallengeData("Diamond", new ItemStack[]{
+                        new ItemStack(Material.DIAMOND),
+                        new ItemStack(Material.DIAMOND_BOOTS),
+                        new ItemStack(Material.DIAMOND_HELMET),
+                        new ItemStack(Material.DIAMOND_CHESTPLATE),
+                        new ItemStack(Material.DIAMOND_SWORD)
+                }, new int[]{ 3, 5, 10, 25 }, new String[]{ "Killer", "Slayer", "Butcher", "Hunter" }),
+                new KitBasedChallengeData("Archer", new ItemStack[]{
+                        new ItemStack(Material.SUGAR),
+                        new ItemStack(Material.LEATHER_BOOTS),
+                        new ItemStack(Material.LEATHER_HELMET),
+                        new ItemStack(Material.LEATHER_CHESTPLATE),
+                        new ItemStack(Material.BOW)
+                }, new int[]{ 3, 5, 10, 25 }, new String[]{ "Killer", "Slayer", "Butcher", "Hunter" }),
+                new KitBasedChallengeData("Bard", new ItemStack[]{
+                        new ItemStack(Material.GOLD_INGOT),
+                        new ItemStack(Material.GOLD_BOOTS),
+                        new ItemStack(Material.GOLD_HELMET),
+                        new ItemStack(Material.GOLD_CHESTPLATE),
+                        new ItemStack(Material.BLAZE_POWDER)
+                }, new int[]{ 3, 5, 10, 25 }, new String[]{ "Killer", "Slayer", "Butcher", "Hunter" })
+        };
+
+        for (KitBasedChallengeData victim : challengeDataArray) {
+            for (KitBasedChallengeData killer : challengeDataArray) {
+                for (int i = 0; i < victim.getCounts().length; i++) {
+                    registerKillBasedChallenge(new KillKitBasedChallenge(victim.getKitName() + " " + victim.getAggressionNames()[i], victim.getIcons()[i], victim.getCounts()[i], killer.getKitName(), victim.getKitName()));
                 }
-                
-                return currentDate;
             }
-            
+        }
+
+        lastDateAsInt = qLib.getInstance().runRedisCommand(redis -> {
+            int currentDate = getDateAsInt();
+
+            if (redis.exists("daily-challenges-updated")) {
+                currentDate = Integer.valueOf(redis.get("daily-challenges-updated"));
+            }
+
+            return currentDate;
         });
         
         loadDailyChallenges();
@@ -136,7 +164,6 @@ public class ChallengeHandler implements Listener {
                     pendingTokens.put(uuid, System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
                 }
             }
-
         },0, 20L);
         
         Bukkit.getScheduler().runTaskTimerAsynchronously(Foxtrot.getInstance(), () -> {
@@ -145,23 +172,18 @@ public class ChallengeHandler implements Listener {
             
             if (oldDate != newDate) {
                 challengeCounts.clear();
-                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&cChallenge progress has been reset! Check out the two new daily challenges."));
-                
-                List<Challenge> challenges = Lists.newArrayList(allChallenges.values());
-                
-                firstChallenge = challenges.get(qLib.RANDOM.nextInt(challenges.size()));
-                secondChallenge = challenges.get(qLib.RANDOM.nextInt(challenges.size()));
-                
-                Bukkit.getLogger().info("Picked \"" + firstChallenge.getName() + "\" as first challenge.");
-                Bukkit.getLogger().info("Picked \"" + secondChallenge.getName() + "\" as second challenge.");
-                
+                pickNewChallenges();
+
                 lastDateAsInt = newDate;
+
                 saveLastDate();
-                
                 saveDailyChallenges();
+
+                Bukkit.broadcastMessage(ChatColor.RED + "Challenge progress has been reset! Check out the two new daily challenges.");
             }
             
             long start = System.currentTimeMillis();
+
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 saveProgress(onlinePlayer, false);
             }
@@ -177,56 +199,65 @@ public class ChallengeHandler implements Listener {
         saveDailyChallenges();
         saveLastDate();
     }
+
+    private void registerKillBasedChallenge(KillBasedChallenge challenge) {
+        killBasedChallenges.put(challenge.getName(), challenge);
+        allChallenges.put(challenge.getName(), challenge);
+    }
     
     private void loadDailyChallenges() {
-        qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
+        qLib.getInstance().runRedisCommand(redis -> {
+            for (int i = 0; i < 3; i++) {
+                if (redis.exists("daily-challenges:" + i)) {
+                    Challenge challenge = allChallenges.get(redis.get("daily-challenges:" + i));
 
-            @Override
-            public Object execute(Jedis redis) {
-                if (redis.exists("firstDailyChallenge")) {
-                    firstChallenge = allChallenges.get(redis.get("firstDailyChallenge"));
-                    secondChallenge = allChallenges.get(redis.get("secondDailyChallenge"));
-                    
-                    Bukkit.getLogger().info("Loaded \"" + firstChallenge.getName() + "\" as first challenge.");
-                    Bukkit.getLogger().info("Loaded \"" + secondChallenge.getName() + "\" as second challenge.");
-                    
-                    if (firstChallenge == secondChallenge) {
-                        Bukkit.getLogger().info("Both challenges are the same. Picking new challenges.");
-                        pickNewChallenges();
+                    if (challenge != null) {
+                        dailyChallenges.add(challenge);
                     }
-                } else {
-                    pickNewChallenges();
                 }
-                
-                return null;
             }
-            
+
+            if (dailyChallenges.size() < 3) {
+                pickNewChallenges();
+            }
+
+            return null;
         });
     }
     
     private void pickNewChallenges() {
-        List<Challenge> challenges = Lists.newArrayList(allChallenges.values());
-        
-        firstChallenge = challenges.get(qLib.RANDOM.nextInt(challenges.size()));
-        
-        challenges.remove(firstChallenge);
-        
-        secondChallenge = challenges.get(qLib.RANDOM.nextInt(challenges.size()));
-        
-        Bukkit.getLogger().info("Picked \"" + firstChallenge.getName() + "\" as first challenge.");
-        Bukkit.getLogger().info("Picked \"" + secondChallenge.getName() + "\" as second challenge.");
+        dailyChallenges.clear();
+
+        List<Challenge> selectedDailyChallenges = new ArrayList<>();
+        List<Challenge> allChallenges = Lists.newArrayList(ChallengeHandler.allChallenges.values());
+
+        // Get 3 daily challenges or add all if there are less than 3 challenges
+        if (allChallenges.size() > 3) {
+            while (selectedDailyChallenges.size() < 3) {
+                Challenge random = allChallenges.get(qLib.RANDOM.nextInt(allChallenges.size()));
+
+                if (!selectedDailyChallenges.contains(random)) {
+                    selectedDailyChallenges.add(random);
+                }
+            }
+        } else {
+            selectedDailyChallenges.addAll(allChallenges);
+        }
+
+        dailyChallenges = selectedDailyChallenges;
+
+        for (Challenge challenge : selectedDailyChallenges) {
+            System.out.println("Selected challenge `" + challenge.getName() + "`");
+        }
     }
     
     private void saveDailyChallenges() {
-        qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
-
-            @Override
-            public Object execute(Jedis redis) {
-                redis.set("firstDailyChallenge", firstChallenge.getName());
-                redis.set("secondDailyChallenge", secondChallenge.getName());
-                return null;
+        qLib.getInstance().runRedisCommand(redis -> {
+            for (int i = 0; i < 3; i++) {
+                redis.set("daily-challenges:" + i, dailyChallenges.get(i).getName());
             }
-            
+
+            return null;
         });
     }
 
@@ -237,30 +268,25 @@ public class ChallengeHandler implements Listener {
 
     @Command(names = {"challenge progress", "challenges"}, permission = "")
     public static void progress(Player sender) {
-        sender.sendMessage(ChatColor.GREEN + "Today's daily challenges: " + instance.firstChallenge.getName() + " and " + instance.secondChallenge.getName());
-        sender.sendMessage(ChatColor.GREEN + "Your progressions:");
-        sender.sendMessage(ChatColor.RED + instance.firstChallenge.getName() + ": " + instance.getProgress(sender, instance.firstChallenge) + "/" + instance.firstChallenge.getCountToQualify());
-        sender.sendMessage(ChatColor.RED + instance.secondChallenge.getName() + ": " + instance.getProgress(sender, instance.secondChallenge) + "/" + instance.secondChallenge.getCountToQualify());
+        new ChallengesMenu().openMenu(sender);
+//        sender.sendMessage(ChatColor.GREEN + "Today's daily challenges: " + instance.firstChallenge.getName() + " and " + instance.secondChallenge.getName());
+//        sender.sendMessage(ChatColor.GREEN + "Your progressions:");
+//        sender.sendMessage(ChatColor.RED + instance.firstChallenge.getName() + ": " + instance.getProgress(sender, instance.firstChallenge) + "/" + instance.firstChallenge.getCountToQualify());
+//        sender.sendMessage(ChatColor.RED + instance.secondChallenge.getName() + ": " + instance.getProgress(sender, instance.secondChallenge) + "/" + instance.secondChallenge.getCountToQualify());
     }
     
     @Command(names = {"challenge picknew"}, permission = "op")
     public static void newchallenges(CommandSender sender) {
-        instance.pickNewChallenges();
-        instance.saveDailyChallenges();
-        
-        sender.sendMessage(ChatColor.GREEN + "Picked \"" + instance.firstChallenge.getName() + "\" as first challenge.");
-        sender.sendMessage(ChatColor.GREEN + "Picked \"" + instance.secondChallenge.getName() + "\" as second challenge.");
+        Foxtrot.getInstance().getChallengeHandler().pickNewChallenges();
+        Foxtrot.getInstance().getChallengeHandler().saveDailyChallenges();
+
+        sender.sendMessage(ChatColor.GREEN + "The challenges have been refreshed!");
     }
         
     public void saveLastDate() {
-        qLib.getInstance().runRedisCommand(new RedisCommand<Object>() {
-            
-            @Override
-            public Object execute(Jedis redis) {
-                redis.set("lastChallengeUpdateTime", Integer.toString(lastDateAsInt));
-                return null;
-            }
-            
+        qLib.getInstance().runRedisCommand(redis -> {
+            redis.set("daily-challenges-updated", Integer.toString(lastDateAsInt));
+            return null;
         });
     }
     
@@ -367,10 +393,10 @@ public class ChallengeHandler implements Listener {
     }
     
     private boolean isActive(Player player, Challenge challenge) {
-        return (firstChallenge == challenge || secondChallenge == challenge) && getProgress(player, challenge) < challenge.getCountToQualify();
+        return dailyChallenges.contains(challenge) && getProgress(player, challenge) < challenge.getCountToQualify();
     }
     
-    private int getProgress(Player player, Challenge challenge) {
+    public int getProgress(Player player, Challenge challenge) {
         if (!challengeCounts.containsKey(player.getUniqueId()) || !challengeCounts.get(player.getUniqueId()).containsKey(challenge)) {
             return 0;
         }
@@ -418,16 +444,23 @@ public class ChallengeHandler implements Listener {
         }
     }
 
-    private boolean hasCompletedBothChallenges(Player player) {
-        return firstChallenge.getCountToQualify() == getProgress(player, firstChallenge) && secondChallenge.getCountToQualify() == getProgress(player, secondChallenge);
+    private boolean hasCompletedAllChallenges(Player player) {
+        for (Challenge challenge : dailyChallenges) {
+            if (challenge.getCountToQualify() != getProgress(player, challenge)) {
+                return false;
+            }
+        }
+
+        return true;
     }
     
     private void completedChallenge(Player player, Challenge challenge) {
         Bukkit.getLogger().info(player.getName() + " completed challenge " + challenge.getName());
         
-        if (hasCompletedBothChallenges(player)) {
+        if (hasCompletedAllChallenges(player)) {
             Bukkit.getLogger().info("Player has completed both challenges. Awarding key");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " Challenge 1");
         }
     }
+
 }
