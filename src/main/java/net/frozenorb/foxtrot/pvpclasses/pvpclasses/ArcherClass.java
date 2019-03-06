@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -48,7 +49,16 @@ public class ArcherClass extends PvPClass {
     @Getter private static Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
     public ArcherClass() {
-        super("Archer", 15, "LEATHER_", Arrays.asList(Material.SUGAR, Material.FEATHER));
+        super("Archer", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
+    }
+
+    @Override
+    public boolean qualifies(PlayerInventory armor) {
+        return wearingAllArmor(armor) &&
+               armor.getHelmet().getType() == Material.LEATHER_HELMET &&
+               armor.getChestplate().getType() == Material.LEATHER_CHESTPLATE &&
+               armor.getLeggings().getType() == Material.LEATHER_LEGGINGS &&
+               armor.getBoots().getType() == Material.LEATHER_BOOTS;
     }
 
     @Override

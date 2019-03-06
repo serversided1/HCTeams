@@ -28,6 +28,7 @@ pvpClasses:
   archer: true
   bard: true
   rogue: true
+  ranger: true
 minerWorld:
   regen:
     COAL_ORE: 30

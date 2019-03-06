@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,7 +30,7 @@ public class MinerClass extends PvPClass implements Listener {
     @Getter private Map<String, Integer> invis = new HashMap<>();
 
     public MinerClass() {
-        super("Miner", 10, "IRON_", null);
+        super("Miner", 10, null);
 
         new BukkitRunnable() {
 
@@ -74,6 +75,15 @@ public class MinerClass extends PvPClass implements Listener {
             }
 
         }.runTaskTimer(Foxtrot.getInstance(), 20L, 20L);
+    }
+
+    @Override
+    public boolean qualifies(PlayerInventory armor) {
+        return wearingAllArmor(armor) &&
+               armor.getHelmet().getType() == Material.IRON_HELMET &&
+               armor.getChestplate().getType() == Material.IRON_CHESTPLATE &&
+               armor.getLeggings().getType() == Material.IRON_LEGGINGS &&
+               armor.getBoots().getType() == Material.IRON_BOOTS;
     }
 
     @Override

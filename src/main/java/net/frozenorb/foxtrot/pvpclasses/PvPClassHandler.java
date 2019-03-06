@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RangerClass;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -48,6 +49,9 @@ public class PvPClassHandler extends BukkitRunnable implements Listener {
         }
         if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.rogue")) {
             pvpClasses.add(new RogueClass());
+        }
+        if (Foxtrot.getInstance().getConfig().getBoolean("pvpClasses.ranger")) {
+            pvpClasses.add(new RangerClass());
         }
 
         for (PvPClass pvpClass : pvpClasses) {

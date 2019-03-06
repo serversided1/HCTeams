@@ -28,16 +28,14 @@ public abstract class PvPClass implements Listener {
     @Getter String name;
     @Getter String siteLink;
     @Getter int warmup;
-    @Getter String armorContains;
     @Getter List<Material> consumables;
     
     private static final Table<UUID, PotionEffectType, PotionEffect> restores = HashBasedTable.create();
 
-    public PvPClass(String name, int warmup, String armorContains, List<Material> consumables) {
+    public PvPClass(String name, int warmup, List<Material> consumables) {
         this.name = name;
         this.siteLink = "www." + Foxtrot.getInstance().getServerHandler().getNetworkWebsite() + "/" + name.toLowerCase().replaceAll(" ", "-");
         this.warmup = warmup;
-        this.armorContains = armorContains;
         this.consumables = consumables;
 
         // Reduce warmup on kit maps
@@ -74,9 +72,13 @@ public abstract class PvPClass implements Listener {
         return (true);
     }
 
-    public boolean qualifies(PlayerInventory armor) {
-        return (armor.getHelmet() != null && armor.getChestplate() != null && armor.getLeggings() != null && armor.getBoots() != null &&
-                       armor.getHelmet().getType().name().startsWith(armorContains) && armor.getChestplate().getType().name().startsWith(armorContains) && armor.getLeggings().getType().name().startsWith(armorContains) && armor.getBoots().getType().name().startsWith(armorContains));
+    public abstract boolean qualifies(PlayerInventory armor);
+
+    protected boolean wearingAllArmor(PlayerInventory armor) {
+        return (armor.getHelmet() != null &&
+                armor.getChestplate() != null &&
+                armor.getLeggings() != null &&
+                armor.getBoots() != null);
     }
 
     public static void smartAddPotion(final Player player, PotionEffect potionEffect, boolean persistOldValues, PvPClass pvpClass) {

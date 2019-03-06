@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -50,7 +51,7 @@ public class BardClass extends PvPClass implements Listener {
     public static final float ENERGY_REGEN_PER_SECOND = 1;
 
     public BardClass() {
-        super("Bard", 15, "GOLD_", null);
+        super("Bard", 15, null);
 
         // Click buffs
         BARD_CLICK_EFFECTS.put(Material.BLAZE_POWDER, BardEffect.fromPotionAndEnergy(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 20 * 5, 1), 45));
@@ -101,6 +102,15 @@ public class BardClass extends PvPClass implements Listener {
             }
 
         }.runTaskTimer(Foxtrot.getInstance(), 15L, 20L);
+    }
+
+    @Override
+    public boolean qualifies(PlayerInventory armor) {
+        return wearingAllArmor(armor) &&
+               armor.getHelmet().getType() == Material.GOLD_HELMET &&
+               armor.getChestplate().getType() == Material.GOLD_CHESTPLATE &&
+               armor.getLeggings().getType() == Material.GOLD_LEGGINGS &&
+               armor.getBoots().getType() == Material.GOLD_BOOTS;
     }
 
     @Override

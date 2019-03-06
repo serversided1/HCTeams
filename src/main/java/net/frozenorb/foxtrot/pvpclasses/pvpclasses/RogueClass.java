@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -34,7 +35,16 @@ public class RogueClass extends PvPClass {
     private static Map<String, Long> backstabCooldown = new HashMap<>();
 
     public RogueClass() {
-        super("Rogue", 15, "CHAINMAIL_", Arrays.asList(Material.SUGAR, Material.FEATHER));
+        super("Rogue", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
+    }
+
+    @Override
+    public boolean qualifies(PlayerInventory armor) {
+        return wearingAllArmor(armor) &&
+               armor.getHelmet().getType() == Material.CHAINMAIL_HELMET &&
+               armor.getChestplate().getType() == Material.CHAINMAIL_CHESTPLATE &&
+               armor.getLeggings().getType() == Material.CHAINMAIL_LEGGINGS &&
+               armor.getBoots().getType() == Material.CHAINMAIL_BOOTS;
     }
 
     @Override
