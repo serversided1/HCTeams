@@ -136,7 +136,7 @@ public class RangerClass extends PvPClass {
 		final Snowball snowball = (Snowball) event.getDamager();
 
 		if (event.getEntity() instanceof Player && snowball.getShooter() instanceof Player) {
-			final Player damaged = (Player) event.getEntity();
+			final Player victim = (Player) event.getEntity();
 			final Player shooter = (Player) ((Snowball) event.getDamager()).getShooter();
 
 			// Don't process if the player isn't in the Ranger class
@@ -144,10 +144,22 @@ public class RangerClass extends PvPClass {
 				return;
 			}
 
-			int distance = (int) ((Location) snowball.getMetadata("ShotFromDistance").get(0).value()).distance(damaged.getLocation());
+			// Don't process if the victim is in a safe-zone
+			if (DTRBitmask.SAFE_ZONE.appliesAt(victim.getLocation())) {
+				shooter.sendMessage(ChatColor.RED + "You can't stun a player who is in spawn!");
+				return;
+			}
+
+			// Don't process if the shooter is in a safe-zone
+			if (DTRBitmask.SAFE_ZONE.appliesAt(shooter.getLocation())) {
+				shooter.sendMessage(ChatColor.RED + "You can't use this in spawn!");
+				return;
+			}
+
+			int distance = (int) ((Location) snowball.getMetadata("ShotFromDistance").get(0).value()).distance(victim.getLocation());
 
 			// Send shooter feedback
-			if (PvPClassHandler.hasKitOn(damaged, this)) {
+			if (PvPClassHandler.hasKitOn(victim, this)) {
 				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Cannot stun another Ranger!");
 				return;
 			} else {
@@ -155,26 +167,26 @@ public class RangerClass extends PvPClass {
 			}
 
 			// Send damaged message
-			damaged.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for 10 seconds.");
+			victim.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for 10 seconds.");
 
 			// Add effects to damaged player
 			// SLOWNESS 1 10 SECONDS
 			// WEAKNESS 4 10 SECONDS
-			damaged.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 10, 0));
-			damaged.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 3));
+			victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 10, 0));
+			victim.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 3));
 
 			// Add 45 second throw cooldown (because the shooter hit another player)
 			throwCooldown.put(shooter.getUniqueId(), System.currentTimeMillis() + 45_000L);
 
 			// Add spawn-tag to both players
-			SpawnTagHandler.addOffensiveSeconds(damaged, SpawnTagHandler.getMaxTagTime());
+			SpawnTagHandler.addOffensiveSeconds(victim, SpawnTagHandler.getMaxTagTime());
 			SpawnTagHandler.addOffensiveSeconds(shooter, SpawnTagHandler.getMaxTagTime());
 
 			// Add enderpearl timer or cancel flying pearl
-			if (damaged.hasMetadata("LastEnderPearl")) {
-				((EnderPearl) damaged.getMetadata("LastEnderPearl").get(0).value()).remove();
+			if (victim.hasMetadata("LastEnderPearl")) {
+				((EnderPearl) victim.getMetadata("LastEnderPearl").get(0).value()).remove();
 			} else {
-				EnderpearlListener.resetEnderpearlTimer(damaged);
+				EnderpearlListener.resetEnderpearlTimer(victim);
 			}
 		}
 	}
