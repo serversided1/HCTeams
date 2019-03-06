@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.listener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -47,7 +48,7 @@ public class KOTHRewardKeyListener implements Listener {
             }
         }
 
-        if (open < 5) {
+        if (open < 3) {
             event.getPlayer().sendMessage(ChatColor.RED + "You must have at least 5 open inventory slots to use a KOTH reward key!");
             return;
         }
@@ -72,12 +73,13 @@ public class KOTHRewardKeyListener implements Listener {
         final List<ItemStack> loot = new ArrayList<>();
         int given = 0;
         int tries = 0;
+        int tier = NumberUtils.toInt(stack.getItemMeta().getLore().get(3).replaceAll("[^\\d.]", ""));
 
         toploop:
-        while (given < 5 && tries < 100) {
+        while (given < 3 && tries < 100) {
             tries++;
 
-            ItemStack chosenItem = lootTables[qLib.RANDOM.nextInt(lootTables.length)];
+            ItemStack chosenItem = lootTables[((tier-1)*9) + qLib.RANDOM.nextInt(9)];
 
             if (chosenItem == null || chosenItem.getType() == Material.AIR || chosenItem.getAmount() == 0) {
                 continue;
@@ -105,7 +107,7 @@ public class KOTHRewardKeyListener implements Listener {
             builder.setLength(builder.length() - 2);
         }
 
-        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "KOTH key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 2) + ChatColor.YELLOW + ".");
+        Foxtrot.getInstance().getServer().broadcastMessage(ChatColor.GOLD + "[KingOfTheHill] " + ChatColor.GOLD + event.getPlayer().getName() + ChatColor.YELLOW + " is obtaining loot for a " + ChatColor.BLUE.toString() + ChatColor.ITALIC + "Tier " + tier + " key" + ChatColor.YELLOW + " obtained from " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 1) + ChatColor.YELLOW + " at " + ChatColor.GOLD + InventoryUtils.getLoreData(event.getItem(), 2) + ChatColor.YELLOW + ".");
 
         new BukkitRunnable() {
 

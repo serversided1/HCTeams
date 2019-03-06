@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.util;
 
+import net.frozenorb.qlib.util.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -22,6 +23,7 @@ public class InventoryUtils {
     public static final String KILLS_LORE_IDENTIFIER = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Kills: " + ChatColor.WHITE.toString() + ChatColor.BOLD;
 
     public static final ItemStack CROWBAR;
+    public static final ItemStack ANTIDOTE = ItemBuilder.of(Material.POTION).data((short) 8196).name(ChatColor.GREEN + "Antidote").setLore(new ArrayList<>()).addToLore(ChatColor.GRAY + "Drink to relieve yourself of potion debuffs.").build();
 
     public static final String CROWBAR_NAME = ChatColor.RED + "Crowbar";
 
@@ -189,23 +191,24 @@ public class InventoryUtils {
         return (lore);
     }
 
-    public static List<String> getKOTHRewardKeyLore(String koth) {
+    public static List<String> getKOTHRewardKeyLore(String koth, int tier) {
         List<String> lore = new ArrayList<>();
         DateFormat sdf = new SimpleDateFormat("M/d HH:mm:ss");
 
         lore.add("");
         lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Obtained from: " + ChatColor.YELLOW + "{" + ChatColor.BLUE + koth + ChatColor.YELLOW + "}");
         lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Time: " + ChatColor.YELLOW + "{" + ChatColor.BLUE + sdf.format(new Date()).replace(" AM", "").replace(" PM", "") + ChatColor.YELLOW + "}");
+        lore.add(ChatColor.WHITE + " - " + ChatColor.AQUA + "Tier: " + ChatColor.YELLOW + "{" + tier + "}");
 
         return (lore);
     }
 
-    public static ItemStack generateKOTHRewardKey(String koth) {
+    public static ItemStack generateKOTHRewardKey(String koth, int tier) {
         ItemStack key = new ItemStack(Material.GOLD_NUGGET);
         ItemMeta meta = key.getItemMeta();
 
         meta.setDisplayName(ChatColor.RED + "KOTH Reward Key");
-        meta.setLore(getKOTHRewardKeyLore(koth));
+        meta.setLore(getKOTHRewardKeyLore(koth, tier));
 
         key.setItemMeta(meta);
         return (key);

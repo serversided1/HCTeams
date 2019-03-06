@@ -115,6 +115,11 @@ public class ChatListener implements Listener {
                 }
 
                 String publicChatFormat = FoxConstants.publicChatFormat(playerTeam, rankPrefix, customPrefix);
+
+                if (Foxtrot.getInstance().getConfig().getBoolean("legions")) {
+                    publicChatFormat = FoxConstants.publicChatFormatTwoPointOhBaby(playerTeam, rankPrefix, customPrefix);
+                }
+
                 String finalMessage = String.format(publicChatFormat, event.getPlayer().getDisplayName(), event.getMessage());
 
                 // Loop those who are to receive the message (which they won't if they have the sender /ignore'd or something),

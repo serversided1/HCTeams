@@ -15,7 +15,7 @@ public class Debuffs extends Killstreak {
     @Override
     public int[] getKills() {
         return new int[] {
-                6
+                9
         };
     }
 

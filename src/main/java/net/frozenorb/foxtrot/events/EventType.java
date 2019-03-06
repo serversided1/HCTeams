@@ -1,5 +1,5 @@
 package net.frozenorb.foxtrot.events;
 
 public enum EventType {
-    KOTH, DTC
+    KOTH, DTC, CARNAGE
 }

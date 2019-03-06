@@ -23,6 +23,7 @@ reduceArmorDamage: true
 blockEntitiesThroughPortals: true
 archerTagColor: YELLOW
 defaultRelationColor: RED
+legions: true
 pvpClasses:
   archer: true
   bard: true

@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot;
 
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.commands.team.TeamTopCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -32,6 +33,25 @@ public final class FoxConstants {
         if (team != null) {
             if (rankPrefix.toLowerCase().contains("famous") || rankPrefix.toLowerCase().contains("youtube")) {
                 rankPrefix = "";
+            }
+
+            starting = ChatColor.GOLD + "[" + Foxtrot.getInstance().getServerHandler().getDefaultRelationColor() + team.getName() + ChatColor.GOLD + "]";
+        }
+
+        return starting + customPrefixString + rankPrefix + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s";
+    }
+
+    public static String publicChatFormatTwoPointOhBaby(Team team, String rankPrefix, String customPrefixString) {
+        String starting = "";
+
+        if (team != null) {
+            if (rankPrefix.toLowerCase().contains("famous") || rankPrefix.toLowerCase().contains("youtube")) {
+                rankPrefix = "";
+            }
+
+            if (TeamTopCommand.getSortedTeams().entrySet().iterator().next().getKey().equals(team)) {
+                starting = ChatColor.YELLOW + "[" + ChatColor.GOLD + team.getName() + ChatColor.YELLOW + "]";
+                return starting + customPrefixString + rankPrefix + ChatColor.WHITE + "%s" + ChatColor.WHITE + ": %s";
             }
 
             starting = ChatColor.GOLD + "[" + Foxtrot.getInstance().getServerHandler().getDefaultRelationColor() + team.getName() + ChatColor.GOLD + "]";

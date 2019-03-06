@@ -1,7 +1,10 @@
 package net.frozenorb.foxtrot;
 
+import java.lang.reflect.Field;
 import java.util.function.Predicate;
 
+import net.frozenorb.foxtrot.persist.maps.*;
+import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -63,36 +66,6 @@ import net.frozenorb.foxtrot.listener.WebsiteListener;
 import net.frozenorb.foxtrot.map.MapHandler;
 import net.frozenorb.foxtrot.packetborder.PacketBorderThread;
 import net.frozenorb.foxtrot.persist.RedisSaveTask;
-import net.frozenorb.foxtrot.persist.maps.ChatModeMap;
-import net.frozenorb.foxtrot.persist.maps.ChatSpyMap;
-import net.frozenorb.foxtrot.persist.maps.CoalMinedMap;
-import net.frozenorb.foxtrot.persist.maps.CobblePickupMap;
-import net.frozenorb.foxtrot.persist.maps.DeathbanMap;
-import net.frozenorb.foxtrot.persist.maps.DeathsMap;
-import net.frozenorb.foxtrot.persist.maps.DiamondMinedMap;
-import net.frozenorb.foxtrot.persist.maps.EmeraldMinedMap;
-import net.frozenorb.foxtrot.persist.maps.FirstJoinMap;
-import net.frozenorb.foxtrot.persist.maps.FishingKitMap;
-import net.frozenorb.foxtrot.persist.maps.FriendLivesMap;
-import net.frozenorb.foxtrot.persist.maps.GoldMinedMap;
-import net.frozenorb.foxtrot.persist.maps.IPMap;
-import net.frozenorb.foxtrot.persist.maps.IronMinedMap;
-import net.frozenorb.foxtrot.persist.maps.KDRMap;
-import net.frozenorb.foxtrot.persist.maps.KillsMap;
-import net.frozenorb.foxtrot.persist.maps.LapisMinedMap;
-import net.frozenorb.foxtrot.persist.maps.LastJoinMap;
-import net.frozenorb.foxtrot.persist.maps.OppleMap;
-import net.frozenorb.foxtrot.persist.maps.PlaytimeMap;
-import net.frozenorb.foxtrot.persist.maps.PvPTimerMap;
-import net.frozenorb.foxtrot.persist.maps.RedstoneMinedMap;
-import net.frozenorb.foxtrot.persist.maps.SoulboundLivesMap;
-import net.frozenorb.foxtrot.persist.maps.StartingPvPTimerMap;
-import net.frozenorb.foxtrot.persist.maps.TabListModeMap;
-import net.frozenorb.foxtrot.persist.maps.ToggleDeathMessageMap;
-import net.frozenorb.foxtrot.persist.maps.ToggleFoundDiamondsMap;
-import net.frozenorb.foxtrot.persist.maps.ToggleGlobalChatMap;
-import net.frozenorb.foxtrot.persist.maps.WhitelistedIPMap;
-import net.frozenorb.foxtrot.persist.maps.WrappedBalanceMap;
 import net.frozenorb.foxtrot.persist.maps.statistics.BaseStatisticMap;
 import net.frozenorb.foxtrot.persist.maps.statistics.EnderPearlsUsedMap;
 import net.frozenorb.foxtrot.persist.maps.statistics.ExpCollectedMap;
@@ -169,6 +142,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private WhitelistedIPMap whitelistedIPMap;
     @Getter private CobblePickupMap cobblePickupMap;
     @Getter private KDRMap kdrMap;
+    @Getter private KitmapTokensMap tokensMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
     @Getter @Setter
@@ -210,6 +184,16 @@ public class Foxtrot extends JavaPlugin {
             world.setWeatherDuration(Integer.MAX_VALUE);
             world.setGameRuleValue("doFireTick", "false");
             world.setGameRuleValue("mobGriefing", "false");
+        }
+
+        if (getConfig().getBoolean("legions")) {
+            try {
+                Field field = Item.class.getDeclaredField("maxStackSize");
+                field.setAccessible(true);
+                field.setInt(Item.getById(322), 6);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
         // we just define this here while we're testing, if we actually
@@ -332,12 +316,12 @@ public class Foxtrot extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new KitMapListener(), this);
         }
         
-        if (getMapHandler().getScoreboardTitle().contains("Arcane") && (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap())) {
+        if (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap()) {
             getServer().getPluginManager().registerEvents(new BountyHandler(), this);
+            getServer().getPluginManager().registerEvents(new CarePackageHandler(), this);
         }
         
         getServer().getPluginManager().registerEvents(new BlockConvenienceListener(), this);
-        getServer().getPluginManager().registerEvents(new CarePackageHandler(), this);
     }
 
     private void setupPersistence() {
@@ -376,6 +360,10 @@ public class Foxtrot extends JavaPlugin {
         (whitelistedIPMap = new WhitelistedIPMap()).loadFromRedis();
         (cobblePickupMap = new CobblePickupMap()).loadFromRedis();
         (kdrMap = new KDRMap()).loadFromRedis();
+
+        if (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap()) {
+            (tokensMap = new KitmapTokensMap()).loadFromRedis();
+        }
     }
 
 }

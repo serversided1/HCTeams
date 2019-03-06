@@ -45,7 +45,7 @@ public class LastInvCommand {
         });
     }
 
-    private static void cleanLoot(ItemStack[] stack) {
+    public static void cleanLoot(ItemStack[] stack) {
         for (ItemStack item : stack) {
             if (item != null && item.hasItemMeta() && item.getItemMeta().hasLore()) {
                 ItemMeta meta = item.getItemMeta();

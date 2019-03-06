@@ -8,8 +8,10 @@ import java.util.concurrent.TimeUnit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.google.common.collect.Maps;
@@ -22,6 +24,14 @@ import net.frozenorb.hydrogen.rank.Rank;
 public class KitListener implements Listener {
     
     private Map<UUID, Long> lastClicked = Maps.newHashMap();
+
+    @EventHandler
+    public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Wolf) {
+            ((Wolf) event.getRightClicked()).setSitting(false);
+            event.setCancelled(true);
+        }
+    }
     
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {

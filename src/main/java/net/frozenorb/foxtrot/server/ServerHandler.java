@@ -355,6 +355,14 @@ public class ServerHandler {
             dtrLoss = Math.min(dtrLoss, 0.50D);
         }
 
+        if (Foxtrot.getInstance().getConfig().getBoolean("legions")) {
+            if (location.getWorld().getEnvironment() == Environment.THE_END) {
+                dtrLoss = Math.min(dtrLoss, 0.50D);
+            } else if (location.getWorld().getEnvironment() == Environment.NETHER) {
+                dtrLoss = Math.min(dtrLoss, 0.75D);
+            }
+        }
+
         if (ownerTo != null) {
             if (ownerTo.hasDTRBitmask(DTRBitmask.QUARTER_DTR_LOSS)) {
                 dtrLoss = Math.min(dtrLoss, 0.25D);
@@ -426,6 +434,11 @@ public class ServerHandler {
 
     public void beginHQWarp(final Player player, final Team team, int warmup, boolean charge) {
         Team inClaim = LandBoard.getInstance().getTeam(player.getLocation());
+
+        // quick fix
+        if(team.getBalance() < 0) {
+            team.setBalance(0);
+        }
 
         if (inClaim != null) {
             if (Foxtrot.getInstance().getServerHandler().isHardcore() && inClaim.getOwner() != null && !inClaim.isMember(player.getUniqueId())) {
@@ -591,6 +604,10 @@ public class ServerHandler {
 
     public void handleShopSign(Sign sign, Player player) {
         ItemStack itemStack = (sign.getLine(2).contains("Crowbar") ? InventoryUtils.CROWBAR : ItemUtils.get(sign.getLine(2).toLowerCase().replace(" ", "")));
+
+        if (itemStack == null && sign.getLine(2).contains("Antidote")) {
+            itemStack = InventoryUtils.ANTIDOTE;
+        }
 
         if (itemStack == null) {
             System.err.println(sign.getLine(2).toLowerCase().replace(" ", ""));

@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.server.event.DisallowedPotionDrinkEvent;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 
+import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,11 +18,30 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 
 public class PotionLimiterListener implements Listener {
+
+    @EventHandler
+    public void onPotionDrinkEvent(PlayerItemConsumeEvent event) {
+        if (event.getItem().isSimilar(InventoryUtils.ANTIDOTE)) {
+            Player player = event.getPlayer();
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.removePotionEffect(PotionEffectType.SLOW);
+                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+                    player.removePotionEffect(PotionEffectType.POISON);
+                    player.removePotionEffect(PotionEffectType.WEAKNESS);
+                }
+            }.runTaskLater(Foxtrot.getInstance(), 2L);
+        }
+    }
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPotionSplash(PotionSplashEvent event) {

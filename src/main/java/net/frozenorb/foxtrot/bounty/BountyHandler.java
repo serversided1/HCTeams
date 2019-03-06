@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.frozenorb.qlib.util.ItemBuilder;
+import net.minecraft.util.com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -47,9 +49,63 @@ public class BountyHandler implements Listener {
     private long lastPositionBroadcastMessage = -1L;
     private long lastSuitablePositionTime = -1L;
     private int secondsUnsuitable = 0;
-    private int reward;
+    private Reward reward;
     
     private static String bountyPrefix = "&7[&6Bounty&7] ";
+
+    private interface RewardAction {
+        void reward(Player player);
+    }
+
+    private enum Reward {
+        TWO_HUNDRED_FIFTY_DOLLARS("$250", player -> {
+            FrozenEconomyHandler.deposit(player.getUniqueId(), 250);
+        }),
+
+        FIVE_HUNDRED_DOLLARS("$500", player -> {
+            FrozenEconomyHandler.deposit(player.getUniqueId(), 500);
+        }),
+
+        SEVEN_HUNDRED_FIFTY_DOLLARS("$750", player -> {
+            FrozenEconomyHandler.deposit(player.getUniqueId(), 750);
+        }),
+
+        ONE_BOUNTY_KEY("1 Bounty Key", player -> {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " bounty");
+        }),
+
+        TWO_BOUNTY_KEYS("2 Bounty Keys", player -> {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " bounty 2");
+        }),
+
+        THREE_BOUNTY_KEYS("3 Bounty Keys", player -> {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " bounty 3");
+        }),
+
+        CRAPPLES("1 Golden Apple", player -> {
+            player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
+        }),
+
+        GOD_APPLE("1 God Apple", player -> {
+            player.getInventory().addItem(ItemBuilder.of(Material.GOLDEN_APPLE).data((short) 1).build());
+        }),
+
+        COBWEBS("8 Cobwebs", player -> {
+            player.getInventory().addItem(ItemBuilder.of(Material.WEB).amount(8).build());
+        }),
+
+        REFILL_POTS("Potion Refill Token", player -> {
+            player.getInventory().addItem(ItemBuilder.of(Material.NETHER_STAR).name("&c&lPotion Refill Token").setUnbreakable(true).setLore(ImmutableList.of("&cRight click this to fill your inventory with potions!")).build());
+        });
+
+        private final String name;
+        private final RewardAction action;
+
+        Reward(String name, RewardAction action) {
+            this.name = name;
+            this.action = action;
+        }
+    }
     
     public BountyHandler() {
         FrozenCommandHandler.registerClass(this.getClass());
@@ -132,7 +188,7 @@ public class BountyHandler implements Listener {
         Player bountyPlayer = suitablePlayers.get(qLib.RANDOM.nextInt(suitablePlayers.size()));
         pickingNewBounty = false;
         set(bountyPlayer);
-        this.reward = qLib.RANDOM.nextInt(3) + 1;
+        this.reward = Reward.values()[qLib.RANDOM.nextInt(Reward.values().length)];
     }
     
     private void checkBroadcast() {
@@ -144,7 +200,7 @@ public class BountyHandler implements Listener {
         
         if (15000 <= System.currentTimeMillis() - lastPositionBroadcastMessage) {
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] " + formatName(currentBountyPlayer) + " &ehas been spotted @ &c" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ()  + "&e."));
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&aKill Reward&7: &f$" + (reward * 250) + ", " + reward + " Bounty Key" + (reward == 1 ? "" : "s")));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&aKill Reward&7: &f" + reward.name));
             lastPositionBroadcastMessage = System.currentTimeMillis();
         }
     }
@@ -221,17 +277,8 @@ public class BountyHandler implements Listener {
         currentBountyPlayer = null;
         
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] &f" + formatName(died.getUniqueId()) + " &ehas been slain by &f" + formatName(killer.getUniqueId()) + "&e."));
-        if (loot == null || loot.isEmpty()) {
-            return;
-        }
         
-        killer.getInventory().addItem(loot.get(qLib.RANDOM.nextInt(loot.size())).clone());
-        
-        for (int i = 0; i < reward; i++) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + killer.getName() + " bounty");
-        }
-
-        FrozenEconomyHandler.deposit(killer.getUniqueId(), reward * 250);
+        reward.action.reward(killer);
     }
     
     @Command(names = "bounty set", permission = "bounty.set", async = true)

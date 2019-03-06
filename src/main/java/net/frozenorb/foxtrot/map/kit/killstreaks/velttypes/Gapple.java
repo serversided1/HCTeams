@@ -9,13 +9,13 @@ public class Gapple extends Killstreak {
 
     @Override
     public String getName() {
-        return "OP Apple";
+        return "God Apple";
     }
 
     @Override
     public int[] getKills() {
         return new int[] {
-                15
+                21
         };
     }
 

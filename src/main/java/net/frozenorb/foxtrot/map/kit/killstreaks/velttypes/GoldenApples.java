@@ -9,7 +9,7 @@ public class GoldenApples extends Killstreak {
 
     @Override
     public String getName() {
-        return "3 Golden Apples";
+        return "5 Golden Apples";
     }
 
     @Override
@@ -21,7 +21,7 @@ public class GoldenApples extends Killstreak {
 
     @Override
     public void apply(Player player) {
-        give(player, new ItemStack(Material.GOLDEN_APPLE, 3));
+        give(player, new ItemStack(Material.GOLDEN_APPLE, 5));
     }
 
 }

@@ -99,7 +99,7 @@ public class ConquestGame implements Listener {
 
         if (teamPoints.get(team.getUniqueId()) >= ConquestHandler.getPointsToWin()) {
             endGame(team);
-            ItemStack conquestKey = InventoryUtils.generateKOTHRewardKey("Conquest");
+            ItemStack conquestKey = InventoryUtils.generateKOTHRewardKey("Conquest", 3);
             conquestKey.setAmount(5);
             event.getPlayer().getInventory().addItem(conquestKey);
             if (!event.getPlayer().getInventory().contains(conquestKey)) {

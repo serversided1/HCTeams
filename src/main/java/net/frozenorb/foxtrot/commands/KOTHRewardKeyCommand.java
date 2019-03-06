@@ -14,7 +14,7 @@ import net.frozenorb.qlib.command.Param;
 public class KOTHRewardKeyCommand {
 
     @Command(names={ "kothrewardkey" }, permission="op")
-    public static void kothRewardKey(Player sender, @Param(name = "player", defaultValue = "self") Player player, @Param(name="koth") String koth, @Param(name="amount", defaultValue = "1") int amount) {
+    public static void kothRewardKey(Player sender, @Param(name = "player", defaultValue = "self") Player player, @Param(name="koth") String koth, @Param(name="amount", defaultValue = "1") int amount , @Param(name="tier", defaultValue = "1") int tier) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
             return;
@@ -30,7 +30,12 @@ public class KOTHRewardKeyCommand {
             return;
         }
 
-        ItemStack stack = InventoryUtils.generateKOTHRewardKey(koth);
+        if (tier == 0 || tier > 3) {
+            sender.sendMessage(ChatColor.RED + "Illegal tier! Must be between 1 and 3.");
+            return;
+        }
+
+        ItemStack stack = InventoryUtils.generateKOTHRewardKey(koth, tier);
         stack.setAmount(amount);
         Map<Integer, ItemStack> failed = player.getInventory().addItem(stack);
 

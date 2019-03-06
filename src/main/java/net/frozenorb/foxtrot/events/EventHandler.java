@@ -258,6 +258,12 @@ public class EventHandler {
                 return;
             }
 
+            if (Foxtrot.getInstance().getConfig().getBoolean("legions") && Bukkit.getOnlinePlayers().size() < 30) {
+                EventSchedule.remove(scheduledTime);
+                Foxtrot.getInstance().getLogger().warning("The event scheduler cannot start an event w/ under 30 players on Legions.");
+                return;
+            }
+
             resolved.activate();
         }
     }

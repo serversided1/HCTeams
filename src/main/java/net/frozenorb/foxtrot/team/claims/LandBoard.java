@@ -91,21 +91,9 @@ public class LandBoard {
         return (regionData == null ? null : regionData.getKey());
     }
 
-    private Location lastLocation = null;
-    private Team lastTeam = null;
-
     public Team getTeam(Location location) {
-        if (lastLocation != null) {
-            if (location.getWorld() == lastLocation.getWorld() && lastLocation.getBlockX() == location.getBlockX() && lastLocation.getBlockZ() == location.getBlockZ()) {
-                return lastTeam;
-            }
-        }
-
         Map.Entry<Claim, Team> regionData = getRegionData(location);
-        Team toReturn = regionData == null ? null : regionData.getValue();
-        this.lastLocation = location;
-        this.lastTeam = toReturn;
-        return toReturn;
+        return regionData == null ? null : regionData.getValue();
     }
 
     public void setTeamAt(Claim claim, Team team) {

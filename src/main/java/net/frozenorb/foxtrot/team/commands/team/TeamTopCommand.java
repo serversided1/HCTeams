@@ -25,14 +25,7 @@ public class TeamTopCommand {
         new BukkitRunnable() {
 
             public void run() {
-                Map<Team, Integer> teamPointsCount = new HashMap<>();
-
-                // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
-                for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
-                    teamPointsCount.put(team, team.getPoints());
-                }
-
-                LinkedHashMap<Team, Integer> sortedTeamPlayerCount = sortByValues(teamPointsCount);
+                LinkedHashMap<Team, Integer> sortedTeamPlayerCount = getSortedTeams();
 
                 int index = 0;
 
@@ -74,6 +67,17 @@ public class TeamTopCommand {
             }
 
         }.runTaskAsynchronously(Foxtrot.getInstance());
+    }
+
+    public static LinkedHashMap<Team, Integer> getSortedTeams() {
+        Map<Team, Integer> teamPointsCount = new HashMap<>();
+
+        // Sort of weird way of getting player counts, but it does it in the least iterations (1), which is what matters!
+        for (Team team : Foxtrot.getInstance().getTeamHandler().getTeams()) {
+            teamPointsCount.put(team, team.getPoints());
+        }
+
+        return sortByValues(teamPointsCount);
     }
 
     public static LinkedHashMap<Team, Integer> sortByValues(Map<Team, Integer> map) {

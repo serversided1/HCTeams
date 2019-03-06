@@ -2,20 +2,20 @@ package net.frozenorb.foxtrot.carepackage;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +38,7 @@ public class CarePackageHandler implements Listener {
     private Location lastCarePackage;
     private World world;
     private static List<ItemStack> loot;
+    private static final Random RANDOM = new Random();
     
     public CarePackageHandler() {
         if (true) {
@@ -115,6 +116,25 @@ public class CarePackageHandler implements Listener {
             lastCarePackage.getBlock().setType(Material.AIR);
             lastCarePackage.getBlock().removeMetadata("CarePackage", Foxtrot.getInstance());
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6[Crate] &eThe &dCrate &eat &d" + lastCarePackage.getBlockX() + " " + lastCarePackage.getBlockZ() + " &ehas despawned."));
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.getPlayer().getLocation().getBlockY() >= 45) return;
+        if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) == null) {
+            if (RANDOM.nextInt(149) == 0) {
+                event.setCancelled(true);
+                event.getBlock().setType(Material.CHEST);
+                Chest chest = (Chest) event.getBlock().getState();
+
+                event.getPlayer().playSound(chest.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Woah! You found a chest.");
+
+                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
+                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
+                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
+            }
         }
     }
 
