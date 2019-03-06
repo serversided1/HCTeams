@@ -147,7 +147,12 @@ public class RangerClass extends PvPClass {
 			int distance = (int) ((Location) snowball.getMetadata("ShotFromDistance").get(0).value()).distance(damaged.getLocation());
 
 			// Send shooter feedback
-			shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Slowed and weakened player!");
+			if (PvPClassHandler.hasKitOn(damaged, this)) {
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Cannot stun another Ranger!");
+				return;
+			} else {
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Slowed and weakened player!");
+			}
 
 			// Send damaged message
 			damaged.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for 10 seconds.");
