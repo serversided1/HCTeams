@@ -17,14 +17,18 @@ public class KillstreaksCommand {
 
     @Command(names = {"killstreaks", "ks", "killstreak"}, permission = "")
     public static void killstreaks(CommandSender sender) {
+    	if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
+    		sender.sendMessage(ChatColor.RED + "You cannot perform this command on this server.");
+    		return;
+	    }
 
         sender.sendMessage(ChatColor.RED.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));
-        
+
         List<Object> streaks = Lists.newArrayList(Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getKillstreaks());
         streaks.addAll(Foxtrot.getInstance().getMapHandler().getKillstreakHandler().getPersistentKillstreaks());
 
         streaks.sort((first, second) -> {
-            
+
             int firstNumber = first instanceof Killstreak ? ((Killstreak) first).getKills()[0] : ((PersistentKillstreak) first).getKillsRequired();
             int secondNumber = second instanceof Killstreak ? ((Killstreak) second).getKills()[0] : ((PersistentKillstreak) second).getKillsRequired();
 
@@ -34,12 +38,12 @@ public class KillstreaksCommand {
             return 1;
 
         });
-        
+
         for (Object ks : streaks) {
             String name = ks instanceof Killstreak ? ((Killstreak) ks).getName() : ((PersistentKillstreak) ks).getName();
             int kills = ks instanceof Killstreak ? ((Killstreak) ks).getKills()[0] : ((PersistentKillstreak) ks).getKillsRequired();
-            
-            
+
+
             sender.sendMessage(ChatColor.YELLOW + name + ": " + ChatColor.RED + kills);
         }
 
