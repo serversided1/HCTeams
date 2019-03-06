@@ -455,6 +455,8 @@ public class ChallengeHandler implements Listener {
     }
     
     private void completedChallenge(Player player, Challenge challenge) {
+        player.sendMessage(ChatColor.GREEN + "Challenge Completed: " + ChatColor.GRAY + challenge.getName());
+
         Bukkit.getLogger().info(player.getName() + " completed challenge " + challenge.getName());
         
         if (hasCompletedAllChallenges(player)) {
