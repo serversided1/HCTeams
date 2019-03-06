@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot;
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 
+import net.frozenorb.foxtrot.listener.SpawnerTrackerListener;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Bukkit;
@@ -287,6 +288,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnerTrackerListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnTagListener(), this);
         getServer().getPluginManager().registerEvents(new StaffUtilsListener(), this);

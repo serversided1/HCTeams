@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.foxtrot.team.event.SpawnerBreakEvent;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
@@ -102,6 +103,12 @@ public class CrowbarListener implements Listener {
             if (event.getClickedBlock().getWorld().getEnvironment() == World.Environment.THE_END) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot break spawners in the end!");
                 event.setCancelled(true);
+                return;
+            }
+
+            SpawnerBreakEvent spawnerBreakEvent = new SpawnerBreakEvent(event.getPlayer(), event.getClickedBlock());
+
+            if (spawnerBreakEvent.isCancelled()) {
                 return;
             }
 

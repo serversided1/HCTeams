@@ -81,6 +81,7 @@ public class Team {
     @Getter private int diamondsMined = 0;
     @Getter private int deaths = 0;
     @Getter private int citadelsCapped = 0;
+    @Getter private int spawnersInClaim = 0;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -438,14 +439,29 @@ public class Team {
         flagForSave();
     }
 
+    public void setSpawnersInClaim(int spawnersInClaim) {
+        this.spawnersInClaim = spawnersInClaim;
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void incrementSpawnersInClaim() {
+        spawnersInClaim++;
+    }
+
+    public void decrementSpawnersInClaim() {
+        spawnersInClaim--;
+    }
+
     public void recalculatePoints() {
         int basePoints = 0;
 
-        basePoints += (Math.floor(kills / 5.0D)) * 5;
-        basePoints += kothCaptures * 20;
-        basePoints += (diamondsMined / 350) * 5;
-        basePoints += citadelsCapped * 200;
-        basePoints = basePoints - (int) ((Math.floor(deaths / 5.0D)) * 10);
+        basePoints += (Math.floor(kills / 5.0D)) * 10;
+        basePoints -= (Math.floor(deaths / 5.0D)) * 15;
+        basePoints += kothCaptures * 50;
+        basePoints += (diamondsMined / 500) * 15;
+        basePoints += citadelsCapped * 125;
+        basePoints += spawnersInClaim * 5;
 
         this.points = basePoints;
     }
@@ -848,6 +864,8 @@ public class Team {
                 setDiamondsMined(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("CitadelsCapped")) {
                 setCitadelsCapped(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("SpawnersInClaim")) {
+                setSpawnersInClaim(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -943,6 +961,7 @@ public class Team {
         teamString.append("DiamondsMined:").append(String.valueOf(getDiamondsMined())).append("\n");
         teamString.append("KothCaptures:").append(String.valueOf(getKothCaptures())).append("\n");
         teamString.append("CitadelsCapped:").append(String.valueOf(getCitadelsCapped())).append("\n");
+        teamString.append("SpawnersInClaim:").append(String.valueOf(getSpawnersInClaim())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -989,6 +1008,7 @@ public class Team {
         dbObject.put("Deaths", this.deaths);
         dbObject.put("DiamondsMined", this.diamondsMined);
         dbObject.put("CitadelsCaptured", this.citadelsCapped);
+        dbObject.put("SpawnersInClaim", this.spawnersInClaim);
         dbObject.put("KothCaptures", this.kothCaptures);
         dbObject.put("Points", this.points);
         dbObject.put("Lives", this.kills);
