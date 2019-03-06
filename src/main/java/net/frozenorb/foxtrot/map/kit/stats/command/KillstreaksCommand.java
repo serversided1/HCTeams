@@ -71,20 +71,19 @@ public class KillstreaksCommand {
 		} else {
 			sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + StringUtils.repeat('-', 53));
 
-			int index = 1;
+			int index = 0;
 
 			for (Map.Entry<Player, Integer> entry : getSortedPlayers().entrySet()) {
-				index++;
-
 				if (index > 10) {
 					break;
 				}
 
+				index++;
+
 				Team team = Foxtrot.getInstance().getTeamHandler().getTeam(entry.getKey());
 
 				FancyMessage playerMessage = new FancyMessage();
-
-				playerMessage.text(index + ".").color(ChatColor.GRAY).then();
+				playerMessage.text(index + ". ").color(ChatColor.GRAY).then();
 				playerMessage.text(entry.getKey().getName()).color(sender instanceof Player && team != null && team.isMember(((Player) sender).getUniqueId()) ? ChatColor.GREEN : ChatColor.RED).then();
 				playerMessage.text(" - ").color(ChatColor.YELLOW).then();
 				playerMessage.text(entry.getValue() + " killstreak").color(ChatColor.GRAY);
