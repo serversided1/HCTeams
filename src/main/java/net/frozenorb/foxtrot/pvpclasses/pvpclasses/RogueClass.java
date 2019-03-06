@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -173,6 +174,13 @@ public class RogueClass extends PvPClass {
 
         //***************************//
 
+    }
+
+    @EventHandler
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        lastJumpUsage.remove(event.getPlayer().getName());
+        lastSpeedUsage.remove(event.getPlayer().getName());
+        backstabCooldown.remove(event.getPlayer().getName());
     }
 
 }

@@ -21,6 +21,7 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -189,6 +190,13 @@ public class RangerClass extends PvPClass {
 				EnderpearlListener.resetEnderpearlTimer(victim);
 			}
 		}
+	}
+
+	@EventHandler
+	public void onPlayerQuitEvent(PlayerQuitEvent event) {
+		lastJumpUsage.remove(event.getPlayer().getName());
+		lastSpeedUsage.remove(event.getPlayer().getName());
+		throwCooldown.remove(event.getPlayer().getUniqueId());
 	}
 
 }
