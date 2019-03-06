@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
+import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.challenges.impl.KillBasedChallenge;
 import net.frozenorb.foxtrot.challenges.impl.KillKitBasedChallenge;
 import net.frozenorb.foxtrot.challenges.impl.util.KitBasedChallengeData;
@@ -455,7 +456,10 @@ public class ChallengeHandler implements Listener {
     }
     
     private void completedChallenge(Player player, Challenge challenge) {
-        player.sendMessage(ChatColor.GREEN + "Challenge Completed: " + ChatColor.GRAY + challenge.getName());
+        FancyMessage message = new FancyMessage("Challenge Completed: ").color(org.bukkit.ChatColor.GREEN).then();
+        message.text(challenge.getName()).color(org.bukkit.ChatColor.GRAY);
+        message.command("challenges");
+        message.send(player);
 
         Bukkit.getLogger().info(player.getName() + " completed challenge " + challenge.getName());
         
