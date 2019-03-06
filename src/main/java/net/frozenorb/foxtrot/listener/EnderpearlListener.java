@@ -23,6 +23,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.util.CheatBreakerKey;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class EnderpearlListener implements Listener {
 
@@ -37,6 +38,8 @@ public class EnderpearlListener implements Listener {
         Player shooter = (Player) event.getEntity().getShooter();
 
         if (event.getEntity() instanceof EnderPearl) {
+            shooter.setMetadata("LastEnderPearl", new FixedMetadataValue(Foxtrot.getInstance(), event.getEntity()));
+
             if (DTRBitmask.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(event.getEntity().getLocation())) {
                 enderpearlCooldown.put(shooter.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
             } else {
@@ -143,4 +146,15 @@ public class EnderpearlListener implements Listener {
     public boolean clippingThrough(Location target, Location from, double thickness) {
         return ((from.getX() > target.getX() && (from.getX() - target.getX() < thickness)) || (target.getX() > from.getX() && (target.getX() - from.getX() < thickness)) || (from.getZ() > target.getZ() && (from.getZ() - target.getZ() < thickness)) || (target.getZ() > from.getZ() && (target.getZ() - from.getZ() < thickness)));
     }
+
+    public static void resetEnderpearlTimer(Player player) {
+        if (DTRBitmask.THIRTY_SECOND_ENDERPEARL_COOLDOWN.appliesAt(player.getLocation())) {
+            enderpearlCooldown.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
+        } else {
+            enderpearlCooldown.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("Staging") ? 1 : 16));
+        }
+
+        CheatBreakerKey.ENDER_PEARL.send(player, enderpearlCooldown.get(player.getName()) - System.currentTimeMillis());
+    }
+
 }

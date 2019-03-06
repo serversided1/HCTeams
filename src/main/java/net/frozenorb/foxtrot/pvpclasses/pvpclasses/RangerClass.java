@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -14,6 +15,7 @@ import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
@@ -144,7 +146,11 @@ public class RangerClass extends PvPClass {
 
 			int distance = (int) ((Location) snowball.getMetadata("ShotFromDistance").get(0).value()).distance(damaged.getLocation());
 
+			// Send shooter feedback
 			shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Slowed and weakened player!");
+
+			// Send damaged message
+			damaged.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for 10 seconds.");
 
 			// Add effects to damaged player
 			// SLOWNESS 1 10 SECONDS
@@ -158,6 +164,13 @@ public class RangerClass extends PvPClass {
 			// Add spawn-tag to both players
 			SpawnTagHandler.addOffensiveSeconds(damaged, SpawnTagHandler.getMaxTagTime());
 			SpawnTagHandler.addOffensiveSeconds(shooter, SpawnTagHandler.getMaxTagTime());
+
+			// Add enderpearl timer or cancel flying pearl
+			if (damaged.hasMetadata("LastEnderPearl")) {
+				((EnderPearl) damaged.getMetadata("LastEnderPearl").get(0).value()).remove();
+			} else {
+				EnderpearlListener.resetEnderpearlTimer(damaged);
+			}
 		}
 	}
 
