@@ -82,6 +82,7 @@ public class Team {
     @Getter private int deaths = 0;
     @Getter private int citadelsCapped = 0;
     @Getter private int spawnersInClaim = 0;
+    @Getter private int killstreakPoints = 0;
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -445,12 +446,22 @@ public class Team {
         flagForSave();
     }
 
+    public void setKillstreakPoints(int killstreakPoints) {
+        this.killstreakPoints = killstreakPoints;
+        recalculatePoints();
+        flagForSave();
+    }
+
     public void incrementSpawnersInClaim() {
         spawnersInClaim++;
+        recalculatePoints();
+        flagForSave();
     }
 
     public void decrementSpawnersInClaim() {
         spawnersInClaim--;
+        recalculatePoints();
+        flagForSave();
     }
 
     public void recalculatePoints() {
@@ -462,6 +473,7 @@ public class Team {
         basePoints += (diamondsMined / 500) * 15;
         basePoints += citadelsCapped * 125;
         basePoints += spawnersInClaim * 5;
+        basePoints += killstreakPoints;
 
         this.points = basePoints;
     }
@@ -866,6 +878,8 @@ public class Team {
                 setCitadelsCapped(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("SpawnersInClaim")) {
                 setSpawnersInClaim(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("KillstreakPoints")) {
+                setKillstreakPoints(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -962,6 +976,7 @@ public class Team {
         teamString.append("KothCaptures:").append(String.valueOf(getKothCaptures())).append("\n");
         teamString.append("CitadelsCapped:").append(String.valueOf(getCitadelsCapped())).append("\n");
         teamString.append("SpawnersInClaim:").append(String.valueOf(getSpawnersInClaim())).append("\n");
+        teamString.append("KillstreakPoints:").append(String.valueOf(getKillstreakPoints())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -1009,6 +1024,7 @@ public class Team {
         dbObject.put("DiamondsMined", this.diamondsMined);
         dbObject.put("CitadelsCaptured", this.citadelsCapped);
         dbObject.put("SpawnersInClaim", this.spawnersInClaim);
+        dbObject.put("KillstreakPoints", this.killstreakPoints);
         dbObject.put("KothCaptures", this.kothCaptures);
         dbObject.put("Points", this.points);
         dbObject.put("Lives", this.kills);
