@@ -452,6 +452,12 @@ public class Team {
         flagForSave();
     }
 
+    public void addKillstreakPoints(int killstreakPoints) {
+        this.killstreakPoints += killstreakPoints;
+        recalculatePoints();
+        flagForSave();
+    }
+
     public void incrementSpawnersInClaim() {
         spawnersInClaim++;
         recalculatePoints();

@@ -3,6 +3,11 @@ package net.frozenorb.foxtrot.map.kit.killstreaks;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import net.frozenorb.qlib.command.Command;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
+import net.frozenorb.qlib.command.Param;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
@@ -17,6 +22,8 @@ public class KillstreakHandler {
     @Getter private List<PersistentKillstreak> persistentKillstreaks = Lists.newArrayList();
 
     public KillstreakHandler() {
+        FrozenCommandHandler.registerClass(this.getClass());
+
         String packageName = Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("Arcane") ? "arcanetypes" : "velttypes";
         ClassUtils.getClassesInPackage(Foxtrot.getInstance(), "net.frozenorb.foxtrot.map.kit.killstreaks." + packageName).forEach(clazz -> {
             if (Killstreak.class.isAssignableFrom(clazz)) {
@@ -75,6 +82,14 @@ public class KillstreakHandler {
     
     public List<PersistentKillstreak> getPersistentKillstreaks(Player player, int count) {
         return persistentKillstreaks.stream().filter(s -> s.check(count)).collect(Collectors.toList());
+    }
+
+    @Command(names = "setks", permission = "hcteams.setkillstreak")
+    public static void setKillstreak(Player player, @Param(name = "killstreak") int killstreak) {
+        StatsEntry statsEntry = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player);
+        statsEntry.setKillstreak(killstreak);
+
+        player.sendMessage(ChatColor.GREEN + "You set your killstreak to: " + killstreak);
     }
 
 }

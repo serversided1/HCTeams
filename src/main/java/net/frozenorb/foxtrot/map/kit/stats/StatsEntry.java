@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.map.kit.stats;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import net.frozenorb.foxtrot.map.kit.stats.command.StatsTopCommand;
 
 import java.util.UUID;
@@ -15,7 +16,9 @@ public class StatsEntry {
     @Getter private int kills;
     @Getter private int deaths;
 
-    @Getter private int killstreak;
+    @Getter
+    @Setter
+    private int killstreak;
     @Getter private int highestKillstreak;
 
     public StatsEntry(UUID owner) {
