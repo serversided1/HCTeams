@@ -167,6 +167,10 @@ public class BountyHandler implements Listener {
         }
         
         this.pickingNewBounty = true;
+
+        if (Bukkit.getOnlinePlayers().size() < 25) {
+            return;
+        }
         
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&7[&6Bounty&7] &eA &9Bounty &ewill be placed on a random player in &c30 seconds&e."));
         Bukkit.getScheduler().runTaskLater(Foxtrot.getInstance(), () -> {
