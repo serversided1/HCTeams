@@ -13,12 +13,18 @@ public class StatsEntry {
 
     @Getter private UUID owner;
 
-    @Getter private int kills;
-    @Getter private int deaths;
+    @Getter
+    @Setter
+    private int kills;
+
+    @Getter
+    @Setter
+    private int deaths;
 
     @Getter
     @Setter
     private int killstreak;
+
     @Getter private int highestKillstreak;
 
     public StatsEntry(UUID owner) {
