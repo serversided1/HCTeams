@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import net.frozenorb.foxtrot.deathmessage.event.PlayerKilledEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -82,6 +83,9 @@ public class DamageListener implements Listener {
                     // kit-map death handling
                     if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                         Player victim = event.getEntity();
+
+                        PlayerKilledEvent killedEvent = new PlayerKilledEvent(killer, victim);
+                        Foxtrot.getInstance().getServer().getPluginManager().callEvent(killedEvent);
                         
                         if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {
                             boosting.putIfAbsent(killer.getUniqueId(), 0);
@@ -129,32 +133,6 @@ public class DamageListener implements Listener {
                             
                             Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), killerStats.getKills());
                             Foxtrot.getInstance().getDeathsMap().setDeaths(victim.getUniqueId(), victimStats.getDeaths());
-
-                            Team killerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(killer);
-
-                            if (killerTeam != null) {
-                                // Check for team killstreak points rewards
-                                switch (killerStats.getKillstreak()) {
-                                    case 75:
-                                        grantTeamKillstreakReward(killer, killerTeam, 75, 15);
-                                        break;
-                                    case 150:
-                                        grantTeamKillstreakReward(killer, killerTeam, 150, 25);
-                                        break;
-                                    case 300:
-                                        grantTeamKillstreakReward(killer, killerTeam, 300, 30);
-                                        break;
-                                    case 400:
-                                        grantTeamKillstreakReward(killer, killerTeam, 400, 40);
-                                        break;
-                                    case 500:
-                                        grantTeamKillstreakReward(killer, killerTeam, 500, 50);
-                                        break;
-                                    case 1000:
-                                        grantTeamKillstreakReward(killer, killerTeam, 1000, 100);
-                                        break;
-                                }
-                            }
                         }
                     } else {
                         Foxtrot.getInstance().getKillsMap().setKills(killer.getUniqueId(), Foxtrot.getInstance().getKillsMap().getKills(killer.getUniqueId()) + 1);
@@ -235,13 +213,7 @@ public class DamageListener implements Listener {
             for (PersistentKillstreak persistentStreak : persistent) {
                 persistentStreak.apply(player);
             }
-            
         }, 5L);
-    }
-
-    private void grantTeamKillstreakReward(Player player, Team team, int killstreak, int points) {
-        team.addKillstreakPoints(points);
-        team.sendMessage(ChatColor.GREEN + "Your team received " + points + " points thanks to " + ChatColor.AQUA + ChatColor.BOLD + player.getName() + ChatColor.GREEN + "'s " + killstreak + " killstreak.");
     }
     
     @EventHandler(ignoreCancelled = false)
