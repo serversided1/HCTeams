@@ -83,11 +83,15 @@ public class DamageListener implements Listener {
                     // kit-map death handling
                     if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                         Player victim = event.getEntity();
-
                         PlayerKilledEvent killedEvent = new PlayerKilledEvent(killer, victim);
+
                         Foxtrot.getInstance().getServer().getPluginManager().callEvent(killedEvent);
-                        
-                        if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {
+
+                        // Prevent kill boosting
+                        // Check if the victim's UUID is the same as the killer's last victim UUID
+                        // Check if the victim's IP matches the killer's IP
+                        if ((killer.getAddress().getAddress().getHostAddress().equalsIgnoreCase(victim.getAddress().getAddress().getHostAddress())) ||
+                            (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId())) {
                             boosting.putIfAbsent(killer.getUniqueId(), 0);
                             boosting.put(killer.getUniqueId(), boosting.get(killer.getUniqueId()) + 1);
                         } else {
