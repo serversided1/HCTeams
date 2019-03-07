@@ -83,15 +83,15 @@ public class DamageListener implements Listener {
                     // kit-map death handling
                     if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                         Player victim = event.getEntity();
-                        PlayerKilledEvent killedEvent = new PlayerKilledEvent(killer, victim);
 
+                        // Call event
+                        PlayerKilledEvent killedEvent = new PlayerKilledEvent(killer, victim);
                         Foxtrot.getInstance().getServer().getPluginManager().callEvent(killedEvent);
 
                         // Prevent kill boosting
                         // Check if the victim's UUID is the same as the killer's last victim UUID
                         // Check if the victim's IP matches the killer's IP
-                        if ((killer.getAddress().getAddress().getHostAddress().equalsIgnoreCase(victim.getAddress().getAddress().getHostAddress())) ||
-                            (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId())) {
+                        if (lastKilled.containsKey(killer.getUniqueId()) && lastKilled.get(killer.getUniqueId()) == victim.getUniqueId()) {
                             boosting.putIfAbsent(killer.getUniqueId(), 0);
                             boosting.put(killer.getUniqueId(), boosting.get(killer.getUniqueId()) + 1);
                         } else {
@@ -100,8 +100,10 @@ public class DamageListener implements Listener {
                         
                         if (killer.equals(victim) || isNaked(victim)) {
                             StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
-                            
+
                             victimStats.addDeath();
+                        } else if (killer.getAddress().getAddress().getHostAddress().equalsIgnoreCase(victim.getAddress().getAddress().getHostAddress())) {
+                            killer.sendMessage(ChatColor.RED + "Boost Check: You've killed a player on the same IP address as you.");
                         } else if (boosting.containsKey(killer.getUniqueId()) && boosting.get(killer.getUniqueId()) > 1) {
                             killer.sendMessage(ChatColor.RED + "Boost Check: You've killed " + victim.getName() + " " + boosting.get(killer.getUniqueId()) + " times.");
                             
