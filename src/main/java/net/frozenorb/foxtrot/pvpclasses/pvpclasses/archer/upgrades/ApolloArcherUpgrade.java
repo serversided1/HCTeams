@@ -16,7 +16,7 @@ public class ApolloArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public int getKillsNeeded() {
-		return 300;
+		return 100;
 	}
 
 	@Override

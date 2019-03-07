@@ -16,7 +16,7 @@ public class HadesArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public int getKillsNeeded() {
-		return 500;
+		return 150;
 	}
 
 	@Override

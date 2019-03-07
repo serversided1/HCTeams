@@ -16,7 +16,7 @@ public class PythonArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public int getKillsNeeded() {
-		return 75;
+		return 25;
 	}
 
 	@Override

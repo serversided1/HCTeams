@@ -16,7 +16,7 @@ public class MedusaArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public int getKillsNeeded() {
-		return 150;
+		return 50;
 	}
 
 	@Override
