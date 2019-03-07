@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.event.SpawnerBreakEvent;
+import net.frozenorb.foxtrot.team.event.CrowbarSpawnerBreakEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,7 +21,7 @@ public class SpawnerTrackerListener implements Listener {
 			Claim claim = LandBoard.getInstance().getClaim(event.getBlockPlaced().getLocation());
 
 			if (claim != null && team.getClaims().contains(claim)) {
-				team.incrementSpawnersInClaim();
+				team.addSpawnersInClaim(1);
 			}
 		}
 	}
@@ -34,20 +34,20 @@ public class SpawnerTrackerListener implements Listener {
 			Claim claim = LandBoard.getInstance().getClaim(event.getBlock().getLocation());
 
 			if (claim != null && team.getClaims().contains(claim)) {
-				team.decrementSpawnersInClaim();
+				team.removeSpawnersInClaim(1);
 			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onSpawnerBreakEvent(SpawnerBreakEvent event) {
+	public void onSpawnerBreakEvent(CrowbarSpawnerBreakEvent event) {
 		Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
 		if (team != null) {
 			Claim claim = LandBoard.getInstance().getClaim(event.getBlock().getLocation());
 
 			if (claim != null && team.getClaims().contains(claim)) {
-				team.incrementSpawnersInClaim();
+				team.removeSpawnersInClaim(1);
 			}
 		}
 	}

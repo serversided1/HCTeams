@@ -65,6 +65,7 @@ public class TeamUnclaimCommand {
                 LandBoard.getInstance().updateSubclaim(subclaim);
             }
 
+            team.setSpawnersInClaim(0);
             team.getSubclaims().clear();
             team.setHQ(null);
             team.flagForSave();

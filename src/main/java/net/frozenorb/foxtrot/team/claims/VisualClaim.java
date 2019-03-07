@@ -580,8 +580,8 @@ public class VisualClaim implements Listener {
 
             LandBoard.getInstance().setTeamAt(claim, playerTeam);
             playerTeam.getClaims().add(claim);
-
             playerTeam.flagForSave();
+            playerTeam.recalculateSpawnersInClaims();
 
             player.sendMessage(ChatColor.YELLOW + "You have claimed this land for your team!");
 
@@ -663,6 +663,7 @@ public class VisualClaim implements Listener {
             playerTeam.getClaims().remove(resizing);
             playerTeam.getClaims().add(newClaim);
             playerTeam.flagForSave();
+            playerTeam.recalculateSpawnersInClaims();
 
             player.sendMessage(ChatColor.YELLOW + "You have resized this land!");
 

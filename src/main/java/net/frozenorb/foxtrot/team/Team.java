@@ -32,9 +32,13 @@ import net.frozenorb.qlib.util.UUIDUtils;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import redis.clients.jedis.Jedis;
@@ -81,9 +85,12 @@ public class Team {
     @Getter private int diamondsMined = 0;
     @Getter private int deaths = 0;
     @Getter private int citadelsCapped = 0;
-    @Getter private int spawnersInClaim = 0;
     @Getter private int killstreakPoints = 0;
     @Getter private int playtimePoints = 0;
+
+    @Getter private int spawnersInClaim = 0;
+    @Getter private int purchasedExtraSpawners = 0; // part of faction upgrades (purchase more spawner slots)
+    @Getter private int spentPoints = 0; // points spent on faction upgrades (kinda aids)
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -441,12 +448,6 @@ public class Team {
         flagForSave();
     }
 
-    public void setSpawnersInClaim(int spawnersInClaim) {
-        this.spawnersInClaim = spawnersInClaim;
-        recalculatePoints();
-        flagForSave();
-    }
-
     public void setKillstreakPoints(int killstreakPoints) {
         this.killstreakPoints = killstreakPoints;
         recalculatePoints();
@@ -471,14 +472,83 @@ public class Team {
         flagForSave();
     }
 
-    public void incrementSpawnersInClaim() {
-        spawnersInClaim++;
+    public void addSpawnersInClaim(int amount) {
+        spawnersInClaim += amount;
+
+        if (spawnersInClaim < 0) {
+            spawnersInClaim = 0;
+        }
+
         recalculatePoints();
         flagForSave();
     }
 
-    public void decrementSpawnersInClaim() {
-        spawnersInClaim--;
+    public void removeSpawnersInClaim(int amount) {
+        spawnersInClaim -= amount;
+
+        if (spawnersInClaim < 0) {
+            spawnersInClaim = 0;
+        }
+
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void setSpawnersInClaim(int amount) {
+        if (amount < 0) {
+            amount = 0;
+        }
+
+        spawnersInClaim = amount;
+        recalculatePoints();
+        flagForSave();
+    }
+
+    public void recalculateSpawnersInClaims() {
+	    new BukkitRunnable() {
+		    @Override
+		    public void run() {
+			    int spawners = 0;
+
+			    // Iterate through chunks' tile entities rather than every block
+			    for (Claim claim : getClaims()) {
+                    final World world = Bukkit.getWorld(claim.getWorld());
+                    final Location minPoint = claim.getMinimumPoint();
+                    final Location maxPoint = claim.getMaximumPoint();
+                    final int minChunkX = ((int) minPoint.getX()) >> 4;
+                    final int minChunkZ = ((int) minPoint.getZ()) >> 4;
+                    final int maxChunkX = ((int) maxPoint.getX()) >> 4;
+                    final int maxChunkZ = ((int) maxPoint.getZ()) >> 4;
+
+                    for (int chunkX = minChunkX; chunkX < maxChunkX + 1; chunkX++) {
+                        for (int chunkZ = minChunkZ; chunkZ < maxChunkZ + 1; chunkZ++) {
+                            Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+
+                            for (BlockState blockState : chunk.getTileEntities()) {
+                                // Check if the block is a mob spawner
+                                if (blockState instanceof CreatureSpawner) {
+                                    // Even though we're iterating through chunks' tile entities
+                                    // we need to make sure that the block's location is within
+                                    // the claim (because claims don't have to align with chunks)
+                                    final Location loc = blockState.getLocation();
+
+                                    if (loc.getX() >= minPoint.getX() && loc.getZ() >= minPoint.getZ() &&
+                                        loc.getX() <= maxPoint.getX() && loc.getZ() <= maxPoint.getZ()) {
+                                        spawners++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+			    }
+
+			    setSpawnersInClaim(spawners);
+		    }
+	    }.runTaskAsynchronously(Foxtrot.getInstance());
+    }
+
+    public void spendPoints(int points) {
+        spentPoints += points;
         recalculatePoints();
         flagForSave();
     }
@@ -494,6 +564,11 @@ public class Team {
         basePoints += spawnersInClaim * 5;
         basePoints += killstreakPoints;
         basePoints += playtimePoints;
+        basePoints -= spentPoints;
+
+        if (basePoints < 0) {
+            basePoints = 0;
+        }
 
         this.points = basePoints;
     }
@@ -896,12 +971,12 @@ public class Team {
                 setDiamondsMined(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("CitadelsCapped")) {
                 setCitadelsCapped(Integer.valueOf(lineParts[0]));
-            } else if (identifier.equalsIgnoreCase("SpawnersInClaim")) {
-                setSpawnersInClaim(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("KillstreakPoints")) {
                 setKillstreakPoints(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("PlaytimePoints")) {
                 setPlaytimePoints(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("SpawnersInClaim")) {
+                setSpawnersInClaim(Integer.valueOf(lineParts[0]));
             }
         }
 
@@ -997,9 +1072,9 @@ public class Team {
         teamString.append("DiamondsMined:").append(String.valueOf(getDiamondsMined())).append("\n");
         teamString.append("KothCaptures:").append(String.valueOf(getKothCaptures())).append("\n");
         teamString.append("CitadelsCapped:").append(String.valueOf(getCitadelsCapped())).append("\n");
-        teamString.append("SpawnersInClaim:").append(String.valueOf(getSpawnersInClaim())).append("\n");
         teamString.append("KillstreakPoints:").append(String.valueOf(getKillstreakPoints())).append("\n");
         teamString.append("PlaytimePoints:").append(String.valueOf(getPlaytimePoints())).append("\n");
+        teamString.append("SpawnersInClaim:").append(String.valueOf(getSpawnersInClaim())).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -1267,8 +1342,8 @@ public class Team {
             player.sendMessage(ChatColor.YELLOW + "Points: " + ChatColor.RED + getPoints());
             player.sendMessage(ChatColor.YELLOW + "KOTH Captures: " + ChatColor.RED + getKothCaptures());
             player.sendMessage(ChatColor.YELLOW + "Lives: " + ChatColor.RED + getLives());
+            player.sendMessage(ChatColor.YELLOW + "Spawners: " + ChatColor.RED + getSpawnersInClaim());
         }
-
 
         if (DTRHandler.isOnCooldown(this)) {
             if (!player.isOp()) {
