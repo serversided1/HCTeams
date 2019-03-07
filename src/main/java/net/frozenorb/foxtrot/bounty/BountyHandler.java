@@ -313,6 +313,10 @@ public class BountyHandler implements Listener {
     }
 
     private static String formatName(UUID uuid) {
+        if (Hydrogen.getInstance().getProfileHandler() == null) {
+            return UUIDUtils.name(uuid);
+        }
+
         Profile profile = Hydrogen.getInstance().getProfileHandler().getProfile(uuid).orElse(null);
         if (profile == null) {
             return UUIDUtils.name(uuid);
