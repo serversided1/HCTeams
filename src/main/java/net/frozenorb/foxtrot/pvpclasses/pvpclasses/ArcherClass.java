@@ -3,11 +3,17 @@ package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.NauseaArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.PoisonArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.SlownessArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.WeaknessArcherUpgradeAbility;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,12 +46,19 @@ import net.frozenorb.qlib.util.TimeUtils;
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
 
-    public static final int MARK_SECONDS = 10;
+    private static final int MARK_SECONDS = 10;
 
-    private static Map<String, Long> lastSpeedUsage = new HashMap<>();
-    private static Map<String, Long> lastJumpUsage = new HashMap<>();
-    @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
-    @Getter private static Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
+    private static final List<ArcherUpgradeAbility> abilities = Arrays.asList(
+            new PoisonArcherUpgradeAbility(),
+            new SlownessArcherUpgradeAbility(),
+            new NauseaArcherUpgradeAbility(),
+            new WeaknessArcherUpgradeAbility()
+    );
+
+    private static final Map<String, Long> lastSpeedUsage = new HashMap<>();
+    private static final Map<String, Long> lastJumpUsage = new HashMap<>();
+    @Getter private static final Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
+    @Getter private static final Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
     public ArcherClass() {
         super("Archer", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
@@ -172,12 +185,30 @@ public class ArcherClass extends PvPClass {
                 FrozenNametagHandler.reloadPlayer(player);
 
                 new BukkitRunnable() {
-
                     public void run() {
                         FrozenNametagHandler.reloadPlayer(player);
                     }
-
                 }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+
+                // Check for special Archer abilities if kitmap
+                // 127-204-25 - lime
+                // 153-51-51 - red
+                // 229-229-51 - yellow
+                // 76-76-76 - gray
+                if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+                    if (!ArcherUpgradeAbility.canUseAbility(shooter)) {
+                        player.sendMessage(ChatColor.RED + "You can't use your Archer upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgradeAbility.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
+                        return;
+                    }
+
+                    for (ArcherUpgradeAbility ability : abilities) {
+                        if (ability.applies(shooter)) {
+                            ability.onHit(shooter, player);
+                            ArcherUpgradeAbility.setCooldown(player, 10);
+                            break;
+                        }
+                    }
+                }
             } else {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
             }
