@@ -1,18 +1,32 @@
-package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities;
+package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades;
 
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class NauseaArcherUpgradeAbility implements ArcherUpgradeAbility {
+public class MedusaArcherUpgrade implements ArcherUpgrade {
+
+	@Override
+	public String getUpgradeName() {
+		return "Medusa";
+	}
+
+	@Override
+	public int getKillsNeeded() {
+		return 150;
+	}
+
+	@Override
+	public short getMaterialData() {
+		return 8;
+	}
 
 	@Override
 	public void onHit(Player shooter, Player victim) {
-		victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 10, 1));
-		victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 10, 1));
+		victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 10, 1));
 	}
 
 	@Override
@@ -24,7 +38,7 @@ public class NauseaArcherUpgradeAbility implements ArcherUpgradeAbility {
 
 			LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
 
-			if (meta.getColor().getRed() != 229 || meta.getColor().getGreen() != 229 || meta.getColor().getBlue() != 51) {
+			if (meta.getColor().getRed() != 76 || meta.getColor().getGreen() != 76 || meta.getColor().getBlue() != 76) {
 				return false;
 			}
 		}

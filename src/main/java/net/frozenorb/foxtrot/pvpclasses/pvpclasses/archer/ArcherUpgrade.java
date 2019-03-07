@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
-public interface ArcherUpgradeAbility {
+public interface ArcherUpgrade {
 
 	@Getter
 	static Map<UUID, Long> cooldown = new HashMap<>();
@@ -22,6 +22,12 @@ public interface ArcherUpgradeAbility {
 	static long getRemainingTime(Player player) {
 		return cooldown.get(player.getUniqueId()) - System.currentTimeMillis();
 	}
+
+	String getUpgradeName();
+
+	int getKillsNeeded();
+
+	short getMaterialData();
 
 	void onHit(Player shooter, Player victim);
 

@@ -1,13 +1,28 @@
-package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities;
+package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades;
 
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class WeaknessArcherUpgradeAbility implements ArcherUpgradeAbility {
+public class HadesArcherUpgrade implements ArcherUpgrade {
+
+	@Override
+	public String getUpgradeName() {
+		return "Hades";
+	}
+
+	@Override
+	public int getKillsNeeded() {
+		return 500;
+	}
+
+	@Override
+	public short getMaterialData() {
+		return 1;
+	}
 
 	@Override
 	public void onHit(Player shooter, Player victim) {

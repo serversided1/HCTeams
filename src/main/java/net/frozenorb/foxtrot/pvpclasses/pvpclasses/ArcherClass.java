@@ -9,11 +9,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgradeAbility;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.NauseaArcherUpgradeAbility;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.PoisonArcherUpgradeAbility;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.SlownessArcherUpgradeAbility;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.abilities.WeaknessArcherUpgradeAbility;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.ApolloArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.PythonArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.MedusaArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.HadesArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.command.ArcherUpgradesCommand;
+import net.frozenorb.qlib.command.FrozenCommandHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,11 +50,12 @@ public class ArcherClass extends PvPClass {
 
     private static final int MARK_SECONDS = 10;
 
-    private static final List<ArcherUpgradeAbility> abilities = Arrays.asList(
-            new PoisonArcherUpgradeAbility(),
-            new SlownessArcherUpgradeAbility(),
-            new NauseaArcherUpgradeAbility(),
-            new WeaknessArcherUpgradeAbility()
+    @Getter
+    private static final List<ArcherUpgrade> abilities = Arrays.asList(
+            new PythonArcherUpgrade(),
+            new MedusaArcherUpgrade(),
+            new ApolloArcherUpgrade(),
+            new HadesArcherUpgrade()
     );
 
     private static final Map<String, Long> lastSpeedUsage = new HashMap<>();
@@ -62,6 +65,10 @@ public class ArcherClass extends PvPClass {
 
     public ArcherClass() {
         super("Archer", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
+
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+            FrozenCommandHandler.registerClass(ArcherUpgradesCommand.class);
+        }
     }
 
     @Override
@@ -196,15 +203,15 @@ public class ArcherClass extends PvPClass {
                 // 229-229-51 - yellow
                 // 76-76-76 - gray
                 if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-                    if (!ArcherUpgradeAbility.canUseAbility(shooter)) {
-                        player.sendMessage(ChatColor.RED + "You can't use your Archer upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgradeAbility.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
+                    if (!ArcherUpgrade.canUseAbility(shooter)) {
+                        player.sendMessage(ChatColor.RED + "You can't use your Archer upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
                         return;
                     }
 
-                    for (ArcherUpgradeAbility ability : abilities) {
+                    for (ArcherUpgrade ability : abilities) {
                         if (ability.applies(shooter)) {
                             ability.onHit(shooter, player);
-                            ArcherUpgradeAbility.setCooldown(player, 10);
+                            ArcherUpgrade.setCooldown(player, 10);
                             break;
                         }
                     }
