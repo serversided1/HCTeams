@@ -111,6 +111,7 @@ public class ServerHandler {
     @Getter private final boolean blockEntitiesThroughPortals;
 
     @Getter private final ChatColor archerTagColor;
+    @Getter private final ChatColor stunTagColor;
     @Getter private final ChatColor defaultRelationColor;
 
     @Getter private final boolean velt;
@@ -193,6 +194,7 @@ public class ServerHandler {
         this.blockEntitiesThroughPortals = Foxtrot.getInstance().getConfig().getBoolean("blockEntitiesThroughPortals", true);
 
         this.archerTagColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("archerTagColor", "YELLOW"));
+        this.stunTagColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("stunTagColor", "BLUE"));
         this.defaultRelationColor = ChatColor.valueOf(Foxtrot.getInstance().getConfig().getString("defaultRelationColor", "RED"));
 
         this.velt = Foxtrot.getInstance().getConfig().getBoolean("velt", false);

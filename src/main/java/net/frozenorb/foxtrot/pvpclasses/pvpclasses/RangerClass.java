@@ -4,13 +4,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,12 +29,18 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class RangerClass extends PvPClass {
+
+	private static final int TAG_SECONDS = 15;
+	private static final int HIT_COOLDOWN_SECONDS = 45;
+	private static final int MISS_COOLDOWN_SECONDS = 15;
 
 	private static Map<String, Long> lastSpeedUsage = new HashMap<>();
 	private static Map<String, Long> lastJumpUsage = new HashMap<>();
 	private static Map<UUID, Long> throwCooldown = new HashMap<>();
+	@Getter private static Map<UUID, Long> markedPlayers = new ConcurrentHashMap<>();
 
 	public RangerClass() {
 		super("Ranger", 5, Arrays.asList(Material.SUGAR, Material.FEATHER));
@@ -123,8 +132,8 @@ public class RangerClass extends PvPClass {
 			// Set snowball distance meta
 			snowball.setMetadata("ShotFromDistance", new FixedMetadataValue(Foxtrot.getInstance(), snowball.getLocation()));
 
-			// Add 15 second default cooldown (gets set to 45 if the snowball hits a player)
-			throwCooldown.put(shooter.getUniqueId(), System.currentTimeMillis() + 15_000L);
+			// Add miss cooldown by default (gets set to hit cooldown if they hit a player)
+			throwCooldown.put(shooter.getUniqueId(), System.currentTimeMillis() + (MISS_COOLDOWN_SECONDS * 1000L));
 		}
 	}
 
@@ -157,31 +166,29 @@ public class RangerClass extends PvPClass {
 				return;
 			}
 
+			// Add spawn-tag to both players
+			SpawnTagHandler.addOffensiveSeconds(victim, SpawnTagHandler.getMaxTagTime());
+			SpawnTagHandler.addOffensiveSeconds(shooter, SpawnTagHandler.getMaxTagTime());
+
 			int distance = (int) ((Location) snowball.getMetadata("ShotFromDistance").get(0).value()).distance(victim.getLocation());
 
 			// Send shooter feedback
 			if (PvPClassHandler.hasKitOn(victim, this)) {
-				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Cannot stun another Ranger!");
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Stun Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Cannot stun another Ranger!");
 				return;
 			} else {
-				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Snowball Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Slowed and weakened player!");
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Stun Range" + ChatColor.YELLOW + " (" + ChatColor.RED + distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Slowed and weakened player!");
 			}
 
 			// Send damaged message
-			victim.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for 10 seconds.");
+			victim.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for " + TAG_SECONDS + " seconds.");
 
 			// Add effects to damaged player
-			// SLOWNESS 1 10 SECONDS
-			// WEAKNESS 4 10 SECONDS
-			victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * 10, 0));
-			victim.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 10, 3));
+			victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * TAG_SECONDS, 0));
+			victim.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * TAG_SECONDS, 3));
 
 			// Add 45 second throw cooldown (because the shooter hit another player)
-			throwCooldown.put(shooter.getUniqueId(), System.currentTimeMillis() + 45_000L);
-
-			// Add spawn-tag to both players
-			SpawnTagHandler.addOffensiveSeconds(victim, SpawnTagHandler.getMaxTagTime());
-			SpawnTagHandler.addOffensiveSeconds(shooter, SpawnTagHandler.getMaxTagTime());
+			throwCooldown.put(shooter.getUniqueId(), System.currentTimeMillis() + (HIT_COOLDOWN_SECONDS * 1000L));
 
 			// Add enderpearl timer or cancel flying pearl
 			if (victim.hasMetadata("LastEnderPearl")) {
@@ -189,6 +196,22 @@ public class RangerClass extends PvPClass {
 			} else {
 				EnderpearlListener.resetEnderpearlTimer(victim);
 			}
+
+			// Mark the victim with a blue name
+			// (handled in FoxtrotNametagProvider)
+			markedPlayers.put(victim.getUniqueId(), System.currentTimeMillis() + (TAG_SECONDS * 1000L));
+
+			// Trigger a nametag update and schedule one for when the tag is finished
+			FrozenNametagHandler.reloadPlayer(victim);
+
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					if (victim.isOnline()) {
+						FrozenNametagHandler.reloadPlayer(victim);
+					}
+				}
+			}.runTaskLaterAsynchronously(Foxtrot.getInstance(), 20L * TAG_SECONDS);
 		}
 	}
 
@@ -197,6 +220,7 @@ public class RangerClass extends PvPClass {
 		lastJumpUsage.remove(event.getPlayer().getName());
 		lastSpeedUsage.remove(event.getPlayer().getName());
 		throwCooldown.remove(event.getPlayer().getUniqueId());
+		markedPlayers.remove(event.getPlayer().getUniqueId());
 	}
 
 }

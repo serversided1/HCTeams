@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.nametag;
 import java.util.Map;
 import java.util.UUID;
 
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.RangerClass;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -33,7 +34,10 @@ public class FoxtrotNametagProvider extends NametagProvider {
 
         // If we already found something above they override these, otherwise we can do these checks.
         if (nametagInfo == null) {
-            if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
+            if (RangerClass.getMarkedPlayers().containsKey(toRefresh.getUniqueId()) && RangerClass.getMarkedPlayers().get(toRefresh.getUniqueId()) > System.currentTimeMillis()) {
+	            System.out.println("refreshed " + toRefresh.getName() + " with stun tag color: " + Foxtrot.getInstance().getServerHandler().getStunTagColor());
+                nametagInfo = createNametag(toRefresh, Foxtrot.getInstance().getServerHandler().getStunTagColor().toString(), "");
+            } else if (ArcherClass.getMarkedPlayers().containsKey(toRefresh.getName()) && ArcherClass.getMarkedPlayers().get(toRefresh.getName()) > System.currentTimeMillis()) {
                 nametagInfo = createNametag(toRefresh, Foxtrot.getInstance().getServerHandler().getArcherTagColor().toString(), "");
             } else if (viewerTeam != null && viewerTeam.getFocused() != null && viewerTeam.getFocused().equals(toRefresh.getUniqueId())) {
                 nametagInfo = createNametag(toRefresh, ChatColor.LIGHT_PURPLE.toString(), "");

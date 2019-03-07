@@ -45,7 +45,6 @@ public class ArcherClass extends PvPClass {
     private static Map<String, Long> lastSpeedUsage = new HashMap<>();
     private static Map<String, Long> lastJumpUsage = new HashMap<>();
     @Getter private static Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
-
     @Getter private static Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
     public ArcherClass() {
