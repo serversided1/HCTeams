@@ -12,7 +12,7 @@ public class PlayerViewDistanceCommand {
 //        if( value <= 15 && value >= 2 ) {
 //            ((CraftPlayer)p).spigot().setViewDistance(value);
 //            ChunkLimiterListener.getViewDistances().put(p.getUniqueId(), value);
-//            sender.sendMessage(ChatColor.GREEN + "Set " + ChatColor.YELLOW + p.getName() + ChatColor.GREEN + "'s view distance to " + org.bukkit.ChatColor.YELLOW + value);
+//            sender.sendMessage(ChatColor.GREEN + "Set " + ChatColor.YELLOW + p.getKitName() + ChatColor.GREEN + "'s view distance to " + org.bukkit.ChatColor.YELLOW + value);
 //        } else {
 //            sender.sendMessage(ChatColor.RED + "The value should be between 2 and 15");
 //        }

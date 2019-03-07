@@ -40,8 +40,8 @@ public class ChunkLimiterListener implements Listener {
         int target = view;
 
         Team team = LandBoard.getInstance().getTeam(event.getTo());
-        if (team != null && !team.getName().equalsIgnoreCase("Warzone")) {
-            if (team.getName().equalsIgnoreCase("spawn")) {
+        if (team != null && !team.getKitName().equalsIgnoreCase("Warzone")) {
+            if (team.getKitName().equalsIgnoreCase("spawn")) {
                 target = 3;
             } else {
                 target = defaultView.get(event.getPlayer().getUniqueId());

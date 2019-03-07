@@ -9,7 +9,7 @@ public class Carnage /*implements Event*/ {
 
 
     @Override
-    public String getName() {
+    public String getKitName() {
         return null;
     }
 
