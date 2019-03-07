@@ -130,7 +130,7 @@ public class CombatLoggerListener implements Listener {
                 // Add the death sign.
 
 //              if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-//                  event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getName()));
+//                  event.getDrops().add(Foxtrot.getInstance().getServerHandler().generateDeathSign(metadata.playerName, event.getEntity().getKiller().getKitName()));
 //              }
             } else {
                 String deathMessage = ChatColor.RED + metadata.playerName + ChatColor.DARK_RED + "[" + victimKills + "]" + ChatColor.GRAY + " (Combat-Logger)" + ChatColor.YELLOW + " died.";

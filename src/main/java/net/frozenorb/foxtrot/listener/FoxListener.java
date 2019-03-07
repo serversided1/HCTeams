@@ -554,8 +554,8 @@ public class FoxListener implements Listener {
                 ItemStack skull = new ItemStack(SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
                 SkullMeta meta = (SkullMeta) skull.getItemMeta();
             
-                meta.setOwner(event.getEntity().getName());
-                meta.setDisplayName(YELLOW + "Head of " + event.getEntity().getName());
+                meta.setOwner(event.getEntity().getKitName());
+                meta.setDisplayName(YELLOW + "Head of " + event.getEntity().getKitName());
                 meta.setLore(Arrays.asList("", deathMsg));
                 skull.setItemMeta(meta);
                 event.getDrops().add(skull);
@@ -563,7 +563,7 @@ public class FoxListener implements Listener {
             */
 
             //            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            //                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getName(), event.getEntity().getKiller().getName())).values()) {
+            //                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getKitName(), event.getEntity().getKiller().getKitName())).values()) {
             //                    event.getDrops().add(it);
             //                }
             //            }
@@ -589,7 +589,7 @@ public class FoxListener implements Listener {
 
             /*
             //prevent stack overflow
-            if (ownerTo != null && ownerTo.getName().equalsIgnoreCase("spawn")) {
+            if (ownerTo != null && ownerTo.getKitName().equalsIgnoreCase("spawn")) {
                 return;
             }
             

@@ -201,7 +201,7 @@ public class EndListener implements Listener {
         } else if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) { // Entering the end
             //Don't allow factions of to large size to enter the mini end.
 //            Team team = LandBoard.getInstance().getTeam(event.getFrom());
-//            if (team != null && team.getName().equalsIgnoreCase(MiniEndConfiguration.getTeamName())) {
+//            if (team != null && team.getKitName().equalsIgnoreCase(MiniEndConfiguration.getTeamName())) {
 //                Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 //                if (playerTeam == null || playerTeam.getSize() <= MiniEndConfiguration.getMaximumTeamSize()) {
 //                    event.setTo(MiniEndConfiguration.getSpawnLocation());

@@ -270,10 +270,6 @@ public class ChallengeHandler implements Listener {
     @Command(names = {"challenge progress", "challenges"}, permission = "")
     public static void progress(Player sender) {
         new ChallengesMenu().openMenu(sender);
-//        sender.sendMessage(ChatColor.GREEN + "Today's daily challenges: " + instance.firstChallenge.getName() + " and " + instance.secondChallenge.getName());
-//        sender.sendMessage(ChatColor.GREEN + "Your progressions:");
-//        sender.sendMessage(ChatColor.RED + instance.firstChallenge.getName() + ": " + instance.getProgress(sender, instance.firstChallenge) + "/" + instance.firstChallenge.getCountToQualify());
-//        sender.sendMessage(ChatColor.RED + instance.secondChallenge.getName() + ": " + instance.getProgress(sender, instance.secondChallenge) + "/" + instance.secondChallenge.getCountToQualify());
     }
     
     @Command(names = {"challenge picknew"}, permission = "op")

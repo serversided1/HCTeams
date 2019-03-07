@@ -75,6 +75,7 @@ public class ArcherClass extends PvPClass {
         if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
         }
+
         super.tick(player);
     }
 

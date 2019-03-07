@@ -385,7 +385,7 @@ public class FoxtrotTabLayoutProvider implements LayoutProvider {
                 if (!onlinePlayer.hasPermission("basic.staff")) {
                     continue;
                 }
-                layout.set(2, ++y, infoColor + onlinePlayer.getName());
+                layout.set(2, ++y, infoColor + onlinePlayer.getKitName());
             }
         }
         */

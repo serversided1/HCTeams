@@ -63,7 +63,7 @@ public class SignSubclaimListener implements Listener {
             return;
         }
 
-        /*if (!playerTeam.isCaptain(event.getPlayer().getName()) && !playerTeam.isOwner(event.getPlayer().getName())) {
+        /*if (!playerTeam.isCaptain(event.getPlayer().getKitName()) && !playerTeam.isOwner(event.getPlayer().getKitName())) {
             event.getBlock().breakNaturally();
             event.getPlayer().sendMessage(ChatColor.RED + "You must be a team captain to be able to do this!");
             return;
