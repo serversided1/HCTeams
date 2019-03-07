@@ -72,7 +72,12 @@ public class KitMapListener implements Listener {
     }
     
     private int getAdditional(Player killer) {
+        if (Hydrogen.getInstance().getProfileHandler() == null) {
+            return 0;
+        }
+
         Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(killer.getUniqueId());
+
         if (!profileOptional.isPresent()) {
             return 0;
         }
