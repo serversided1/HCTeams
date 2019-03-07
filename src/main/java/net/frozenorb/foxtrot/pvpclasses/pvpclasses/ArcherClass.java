@@ -200,21 +200,19 @@ public class ArcherClass extends PvPClass {
                 }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
 
                 // Check for special Archer archerUpgrades if kitmap
-                // 127-204-25 - lime
-                // 153-51-51 - red
-                // 229-229-51 - yellow
-                // 76-76-76 - gray
                 if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                     if (!ArcherUpgrade.canUseAbility(shooter)) {
-                        player.sendMessage(ChatColor.RED + "You can't use your Archer upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
+                        player.sendMessage(ChatColor.RED + "You can't use your Archer Upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
                         return;
                     }
 
                     for (ArcherUpgrade ability : archerUpgrades) {
-                        if (ability.applies(shooter)) {
-                            ability.onHit(shooter, player);
-                            ArcherUpgrade.setCooldown(player, 10);
-                            break;
+                        if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId()) >= ability.getKillsNeeded()) {
+                            if (ability.applies(shooter)) {
+                                ability.onHit(shooter, player);
+                                ArcherUpgrade.setCooldown(player, 10);
+                                break;
+                            }
                         }
                     }
                 }
@@ -254,10 +252,12 @@ public class ArcherClass extends PvPClass {
 
     @EventHandler
     public void onPlayerKilledEvent(PlayerKilledEvent event) {
-        StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(event.getKiller().getUniqueId());
+        if (PvPClassHandler.hasKitOn(event.getKiller(), this)) {
+            Foxtrot.getInstance().getArcherKillsMap().increment(event.getKiller().getUniqueId());
+        }
 
         for (ArcherUpgrade upgrade : archerUpgrades) {
-            if (stats.getKills() == upgrade.getKillsNeeded()) {
+            if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(event.getKiller().getUniqueId()) == upgrade.getKillsNeeded()) {
                 event.getKiller().sendMessage(ChatColor.GREEN + "You've unlocked the " + ChatColor.AQUA + ChatColor.BOLD + upgrade.getUpgradeName() + ChatColor.GREEN + " Archer Upgrade!");
                 break;
             }

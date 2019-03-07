@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import net.frozenorb.qlib.menu.Button;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -21,8 +20,7 @@ public class UpgradeProgressButton extends Button {
 
 	@Override
 	public String getName(Player player) {
-		StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player.getUniqueId());
-		return (stats.getKills() >= upgrade.getKillsNeeded() ? ChatColor.GREEN : ChatColor.YELLOW) + upgrade.getUpgradeName();
+		return (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId()) >= upgrade.getKillsNeeded() ? ChatColor.GREEN : ChatColor.YELLOW) + upgrade.getUpgradeName();
 	}
 
 	@Override
@@ -37,12 +35,10 @@ public class UpgradeProgressButton extends Button {
 
 	@Override
 	public List<String> getDescription(Player player) {
-		StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player.getUniqueId());
-
 		final String[] blocks = new String[10];
 		Arrays.fill(blocks, ChatColor.GRAY + StringEscapeUtils.unescapeJava("\u2588"));
 
-		int progress = stats.getKills();
+		int progress = Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId());
 		final double percentage = ((double) progress / (double) upgrade.getKillsNeeded()) * 100.0D;
 
 		for (int i = 0; i < percentage / 10; i++) {
