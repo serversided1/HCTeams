@@ -107,6 +107,7 @@ public class CrowbarListener implements Listener {
             }
 
             SpawnerBreakEvent spawnerBreakEvent = new SpawnerBreakEvent(event.getPlayer(), event.getClickedBlock());
+            Foxtrot.getInstance().getServer().getPluginManager().callEvent(spawnerBreakEvent);
 
             if (spawnerBreakEvent.isCancelled()) {
                 return;
