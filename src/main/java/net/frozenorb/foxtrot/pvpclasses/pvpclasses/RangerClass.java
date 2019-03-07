@@ -12,6 +12,7 @@ import net.frozenorb.foxtrot.listener.EnderpearlListener;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
 import net.frozenorb.qlib.util.TimeUtils;
@@ -221,6 +222,31 @@ public class RangerClass extends PvPClass {
 		lastSpeedUsage.remove(event.getPlayer().getName());
 		throwCooldown.remove(event.getPlayer().getUniqueId());
 		markedPlayers.remove(event.getPlayer().getUniqueId());
+	}
+
+	private boolean canUseMark(Player player) {
+		if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
+			Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
+
+			int amount = 0;
+
+			for (Player member : team.getOnlineMembers()) {
+				if (PvPClassHandler.hasKitOn(member, this)) {
+					amount++;
+
+					if (amount > 3) {
+						break;
+					}
+				}
+			}
+
+			if (amount > 3) {
+				player.sendMessage(ChatColor.RED + "Your team has too many rangers. Stun was not applied.");
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }
