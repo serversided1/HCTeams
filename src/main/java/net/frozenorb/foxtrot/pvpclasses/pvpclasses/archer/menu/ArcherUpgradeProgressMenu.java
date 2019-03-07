@@ -22,7 +22,7 @@ public class ArcherUpgradeProgressMenu extends Menu {
 
 		int startAt = 1;
 
-		for (ArcherUpgrade upgrade : ArcherClass.getAbilities()) {
+		for (ArcherUpgrade upgrade : ArcherClass.getArcherUpgrades()) {
 			buttons.put(startAt, new UpgradeProgressButton(upgrade));
 			startAt += 2;
 		}
