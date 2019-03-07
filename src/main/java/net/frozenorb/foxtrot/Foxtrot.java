@@ -27,7 +27,7 @@ import net.frozenorb.foxtrot.challenges.ChallengeHandler;
 import net.frozenorb.foxtrot.chat.ChatHandler;
 import net.frozenorb.foxtrot.citadel.CitadelHandler;
 import net.frozenorb.foxtrot.conquest.ConquestHandler;
-import net.frozenorb.foxtrot.crates.CrateListener;
+import net.frozenorb.foxtrot.crates.CrateHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.events.EventHandler;
 import net.frozenorb.foxtrot.glowmtn.GlowHandler;
@@ -107,6 +107,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CavernHandler cavernHandler;
     @Getter private GlowHandler glowHandler;
     @Getter private ChallengeHandler challengeHandler;
+    @Getter private CrateHandler crateHandler;
 
     @Getter private PlaytimeMap playtimeMap;
     @Getter private OppleMap oppleMap;
@@ -255,6 +256,7 @@ public class Foxtrot extends JavaPlugin {
         conquestHandler = new ConquestHandler();
         glowHandler = new GlowHandler();
         cavernHandler = new CavernHandler();
+        crateHandler = new CrateHandler();
         
         if (mapHandler.isKitMap() || serverHandler.isVeltKitMap()) {
             challengeHandler = new ChallengeHandler();
@@ -299,7 +301,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new CavernListener(), this);
         getServer().getPluginManager().registerEvents(new GlowListener(), this);
-        getServer().getPluginManager().registerEvents(new CrateListener(), this);
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
 
