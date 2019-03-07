@@ -145,6 +145,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CobblePickupMap cobblePickupMap;
     @Getter private KDRMap kdrMap;
     @Getter private KitmapTokensMap tokensMap;
+    @Getter private ArcherKillsMap archerKillsMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
     @Getter @Setter
@@ -366,6 +367,7 @@ public class Foxtrot extends JavaPlugin {
 
         if (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap()) {
             (tokensMap = new KitmapTokensMap()).loadFromRedis();
+            (archerKillsMap = new ArcherKillsMap()).loadFromRedis();
         }
     }
 
