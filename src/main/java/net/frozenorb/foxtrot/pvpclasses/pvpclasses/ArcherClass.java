@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import net.frozenorb.foxtrot.deathmessage.event.PlayerKilledEvent;
-import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.ApolloArcherUpgrade;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.PythonArcherUpgrade;
@@ -86,6 +85,15 @@ public class ArcherClass extends PvPClass {
     public void apply(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+            for (ArcherUpgrade ability : archerUpgrades) {
+                if (ability.applies(player) && Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId()) < ability.getKillsNeeded()) {
+                    player.sendMessage(ChatColor.RED + "You have an upgraded Archer set equipped but do not meet the requirements to use it's abilities.");
+                    player.sendMessage(ChatColor.RED + "To track your unlock progress, use the /archerupgrades command.");
+                }
+            }
+        }
     }
 
     @Override
@@ -256,10 +264,12 @@ public class ArcherClass extends PvPClass {
             Foxtrot.getInstance().getArcherKillsMap().increment(event.getKiller().getUniqueId());
         }
 
-        for (ArcherUpgrade upgrade : archerUpgrades) {
-            if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(event.getKiller().getUniqueId()) == upgrade.getKillsNeeded()) {
-                event.getKiller().sendMessage(ChatColor.GREEN + "You've unlocked the " + ChatColor.AQUA + ChatColor.BOLD + upgrade.getUpgradeName() + ChatColor.GREEN + " Archer Upgrade!");
-                break;
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+            for (ArcherUpgrade upgrade : archerUpgrades) {
+                if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(event.getKiller().getUniqueId()) == upgrade.getKillsNeeded()) {
+                    event.getKiller().sendMessage(ChatColor.GREEN + "You've unlocked the " + ChatColor.AQUA + ChatColor.BOLD + upgrade.getUpgradeName() + ChatColor.GREEN + " Archer Upgrade!");
+                    break;
+                }
             }
         }
     }
