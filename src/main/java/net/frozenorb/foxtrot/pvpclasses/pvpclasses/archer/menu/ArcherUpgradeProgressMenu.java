@@ -7,13 +7,14 @@ import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.menu.button.UpgradeProgressButton;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ArcherUpgradeProgressMenu extends Menu {
 
 	@Override
 	public String getTitle(Player player) {
-		return "Archer Upgrades";
+		return ChatColor.GOLD +  "Archer Upgrades";
 	}
 
 	@Override

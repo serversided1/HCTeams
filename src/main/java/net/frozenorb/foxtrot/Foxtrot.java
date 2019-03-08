@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import net.frozenorb.foxtrot.listener.SpawnerTrackerListener;
 import net.frozenorb.foxtrot.persist.maps.*;
+import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -274,8 +275,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        combatLoggerListener = new CombatLoggerListener();
-        getServer().getPluginManager().registerEvents(combatLoggerListener, this);
+        getServer().getPluginManager().registerEvents((combatLoggerListener = new CombatLoggerListener()), this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
         getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
@@ -287,7 +287,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new KOTHRewardKeyListener(), this);
         getServer().getPluginManager().registerEvents(new PvPTimerListener(), this);
         getServer().getPluginManager().registerEvents(new PotionLimiterListener(), this);
-        //getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
         getServer().getPluginManager().registerEvents(new NetherPortalListener(), this);
         getServer().getPluginManager().registerEvents(new PortalTrapListener(), this);
         getServer().getPluginManager().registerEvents(new SignSubclaimListener(), this);
@@ -305,27 +304,32 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
 
-        //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
-        //getServer().getPluginManager().registerEvents(new IPListener(), this );
         if (getServerHandler().isReduceArmorDamage()) {
             getServer().getPluginManager().registerEvents(new ArmorDamageListener(), this);
         }
+
         if (getServerHandler().isBlockEntitiesThroughPortals()) {
             getServer().getPluginManager().registerEvents(new EntityPortalListener(), this);
         }
+
         if (getServerHandler().isBlockRemovalEnabled()) {
             getServer().getPluginManager().registerEvents(new BlockRegenListener(), this);
         }
-        if (getServerHandler().isVeltKitMap()) {
-            getServer().getPluginManager().registerEvents(new KitMapListener(), this);
-        }
-        
+
+        // Register kitmap specific listeners
         if (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap()) {
+            getServer().getPluginManager().registerEvents(new KitMapListener(), this);
             getServer().getPluginManager().registerEvents(new BountyHandler(), this);
             getServer().getPluginManager().registerEvents(new CarePackageHandler(), this);
+
+            TeamUpgrade.register();
         }
         
         getServer().getPluginManager().registerEvents(new BlockConvenienceListener(), this);
+
+        //getServer().getPluginManager().registerEvents(new ChunkLimiterListener(), this );
+        //getServer().getPluginManager().registerEvents(new IPListener(), this );
+        //getServer().getPluginManager().registerEvents(new Prot3Sharp3Listener(), this);
     }
 
     private void setupPersistence() {

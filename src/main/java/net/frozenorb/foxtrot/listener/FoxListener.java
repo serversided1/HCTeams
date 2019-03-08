@@ -431,7 +431,7 @@ public class FoxListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onSignPlace(BlockPlaceEvent e) {
         Block block = e.getBlock();
         ItemStack hand = e.getItemInHand();
@@ -457,10 +457,11 @@ public class FoxListener implements Listener {
                     String name = stripColor(hand.getItemMeta().getDisplayName());
                     String entName = name.replace(" Spawner", "");
                     EntityType type = EntityType.valueOf(entName.toUpperCase().replaceAll(" ", "_"));
-                    CreatureSpawner spawner = (CreatureSpawner) block.getState();
 
+                    CreatureSpawner spawner = (CreatureSpawner) block.getState();
                     spawner.setSpawnedType(type);
                     spawner.update();
+
                     e.getPlayer().sendMessage(AQUA + "You placed a " + entName + " spawner!");
                 }
             }

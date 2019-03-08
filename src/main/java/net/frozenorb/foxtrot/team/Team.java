@@ -20,6 +20,7 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
 import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
@@ -89,8 +90,9 @@ public class Team {
     @Getter private int playtimePoints = 0;
 
     @Getter private int spawnersInClaim = 0;
-    @Getter private int purchasedExtraSpawners = 0; // part of faction upgrades (purchase more spawner slots)
     @Getter private int spentPoints = 0; // points spent on faction upgrades (kinda aids)
+
+	@Getter private Map<String, Integer> upgradeToTier = new HashMap<>();
 
     @Getter private int forceInvites = MAX_FORCE_INVITES;
     @Getter private Set<UUID> historicalMembers = new HashSet<>(); // this will store all players that were once members
@@ -105,6 +107,17 @@ public class Team {
 
     public Team(String name) {
         this.name = name;
+
+        // Set default team upgrades
+        for (TeamUpgrade upgrade : TeamUpgrade.upgrades.values()) {
+            if (upgrade.isCategory()) {
+                for (TeamUpgrade complexUpgrade : upgrade.getCategoryElements()) {
+                    upgradeToTier.putIfAbsent(complexUpgrade.getUpgradeName(), 0);
+                }
+            } else {
+                upgradeToTier.putIfAbsent(upgrade.getUpgradeName(), 0);
+            }
+        }
     }
 
     public void setDTR(double newDTR) {
@@ -547,11 +560,21 @@ public class Team {
 	    }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
+    public int getExtraSpawners() {
+	    return upgradeToTier.getOrDefault("Extra Spawner", 0);
+    }
+
     public void spendPoints(int points) {
         spentPoints += points;
         recalculatePoints();
         flagForSave();
     }
+
+	public void setSpentPoints(int points) {
+		spentPoints = points;
+		recalculatePoints();
+		flagForSave();
+	}
 
     public void recalculatePoints() {
         int basePoints = 0;
@@ -797,6 +820,13 @@ public class Team {
         if (obj.containsKey("Lives")) setLives(obj.getInt("Lives"));
         if (obj.containsKey("Claims")) for (Object claim : (BasicDBList) obj.get("Claims")) getClaims().add(Claim.fromJson((BasicDBObject) claim));
         if (obj.containsKey("Subclaims")) for (Object subclaim : (BasicDBList) obj.get("Subclaims")) getSubclaims().add(Subclaim.fromJson((BasicDBObject) subclaim));
+        if (obj.containsKey("PlaytimePoints")) setPlaytimePoints(obj.getInt("PlaytimePoints"));
+        if (obj.containsKey("SpentPoints")) setSpentPoints(obj.getInt("SpentPoints"));
+        if (obj.containsKey("SpawnersInClaim")) setSpawnersInClaim(obj.getInt("SpawnersInClaim"));
+
+        // Load team upgrades if they exist
+        if (obj.containsKey("Upgrades")) for (Object upgrade : (BasicDBList) obj.get("Upgrades")) upgradeToTier.put(((BasicDBObject) upgrade).getString("UpgradeName"), ((BasicDBObject) upgrade).getInt("Tier"));
+
         loading = false;
     }
 
@@ -959,8 +989,6 @@ public class Team {
                 setPowerFaction(Boolean.valueOf(lineParts[0]));
             } else if(identifier.equalsIgnoreCase("Lives")) {
                 setLives(Integer.valueOf(lineParts[0]));
-            } else if (identifier.equalsIgnoreCase("Points")) {
-                setPoints(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("Kills")) {
                 setKills(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("Deaths")) {
@@ -975,8 +1003,19 @@ public class Team {
                 setKillstreakPoints(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("PlaytimePoints")) {
                 setPlaytimePoints(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Points")) {
+	            setPoints(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("SpentPoints")) {
+				setSpentPoints(Integer.valueOf(lineParts[0]));
             } else if (identifier.equalsIgnoreCase("SpawnersInClaim")) {
                 setSpawnersInClaim(Integer.valueOf(lineParts[0]));
+            } else if (identifier.equalsIgnoreCase("Upgrades")) {
+                for (String name : lineParts) {
+                    if (name.length() >= 2) {
+                        String[] nameSplit = name.split(";");
+                        upgradeToTier.put(nameSplit[0].trim(), Integer.valueOf(nameSplit[1].trim()));
+                    }
+                }
             }
         }
 
@@ -1046,6 +1085,17 @@ public class Team {
             historicalMembers.setLength(historicalMembers.length() - 2);
         }
 
+        StringBuilder upgrades = new StringBuilder();
+
+        for (Map.Entry<String, Integer> entry : upgradeToTier.entrySet()) {
+            System.out.println("appending " + entry.getKey() + " (" + entry.getValue() + ")");
+            upgrades.append(entry.getKey()).append(";").append(entry.getValue()).append(", ");
+        }
+
+        if (upgrades.length() > 2) {
+            upgrades.setLength(upgrades.length() - 2);
+        }
+
         teamString.append("UUID:").append(getUniqueId().toString()).append("\n");
         teamString.append("Owner:").append(getOwner()).append('\n');
         teamString.append("CoLeaders:").append(coleaders.toString()).append('\n');
@@ -1066,7 +1116,6 @@ public class Team {
         teamString.append("Announcement:").append(String.valueOf(getAnnouncement()).replace("\n", "")).append("\n");
         teamString.append("PowerFaction:").append(String.valueOf(isPowerFaction())).append("\n");
         teamString.append("Lives:").append(String.valueOf(getLives())).append("\n");
-        teamString.append("Points:").append(String.valueOf(getPoints())).append("\n");
         teamString.append("Kills:").append(String.valueOf(getKills())).append("\n");
         teamString.append("Deaths:").append(String.valueOf(getDeaths())).append("\n");
         teamString.append("DiamondsMined:").append(String.valueOf(getDiamondsMined())).append("\n");
@@ -1074,7 +1123,10 @@ public class Team {
         teamString.append("CitadelsCapped:").append(String.valueOf(getCitadelsCapped())).append("\n");
         teamString.append("KillstreakPoints:").append(String.valueOf(getKillstreakPoints())).append("\n");
         teamString.append("PlaytimePoints:").append(String.valueOf(getPlaytimePoints())).append("\n");
+	    teamString.append("Points:").append(String.valueOf(getPoints())).append("\n");
+	    teamString.append("SpentPoints:").append(String.valueOf(getSpentPoints())).append("\n");
         teamString.append("SpawnersInClaim:").append(String.valueOf(getSpawnersInClaim())).append("\n");
+        teamString.append("Upgrades:").append(upgrades.toString()).append("\n");
 
         if (getHQ() != null) {
             teamString.append("HQ:").append(getHQ().getWorld().getName()).append(",").append(getHQ().getX()).append(",").append(getHQ().getY()).append(",").append(getHQ().getZ()).append(",").append(getHQ().getYaw()).append(",").append(getHQ().getPitch()).append('\n');
@@ -1082,7 +1134,6 @@ public class Team {
 
         return (teamString.toString());
     }
-
 
     public BasicDBObject toJSON() {
         BasicDBObject dbObject = new BasicDBObject();
@@ -1121,12 +1172,24 @@ public class Team {
         dbObject.put("Deaths", this.deaths);
         dbObject.put("DiamondsMined", this.diamondsMined);
         dbObject.put("CitadelsCaptured", this.citadelsCapped);
-        dbObject.put("SpawnersInClaim", this.spawnersInClaim);
         dbObject.put("KillstreakPoints", this.killstreakPoints);
         dbObject.put("PlaytimePoints", this.playtimePoints);
         dbObject.put("KothCaptures", this.kothCaptures);
-        dbObject.put("Points", this.points);
-        dbObject.put("Lives", this.kills);
+	    dbObject.put("Points", this.points);
+	    dbObject.put("SpentPoints", this.spentPoints);
+	    dbObject.put("SpawnersInClaim", this.spawnersInClaim);
+
+        BasicDBList upgrades = new BasicDBList();
+
+        for (Map.Entry<String, Integer> entry : upgradeToTier.entrySet()) {
+            BasicDBObject upgradeDBObject = new BasicDBObject();
+            upgradeDBObject.put("UpgradeName", entry.getKey());
+            upgradeDBObject.put("Tier", entry.getValue());
+
+            upgrades.add(upgradeDBObject);
+        }
+
+	    dbObject.put("Upgrades", upgrades);
 
         return (dbObject);
     }

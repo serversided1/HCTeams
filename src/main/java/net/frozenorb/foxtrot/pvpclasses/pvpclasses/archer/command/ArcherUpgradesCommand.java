@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 public class ArcherUpgradesCommand {
 
-	@Command(names = { "upgrades", "archerupgrades", "archerabilities" }, permission = "")
+	@Command(names = { "archerupgrades", "archerabilities" }, permission = "")
 	public static void showProgress(Player player) {
 		new ArcherUpgradeProgressMenu().openMenu(player);
 	}
