@@ -1,4 +1,4 @@
-package net.frozenorb.foxtrot.team.event;
+package net.frozenorb.foxtrot.server.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

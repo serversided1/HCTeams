@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.foxtrot.team.event.CrowbarSpawnerBreakEvent;
+import net.frozenorb.foxtrot.server.event.CrowbarSpawnerBreakEvent;
 import net.frozenorb.foxtrot.util.InventoryUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;

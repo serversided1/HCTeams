@@ -4,7 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
-import net.frozenorb.foxtrot.team.event.CrowbarSpawnerBreakEvent;
+import net.frozenorb.foxtrot.server.event.CrowbarSpawnerBreakEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
