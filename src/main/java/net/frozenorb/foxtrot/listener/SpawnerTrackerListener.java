@@ -5,6 +5,7 @@ import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.event.CrowbarSpawnerBreakEvent;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -15,13 +16,15 @@ public class SpawnerTrackerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlaceEvent(BlockPlaceEvent event) {
-		Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+		if (event.getBlockPlaced().getType() == Material.MOB_SPAWNER) {
+			Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
 
-		if (team != null) {
-			Claim claim = LandBoard.getInstance().getClaim(event.getBlockPlaced().getLocation());
+			if (team != null) {
+				Claim claim = LandBoard.getInstance().getClaim(event.getBlockPlaced().getLocation());
 
-			if (claim != null && team.getClaims().contains(claim)) {
-				team.addSpawnersInClaim(1);
+				if (claim != null && team.getClaims().contains(claim)) {
+					team.addSpawnersInClaim(1);
+				}
 			}
 		}
 	}
