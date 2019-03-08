@@ -1,7 +1,9 @@
 package net.frozenorb.foxtrot.commands;
 
+import net.frozenorb.qlib.command.Param;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.util.InventoryUtils;
@@ -9,7 +11,7 @@ import net.frozenorb.qlib.command.Command;
 
 public class CrowbarCommand {
 
-    @Command(names={ "Crowbar" }, permission="op")
+    @Command(names={ "crowbar" }, permission="op")
     public static void crowbar(Player sender) {
         if (sender.getGameMode() != GameMode.CREATIVE) {
             sender.sendMessage(ChatColor.RED + "This command must be ran in creative.");
@@ -18,6 +20,13 @@ public class CrowbarCommand {
 
         sender.setItemInHand(InventoryUtils.CROWBAR);
         sender.sendMessage(ChatColor.YELLOW + "Gave you a crowbar.");
+    }
+
+    @Command(names={ "crowbar" }, permission="op")
+    public static void crowbar(CommandSender sender, @Param(name = "player") Player target) {
+        target.getInventory().addItem(InventoryUtils.CROWBAR);
+        target.sendMessage(ChatColor.YELLOW + "You received a crowbar from " + sender.getName() + ".");
+        sender.sendMessage(ChatColor.YELLOW + "You gave a crowbar to " + target.getName() + ".");
     }
 
 }
