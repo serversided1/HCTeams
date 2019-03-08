@@ -89,13 +89,8 @@ public class KitCommand {
 
     private static boolean canUse(Player player, Kit kit) {
         String kitName = kit.getName();
-
-        if (kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue") || kitName.equals("Miner") || kitName.equals("Builder")) {
-            if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-                return true;
-            } else {
-                return false;
-            }
+        if (kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue") || kitName.equals("Miner") || kitName.equals("Builder")) {
+            return false;
         }
         
         Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
@@ -110,5 +105,4 @@ public class KitCommand {
         
         return highestRank.getDisplayName().equals(kitName);
     }
-
 }
