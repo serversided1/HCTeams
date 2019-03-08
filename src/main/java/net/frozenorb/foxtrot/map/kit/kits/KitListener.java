@@ -75,7 +75,7 @@ public class KitListener implements Listener {
     }
     
     private boolean canUse(Player player, String kitName) {
-        if (kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue")) {
+        if (kitName.equals("Miner") || kitName.equals("Builder") || kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue")) {
             return true;
         }
         
@@ -87,10 +87,6 @@ public class KitListener implements Listener {
         Rank highestRank = profile.getBestDisplayRank();
         
         if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
-            return true;
-        }
-        
-        if (kitName.equals("Miner") || kitName.equals("Builder")) {
             return true;
         }
         
