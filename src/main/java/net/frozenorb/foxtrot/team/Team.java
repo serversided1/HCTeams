@@ -1092,7 +1092,6 @@ public class Team {
         StringBuilder upgrades = new StringBuilder();
 
         for (Map.Entry<String, Integer> entry : upgradeToTier.entrySet()) {
-            System.out.println("appending " + entry.getKey() + " (" + entry.getValue() + ")");
             upgrades.append(entry.getKey()).append(";").append(entry.getValue()).append(", ");
         }
 
