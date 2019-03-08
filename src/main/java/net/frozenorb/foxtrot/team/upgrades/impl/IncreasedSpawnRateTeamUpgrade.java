@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.upgrades.impl;
 
+import java.util.List;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
@@ -53,9 +54,14 @@ public class IncreasedSpawnRateTeamUpgrade implements TeamUpgrade, Listener {
 	@Override
 	public void onPurchase(Player player, Team team, int tier, int price) {
 		Bukkit.getScheduler().runTaskAsynchronously(Foxtrot.getInstance(), () -> {
-			for (CreatureSpawner creatureSpawner : team.findSpawners()) {
-				creatureSpawner.setDelay(creatureSpawner.getDelay() / tier);
-			}
+			List<CreatureSpawner> list = team.findSpawners();
+
+			Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
+				for (CreatureSpawner creatureSpawner : list) {
+					creatureSpawner.setDelay(creatureSpawner.getDelay() / tier);
+					creatureSpawner.update();
+				}
+			});
 		});
 	}
 
