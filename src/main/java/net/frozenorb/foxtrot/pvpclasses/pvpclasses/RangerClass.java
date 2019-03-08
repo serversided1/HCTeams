@@ -147,12 +147,26 @@ public class RangerClass extends PvPClass {
 		final Snowball snowball = (Snowball) event.getDamager();
 
 		if (event.getEntity() instanceof Player && snowball.getShooter() instanceof Player) {
-			final Player victim = (Player) event.getEntity();
 			final Player shooter = (Player) ((Snowball) event.getDamager()).getShooter();
+			final Player victim = (Player) event.getEntity();
 
 			// Don't process if the player isn't in the Ranger class
 			if (!PvPClassHandler.hasKitOn(shooter, this)) {
 				return;
+			}
+
+			if (!canUseMark(shooter)) {
+				return;
+			}
+
+			Team shooterTeam = Foxtrot.getInstance().getTeamHandler().getTeam(shooter);
+
+			if (shooterTeam != null) {
+				if (shooterTeam.isOwner(victim.getUniqueId()) || shooterTeam.isCoLeader(victim.getUniqueId()) || shooterTeam.isCaptain(victim.getUniqueId()) || shooterTeam.isMember(victim.getUniqueId())) {
+					shooter.sendMessage(ChatColor.RED + "You cannot stun a player on your team!");
+					event.setCancelled(true);
+					return;
+				}
 			}
 
 			// Don't process if the victim is in a safe-zone
