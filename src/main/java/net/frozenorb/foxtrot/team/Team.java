@@ -521,47 +521,51 @@ public class Team {
 	    new BukkitRunnable() {
 		    @Override
 		    public void run() {
-			    int spawners = 0;
-
-			    // Iterate through chunks' tile entities rather than every block
-			    for (Claim claim : getClaims()) {
-                    final World world = Bukkit.getWorld(claim.getWorld());
-                    final Location minPoint = claim.getMinimumPoint();
-                    final Location maxPoint = claim.getMaximumPoint();
-                    final int minChunkX = ((int) minPoint.getX()) >> 4;
-                    final int minChunkZ = ((int) minPoint.getZ()) >> 4;
-                    final int maxChunkX = ((int) maxPoint.getX()) >> 4;
-                    final int maxChunkZ = ((int) maxPoint.getZ()) >> 4;
-
-                    for (int chunkX = minChunkX; chunkX < maxChunkX + 1; chunkX++) {
-                        for (int chunkZ = minChunkZ; chunkZ < maxChunkZ + 1; chunkZ++) {
-                            Chunk chunk = world.getChunkAt(chunkX, chunkZ);
-
-                            for (BlockState blockState : chunk.getTileEntities()) {
-                                // Check if the block is a mob spawner
-                                if (blockState instanceof CreatureSpawner) {
-                                    // Even though we're iterating through chunks' tile entities
-                                    // we need to make sure that the block's location is within
-                                    // the claim (because claims don't have to align with chunks)
-                                    final Location loc = blockState.getLocation();
-
-                                    if (loc.getX() >= minPoint.getX() && loc.getZ() >= minPoint.getZ() &&
-                                        loc.getX() <= maxPoint.getX() && loc.getZ() <= maxPoint.getZ()) {
-                                        spawners++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-			    }
-
-			    setSpawnersInClaim(spawners);
+			    setSpawnersInClaim(findSpawners().size());
 		    }
 	    }.runTaskAsynchronously(Foxtrot.getInstance());
     }
 
-    public int getExtraSpawners() {
-	    return upgradeToTier.getOrDefault("Extra Spawner", 0);
+    public List<CreatureSpawner> findSpawners() {
+        if (Bukkit.isPrimaryThread()) {
+            throw new RuntimeException("Cannot call Team#findSpawners on main thread");
+        }
+
+        List<CreatureSpawner> list = new ArrayList<>();
+
+        // Iterate through chunks' tile entities rather than every block
+        for (Claim claim : getClaims()) {
+            final World world = Bukkit.getWorld(claim.getWorld());
+            final Location minPoint = claim.getMinimumPoint();
+            final Location maxPoint = claim.getMaximumPoint();
+            final int minChunkX = ((int) minPoint.getX()) >> 4;
+            final int minChunkZ = ((int) minPoint.getZ()) >> 4;
+            final int maxChunkX = ((int) maxPoint.getX()) >> 4;
+            final int maxChunkZ = ((int) maxPoint.getZ()) >> 4;
+
+            for (int chunkX = minChunkX; chunkX < maxChunkX + 1; chunkX++) {
+                for (int chunkZ = minChunkZ; chunkZ < maxChunkZ + 1; chunkZ++) {
+                    Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+
+                    for (BlockState blockState : chunk.getTileEntities()) {
+                        // Check if the block is a mob spawner
+                        if (blockState instanceof CreatureSpawner) {
+                            // Even though we're iterating through chunks' tile entities
+                            // we need to make sure that the block's location is within
+                            // the claim (because claims don't have to align with chunks)
+                            final Location loc = blockState.getLocation();
+
+                            if (loc.getX() >= minPoint.getX() && loc.getZ() >= minPoint.getZ() &&
+                                loc.getX() <= maxPoint.getX() && loc.getZ() <= maxPoint.getZ()) {
+                                list.add((CreatureSpawner) blockState);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return list;
     }
 
     public void spendPoints(int points) {
