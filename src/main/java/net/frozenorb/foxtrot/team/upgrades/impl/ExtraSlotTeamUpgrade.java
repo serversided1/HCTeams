@@ -1,7 +1,10 @@
 package net.frozenorb.foxtrot.team.upgrades.impl;
 
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.team.event.PlayerAttemptJoinFullTeamEvent;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -30,6 +33,15 @@ public class ExtraSlotTeamUpgrade implements TeamUpgrade, Listener {
 	@Override
 	public int getPrice(int tier) {
 		return 30 + ((tier - 1) * 10);
+	}
+
+	@EventHandler
+	public void onPlayerAttemptJoinFullTeamEvent(PlayerAttemptJoinFullTeamEvent event) {
+		if (getTier(event.getTeam()) > 0) {
+			if (event.getTeam().getMembers().size() + getTier(event.getTeam()) < Foxtrot.getInstance().getMapHandler().getTeamSize()) {
+				event.setAllowBypass(true);
+			}
+		}
 	}
 
 }

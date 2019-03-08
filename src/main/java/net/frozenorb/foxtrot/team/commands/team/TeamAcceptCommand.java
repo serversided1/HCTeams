@@ -4,6 +4,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
+import net.frozenorb.foxtrot.team.event.PlayerAttemptJoinFullTeamEvent;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.nametag.FrozenNametagHandler;
@@ -21,8 +22,13 @@ public class TeamAcceptCommand {
             }
 
             if (team.getMembers().size() >= Foxtrot.getInstance().getMapHandler().getTeamSize()) {
-                sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team is full!");
-                return;
+                PlayerAttemptJoinFullTeamEvent attemptEvent = new PlayerAttemptJoinFullTeamEvent(sender, team);
+                Foxtrot.getInstance().getServer().getPluginManager().callEvent(attemptEvent);
+
+                if (!attemptEvent.isAllowBypass()) {
+                    sender.sendMessage(ChatColor.RED + team.getName() + " cannot be joined: Team is full!");
+                    return;
+                }
             }
 
             if (DTRHandler.isOnCooldown(team) && !Foxtrot.getInstance().getServerHandler().isPreEOTW() && !Foxtrot.getInstance().getMapHandler().isKitMap() && !Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
