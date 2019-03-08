@@ -50,7 +50,7 @@ import net.frozenorb.qlib.util.TimeUtils;
 @SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
 
-    private static final int MARK_SECONDS = 10;
+    private static final int MARK_SECONDS = 5;
 
     @Getter
     private static final List<ArcherUpgrade> archerUpgrades = Arrays.asList(
