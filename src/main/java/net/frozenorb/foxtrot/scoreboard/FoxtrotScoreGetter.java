@@ -15,7 +15,7 @@ import net.frozenorb.foxtrot.events.Event;
 import net.frozenorb.foxtrot.events.EventType;
 import net.frozenorb.foxtrot.events.dtc.DTC;
 import net.frozenorb.foxtrot.events.koth.KOTH;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.server.EnderpearlCooldownHandler;
 import net.frozenorb.foxtrot.listener.GoldenAppleListener;
 import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.ArcherClass;
@@ -251,8 +251,8 @@ public class FoxtrotScoreGetter implements ScoreGetter {
     }
 
     public String getEnderpearlScore(Player player) {
-        if (EnderpearlListener.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlListener.getEnderpearlCooldown().get(player.getName()) >= System.currentTimeMillis()) {
-            float diff = EnderpearlListener.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
+        if (EnderpearlCooldownHandler.getEnderpearlCooldown().containsKey(player.getName()) && EnderpearlCooldownHandler.getEnderpearlCooldown().get(player.getName()) >= System.currentTimeMillis()) {
+            float diff = EnderpearlCooldownHandler.getEnderpearlCooldown().get(player.getName()) - System.currentTimeMillis();
 
             if (diff >= 0) {
                 return (ScoreFunction.TIME_FANCY.apply(diff / 1000F));

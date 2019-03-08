@@ -1,10 +1,16 @@
 package net.frozenorb.foxtrot.team.upgrades.impl;
 
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.server.event.EnderpearlCooldownAppliedEvent;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-public class ReducedPearlCDTeamUpgrade implements TeamUpgrade {
+public class ReducedPearlCDTeamUpgrade implements TeamUpgrade, Listener {
 
 	@Override
 	public String getUpgradeName() {
@@ -38,6 +44,37 @@ public class ReducedPearlCDTeamUpgrade implements TeamUpgrade {
 	@Override
 	public int getTierLimit() {
 		return 3;
+	}
+
+	@EventHandler
+	public void onEnderpearlCooldownAppliedEvent(EnderpearlCooldownAppliedEvent event) {
+		Team team = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
+
+		if (team != null) {
+			for (Claim claim : team.getClaims()) {
+				if (claim.contains(event.getPlayer())) {
+					if (getTier(team) > 0) {
+						long timeToApply = event.getTimeToApply();
+
+						switch (getTier(team)) {
+							case 1:
+								timeToApply = 13_000L;
+								break;
+							case 2:
+								timeToApply = 8_000L;
+								break;
+							case 3:
+								timeToApply = 4_000L;
+								break;
+						}
+
+						event.setTimeToApply(timeToApply);
+					}
+
+					break;
+				}
+			}
+		}
 	}
 
 }

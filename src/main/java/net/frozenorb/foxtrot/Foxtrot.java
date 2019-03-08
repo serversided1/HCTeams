@@ -45,7 +45,7 @@ import net.frozenorb.foxtrot.listener.CrowbarListener;
 import net.frozenorb.foxtrot.listener.DeathbanListener;
 import net.frozenorb.foxtrot.listener.EnchantmentLimiterListener;
 import net.frozenorb.foxtrot.listener.EndListener;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.server.EnderpearlCooldownHandler;
 import net.frozenorb.foxtrot.listener.EntityPortalListener;
 import net.frozenorb.foxtrot.listener.FoundDiamondsListener;
 import net.frozenorb.foxtrot.listener.FoxListener;
@@ -279,7 +279,7 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);
         getServer().getPluginManager().registerEvents(new EnchantmentLimiterListener(), this);
-        getServer().getPluginManager().registerEvents(new EnderpearlListener(), this);
+        getServer().getPluginManager().registerEvents(new EnderpearlCooldownHandler(), this);
         getServer().getPluginManager().registerEvents(new EndListener(), this);
         getServer().getPluginManager().registerEvents(new FoundDiamondsListener(), this);
         getServer().getPluginManager().registerEvents(new FoxListener(), this);

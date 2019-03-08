@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.listener.EnderpearlListener;
+import net.frozenorb.foxtrot.server.EnderpearlCooldownHandler;
 import net.frozenorb.foxtrot.pvpclasses.PvPClass;
 import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
@@ -195,7 +195,7 @@ public class RangerClass extends PvPClass {
 			if (victim.hasMetadata("LastEnderPearl")) {
 				((EnderPearl) victim.getMetadata("LastEnderPearl").get(0).value()).remove();
 			} else {
-				EnderpearlListener.resetEnderpearlTimer(victim);
+				EnderpearlCooldownHandler.resetEnderpearlTimer(victim);
 			}
 
 			// Mark the victim with a blue name

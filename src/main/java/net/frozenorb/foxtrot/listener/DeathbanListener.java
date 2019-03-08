@@ -2,6 +2,7 @@ package net.frozenorb.foxtrot.listener;
 
 import java.util.Optional;
 
+import net.frozenorb.foxtrot.server.EnderpearlCooldownHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +25,7 @@ public class DeathbanListener implements Listener {
     public void onPlayerDeath(final PlayerDeathEvent event) {
         LastInvCommand.recordInventory(event.getEntity());
 
-        EnderpearlListener.getEnderpearlCooldown().remove(event.getEntity().getName()); // cancel enderpearls
+        EnderpearlCooldownHandler.getEnderpearlCooldown().remove(event.getEntity().getName()); // cancel enderpearls
         CheatBreakerKey.ENDER_PEARL.clear(event.getEntity());
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap()) {
