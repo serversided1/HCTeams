@@ -4,32 +4,32 @@ import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class ExperienceRatesTeamUpgrade implements TeamUpgrade {
+public class IncreasedSpawnRateTeamUpgrade implements TeamUpgrade {
 
 	@Override
 	public String getUpgradeName() {
-		return "Experience Rates";
+		return "Increase Mob Spawn Rate";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Increase the amount of XP earned in your claim";
+		return "Increase the rate at which mobs spawn in your claim";
 	}
 
 	@Override
 	public ItemStack getIcon() {
-		return new ItemStack(Material.EXP_BOTTLE);
+		return new ItemStack(Material.SKULL_ITEM);
 	}
 
 	@Override
 	public int getPrice(int tier) {
 		switch (tier) {
 			case 1:
-				return 25;
+				return 15;
 			case 2:
-				return 50;
+				return 35;
 			case 3:
-				return 75;
+				return 50;
 			default:
 				throw new RuntimeException("This shouldn't happen");
 		}

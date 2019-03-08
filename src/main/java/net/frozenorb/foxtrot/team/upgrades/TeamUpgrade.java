@@ -9,10 +9,10 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.upgrades.impl.ClaimEffectsCategoryTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ClaimEffectTeamUpgrade;
-import net.frozenorb.foxtrot.team.upgrades.impl.ExperienceRatesTeamUpgrade;
+import net.frozenorb.foxtrot.team.upgrades.impl.IncreasedXPRateTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ExtraSlotTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ExtraSpawnerTeamUpgrade;
-import net.frozenorb.foxtrot.team.upgrades.impl.MobSpawnRatesTeamUpgrade;
+import net.frozenorb.foxtrot.team.upgrades.impl.IncreasedSpawnRateTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ReducedPearlCDTeamUpgrade;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -26,8 +26,8 @@ public interface TeamUpgrade {
 		List<TeamUpgrade> list = Arrays.asList(
 				new ExtraSlotTeamUpgrade(),
 				new ExtraSpawnerTeamUpgrade(),
-				new MobSpawnRatesTeamUpgrade(),
-				new ExperienceRatesTeamUpgrade(),
+				new IncreasedSpawnRateTeamUpgrade(),
+				new IncreasedXPRateTeamUpgrade(),
 				new ReducedPearlCDTeamUpgrade(),
 				new ClaimEffectsCategoryTeamUpgrade()
 		);
