@@ -81,6 +81,8 @@ public class PurchaseButton extends Button {
 		team.getUpgradeToTier().put(upgrade.getUpgradeName(), nextTier);
 		team.flagForSave();
 
+		upgrade.onPurchase(player, team, nextTier, price);
+
 		player.sendMessage(ChatColor.GREEN + "You purchased the " + ChatColor.AQUA + ChatColor.BOLD.toString() + upgrade.getUpgradeName() + (upgrade.getTierLimit() > 1 ? " Tier " + nextTier : "") + ChatColor.GREEN + " upgrade for " + ChatColor.LIGHT_PURPLE + price + " points" + ChatColor.GREEN + ".");
 		player.closeInventory();
 	}

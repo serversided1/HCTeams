@@ -14,6 +14,7 @@ import net.frozenorb.foxtrot.team.upgrades.impl.ExtraSlotTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ExtraSpawnerTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.IncreasedSpawnRateTeamUpgrade;
 import net.frozenorb.foxtrot.team.upgrades.impl.ReducedPearlCDTeamUpgrade;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
@@ -62,6 +63,10 @@ public interface TeamUpgrade {
 
 	default List<ClaimEffectTeamUpgrade> getCategoryElements() {
 		return null;
+	}
+
+	default void onPurchase(Player player, Team team, int tier, int price) {
+
 	}
 
 }
