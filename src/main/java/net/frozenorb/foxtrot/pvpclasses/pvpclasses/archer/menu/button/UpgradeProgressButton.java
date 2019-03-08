@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 
 @AllArgsConstructor
 public class UpgradeProgressButton extends Button {
@@ -54,12 +55,23 @@ public class UpgradeProgressButton extends Button {
 		lore.add(ChatColor.DARK_GRAY.toString() + "[" + StringUtils.join(blocks) + ChatColor.DARK_GRAY + "] (" + ChatColor.GREEN + progress + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + upgrade.getKillsNeeded() + ChatColor.DARK_GRAY + ")");
 
 		if (percentage >= 100.0D) {
-			lore.add(ChatColor.GREEN + "You unlocked this upgrade!");
+			lore.add(ChatColor.GREEN + "You unlocked this upgrade");
+			lore.add("");
+			lore.add(ChatColor.YELLOW + "Click to receive this kit");
 		} else {
 			lore.add(ChatColor.GREEN + "Kill " + upgrade.getKillsNeeded() + " people to unlock this upgrade");
 		}
 
 		return lore;
+	}
+
+	@Override
+	public void clicked(Player player, int slot, ClickType clickType) {
+		int progress = Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId());
+
+		if (progress >= upgrade.getKillsNeeded()) {
+			player.performCommand("kit Archer" + upgrade.getUpgradeName());
+		}
 	}
 
 }
