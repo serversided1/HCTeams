@@ -23,7 +23,7 @@ import net.frozenorb.hydrogen.rank.Rank;
 
 public class KitListener implements Listener {
     
-    private Map<UUID, Long> lastClicked = Maps.newHashMap();
+    private static Map<UUID, Long> lastClicked = Maps.newHashMap();
 
     @EventHandler
     public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
@@ -49,32 +49,10 @@ public class KitListener implements Listener {
         
         Kit kit = Foxtrot.getInstance().getMapHandler().getKitManager().get(player.getUniqueId(), sign.getLine(1));
         
-        if (kit == null) {
-            player.sendMessage(ChatColor.RED + "Unknown kit.");
-            return;
-        }
-        
-        if (player.hasMetadata("modmode")) {
-            player.sendMessage(ChatColor.RED + "You cannot use this while in mod mode.");
-            return;
-        }
-        
-        if (lastClicked.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - lastClicked.get(player.getUniqueId()) < TimeUnit.SECONDS.toMillis(15))) {
-            player.sendMessage(ChatColor.RED + "Please wait before using this again.");
-            return;
-        }
-        
-        if (!canUse(player, kit.getName())) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not own this kit. Purchase it at store.veltpvp.com."));
-            return;
-        }
-        
-        kit.apply(player);
-        
-        lastClicked.put(player.getUniqueId(), System.currentTimeMillis());
+        attemptApplyKit(player, kit);
     }
     
-    private boolean canUse(Player player, String kitName) {
+    private static boolean canUse(Player player, String kitName) {
         if (kitName.equals("Miner") || kitName.equals("Builder") || kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue")) {
             return true;
         }
@@ -91,6 +69,32 @@ public class KitListener implements Listener {
         }
         
         return highestRank.getDisplayName().equals(kitName);
+    }
+
+    public static void attemptApplyKit(Player player, Kit kit) {
+        if (kit == null) {
+            player.sendMessage(ChatColor.RED + "Unknown kit.");
+            return;
+        }
+
+        if (player.hasMetadata("modmode")) {
+            player.sendMessage(ChatColor.RED + "You cannot use this while in mod mode.");
+            return;
+        }
+
+        if (lastClicked.containsKey(player.getUniqueId()) && (System.currentTimeMillis() - lastClicked.get(player.getUniqueId()) < TimeUnit.SECONDS.toMillis(15))) {
+            player.sendMessage(ChatColor.RED + "Please wait before using this again.");
+            return;
+        }
+
+        if (!canUse(player, kit.getName())) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not own this kit. Purchase it at store.veltpvp.com."));
+            return;
+        }
+
+        kit.apply(player);
+
+        lastClicked.put(player.getUniqueId(), System.currentTimeMillis());
     }
     
 }

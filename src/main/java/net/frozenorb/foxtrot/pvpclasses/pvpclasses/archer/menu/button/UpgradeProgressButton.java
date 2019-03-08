@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.map.kit.kits.KitListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import net.frozenorb.qlib.menu.Button;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -70,7 +71,7 @@ public class UpgradeProgressButton extends Button {
 		int progress = Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId());
 
 		if (progress >= upgrade.getKillsNeeded()) {
-			player.performCommand("kit Archer" + upgrade.getUpgradeName());
+			KitListener.attemptApplyKit(player, Foxtrot.getInstance().getMapHandler().getKitManager().get(player.getUniqueId(), "Archer" + upgrade.getUpgradeName()));
 		}
 	}
 
