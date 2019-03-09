@@ -51,8 +51,11 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 
 							for (ClaimEffectTeamUpgrade upgrade : claimEffectUpgrades) {
 								if (upgrade.getTier(team) > 0) {
+									// Store their previous matching effects
 									for (PotionEffect activeEffect : player.getActivePotionEffects()) {
-										if (activeEffect.getType().equals(upgrade.getPotionEffectType()) && activeEffect.getDuration() != Integer.MAX_VALUE) {
+										// Make sure effectType matches and that the duration isn't over 15 minutes
+										// I tried checking if duration == Integer.MAX_VALUE but it doesn't seem to work
+										if (activeEffect.getType().equals(upgrade.getPotionEffectType()) && activeEffect.getDuration() <= 18_000L) {
 											effects.add(new EffectSnapshot(activeEffect.getType(), activeEffect.getAmplifier(), activeEffect.getDuration()));
 											player.removePotionEffect(activeEffect.getType());
 											break;
@@ -63,7 +66,7 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 								}
 							}
 
-							effectsToRestore.put(player.getUniqueId(), effects);
+							effectsToRestore.putIfAbsent(player.getUniqueId(), effects);
 
 							continue playerLoop;
 						}
@@ -83,6 +86,22 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 						}
 
 						effectsToRestore.remove(player.getUniqueId());
+					}
+				} else {
+					if (receivingEffects.getOrDefault(player.getUniqueId(), false)) {
+						receivingEffects.put(player.getUniqueId(), false);
+
+						for (PotionEffect effect : player.getActivePotionEffects()) {
+							player.removePotionEffect(effect.getType());
+						}
+
+						if (effectsToRestore.containsKey(player.getUniqueId())) {
+							for (EffectSnapshot effectSnapshot : effectsToRestore.get(player.getUniqueId())) {
+								player.addPotionEffect(new PotionEffect(effectSnapshot.getEffectType(), effectSnapshot.getDuration(), effectSnapshot.getAmplifier()));
+							}
+
+							effectsToRestore.remove(player.getUniqueId());
+						}
 					}
 				}
 			}
