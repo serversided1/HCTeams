@@ -6,13 +6,14 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.challenges.menu.button.ChallengeProgressButton;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ChallengesMenu extends Menu {
 
 	@Override
 	public String getTitle(Player player) {
-		return "Daily Challenges";
+		return ChatColor.GOLD +  "Daily Challenges";
 	}
 
 	@Override
