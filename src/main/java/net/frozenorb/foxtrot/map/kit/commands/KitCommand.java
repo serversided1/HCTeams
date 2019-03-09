@@ -50,6 +50,7 @@ public class KitCommand {
         }
 
         Kit targetKit = Foxtrot.getInstance().getMapHandler().getKitManager().get(kitName);
+
         if (targetKit == null) {
             sender.sendMessage(ChatColor.RED + "Unable to locate kit '" + kitName + "'.");
             return;

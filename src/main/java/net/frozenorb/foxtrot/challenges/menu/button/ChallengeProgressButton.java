@@ -34,6 +34,10 @@ public class ChallengeProgressButton extends Button {
 		final double percentage = ((double) progress / (double) challenge.getCountToQualify()) * 100.0D;
 
 		for (int i = 0; i < percentage / 10; i++) {
+			if (i > blocks.length) {
+				break;
+			}
+
 			blocks[i] = ChatColor.GREEN + StringEscapeUtils.unescapeJava("\u2588");
 		}
 
