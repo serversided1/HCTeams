@@ -115,7 +115,7 @@ public class ArcherClass extends PvPClass {
     public void onEntityArrowHit(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) event.getDamager();
-            final Player player = (Player) event.getEntity();
+            final Player victim = (Player) event.getEntity();
 
             if (!(arrow.getShooter() instanceof Player)) {
                 return;
@@ -130,14 +130,14 @@ public class ArcherClass extends PvPClass {
 
             // 2 hearts for a marked shot
             // 1.5 hearts for a marking / unmarked shot.
-            int damage = isMarked(player) ? 4 : 3; // Ternary for getting damage!
+            int damage = isMarked(victim) ? 4 : 3; // Ternary for getting damage!
 
             // If the bow isn't 100% pulled back we do 1 heart no matter what.
             if (pullback < 0.5F) {
                 damage = 2; // 1 heart
             }
 
-            if (player.getHealth() - damage <= 0D) {
+            if (victim.getHealth() - damage <= 0D) {
                 event.setCancelled(true);
             } else {
                 event.setDamage(0D);
@@ -145,24 +145,24 @@ public class ArcherClass extends PvPClass {
 
             // The 'ShotFromDistance' metadata is applied in the deathmessage module.
             Location shotFrom = (Location) arrow.getMetadata("ShotFromDistance").get(0).value();
-            double distance = shotFrom.distance(player.getLocation());
+            double distance = shotFrom.distance(victim.getLocation());
 
-            DeathMessageHandler.addDamage(player, new ArrowTracker.ArrowDamageByPlayer(player.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));
-            player.setHealth(Math.max(0D, player.getHealth() - damage));
+            DeathMessageHandler.addDamage(victim, new ArrowTracker.ArrowDamageByPlayer(victim.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));
+            victim.setHealth(Math.max(0D, victim.getHealth() - damage));
 
-            if (PvPClassHandler.hasKitOn(player, this)) {
+            if (PvPClassHandler.hasKitOn(victim, this)) {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Cannot mark other Archers. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
             } else if (pullback >= 0.5F) {
                 shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Marked player for " + MARK_SECONDS + " seconds. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
 
                 // Only send the message if they're not already marked.
-                if (!isMarked(player)) {
-                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
+                if (!isMarked(victim)) {
+                    victim.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
                 }
 
                 PotionEffect invis = null;
 
-                for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+                for (PotionEffect potionEffect : victim.getActivePotionEffects()) {
                     if (potionEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
                         invis = potionEffect;
                         break;
@@ -170,16 +170,16 @@ public class ArcherClass extends PvPClass {
                 }
 
                 if (invis != null) {
-                    PvPClass playerClass = PvPClassHandler.getPvPClass(player);
+                    PvPClass playerClass = PvPClassHandler.getPvPClass(victim);
 
-                    player.removePotionEffect(invis.getType());
+                    victim.removePotionEffect(invis.getType());
 
                     final PotionEffect invisFinal = invis;
 
                     /* Handle returning their invisibility after the archer tag is done */
                     if (playerClass instanceof MinerClass) {
                         /* Queue player to have invis returned. (MinerClass takes care of this) */
-                        ((MinerClass) playerClass).getInvis().put(player.getName(), MARK_SECONDS);
+                        ((MinerClass) playerClass).getInvis().put(victim.getName(), MARK_SECONDS);
                     } else {
                         /* player has no class but had invisibility, return it after their tag expires */
                         new BukkitRunnable() {
@@ -189,38 +189,38 @@ public class ArcherClass extends PvPClass {
                                     return; // Ensure we never apply an infinite invis to a non miner
                                 }
 
-                                player.addPotionEffect(invisFinal);
+                                victim.addPotionEffect(invisFinal);
                             }
 
                         }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
                     }
                 }
 
-                getMarkedPlayers().put(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
+                getMarkedPlayers().put(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
 
                 getMarkedBy().putIfAbsent(shooter.getName(), new HashSet<>());
-                getMarkedBy().get(shooter.getName()).add(new Pair<>(player.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
+                getMarkedBy().get(shooter.getName()).add(new Pair<>(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
 
-                FrozenNametagHandler.reloadPlayer(player);
+                FrozenNametagHandler.reloadPlayer(victim);
 
                 new BukkitRunnable() {
                     public void run() {
-                        FrozenNametagHandler.reloadPlayer(player);
+                        FrozenNametagHandler.reloadPlayer(victim);
                     }
                 }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
 
                 // Check for special Archer archerUpgrades if kitmap
                 if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
                     if (!ArcherUpgrade.canUseAbility(shooter)) {
-                        player.sendMessage(ChatColor.RED + "You can't use your Archer Upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
+                        shooter.sendMessage(ChatColor.RED + "You can't use your Archer Upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
                         return;
                     }
 
                     for (ArcherUpgrade ability : archerUpgrades) {
-                        if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId()) >= ability.getKillsNeeded()) {
+                        if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(shooter.getUniqueId()) >= ability.getKillsNeeded()) {
                             if (ability.applies(shooter)) {
-                                ability.onHit(shooter, player);
-                                ArcherUpgrade.setCooldown(player, 10);
+                                ability.onHit(shooter, victim);
+                                ArcherUpgrade.setCooldown(shooter, 10);
                                 break;
                             }
                         }
