@@ -2,9 +2,14 @@ package net.frozenorb.foxtrot.map.kit.kits;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import net.frozenorb.hydrogen.Hydrogen;
+import net.frozenorb.hydrogen.profile.Profile;
+import net.frozenorb.hydrogen.rank.Rank;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Lists;
@@ -16,6 +21,9 @@ import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.util.UUIDUtils;
 
+/**
+ * Only gets instantiated if the server is kitmap
+ */
 public class KitManager {
     
     @Getter
@@ -149,6 +157,26 @@ public class KitManager {
     
     public void logout(UUID player) {
         userKits.remove(player);
+    }
+
+    public boolean canUseKit(Player player, String kitName) {
+        // You can always use these kits
+        if (kitName.equals("Miner") || kitName.equals("Builder") || kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue")) {
+            return true;
+        }
+
+        Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
+        if (!profileOptional.isPresent())
+            return false;
+
+        Profile profile = profileOptional.get();
+        Rank highestRank = profile.getBestDisplayRank();
+
+        if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
+            return true;
+        }
+
+        return highestRank.getDisplayName().equals(kitName);
     }
     
 }

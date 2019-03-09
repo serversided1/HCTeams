@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import net.frozenorb.foxtrot.deathmessage.event.PlayerKilledEvent;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
+import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.command.SetArcherKillsCommand;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.ApolloArcherUpgrade;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.PythonArcherUpgrade;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.MedusaArcherUpgrade;
@@ -69,6 +70,7 @@ public class ArcherClass extends PvPClass {
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             FrozenCommandHandler.registerClass(ArcherUpgradesCommand.class);
+            FrozenCommandHandler.registerClass(SetArcherKillsCommand.class);
         }
     }
 

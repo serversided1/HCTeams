@@ -51,25 +51,6 @@ public class KitListener implements Listener {
         
         attemptApplyKit(player, kit);
     }
-    
-    private static boolean canUse(Player player, String kitName) {
-        if (kitName.equals("Miner") || kitName.equals("Builder") || kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue")) {
-            return true;
-        }
-        
-        Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
-        if (!profileOptional.isPresent())
-            return false;
-        
-        Profile profile = profileOptional.get();
-        Rank highestRank = profile.getBestDisplayRank();
-        
-        if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
-            return true;
-        }
-        
-        return highestRank.getDisplayName().equals(kitName);
-    }
 
     public static void attemptApplyKit(Player player, Kit kit) {
         if (kit == null) {
@@ -87,7 +68,7 @@ public class KitListener implements Listener {
             return;
         }
 
-        if (!canUse(player, kit.getName())) {
+        if (!Foxtrot.getInstance().getMapHandler().getKitManager().canUseKit(player, kit.getName())) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou do not own this kit. Purchase it at store.veltpvp.com."));
             return;
         }
