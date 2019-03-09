@@ -71,7 +71,7 @@ public class BountyHandler implements Listener {
         }),
 
         ONE_BOUNTY_KEY("1 Bounty Key", player -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " bounty");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "cr givekey " + player.getName() + " bounty 1");
         }),
 
         TWO_BOUNTY_KEYS("2 Bounty Keys", player -> {
