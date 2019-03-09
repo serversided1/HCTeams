@@ -5,14 +5,15 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.Getter;
 import mkremins.fanciful.FancyMessage;
+import net.frozenorb.foxtrot.challenges.command.ChallengePickNewCommand;
+import net.frozenorb.foxtrot.challenges.command.ChallengeProgress;
+import net.frozenorb.foxtrot.challenges.command.TokensCommand;
 import net.frozenorb.foxtrot.challenges.impl.KillBasedChallenge;
 import net.frozenorb.foxtrot.challenges.impl.KillKitBasedChallenge;
 import net.frozenorb.foxtrot.challenges.impl.util.KitBasedChallengeData;
-import net.frozenorb.foxtrot.challenges.menu.ChallengesMenu;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -33,7 +34,6 @@ import com.mongodb.client.model.UpdateOptions;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.qlib.qLib;
-import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
 import net.frozenorb.qlib.util.ClassUtils;
 import net.frozenorb.qlib.util.UUIDUtils;
@@ -47,6 +47,7 @@ public class ChallengeHandler implements Listener {
     private static UpdateOptions UPSERT = new UpdateOptions().upsert(true);
     
     private Map<UUID, Map<Challenge, Integer>> challengeCounts = Maps.newConcurrentMap();
+    @Getter
     private Map<UUID, Long> pendingTokens = Maps.newConcurrentMap();
     @Getter
     private List<Challenge> dailyChallenges = new ArrayList<>();
@@ -192,7 +193,10 @@ public class ChallengeHandler implements Listener {
             Bukkit.getLogger().info("Saved " + Bukkit.getOnlinePlayers().size() + " challenge progressions in " + (System.currentTimeMillis() - start) + "ms.");
         }, 30 * 20, 30 * 20);
         
-        FrozenCommandHandler.registerAll(Foxtrot.getInstance());
+        FrozenCommandHandler.registerClass(ChallengePickNewCommand.class);
+        FrozenCommandHandler.registerClass(ChallengeProgress.class);
+        FrozenCommandHandler.registerClass(TokensCommand.class);
+
         Bukkit.getPluginManager().registerEvents(this, Foxtrot.getInstance());
     }
     
@@ -226,7 +230,7 @@ public class ChallengeHandler implements Listener {
         });
     }
     
-    private void pickNewChallenges() {
+    public void pickNewChallenges() {
         dailyChallenges.clear();
 
         List<Challenge> selectedDailyChallenges = new ArrayList<>();
@@ -252,7 +256,7 @@ public class ChallengeHandler implements Listener {
         }
     }
     
-    private void saveDailyChallenges() {
+    public void saveDailyChallenges() {
         qLib.getInstance().runRedisCommand(redis -> {
             for (int i = 0; i < 3; i++) {
                 redis.set("daily-challenges:" + i, dailyChallenges.get(i).getName());
@@ -260,24 +264,6 @@ public class ChallengeHandler implements Listener {
 
             return null;
         });
-    }
-
-    @Command(names = {"tokens"}, permission = "")
-    public static void tokens(Player sender) {
-        sender.sendMessage(ChatColor.YELLOW + "You have " + ChatColor.GOLD + Foxtrot.getInstance().getTokensMap().getTokens(sender.getUniqueId()) + ChatColor.YELLOW + " tokens.");
-    }
-
-    @Command(names = {"challenge progress", "challenges"}, permission = "")
-    public static void progress(Player sender) {
-        new ChallengesMenu().openMenu(sender);
-    }
-    
-    @Command(names = {"challenge picknew"}, permission = "op")
-    public static void newchallenges(CommandSender sender) {
-        Foxtrot.getInstance().getChallengeHandler().pickNewChallenges();
-        Foxtrot.getInstance().getChallengeHandler().saveDailyChallenges();
-
-        sender.sendMessage(ChatColor.GREEN + "The challenges have been refreshed!");
     }
         
     public void saveLastDate() {
