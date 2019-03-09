@@ -87,22 +87,33 @@ public class KitCommand {
         targetKit.apply(sender);
     }
 
-    private static boolean canUse(Player player, Kit kit) {
+    public static boolean canUse(Player player, Kit kit) {
         String kitName = kit.getName();
-        if (kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue") || kitName.equals("Miner") || kitName.equals("Builder")) {
+
+        // Don't show any of these kits as donator kits
+        if (kitName.equals("Ranger") || kitName.equals("PvP") || kitName.equals("Archer") || kitName.equals("Bard") || kitName.equals("Rogue") || kitName.equals("Miner") || kitName.equals("Builder")) {
             return false;
         }
-        
+
+        // Don't show any of these kitmap specific kits as donator kits either
+        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
+            if (kitName.equals("ArcherPython") || kitName.equals("ArcherApollo") || kitName.equals("ArcherHades") || kitName.equals("ArcherMedusa")) {
+                return false;
+            }
+        }
+
         Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
         if (!profileOptional.isPresent()) return false;
-        
+
         Profile profile = profileOptional.get();
         Rank highestRank = profile.getBestDisplayRank();
-        
+
         if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
             return true;
         }
-        
+
         return highestRank.getDisplayName().equals(kitName);
     }
+
+
 }
