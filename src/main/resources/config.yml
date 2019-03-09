@@ -8,6 +8,8 @@ tab:
   serverName: '&6&lHCTeams'
   sectionColor: '&5'
   infoColor: '&e'
+glowstoneMountain: false
+cavern: false
 startingTimer: false
 forceInvites: true
 squads: false
