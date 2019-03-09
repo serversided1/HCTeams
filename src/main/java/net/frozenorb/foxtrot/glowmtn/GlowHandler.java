@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.glowmtn;
 import java.io.File;
 import java.io.IOException;
 
+import net.frozenorb.foxtrot.glowmtn.listeners.GlowListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -44,6 +45,8 @@ public class GlowHandler {
             // Broadcast the reset
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Glowstone Mountain]" + ChatColor.GREEN + " All glowstone has been reset!");
         }, secs, secs);
+
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new GlowListener(), Foxtrot.getInstance());
     }
 
     public void save() {

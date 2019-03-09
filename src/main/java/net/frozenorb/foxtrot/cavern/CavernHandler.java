@@ -3,6 +3,7 @@ package net.frozenorb.foxtrot.cavern;
 import java.io.File;
 import java.io.IOException;
 
+import net.frozenorb.foxtrot.cavern.listeners.CavernListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -43,6 +44,8 @@ public class CavernHandler {
             // Broadcast the reset
             Bukkit.broadcastMessage(ChatColor.AQUA + "[Cavern]" + ChatColor.GREEN + " All ores have been reset!");
         }, 20 * 60 * 60, 20 * 60 * 60);
+
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(new CavernListener(), Foxtrot.getInstance());
     }
 
     public void save() {

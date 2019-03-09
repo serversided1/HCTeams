@@ -256,8 +256,15 @@ public class Foxtrot extends JavaPlugin {
         pvpClassHandler = new PvPClassHandler();
         eventHandler = new EventHandler();
         conquestHandler = new ConquestHandler();
-        glowHandler = new GlowHandler();
-        cavernHandler = new CavernHandler();
+
+        if (getConfig().getBoolean("glowstoneMountain", false)) {
+            glowHandler = new GlowHandler();
+        }
+
+        if (getConfig().getBoolean("cavern", false)) {
+            cavernHandler = new CavernHandler();
+        }
+
         crateHandler = new CrateHandler();
         
         if (mapHandler.isKitMap() || serverHandler.isVeltKitMap()) {
@@ -299,8 +306,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
         getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
-        getServer().getPluginManager().registerEvents(new CavernListener(), this);
-        getServer().getPluginManager().registerEvents(new GlowListener(), this);
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
 
