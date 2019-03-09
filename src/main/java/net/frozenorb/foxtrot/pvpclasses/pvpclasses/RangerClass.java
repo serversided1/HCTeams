@@ -35,8 +35,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class RangerClass extends PvPClass {
 
 	private static final int TAG_SECONDS = 15;
-	private static final int HIT_COOLDOWN_SECONDS = 45;
-	private static final int MISS_COOLDOWN_SECONDS = 15;
+	private static final int HIT_COOLDOWN_SECONDS = 20;
+	private static final int MISS_COOLDOWN_SECONDS = 10;
 
 	private static Map<String, Long> lastSpeedUsage = new HashMap<>();
 	private static Map<String, Long> lastJumpUsage = new HashMap<>();
