@@ -5,7 +5,7 @@ import java.util.Map;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
-import net.frozenorb.foxtrot.team.upgrades.menu.button.ComplexButton;
+import net.frozenorb.foxtrot.team.upgrades.menu.button.CategoryButton;
 import net.frozenorb.foxtrot.team.upgrades.menu.button.PurchaseButton;
 import net.frozenorb.qlib.menu.Button;
 import net.frozenorb.qlib.menu.Menu;
@@ -25,7 +25,7 @@ public class TeamUpgradesMenu extends Menu {
 		Map<Integer, Button> buttons = new HashMap<>();
 
 		for (TeamUpgrade upgrade : TeamUpgrade.upgrades.values()) {
-			buttons.put(buttons.size(), upgrade.isCategory() ? new ComplexButton(upgrade) : new PurchaseButton(team, upgrade));
+			buttons.put(buttons.size(), upgrade.isCategory() ? new CategoryButton(upgrade) : new PurchaseButton(team, upgrade));
 		}
 
 		return buttons;

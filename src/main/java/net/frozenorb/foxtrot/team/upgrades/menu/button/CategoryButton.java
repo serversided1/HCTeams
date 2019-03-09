@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
-import net.frozenorb.foxtrot.team.upgrades.menu.ComplexUpgradesMenu;
+import net.frozenorb.foxtrot.team.upgrades.menu.CategoryUpgradesMenu;
 import net.frozenorb.qlib.menu.Button;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 
 @AllArgsConstructor
-public class ComplexButton extends Button {
+public class CategoryButton extends Button {
 
 	private TeamUpgrade upgrade;
 
@@ -44,7 +44,7 @@ public class ComplexButton extends Button {
 
 	@Override
 	public void clicked(Player player, int slot, ClickType clickType) {
-		new ComplexUpgradesMenu(ChatColor.GOLD + upgrade.getUpgradeName(), upgrade.getCategoryElements()).openMenu(player);
+		new CategoryUpgradesMenu(ChatColor.GOLD + upgrade.getUpgradeName(), upgrade.getCategoryElements()).openMenu(player);
 	}
 
 }

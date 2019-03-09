@@ -14,7 +14,7 @@ import net.frozenorb.qlib.menu.Menu;
 import org.bukkit.entity.Player;
 
 @AllArgsConstructor
-public class ComplexUpgradesMenu extends Menu {
+public class CategoryUpgradesMenu extends Menu {
 
 	private String title;
 	private List<ClaimEffectTeamUpgrade> upgrades;

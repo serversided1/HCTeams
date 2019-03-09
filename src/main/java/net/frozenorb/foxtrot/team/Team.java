@@ -111,8 +111,8 @@ public class Team {
         // Set default team upgrades
         for (TeamUpgrade upgrade : TeamUpgrade.upgrades.values()) {
             if (upgrade.isCategory()) {
-                for (TeamUpgrade complexUpgrade : upgrade.getCategoryElements()) {
-                    upgradeToTier.putIfAbsent(complexUpgrade.getUpgradeName(), 0);
+                for (TeamUpgrade categoryUpgrade : upgrade.getCategoryElements()) {
+                    upgradeToTier.putIfAbsent(categoryUpgrade.getUpgradeName(), 0);
                 }
             } else {
                 upgradeToTier.putIfAbsent(upgrade.getUpgradeName(), 0);

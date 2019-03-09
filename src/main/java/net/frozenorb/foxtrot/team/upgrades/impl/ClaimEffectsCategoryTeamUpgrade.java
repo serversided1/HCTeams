@@ -1,5 +1,6 @@
 package net.frozenorb.foxtrot.team.upgrades.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
+import net.frozenorb.foxtrot.util.EffectSnapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,7 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 
-	private static final List<ClaimEffectTeamUpgrade> complexUpgrades = Arrays.asList(
+	private static final List<ClaimEffectTeamUpgrade> claimEffectUpgrades = Arrays.asList(
 			new ClaimEffectTeamUpgrade("Saturation", 50, 0, 1, new ItemStack(Material.MELON), PotionEffectType.SATURATION),
 			new ClaimEffectTeamUpgrade("Speed", 25, 25, 3, new ItemStack(Material.SUGAR), PotionEffectType.SPEED),
 			new ClaimEffectTeamUpgrade("Haste", 15, 10, 5, new ItemStack(Material.DIAMOND_PICKAXE), PotionEffectType.FAST_DIGGING),
@@ -31,6 +33,7 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 	);
 
 	private static final Map<UUID, Boolean> receivingEffects = new HashMap<>();
+	private static final Map<UUID, List<EffectSnapshot>> effectsToRestore = new HashMap<>();
 
 	public ClaimEffectsCategoryTeamUpgrade() {
 		// Start task to give effects to players in teams that have team upgrades
@@ -44,11 +47,23 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 						if (claim.contains(player)) {
 							receivingEffects.put(player.getUniqueId(), true);
 
-							for (ClaimEffectTeamUpgrade upgrade : complexUpgrades) {
+							List<EffectSnapshot> effects = new ArrayList<>();
+
+							for (ClaimEffectTeamUpgrade upgrade : claimEffectUpgrades) {
 								if (upgrade.getTier(team) > 0) {
+									for (PotionEffect activeEffect : player.getActivePotionEffects()) {
+										if (activeEffect.getType().equals(upgrade.getPotionEffectType()) && activeEffect.getDuration() != Integer.MAX_VALUE) {
+											effects.add(new EffectSnapshot(activeEffect.getType(), activeEffect.getAmplifier(), activeEffect.getDuration()));
+											player.removePotionEffect(activeEffect.getType());
+											break;
+										}
+									}
+
 									player.addPotionEffect(new PotionEffect(upgrade.getPotionEffectType(), Integer.MAX_VALUE, upgrade.getTier(team) - 1));
 								}
 							}
+
+							effectsToRestore.put(player.getUniqueId(), effects);
 
 							continue playerLoop;
 						}
@@ -57,11 +72,17 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 					if (receivingEffects.getOrDefault(player.getUniqueId(), false)) {
 						receivingEffects.put(player.getUniqueId(), false);
 
-						for (ClaimEffectTeamUpgrade upgrade : complexUpgrades) {
+						for (ClaimEffectTeamUpgrade upgrade : claimEffectUpgrades) {
 							if (upgrade.getTier(team) > 0) {
 								player.removePotionEffect(upgrade.getPotionEffectType());
 							}
 						}
+
+						for (EffectSnapshot effectSnapshot : effectsToRestore.get(player.getUniqueId())) {
+							player.addPotionEffect(new PotionEffect(effectSnapshot.getEffectType(), effectSnapshot.getDuration(), effectSnapshot.getAmplifier()));
+						}
+
+						effectsToRestore.remove(player.getUniqueId());
 					}
 				}
 			}
@@ -105,12 +126,13 @@ public class ClaimEffectsCategoryTeamUpgrade implements TeamUpgrade, Listener {
 
 	@Override
 	public List<ClaimEffectTeamUpgrade> getCategoryElements() {
-		return complexUpgrades;
+		return claimEffectUpgrades;
 	}
 
 	@EventHandler
 	public void onPlayerQuitEvent(PlayerQuitEvent event) {
 		receivingEffects.remove(event.getPlayer().getUniqueId());
+		effectsToRestore.remove(event.getPlayer().getUniqueId());
 	}
 
 }
