@@ -38,7 +38,6 @@ public class CarePackageHandler implements Listener {
     private Location lastCarePackage;
     private World world;
     private static List<ItemStack> loot;
-    private static final Random RANDOM = new Random();
     
     public CarePackageHandler() {
         if (true) {
@@ -123,17 +122,18 @@ public class CarePackageHandler implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.getPlayer().getLocation().getBlockY() >= 45) return;
         if (LandBoard.getInstance().getTeam(event.getBlock().getLocation()) == null) {
-            if (RANDOM.nextInt(149) == 0) {
+            if (qLib.RANDOM.nextInt(149) == 0) {
                 event.setCancelled(true);
                 event.getBlock().setType(Material.CHEST);
+
                 Chest chest = (Chest) event.getBlock().getState();
 
                 event.getPlayer().playSound(chest.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Woah! You found a chest.");
 
-                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
-                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
-                chest.getBlockInventory().setItem(RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(RANDOM.nextInt(loot.size())));
+                chest.getBlockInventory().setItem(qLib.RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(qLib.RANDOM.nextInt(loot.size())));
+                chest.getBlockInventory().setItem(qLib.RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(qLib.RANDOM.nextInt(loot.size())));
+                chest.getBlockInventory().setItem(qLib.RANDOM.nextInt(chest.getBlockInventory().getSize()), loot.get(qLib.RANDOM.nextInt(loot.size())));
             }
         }
     }

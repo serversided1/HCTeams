@@ -18,6 +18,11 @@ public class CavernCommand {
 
     @Command(names = "cavern scan", permission = "op")
     public static void cavernScan(Player sender) {
+        if (!Foxtrot.getInstance().getConfig().getBoolean("cavern", false)) {
+            sender.sendMessage(RED + "Cavern is currently disabled. Check config.yml to toggle.");
+            return;
+        }
+
         Team team = Foxtrot.getInstance().getTeamHandler().getTeam(CavernHandler.getCavernTeamName());
 
         // Make sure we have a team
