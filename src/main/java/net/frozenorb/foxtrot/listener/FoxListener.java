@@ -526,48 +526,31 @@ public class FoxListener implements Listener {
             if (playerTeam != null) {
                 TeamActionTracker.logActionAsync(playerTeam, TeamActionType.MEMBER_KILLED_BY_ENEMY_IN_PVP, ImmutableMap.of("playerId", event.getEntity().getUniqueId(), "playerName", event.getEntity().getName(), "killerId", killer.getUniqueId(), "killerName", killer.getName(), "coordinates", deathX + ", " + deathY + ", " + deathZ));
             }
+
+            // Add kills to sword lore if the victim does not equal the killer
+            if (!event.getEntity().equals(killer)) {
+                ItemStack hand = killer.getItemInHand();
+
+                if (hand.getType().name().contains("SWORD") || hand.getType() == BOW) {
+                    InventoryUtils.addKill(hand, killer.getDisplayName() + YELLOW + " " + (hand.getType() == BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
+                }
+            }
         }
 
         if (playerTeam != null) {
             playerTeam.playerDeath(event.getEntity().getName(), Foxtrot.getInstance().getServerHandler().getDTRLoss(event.getEntity()));
         }
 
-        // Add deaths to armor
-        String deathMsg = YELLOW + event.getEntity().getName() + RESET + " " + (event.getEntity().getKiller() != null ? "killed by " + YELLOW + event.getEntity().getKiller().getName() : "died") + " " + GOLD + InventoryUtils.DEATH_TIME_FORMAT.format(new Date());
+        if (killer == null || (!event.getEntity().equals(killer))) {
+            // Add deaths to armor
+            String deathMsg = YELLOW + event.getEntity().getName() + RESET + " " + (event.getEntity().getKiller() != null ? "killed by " + YELLOW + event.getEntity().getKiller().getName() : "died") + " " + GOLD +
+                              InventoryUtils.DEATH_TIME_FORMAT.format(new Date());
 
-        for (ItemStack armor : event.getEntity().getInventory().getArmorContents()) {
-            if (armor != null && armor.getType() != AIR) {
-                InventoryUtils.addDeath(armor, deathMsg);
+            for (ItemStack armor : event.getEntity().getInventory().getArmorContents()) {
+                if (armor != null && armor.getType() != AIR) {
+                    InventoryUtils.addDeath(armor, deathMsg);
+                }
             }
-        }
-
-        if (killer != null) {
-            ItemStack hand = killer.getItemInHand();
-
-            // Add kills to sword lore
-            if (hand.getType().name().contains("SWORD") || hand.getType() == BOW) {
-                InventoryUtils.addKill(hand, killer.getDisplayName() + YELLOW + " " + (hand.getType() == BOW ? "shot" : "killed") + " " + event.getEntity().getDisplayName());
-            }
-
-            // Add player head to item drops
-            /* Temporarily (maybe permanently) remove player heads since the client blocks on texture downloads.
-            if (killer.hasPermission("foxtrot.skulldrop")) {
-                ItemStack skull = new ItemStack(SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
-                SkullMeta meta = (SkullMeta) skull.getItemMeta();
-            
-                meta.setOwner(event.getEntity().getKitName());
-                meta.setDisplayName(YELLOW + "Head of " + event.getEntity().getKitName());
-                meta.setLore(Arrays.asList("", deathMsg));
-                skull.setItemMeta(meta);
-                event.getDrops().add(skull);
-            }
-            */
-
-            //            if (!Foxtrot.getInstance().getMapHandler().isKitMap()) {
-            //                for (ItemStack it : event.getEntity().getKiller().getInventory().addItem(Foxtrot.getInstance().getServerHandler().generateDeathSign(event.getEntity().getKitName(), event.getEntity().getKiller().getKitName())).values()) {
-            //                    event.getDrops().add(it);
-            //                }
-            //            }
         }
 
         event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
