@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import net.frozenorb.foxtrot.deathmessage.event.PlayerKilledEvent;
+import net.frozenorb.foxtrot.util.Players;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -97,8 +98,8 @@ public class DamageListener implements Listener {
                         } else {
                             boosting.put(killer.getUniqueId(), 0);
                         }
-                        
-                        if (killer.equals(victim) || isNaked(victim)) {
+
+                        if (killer.equals(victim) || Players.isNaked(victim)) {
                             StatsEntry victimStats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim);
 
                             victimStats.addDeath();
@@ -245,10 +246,6 @@ public class DamageListener implements Listener {
         
         ItemStack pot = new ItemStack(Material.POTION, 1, (short) 16421);
         while (event.getPlayer().getInventory().addItem(pot).isEmpty()) {}
-    }
-    
-    private boolean isNaked(Player player) {
-        return player.getInventory().getHelmet() == null && player.getInventory().getChestplate() == null && player.getInventory().getLeggings() == null && player.getInventory().getBoots() == null;
     }
     
 }

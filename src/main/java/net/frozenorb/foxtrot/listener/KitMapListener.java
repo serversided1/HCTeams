@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import net.frozenorb.foxtrot.util.Players;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
@@ -49,23 +50,26 @@ public class KitMapListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent e) {
-        
         if (Foxtrot.getInstance().getMapHandler().getScoreboardTitle().contains("cane")) {
             return;
         }
         
-        Player p = e.getEntity();
-        if ((p.getKiller() instanceof Player)) {
-            String killerName = p.getKiller().getName();
-            FrozenEconomyHandler.deposit(p.getKiller().getUniqueId(), 100 + getAdditional(p.getKiller()));
-            p.getKiller().sendMessage(ChatColor.RED + "You recieved a reward for killing " + ChatColor.GREEN
-                    + p.getName() + ChatColor.RED + ".");
+        Player victim = e.getEntity();
+
+        // 1. killer should not be null
+        // 2. victim should not be equal to killer
+        // 3. victim should not be naked
+        if (victim.getKiller() != null && !victim.getUniqueId().equals(victim.getKiller().getUniqueId()) && !Players.isNaked(victim)) {
+            String killerName = victim.getKiller().getName();
+            FrozenEconomyHandler.deposit(victim.getKiller().getUniqueId(), 100 + getAdditional(victim.getKiller()));
+            victim.getKiller().sendMessage(ChatColor.RED + "You received a reward for killing " + ChatColor.GREEN
+                    + victim.getName() + ChatColor.RED + ".");
             
             Bukkit.getScheduler().runTask(Foxtrot.getInstance(), () -> {
-                int kills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(p.getKiller()).getKills();
+                int kills = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(victim.getKiller()).getKills();
                 if (kills % 10 == 0) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "crate givekey " + killerName + " OP 1");
-                    p.getKiller().sendMessage(ChatColor.GREEN + "You received an OP key for 10 kills!");
+                    victim.getKiller().sendMessage(ChatColor.GREEN + "You received an OP key for 10 kills!");
                 }
             });
         }
