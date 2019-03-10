@@ -35,7 +35,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
-import net.frozenorb.foxtrot.map.kit.stats.command.ChestCommand;
+import net.frozenorb.foxtrot.map.stats.command.ChestCommand;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.qlib.qLib;

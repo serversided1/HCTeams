@@ -2,7 +2,7 @@ package net.frozenorb.foxtrot.commands;
 
 import org.bukkit.entity.Player;
 
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
+import net.frozenorb.foxtrot.team.track.TeamActionTracker;
 import net.frozenorb.qlib.command.Command;
 
 public class ToggleDatabaseTeamLog {

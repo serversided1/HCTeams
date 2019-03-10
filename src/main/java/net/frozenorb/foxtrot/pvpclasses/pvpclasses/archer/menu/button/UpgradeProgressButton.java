@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.kit.kits.KitListener;
+import net.frozenorb.foxtrot.map.kits.KitListener;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import net.frozenorb.foxtrot.util.ProgressBarBuilder;
 import net.frozenorb.qlib.menu.Button;

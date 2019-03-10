@@ -31,9 +31,9 @@ import net.frozenorb.foxtrot.deathmessage.event.CustomPlayerDamageEvent;
 import net.frozenorb.foxtrot.deathmessage.objects.Damage;
 import net.frozenorb.foxtrot.deathmessage.objects.PlayerDamage;
 import net.frozenorb.foxtrot.deathmessage.util.UnknownDamage;
-import net.frozenorb.foxtrot.map.kit.killstreaks.Killstreak;
-import net.frozenorb.foxtrot.map.kit.killstreaks.PersistentKillstreak;
-import net.frozenorb.foxtrot.map.kit.stats.StatsEntry;
+import net.frozenorb.foxtrot.map.killstreaks.Killstreak;
+import net.frozenorb.foxtrot.map.killstreaks.PersistentKillstreak;
+import net.frozenorb.foxtrot.map.stats.StatsEntry;
 import net.frozenorb.foxtrot.team.Team;
 
 public class DamageListener implements Listener {

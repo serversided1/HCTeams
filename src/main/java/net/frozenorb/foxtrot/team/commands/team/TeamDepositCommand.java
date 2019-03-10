@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableMap;
 
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionTracker;
-import net.frozenorb.foxtrot.teamactiontracker.TeamActionType;
+import net.frozenorb.foxtrot.team.track.TeamActionTracker;
+import net.frozenorb.foxtrot.team.track.TeamActionType;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

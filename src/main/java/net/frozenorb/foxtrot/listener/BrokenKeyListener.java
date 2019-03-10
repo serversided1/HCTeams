@@ -38,7 +38,7 @@ public class BrokenKeyListener implements Listener {
 							break;
 						}
 					}
-				} else if (itemMeta.getDisplayName().contains(ChatColor.GOLD + "Bounty") && itemMeta.getDisplayName().contains(ChatColor.GRAY + "Crate")) {
+				} else if (itemMeta.getDisplayName().contains("[") && itemMeta.getDisplayName().contains(ChatColor.GOLD + "Bounty") && itemMeta.getDisplayName().contains(ChatColor.GRAY + "Crate")) {
 					event.getPlayer().setItemInHand(null);
 					event.getPlayer().updateInventory();
 

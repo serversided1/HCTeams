@@ -32,7 +32,7 @@ import org.bukkit.inventory.Inventory;
 import com.google.common.collect.Maps;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.map.kit.kits.Kit;
+import net.frozenorb.foxtrot.map.kits.Kit;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;

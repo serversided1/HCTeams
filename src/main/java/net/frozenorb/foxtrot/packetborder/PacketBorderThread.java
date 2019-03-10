@@ -13,7 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.bounty.BountyHandler;
+import net.frozenorb.foxtrot.map.bounty.BountyHandler;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.Claim;

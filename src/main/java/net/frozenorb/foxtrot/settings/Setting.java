@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.settings.menu.SettingButton;
+import net.frozenorb.foxtrot.settings.menu.button.SettingButton;
 import net.frozenorb.foxtrot.tab.TabListMode;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
