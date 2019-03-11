@@ -600,6 +600,37 @@ public class Team {
         this.points = basePoints;
     }
 
+    public String[] getPointBreakDown() {
+        int basePoints = 0;
+
+        basePoints += (Math.floor(kills / 5.0D)) * 10;
+        basePoints -= (Math.floor(deaths / 5.0D)) * 15;
+        basePoints += kothCaptures * 50;
+        basePoints += citadelsCapped * 125;
+        basePoints += (diamondsMined / 500) * 15;
+        basePoints += spawnersInClaim * 5;
+        basePoints += killstreakPoints;
+        basePoints += playtimePoints;
+        basePoints -= spentPoints;
+
+        if (basePoints < 0) {
+            basePoints = 0;
+        }
+
+        return new String[]{
+                "Base Points: " + basePoints,
+                "Kills Points: (" + kills + " kills / 5) * 10 = " + ((Math.floor(kills / 5.0D)) * 10),
+                "Deaths Points: (" + deaths + " deaths / 5) * 15 = " + ((Math.floor(deaths / 5.0D)) * 15),
+                "KOTH Captures Points: (" + kothCaptures + " caps) * 50 = " + (kothCaptures * 50),
+                "Citadel Captures Points: (" + citadelsCapped + " caps) * 125 = " + (citadelsCapped * 125),
+                "Diamonds Mined Points: (" + diamondsMined + " mined / 500) * 15 = " + ((diamondsMined / 500) * 15),
+                "Spawners Points: (" + spawnersInClaim + " spawners) * 5 = " + (spawnersInClaim * 5),
+                "Killstreaks Points: " + killstreakPoints,
+                "Playtime Points: " + playtimePoints,
+                "Spent Points: " + spentPoints
+        };
+    }
+
     public void flagForSave() {
         needsSave = true;
     }
