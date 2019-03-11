@@ -1,7 +1,7 @@
 package net.frozenorb.foxtrot.team.upgrades.impl;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.team.event.PlayerAttemptJoinFullTeamEvent;
+import net.frozenorb.foxtrot.team.event.FullTeamBypassEvent;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -36,9 +36,11 @@ public class ExtraSlotTeamUpgrade implements TeamUpgrade, Listener {
 	}
 
 	@EventHandler
-	public void onPlayerAttemptJoinFullTeamEvent(PlayerAttemptJoinFullTeamEvent event) {
+	public void onFullTeamBypassEvent(FullTeamBypassEvent event) {
+		event.setExtraSlots(getTier(event.getTeam()));
+
 		if (getTier(event.getTeam()) > 0) {
-			if (event.getTeam().getMembers().size() + getTier(event.getTeam()) < Foxtrot.getInstance().getMapHandler().getTeamSize()) {
+			if (event.getTeam().getMembers().size() + 1 <= Foxtrot.getInstance().getMapHandler().getTeamSize() + getTier(event.getTeam())) {
 				event.setAllowBypass(true);
 			}
 		}

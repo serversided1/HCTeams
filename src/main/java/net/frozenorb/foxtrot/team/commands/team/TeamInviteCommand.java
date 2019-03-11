@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import mkremins.fanciful.FancyMessage;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.event.FullTeamBypassEvent;
 import net.frozenorb.foxtrot.team.track.TeamActionTracker;
 import net.frozenorb.foxtrot.team.track.TeamActionType;
 import net.frozenorb.qlib.command.Command;
@@ -27,8 +28,13 @@ public class TeamInviteCommand {
         }
 
         if (team.getMembers().size() >= Foxtrot.getInstance().getMapHandler().getTeamSize()) {
-            sender.sendMessage(ChatColor.RED + "The max team size is " + Foxtrot.getInstance().getMapHandler().getTeamSize() + "!");
-            return;
+            FullTeamBypassEvent bypassEvent = new FullTeamBypassEvent(sender, team);
+            Foxtrot.getInstance().getServer().getPluginManager().callEvent(bypassEvent);
+
+            if (!bypassEvent.isAllowBypass()) {
+                sender.sendMessage(ChatColor.RED + "The max team size is " + Foxtrot.getInstance().getMapHandler().getTeamSize() + (bypassEvent.getExtraSlots() == 0 ? "" : " (+" + bypassEvent.getExtraSlots() + ")") + "!");
+                return;
+            }
         }
 
         if (!(team.isOwner(sender.getUniqueId()) || team.isCoLeader(sender.getUniqueId()) || team.isCaptain(sender.getUniqueId()))) {
