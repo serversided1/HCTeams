@@ -38,7 +38,17 @@ public class UpgradeProgressButton extends Button {
 		int progress = Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId());
 		double percentage = ProgressBarBuilder.percentage(progress, upgrade.getKillsNeeded());
 
+		if (progress >= upgrade.getKillsNeeded()) {
+			progress = upgrade.getKillsNeeded();
+		}
+
 		List<String> lore = new ArrayList<>();
+		lore.add("");
+
+		for (String descriptionLine : upgrade.getDescription()) {
+			lore.add(ChatColor.GRAY + ChatColor.ITALIC.toString() + descriptionLine);
+		}
+
 		lore.add("");
 		lore.add(ChatColor.DARK_GRAY.toString() + "[" + new ProgressBarBuilder().build(percentage) + ChatColor.DARK_GRAY + "] (" + ChatColor.GREEN + progress + ChatColor.DARK_GRAY + "/" + ChatColor.GRAY + upgrade.getKillsNeeded() + ChatColor.DARK_GRAY + ")");
 

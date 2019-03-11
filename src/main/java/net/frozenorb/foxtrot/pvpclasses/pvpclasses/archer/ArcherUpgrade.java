@@ -1,6 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
@@ -24,6 +25,8 @@ public interface ArcherUpgrade {
 	}
 
 	String getUpgradeName();
+
+	List<String> getDescription();
 
 	int getKillsNeeded();
 

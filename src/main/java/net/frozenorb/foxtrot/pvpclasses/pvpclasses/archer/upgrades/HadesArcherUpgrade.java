@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades;
 
+import java.util.Arrays;
+import java.util.List;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,14 @@ public class HadesArcherUpgrade implements ArcherUpgrade {
 	@Override
 	public String getUpgradeName() {
 		return "Hades";
+	}
+
+	@Override
+	public List<String> getDescription() {
+		return Arrays.asList(
+				"Players shot by this upgrade will receive",
+				"Weakness 4 and Hunger 5 for 10 seconds."
+		);
 	}
 
 	@Override

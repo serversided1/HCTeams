@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades;
 
+import java.util.Arrays;
+import java.util.List;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +17,15 @@ public class ApolloArcherUpgrade implements ArcherUpgrade {
 	}
 
 	@Override
+	public List<String> getDescription() {
+		return Arrays.asList(
+				"Players shot by this upgrade will receive",
+				"Blindness 2 for 5 seconds and Confusion 1",
+				"for 10 seconds."
+		);
+	}
+
+	@Override
 	public int getKillsNeeded() {
 		return 100;
 	}
@@ -26,8 +37,8 @@ public class ApolloArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public void onHit(Player shooter, Player victim) {
-		victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 10, 1));
-		victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 10, 1));
+		victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 5, 1));
+		victim.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * 10, 0));
 	}
 
 	@Override

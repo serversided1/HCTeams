@@ -1,5 +1,7 @@
 package net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades;
 
+import java.util.Arrays;
+import java.util.List;
 import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +17,14 @@ public class PythonArcherUpgrade implements ArcherUpgrade {
 	}
 
 	@Override
+	public List<String> getDescription() {
+		return Arrays.asList(
+				"Players shot by this upgrade will receive",
+				"poison 1 for 5 seconds."
+		);
+	}
+
+	@Override
 	public int getKillsNeeded() {
 		return 25;
 	}
@@ -26,7 +36,7 @@ public class PythonArcherUpgrade implements ArcherUpgrade {
 
 	@Override
 	public void onHit(Player shooter, Player victim) {
-		victim.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20 * 10, 1));
+		victim.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 20 * 5, 0));
 	}
 
 	@Override
