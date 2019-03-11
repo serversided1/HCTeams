@@ -58,7 +58,7 @@ public class RangerClass extends PvPClass {
 
 	@Override
 	public void apply(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
 		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0), true);
 	}
 
@@ -199,7 +199,7 @@ public class RangerClass extends PvPClass {
 			victim.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Stunned! " + ChatColor.YELLOW + "A ranger has shot and stunned you for " + TAG_SECONDS + " seconds.");
 
 			// Add effects to damaged player
-			victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * TAG_SECONDS, 0));
+			victim.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * TAG_SECONDS, 1));
 			victim.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * TAG_SECONDS, 3));
 
 			// Add 45 second throw cooldown (because the shooter hit another player)
