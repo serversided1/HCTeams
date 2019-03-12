@@ -194,7 +194,7 @@ public class ChallengeHandler implements Listener {
                 saveLastDate();
                 saveDailyChallenges();
 
-                Bukkit.broadcastMessage(ChatColor.RED + "Challenge progress has been reset! Check out the two new daily challenges.");
+                Bukkit.broadcastMessage(ChatColor.RED + "Challenge progress has been reset! Check out the new daily challenges.");
             }
             
             long start = System.currentTimeMillis();
