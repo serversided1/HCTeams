@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot;
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 
-import net.frozenorb.foxtrot.listener.BrokenKeyListener;
+import net.frozenorb.foxtrot.events.hell.HellHandler;
 import net.frozenorb.foxtrot.listener.SpawnerTrackerListener;
 import net.frozenorb.foxtrot.persist.maps.*;
 import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
@@ -102,6 +102,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private ServerHandler serverHandler;
     @Getter private MapHandler mapHandler;
     @Getter private CitadelHandler citadelHandler;
+    @Getter private HellHandler hellHandler;
     @Getter private EventHandler eventHandler;
     @Getter private ConquestHandler conquestHandler;
     @Getter private CavernHandler cavernHandler;
@@ -256,6 +257,10 @@ public class Foxtrot extends JavaPlugin {
         eventHandler = new EventHandler();
         conquestHandler = new ConquestHandler();
 
+        if (getConfig().getBoolean("hell.enabled", false)) {
+            hellHandler = new HellHandler();
+        }
+
         if (getConfig().getBoolean("glowstoneMountain", false)) {
             glowHandler = new GlowHandler();
         }
@@ -281,7 +286,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new AntiGlitchListener(), this);
         getServer().getPluginManager().registerEvents(new BasicPreventionListener(), this);
         getServer().getPluginManager().registerEvents(new BorderListener(), this);
-        getServer().getPluginManager().registerEvents(new BrokenKeyListener(), this);
         getServer().getPluginManager().registerEvents((combatLoggerListener = new CombatLoggerListener()), this);
         getServer().getPluginManager().registerEvents(new CrowbarListener(), this);
         getServer().getPluginManager().registerEvents(new DeathbanListener(), this);

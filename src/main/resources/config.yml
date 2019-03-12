@@ -8,6 +8,9 @@ tab:
   serverName: '&6&lHCTeams'
   sectionColor: '&5'
   infoColor: '&e'
+hell:
+  enabled: true
+  worldName: "Hell-Grid"
 glowstoneMountain: false
 cavern: false
 startingTimer: false
