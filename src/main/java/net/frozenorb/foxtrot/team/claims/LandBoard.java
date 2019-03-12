@@ -3,18 +3,13 @@ package net.frozenorb.foxtrot.team.claims;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.team.Team;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.craftbukkit.v1_7_R4.util.LongHash;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
