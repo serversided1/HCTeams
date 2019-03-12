@@ -13,8 +13,11 @@ import org.bukkit.World;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 
-public class LandBoard {
+public class LandBoard implements Listener {
 
     private static LandBoard instance;
     @Getter @Setter private boolean claimsEnabled = true;
@@ -22,8 +25,10 @@ public class LandBoard {
 
     public LandBoard() {
         for (World world : Foxtrot.getInstance().getServer().getWorlds()) {
-            buckets.put(world.getName(), HashMultimap.<CoordinateSet, Map.Entry<Claim, Team>>create());
+            buckets.put(world.getName(), HashMultimap.create());
         }
+
+        Foxtrot.getInstance().getServer().getPluginManager().registerEvents(this, Foxtrot.getInstance());
     }
 
     public void loadFromTeams() {
@@ -158,5 +163,9 @@ public class LandBoard {
         return (instance);
     }
 
+    @EventHandler
+    public void onWorldLoadEvent(WorldLoadEvent event) {
+        buckets.put(event.getWorld().getName(), HashMultimap.create());
+    }
 
 }
