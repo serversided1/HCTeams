@@ -105,6 +105,10 @@ public class LandBoard implements Listener {
             for (int z = regionData.getKey().getZ1(); z < regionData.getKey().getZ2() + step; z += step) {
                 Multimap<CoordinateSet, Map.Entry<Claim, Team>> worldMap = buckets.get(regionData.getKey().getWorld());
 
+                if (worldMap == null) {
+                    continue;
+                }
+
                 if (regionData.getValue() == null) {
                     CoordinateSet coordinateSet = new CoordinateSet(x, z);
                     Iterator<Map.Entry<Claim, Team>> claimIterator = worldMap.get(coordinateSet).iterator();

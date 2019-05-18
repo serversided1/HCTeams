@@ -3,12 +3,8 @@ package net.frozenorb.foxtrot.map.kits;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
-import net.frozenorb.hydrogen.Hydrogen;
-import net.frozenorb.hydrogen.profile.Profile;
-import net.frozenorb.hydrogen.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -174,18 +170,7 @@ public class KitManager {
             return true;
         }
 
-        Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
-        if (!profileOptional.isPresent())
-            return false;
-
-        Profile profile = profileOptional.get();
-        Rank highestRank = profile.getBestDisplayRank();
-
-        if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
-            return true;
-        }
-
-        return highestRank.getDisplayName().equals(kitName);
+        return player.hasPermission("hcteams.staff") || player.hasPermission("hcteams.youtuber") || player.hasPermission("hcteams.famous");
     }
     
 }

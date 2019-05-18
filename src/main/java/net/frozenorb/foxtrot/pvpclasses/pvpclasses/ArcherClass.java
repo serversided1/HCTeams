@@ -3,21 +3,21 @@ package net.frozenorb.foxtrot.pvpclasses.pvpclasses;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import net.frozenorb.foxtrot.deathmessage.event.PlayerKilledEvent;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.ArcherUpgrade;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.command.SetArcherKillsCommand;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.ApolloArcherUpgrade;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.PythonArcherUpgrade;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.MedusaArcherUpgrade;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.upgrades.HadesArcherUpgrade;
-import net.frozenorb.foxtrot.pvpclasses.pvpclasses.archer.command.ArcherUpgradesCommand;
-import net.frozenorb.qlib.command.FrozenCommandHandler;
+import lombok.Getter;
+import net.frozenorb.foxtrot.Foxtrot;
+import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
+import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
+import net.frozenorb.foxtrot.pvpclasses.PvPClass;
+import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
+import net.frozenorb.foxtrot.server.SpawnTagHandler;
+import net.frozenorb.foxtrot.team.Team;
+import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
+import net.frozenorb.qlib.nametag.FrozenNametagHandler;
+import net.frozenorb.qlib.util.TimeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -35,319 +35,254 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import lombok.Getter;
-import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
-import net.frozenorb.foxtrot.deathmessage.trackers.ArrowTracker;
-import net.frozenorb.foxtrot.pvpclasses.PvPClass;
-import net.frozenorb.foxtrot.pvpclasses.PvPClassHandler;
-import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.foxtrot.team.Team;
-import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.qlib.nametag.FrozenNametagHandler;
-import net.frozenorb.qlib.util.TimeUtils;
-
-@SuppressWarnings("deprecation")
 public class ArcherClass extends PvPClass {
 
-    private static final int MARK_SECONDS = 5;
+	private static final int MARK_SECONDS = 5;
 
-    @Getter
-    private static final List<ArcherUpgrade> archerUpgrades = Arrays.asList(
-            new PythonArcherUpgrade(),
-            new MedusaArcherUpgrade(),
-            new ApolloArcherUpgrade(),
-            new HadesArcherUpgrade()
-    );
+	private static final Map<String, Long> lastSpeedUsage = new HashMap<>();
+	private static final Map<String, Long> lastJumpUsage = new HashMap<>();
+	@Getter private static final Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
+	@Getter private static final Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
 
-    private static final Map<String, Long> lastSpeedUsage = new HashMap<>();
-    private static final Map<String, Long> lastJumpUsage = new HashMap<>();
-    @Getter private static final Map<String, Long> markedPlayers = new ConcurrentHashMap<>();
-    @Getter private static final Map<String, Set<Pair<String, Long>>> markedBy = new HashMap<>();
+	public ArcherClass() {
+		super("Archer", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
+	}
 
-    public ArcherClass() {
-        super("Archer", 15, Arrays.asList(Material.SUGAR, Material.FEATHER));
+	@Override
+	public boolean qualifies(PlayerInventory armor) {
+		return wearingAllArmor(armor) &&
+		       armor.getHelmet().getType() == Material.LEATHER_HELMET &&
+		       armor.getChestplate().getType() == Material.LEATHER_CHESTPLATE &&
+		       armor.getLeggings().getType() == Material.LEATHER_LEGGINGS &&
+		       armor.getBoots().getType() == Material.LEATHER_BOOTS;
+	}
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-            FrozenCommandHandler.registerClass(ArcherUpgradesCommand.class);
-            FrozenCommandHandler.registerClass(SetArcherKillsCommand.class);
-        }
-    }
+	@Override
+	public void apply(Player player) {
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+	}
 
-    @Override
-    public boolean qualifies(PlayerInventory armor) {
-        return wearingAllArmor(armor) &&
-               armor.getHelmet().getType() == Material.LEATHER_HELMET &&
-               armor.getChestplate().getType() == Material.LEATHER_CHESTPLATE &&
-               armor.getLeggings().getType() == Material.LEATHER_LEGGINGS &&
-               armor.getBoots().getType() == Material.LEATHER_BOOTS;
-    }
+	@Override
+	public void tick(Player player) {
+		if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+		}
 
-    @Override
-    public void apply(Player player) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0), true);
+		if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
+		}
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-            for (ArcherUpgrade ability : archerUpgrades) {
-                if (ability.applies(player) && Foxtrot.getInstance().getArcherKillsMap().getArcherKills(player.getUniqueId()) < ability.getKillsNeeded()) {
-                    player.sendMessage(ChatColor.RED + "You have an upgraded Archer set equipped but do not meet the requirements to use it's abilities.");
-                    player.sendMessage(ChatColor.RED + "To track your unlock progress, use the /archerupgrades command.");
-                }
-            }
-        }
-    }
+		super.tick(player);
+	}
 
-    @Override
-    public void tick(Player player) {
-        if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
-        }
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onEntityArrowHit(EntityDamageByEntityEvent event) {
+		if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
+			Arrow arrow = (Arrow) event.getDamager();
+			final Player victim = (Player) event.getEntity();
 
-        if (!player.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0));
-        }
+			if (!(arrow.getShooter() instanceof Player)) {
+				return;
+			}
 
-        super.tick(player);
-    }
+			Player shooter = (Player) arrow.getShooter();
+			float pullback = arrow.getMetadata("Pullback").get(0).asFloat();
 
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
-    public void onEntityArrowHit(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
-            Arrow arrow = (Arrow) event.getDamager();
-            final Player victim = (Player) event.getEntity();
+			if (!PvPClassHandler.hasKitOn(shooter, this)) {
+				return;
+			}
 
-            if (!(arrow.getShooter() instanceof Player)) {
-                return;
-            }
+			// 2 hearts for a marked shot
+			// 1.5 hearts for a marking / unmarked shot.
+			int damage = isMarked(victim) ? 4 : 3; // Ternary for getting damage!
 
-            Player shooter = (Player) arrow.getShooter();
-            float pullback = arrow.getMetadata("Pullback").get(0).asFloat();
+			// If the bow isn't 100% pulled back we do 1 heart no matter what.
+			if (pullback < 0.5F) {
+				damage = 2; // 1 heart
+			}
 
-            if (!PvPClassHandler.hasKitOn(shooter, this)) {
-                return;
-            }
+			if (victim.getHealth() - damage <= 0D) {
+				event.setCancelled(true);
+			} else {
+				event.setDamage(0D);
+			}
 
-            // 2 hearts for a marked shot
-            // 1.5 hearts for a marking / unmarked shot.
-            int damage = isMarked(victim) ? 4 : 3; // Ternary for getting damage!
+			// The 'ShotFromDistance' metadata is applied in the deathmessage module.
+			Location shotFrom = (Location) arrow.getMetadata("ShotFromDistance").get(0).value();
+			double distance = shotFrom.distance(victim.getLocation());
 
-            // If the bow isn't 100% pulled back we do 1 heart no matter what.
-            if (pullback < 0.5F) {
-                damage = 2; // 1 heart
-            }
+			DeathMessageHandler.addDamage(victim, new ArrowTracker.ArrowDamageByPlayer(victim.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));
+			victim.setHealth(Math.max(0D, victim.getHealth() - damage));
 
-            if (victim.getHealth() - damage <= 0D) {
-                event.setCancelled(true);
-            } else {
-                event.setDamage(0D);
-            }
+			if (PvPClassHandler.hasKitOn(victim, this)) {
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Cannot mark other Archers. " +
+				                    ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
+			} else if (pullback >= 0.5F) {
+				shooter.sendMessage(
+						ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Marked player for " + MARK_SECONDS + " seconds. " +
+						ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
 
-            // The 'ShotFromDistance' metadata is applied in the deathmessage module.
-            Location shotFrom = (Location) arrow.getMetadata("ShotFromDistance").get(0).value();
-            double distance = shotFrom.distance(victim.getLocation());
+				// Only send the message if they're not already marked.
+				if (!isMarked(victim)) {
+					victim.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
+				}
 
-            DeathMessageHandler.addDamage(victim, new ArrowTracker.ArrowDamageByPlayer(victim.getName(), damage, ((Player) arrow.getShooter()).getName(), shotFrom, distance));
-            victim.setHealth(Math.max(0D, victim.getHealth() - damage));
+				PotionEffect invis = null;
 
-            if (PvPClassHandler.hasKitOn(victim, this)) {
-                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Cannot mark other Archers. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
-            } else if (pullback >= 0.5F) {
-                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.GOLD + "Marked player for " + MARK_SECONDS + " seconds. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
+				for (PotionEffect potionEffect : victim.getActivePotionEffects()) {
+					if (potionEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
+						invis = potionEffect;
+						break;
+					}
+				}
 
-                // Only send the message if they're not already marked.
-                if (!isMarked(victim)) {
-                    victim.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Marked! " + ChatColor.YELLOW + "An archer has shot you and marked you (+25% damage) for " + MARK_SECONDS + " seconds.");
-                }
+				if (invis != null) {
+					PvPClass playerClass = PvPClassHandler.getPvPClass(victim);
 
-                PotionEffect invis = null;
+					victim.removePotionEffect(invis.getType());
 
-                for (PotionEffect potionEffect : victim.getActivePotionEffects()) {
-                    if (potionEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
-                        invis = potionEffect;
-                        break;
-                    }
-                }
+					final PotionEffect invisFinal = invis;
 
-                if (invis != null) {
-                    PvPClass playerClass = PvPClassHandler.getPvPClass(victim);
+					/* Handle returning their invisibility after the archer tag is done */
+					if (playerClass instanceof MinerClass) {
+						/* Queue player to have invis returned. (MinerClass takes care of this) */
+						((MinerClass) playerClass).getInvis().put(victim.getName(), MARK_SECONDS);
+					} else {
+						/* player has no class but had invisibility, return it after their tag expires */
+						new BukkitRunnable() {
 
-                    victim.removePotionEffect(invis.getType());
+							public void run() {
+								if (invisFinal.getDuration() > 1_000_000) {
+									return; // Ensure we never apply an infinite invis to a non miner
+								}
 
-                    final PotionEffect invisFinal = invis;
+								victim.addPotionEffect(invisFinal);
+							}
 
-                    /* Handle returning their invisibility after the archer tag is done */
-                    if (playerClass instanceof MinerClass) {
-                        /* Queue player to have invis returned. (MinerClass takes care of this) */
-                        ((MinerClass) playerClass).getInvis().put(victim.getName(), MARK_SECONDS);
-                    } else {
-                        /* player has no class but had invisibility, return it after their tag expires */
-                        new BukkitRunnable() {
+						}.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+					}
+				}
 
-                            public void run() {
-                                if(invisFinal.getDuration() > 1_000_000) {
-                                    return; // Ensure we never apply an infinite invis to a non miner
-                                }
+				getMarkedPlayers().put(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
 
-                                victim.addPotionEffect(invisFinal);
-                            }
+				getMarkedBy().putIfAbsent(shooter.getName(), new HashSet<>());
+				getMarkedBy().get(shooter.getName()).add(new Pair<>(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
 
-                        }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
-                    }
-                }
+				FrozenNametagHandler.reloadPlayer(victim);
 
-                getMarkedPlayers().put(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000));
+				new BukkitRunnable() {
+					public void run() {
+						FrozenNametagHandler.reloadPlayer(victim);
+					}
+				}.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+			} else {
+				shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " +
+				                    ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
+			}
+		}
+	}
 
-                getMarkedBy().putIfAbsent(shooter.getName(), new HashSet<>());
-                getMarkedBy().get(shooter.getName()).add(new Pair<>(victim.getName(), System.currentTimeMillis() + (MARK_SECONDS * 1000)));
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player player = (Player) event.getEntity();
 
-                FrozenNametagHandler.reloadPlayer(victim);
+			if (isMarked(player)) {
+				Player damager = null;
+				if (event.getDamager() instanceof Player) {
+					damager = (Player) event.getDamager();
+				} else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+					damager = (Player) ((Projectile) event.getDamager()).getShooter();
+				}
 
-                new BukkitRunnable() {
-                    public void run() {
-                        FrozenNametagHandler.reloadPlayer(victim);
-                    }
-                }.runTaskLater(Foxtrot.getInstance(), (MARK_SECONDS * 20) + 5);
+				if (damager != null && !canUseMark(damager, player)) {
+					return;
+				}
 
-                // Check for special Archer archerUpgrades if kitmap
-                if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-                    if (!ArcherUpgrade.canUseAbility(shooter)) {
-                        shooter.sendMessage(ChatColor.RED + "You can't use your Archer Upgrade ability for another " + ChatColor.BOLD + TimeUtils.formatIntoDetailedString((int) (ArcherUpgrade.getRemainingTime(shooter) / 1000)) + ChatColor.RED + ".");
-                        return;
-                    }
+				// Apply 125% damage if they're 'marked'
+				event.setDamage(event.getDamage() * 1.25D);
+			}
+		}
+	}
 
-                    for (ArcherUpgrade ability : archerUpgrades) {
-                        if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(shooter.getUniqueId()) >= ability.getKillsNeeded()) {
-                            if (ability.applies(shooter)) {
-                                ability.onHit(shooter, victim);
-                                ArcherUpgrade.setCooldown(shooter, 10);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else {
-                shooter.sendMessage(ChatColor.YELLOW + "[" + ChatColor.BLUE + "Arrow Range" + ChatColor.YELLOW + " (" + ChatColor.RED + (int) distance + ChatColor.YELLOW + ")] " + ChatColor.RED + "Bow wasn't fully drawn back. " + ChatColor.BLUE.toString() + ChatColor.BOLD + "(" + damage / 2 + " heart" + ((damage / 2 == 1) ? "" : "s") + ")");
-            }
-        }
-    }
+	@EventHandler
+	public void onEntityShootBow(EntityShootBowEvent event) {
+		event.getProjectile().setMetadata("Pullback", new FixedMetadataValue(Foxtrot.getInstance(), event.getForce()));
+	}
 
-    @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+	@Override
+	public boolean itemConsumed(Player player, Material material) {
+		if (material == Material.SUGAR) {
+			if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
+				long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
+				String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
-            if (isMarked(player)) {
-                Player damager = null;
-                if (event.getDamager() instanceof Player) {
-                    damager = (Player) event.getDamager();
-                } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                    damager = (Player) ((Projectile) event.getDamager()).getShooter();
-                }
+				player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+				return (false);
+			}
 
-                if (damager != null && !canUseMark(damager, player)) {
-                    return;
-                }
+			lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
+			return (true);
+		} else {
+			if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
+				player.sendMessage(ChatColor.RED + "You can't use this in spawn!");
+				return (false);
+			}
 
-                // Apply 125% damage if they're 'marked'
-                event.setDamage(event.getDamage() * 1.25D);
-            }
-        }
-    }
+			if (lastJumpUsage.containsKey(player.getName()) && lastJumpUsage.get(player.getName()) > System.currentTimeMillis()) {
+				long millisLeft = lastJumpUsage.get(player.getName()) - System.currentTimeMillis();
+				String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
 
-    @EventHandler
-    public void onEntityShootBow(EntityShootBowEvent event) {
-        event.getProjectile().setMetadata("Pullback", new FixedMetadataValue(Foxtrot.getInstance(), event.getForce()));
-    }
+				player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
+				return (false);
+			}
 
-    @EventHandler
-    public void onPlayerKilledEvent(PlayerKilledEvent event) {
-        if (PvPClassHandler.hasKitOn(event.getKiller(), this)) {
-            Foxtrot.getInstance().getArcherKillsMap().increment(event.getKiller().getUniqueId());
-        }
+			lastJumpUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 4));
 
-        if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
-            for (ArcherUpgrade upgrade : archerUpgrades) {
-                if (Foxtrot.getInstance().getArcherKillsMap().getArcherKills(event.getKiller().getUniqueId()) == upgrade.getKillsNeeded()) {
-                    event.getKiller().sendMessage(ChatColor.GREEN + "You've unlocked the " + ChatColor.AQUA + ChatColor.BOLD + upgrade.getUpgradeName() + ChatColor.GREEN + " Archer Upgrade!");
-                    break;
-                }
-            }
-        }
-    }
+			SpawnTagHandler.addPassiveSeconds(player, SpawnTagHandler.getMaxTagTime());
+			return (false);
+		}
+	}
 
-    @Override
-    public boolean itemConsumed(Player player, Material material) {
-        if (material == Material.SUGAR) {
-            if (lastSpeedUsage.containsKey(player.getName()) && lastSpeedUsage.get(player.getName()) > System.currentTimeMillis()) {
-                long millisLeft = lastSpeedUsage.get(player.getName()) - System.currentTimeMillis();
-                String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
+	public static boolean isMarked(Player player) {
+		return (getMarkedPlayers().containsKey(player.getName()) && getMarkedPlayers().get(player.getName()) > System.currentTimeMillis());
+	}
 
-                player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
-                return (false);
-            }
+	private boolean canUseMark(Player player, Player victim) {
+		if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
+			Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
 
-            lastSpeedUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 3), true);
-            return (true);
-        } else {
-            if (DTRBitmask.SAFE_ZONE.appliesAt(player.getLocation())) {
-                player.sendMessage(ChatColor.RED + "You can't use this in spawn!");
-                return (false);
-            }
+			int amount = 0;
+			for (Player member : team.getOnlineMembers()) {
+				if (PvPClassHandler.hasKitOn(member, this)) {
+					amount++;
 
-            if (lastJumpUsage.containsKey(player.getName()) && lastJumpUsage.get(player.getName()) > System.currentTimeMillis()) {
-                long millisLeft = lastJumpUsage.get(player.getName()) - System.currentTimeMillis();
-                String msg = TimeUtils.formatIntoDetailedString((int) millisLeft / 1000);
+					if (amount > 3) {
+						break;
+					}
+				}
+			}
 
-                player.sendMessage(ChatColor.RED + "You cannot use this for another §c§l" + msg + "§c.");
-                return (false);
-            }
+			if (amount > 3) {
+				player.sendMessage(ChatColor.RED + "Your team has too many archers. Archer mark was not applied.");
+				return false;
+			}
+		}
 
-            lastJumpUsage.put(player.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * 5, 4));
+		if (markedBy.containsKey(player.getName())) {
+			for (Pair<String, Long> pair : markedBy.get(player.getName())) {
+				if (victim.getName().equals(pair.first) && pair.second > System.currentTimeMillis()) {
+					return false;
+				}
+			}
 
-            SpawnTagHandler.addPassiveSeconds(player, SpawnTagHandler.getMaxTagTime());
-            return (false);
-        }
-    }
-
-    public static boolean isMarked(Player player) {
-        return (getMarkedPlayers().containsKey(player.getName()) && getMarkedPlayers().get(player.getName()) > System.currentTimeMillis());
-    }
-
-    private boolean canUseMark(Player player, Player victim) {
-        if (Foxtrot.getInstance().getTeamHandler().getTeam(player) != null) {
-            Team team = Foxtrot.getInstance().getTeamHandler().getTeam(player);
-
-            int amount = 0;
-            for (Player member : team.getOnlineMembers()) {
-                if (PvPClassHandler.hasKitOn(member, this)) {
-                    amount++;
-
-                    if (amount > 3) {
-                        break;
-                    }
-                }
-            }
-
-            if (amount > 3) {
-                player.sendMessage(ChatColor.RED + "Your team has too many archers. Archer mark was not applied.");
-                return false;
-            }
-        }
-
-        if (markedBy.containsKey(player.getName())) {
-            for (Pair<String, Long> pair : markedBy.get(player.getName())) {
-                if (victim.getName().equals(pair.first) && pair.second > System.currentTimeMillis()) {
-                    return false;
-                }
-            }
-
-            return true;
-        } else {
-            return true;
-        }
-    }
+			return true;
+		} else {
+			return true;
+		}
+	}
 
 }

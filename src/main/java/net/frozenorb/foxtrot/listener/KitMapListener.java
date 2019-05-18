@@ -2,7 +2,6 @@ package net.frozenorb.foxtrot.listener;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import net.frozenorb.foxtrot.util.Players;
@@ -37,9 +36,6 @@ import net.frozenorb.foxtrot.server.SpawnTagHandler;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.hydrogen.Hydrogen;
-import net.frozenorb.hydrogen.profile.Profile;
-import net.frozenorb.hydrogen.rank.Rank;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.economy.FrozenEconomyHandler;
@@ -76,44 +72,31 @@ public class KitMapListener implements Listener {
     }
     
     private int getAdditional(Player killer) {
-        if (Hydrogen.getInstance().getProfileHandler() == null) {
-            return 0;
-        }
-
-        Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(killer.getUniqueId());
-
-        if (!profileOptional.isPresent()) {
-            return 0;
-        }
-        
-        Profile profile = profileOptional.get();
-        Rank topRank = profile.getBestGeneralRank();
-        
-        switch (topRank.getId()) {
-        case "ghoul":
-        case "poltergeist":
+        if (killer.hasPermission("hcteams.killreward.ghoul")) {
             return 5;
-        case "sorcerer":
+        } else if (killer.hasPermission("hcteams.killreward.poltergeist")) {
+            return 5;
+        } else if (killer.hasPermission("hcteams.killreward.sorcerer")) {
             return 10;
-        case "suprive":
+        } else if (killer.hasPermission("hcteams.killreward.suprive")) {
             return 25;
-        case "juggernaut":
+        } else if (killer.hasPermission("hcteams.killreward.juggernaut")) {
             return 50;
-        case "myth":
+        } else if (killer.hasPermission("hcteams.killreward.myth")) {
             return 75;
-        case "sapphire":
+        } else if (killer.hasPermission("hcteams.killreward.sapphire")) {
             return 100;
-        case "pearl":
+        } else if (killer.hasPermission("hcteams.killreward.pearl")) {
             return 125;
-        case "ruby":
+        } else if (killer.hasPermission("hcteams.killreward.ruby")) {
             return 150;
-        case "velt":
+        } else if (killer.hasPermission("hcteams.killreward.velt")) {
             return 175;
-        case "velt-plus":
+        } else if (killer.hasPermission("hcteams.killreward.velt-plus")) {
             return 200;
+        } else {
+            return 0;
         }
-        
-        return 0;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

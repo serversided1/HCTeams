@@ -62,7 +62,7 @@ public class ChatListener implements Listener {
         event.getPlayer().removeMetadata("NoSpamCheck", Foxtrot.getInstance());
 
         Team playerTeam = Foxtrot.getInstance().getTeamHandler().getTeam(event.getPlayer());
-        String rankPrefix = event.getPlayer().hasMetadata("HydrogenPrefix") ? event.getPlayer().getMetadata("HydrogenPrefix").get(0).asString() : "";
+        String rankPrefix = event.getPlayer().hasMetadata("RankPrefix") ? event.getPlayer().getMetadata("RankPrefix").get(0).asString() : "";
         String customPrefix = getCustomPrefix(event.getPlayer().getUniqueId());
         ChatMode playerChatMode = Foxtrot.getInstance().getChatModeMap().getChatMode(event.getPlayer().getUniqueId());
         ChatMode forcedChatMode = ChatMode.findFromForcedPrefix(event.getMessage().charAt(0));

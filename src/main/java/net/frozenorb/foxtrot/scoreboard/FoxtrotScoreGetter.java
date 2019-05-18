@@ -3,7 +3,7 @@ package net.frozenorb.foxtrot.scoreboard;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.frozenorb.foxtrot.events.hell.HellHandler;
+import net.frozenorb.foxtrot.events.nightmare.progress.ProgressData;
 import org.bson.types.ObjectId;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -45,7 +45,7 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         String logoutScore = getLogoutScore(player);
         String homeScore = getHomeScore(player);
         String appleScore = getAppleScore(player);
-        String hellScore = getHellEventScore(player);
+        String nightmareScore = getNightmareScore(player);
 
         if (Foxtrot.getInstance().getMapHandler().isKitMap() || Foxtrot.getInstance().getServerHandler().isVeltKitMap()) {
             StatsEntry stats = Foxtrot.getInstance().getMapHandler().getStatsHandler().getStats(player.getUniqueId());
@@ -70,8 +70,8 @@ public class FoxtrotScoreGetter implements ScoreGetter {
             scores.add("&e&lEnderpearl&7: &c" + enderpearlScore);
         }
 
-	    if (hellScore != null) {
-		    scores.add("&e&lHell&7: &c" + hellScore);
+	    if (nightmareScore != null) {
+		    scores.add("&e&lNightmare&7: &c" + nightmareScore);
 	    }
 
         if (pvpTimerScore != null) {
@@ -327,18 +327,15 @@ public class FoxtrotScoreGetter implements ScoreGetter {
         return (null);
     }
 
-    public String getHellEventScore(Player player) {
-        if (Foxtrot.getInstance().getHellHandler() == null) {
-            return null;
+    public String getNightmareScore(Player player) {
+        if (Foxtrot.getInstance().getNightmareHandler() != null) {
+            if (Foxtrot.getInstance().getNightmareHandler().hasProgression(player)) {
+                ProgressData progressData = Foxtrot.getInstance().getNightmareHandler().getOrCreateProgression(player.getUniqueId());
+                return progressData.isTimesUp() ? null : (ScoreFunction.TIME_FANCY.apply(progressData.getTimeRemaining() / 1_000F));
+            }
         }
 
-        if (!Foxtrot.getInstance().getHellHandler().getPlayerToTime().containsKey(player.getUniqueId())) {
-            return null;
-        }
-
-        long remainingMS = (Foxtrot.getInstance().getHellHandler().getPlayerToTime().get(player.getUniqueId()) + HellHandler.TIME_LIMIT_MS) - System.currentTimeMillis();
-
-        return (ScoreFunction.TIME_FANCY.apply(remainingMS / 1000F));
+        return null;
     }
 
 }

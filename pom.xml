@@ -29,6 +29,18 @@
             </plugin>
         </plugins>
     </build>
+
+	<repositories>
+		<repository>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/repo/</url>
+		</repository>
+		<repository>
+			<id>fawe-repo</id>
+			<url>http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<!-- Spigot Jars -->
 		<dependency>
@@ -53,11 +65,6 @@
 			<artifactId>qLib</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		<dependency>
-			<groupId>net.frozenorb</groupId>
-			<artifactId>Hydrogen</artifactId>
-			<version>LATEST</version>
-		</dependency>
 
 		<!-- Misc. Jars -->
 		<dependency>
@@ -74,6 +81,24 @@
 			<groupId>com.cheatbreaker</groupId>
 			<artifactId>CheatBreakerAPI</artifactId>
 			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-bukkit</artifactId>
+			<version>6.1.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-core</artifactId>
+			<version>6.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>LATEST</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
@@ -41,7 +40,7 @@ public class JuggernautCommand {
             return;
         }
 
-        if (!Hydrogen.getInstance().getProfileHandler().getProfile(sender.getUniqueId()).get().getBestDisplayRank().getDisplayName().equals("Juggernaut")) return;
+        if (!sender.hasPermission("juggernaut.revive")) return;
 
         UUID target = player;
 

@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 
 import net.frozenorb.foxtrot.Foxtrot;
-import net.frozenorb.hydrogen.Hydrogen;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.uuid.FrozenUUIDCache;
@@ -43,7 +42,7 @@ public class VeltCommand {
 
         UUID target = player;
 
-        if (!Hydrogen.getInstance().getProfileHandler().getProfile(sender.getUniqueId()).get().getBestDisplayRank().getDisplayName().startsWith("Velt")) return;
+        if (!sender.hasPermission("velt.revive")) return;
 
         long deathbannedUntil = Foxtrot.getInstance().getDeathbanMap().getDeathban(target);
         if (deathbannedUntil < System.currentTimeMillis()) {

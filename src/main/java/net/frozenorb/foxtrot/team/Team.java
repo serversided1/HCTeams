@@ -20,7 +20,6 @@ import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.claims.Subclaim;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
 import net.frozenorb.foxtrot.team.dtr.DTRHandler;
-import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import net.frozenorb.foxtrot.team.track.TeamActionTracker;
 import net.frozenorb.foxtrot.team.track.TeamActionType;
 import net.frozenorb.foxtrot.util.CuboidRegion;
@@ -107,17 +106,6 @@ public class Team {
 
     public Team(String name) {
         this.name = name;
-
-        // Set default team upgrades
-        for (TeamUpgrade upgrade : TeamUpgrade.upgrades.values()) {
-            if (upgrade.isCategory()) {
-                for (TeamUpgrade categoryUpgrade : upgrade.getCategoryElements()) {
-                    upgradeToTier.putIfAbsent(categoryUpgrade.getUpgradeName(), 0);
-                }
-            } else {
-                upgradeToTier.putIfAbsent(upgrade.getUpgradeName(), 0);
-            }
-        }
     }
 
     public void setDTR(double newDTR) {

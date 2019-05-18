@@ -1,7 +1,6 @@
 package net.frozenorb.foxtrot.map.kits.command;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -13,9 +12,6 @@ import com.google.common.collect.Maps;
 import net.frozenorb.foxtrot.Foxtrot;
 import net.frozenorb.foxtrot.map.kits.Kit;
 import net.frozenorb.foxtrot.server.SpawnTagHandler;
-import net.frozenorb.hydrogen.Hydrogen;
-import net.frozenorb.hydrogen.profile.Profile;
-import net.frozenorb.hydrogen.rank.Rank;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.Param;
 import net.frozenorb.qlib.scoreboard.ScoreFunction;
@@ -103,17 +99,8 @@ public class KitCommand {
             }
         }
 
-        Optional<Profile> profileOptional = Hydrogen.getInstance().getProfileHandler().getProfile(player.getUniqueId());
-        if (!profileOptional.isPresent()) return false;
+        return player.hasPermission("hcteams.staff") || player.hasPermission("hcteams.youtuber") || player.hasPermission("hcteams.famous");
 
-        Profile profile = profileOptional.get();
-        Rank highestRank = profile.getBestDisplayRank();
-
-        if (highestRank.isStaffRank() || highestRank.getDisplayName().equals("YouTuber") || highestRank.getDisplayName().equals("Famous")) {
-            return true;
-        }
-
-        return highestRank.getDisplayName().equals(kitName);
     }
 
 

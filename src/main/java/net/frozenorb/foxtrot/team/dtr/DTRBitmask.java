@@ -45,7 +45,9 @@ public enum DTRBitmask {
 
     DUEL(4096, "Duel", "Determines if a region is part of a duel"),
     
-    DTC(8192, "DTC", "Determines if a region is part of DTC");
+    DTC(8192, "DTC", "Determines if a region is part of DTC"),
+
+    NIGHTMARE(16384, "Nightmare", "Determines if a region is part of Nightmare");
 
     @Getter private int bitmask;
     @Getter private String name;

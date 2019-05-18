@@ -29,8 +29,6 @@ import net.frozenorb.foxtrot.commands.CustomTimerCreateCommand;
 import net.frozenorb.foxtrot.team.Team;
 import net.frozenorb.foxtrot.team.claims.LandBoard;
 import net.frozenorb.foxtrot.team.dtr.DTRBitmask;
-import net.frozenorb.hydrogen.Hydrogen;
-import net.frozenorb.hydrogen.profile.Profile;
 import net.frozenorb.qlib.qLib;
 import net.frozenorb.qlib.command.Command;
 import net.frozenorb.qlib.command.FrozenCommandHandler;
@@ -317,15 +315,7 @@ public class BountyHandler implements Listener {
     }
 
     private static String formatName(UUID uuid) {
-        if (Hydrogen.getInstance().getProfileHandler() == null) {
-            return UUIDUtils.name(uuid);
-        }
-
-        Profile profile = Hydrogen.getInstance().getProfileHandler().getProfile(uuid).orElse(null);
-        if (profile == null) {
-            return UUIDUtils.name(uuid);
-        }
-        
-        return profile.getBestDisplayRank().getGameColor() + UUIDUtils.name(uuid);
+        Player player = Bukkit.getPlayer(uuid);
+        return (player != null && player.hasMetadata("RankColor") ? player.getMetadata("RankColor").get(0).asString() : ChatColor.WHITE) + UUIDUtils.name(uuid);
     }
 }

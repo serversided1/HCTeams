@@ -3,10 +3,9 @@ package net.frozenorb.foxtrot;
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 
-import net.frozenorb.foxtrot.events.hell.HellHandler;
+import net.frozenorb.foxtrot.events.nightmare.NightmareHandler;
 import net.frozenorb.foxtrot.listener.SpawnerTrackerListener;
 import net.frozenorb.foxtrot.persist.maps.*;
-import net.frozenorb.foxtrot.team.upgrades.TeamUpgrade;
 import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -32,7 +31,6 @@ import net.frozenorb.foxtrot.crates.CrateHandler;
 import net.frozenorb.foxtrot.deathmessage.DeathMessageHandler;
 import net.frozenorb.foxtrot.events.EventHandler;
 import net.frozenorb.foxtrot.events.region.glowmtn.GlowHandler;
-import net.frozenorb.foxtrot.librato.FoxtrotLibratoListener;
 import net.frozenorb.foxtrot.listener.AntiGlitchListener;
 import net.frozenorb.foxtrot.listener.ArmorDamageListener;
 import net.frozenorb.foxtrot.listener.BasicPreventionListener;
@@ -102,7 +100,7 @@ public class Foxtrot extends JavaPlugin {
     @Getter private ServerHandler serverHandler;
     @Getter private MapHandler mapHandler;
     @Getter private CitadelHandler citadelHandler;
-    @Getter private HellHandler hellHandler;
+    @Getter private NightmareHandler nightmareHandler;
     @Getter private EventHandler eventHandler;
     @Getter private ConquestHandler conquestHandler;
     @Getter private CavernHandler cavernHandler;
@@ -146,7 +144,6 @@ public class Foxtrot extends JavaPlugin {
     @Getter private CobblePickupMap cobblePickupMap;
     @Getter private KDRMap kdrMap;
     @Getter private KitmapTokensMap tokensMap;
-    @Getter private ArcherKillsMap archerKillsMap;
 
     @Getter private CombatLoggerListener combatLoggerListener;
     @Getter @Setter
@@ -237,6 +234,10 @@ public class Foxtrot extends JavaPlugin {
             challengeHandler.save();
         }
 
+        if (nightmareHandler != null) {
+            nightmareHandler.safeShutdown();
+        }
+
         qLib.getInstance().runRedisCommand((jedis) -> {
             jedis.save();
             return null;
@@ -248,6 +249,11 @@ public class Foxtrot extends JavaPlugin {
         mapHandler = new MapHandler();
         mapHandler.load();
 
+        // Must be loaded before teams are loaded (world gets loaded here)
+        if (getConfig().getBoolean("nightmare.enabled", false)) {
+            nightmareHandler = new NightmareHandler();
+        }
+
         teamHandler = new TeamHandler();
         LandBoard.getInstance().loadFromTeams();
 
@@ -257,16 +263,17 @@ public class Foxtrot extends JavaPlugin {
         eventHandler = new EventHandler();
         conquestHandler = new ConquestHandler();
 
-        if (getConfig().getBoolean("hell.enabled", false)) {
-            hellHandler = new HellHandler();
-        }
-
         if (getConfig().getBoolean("glowstoneMountain", false)) {
             glowHandler = new GlowHandler();
         }
 
         if (getConfig().getBoolean("cavern", false)) {
             cavernHandler = new CavernHandler();
+        }
+
+        // Must be loaded after teams are loaded
+        if (nightmareHandler != null) {
+            nightmareHandler.lateInitialization();
         }
 
         crateHandler = new CrateHandler();
@@ -309,7 +316,6 @@ public class Foxtrot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new WebsiteListener(), this);
         getServer().getPluginManager().registerEvents(new TeamSubclaimCommand(), this);
         getServer().getPluginManager().registerEvents(new TeamClaimCommand(), this);
-        getServer().getPluginManager().registerEvents(new FoxtrotLibratoListener(), this);
         getServer().getPluginManager().registerEvents(new StatTrakListener(), this);
         getServer().getPluginManager().registerEvents(new TeamRequestSpamListener(), this);
 
@@ -330,8 +336,6 @@ public class Foxtrot extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new KitMapListener(), this);
             getServer().getPluginManager().registerEvents(new BountyHandler(), this);
             getServer().getPluginManager().registerEvents(new CarePackageHandler(), this);
-
-            TeamUpgrade.register();
         }
         
         getServer().getPluginManager().registerEvents(new BlockConvenienceListener(), this);
@@ -380,7 +384,6 @@ public class Foxtrot extends JavaPlugin {
 
         if (getServerHandler().isVeltKitMap() || getMapHandler().isKitMap()) {
             (tokensMap = new KitmapTokensMap()).loadFromRedis();
-            (archerKillsMap = new ArcherKillsMap()).loadFromRedis();
         }
     }
 
